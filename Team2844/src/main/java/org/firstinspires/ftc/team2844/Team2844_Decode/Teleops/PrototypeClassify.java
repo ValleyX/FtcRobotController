@@ -13,7 +13,7 @@ public class PrototypeClassify extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robotHardware = new RobotHardware(this);
-        opMode_ = new LinearOpMode();
+        opMode_ = new LinearOpMode(this, robotHardware);
         waitForStart();
         runtime.reset();
 
