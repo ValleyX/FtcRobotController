@@ -13,12 +13,19 @@ public class PrototypeClassify extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robotHardware = new RobotHardware(this);
-        opMode_ = new LinearOpMode(this, robotHardware);
+        opMode_ = this;
         waitForStart();
         runtime.reset();
 
         while (opModeIsActive()) {
-            if(){
+            double[] array = robotHardware.getColors();
+            if(array[0] > 0.01 && array[1] > 0.01 && array[2] > 0.01){
+                if(Math.max(array[1], array[2]) == array[1])
+                {
+
+                } else if(Math.max(array[1], array[2]) == array[2]) {
+
+                }
 
             }
         }

@@ -19,12 +19,13 @@ public class RobotHardware {
     public NormalizedColorSensor colorSensor;
     public NormalizedRGBA colors;
     public float[] hsvValues;
-    double gain = 2.0;
+    double gain = 2.5;
 
     public RobotHardware(LinearOpMode opMode) {
         opMode_ = opMode;
         //servos
         classSer = opMode_.hardwareMap.get(Servo.class, "classSer");
+        classSer.setPosition(0.0);
 
         //motor hardwaremaps and stuffs
 
