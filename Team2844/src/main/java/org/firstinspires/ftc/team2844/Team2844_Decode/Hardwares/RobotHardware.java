@@ -18,21 +18,19 @@ public class RobotHardware {
     //sensor
     public NormalizedColorSensor colorSensor;
     public NormalizedRGBA colors;
-    public float[] hsvValues;
     double gain = 2.5;
 
     public RobotHardware(LinearOpMode opMode) {
         opMode_ = opMode;
         //servos
         classSer = opMode_.hardwareMap.get(Servo.class, "classSer");
-        classSer.setPosition(0.0);
+        classSer.setPosition(0.5);
 
         //motor hardwaremaps and stuffs
 
         //sensor hardware maps and stuffs
         colorSensor = opMode_.hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
         colors = colorSensor.getNormalizedColors();
-        Color.colorToHSV(colors.toColor(), hsvValues);
 
         colorSensor.setGain((float)gain);
 
@@ -44,8 +42,9 @@ public class RobotHardware {
      * it gets the colors as a double array
      * @return the double array of rgb vaules (red, green, blue)
      */
-    public double[] getColors(){
-        double[] colorReturn = {colors.red, colors.green, colors.blue};
+    public float[] getColors(){
+        colors = colorSensor.getNormalizedColors();
+        float[] colorReturn = {colors.red, colors.green, colors.blue};
         return colorReturn;
     }
 
@@ -56,4 +55,10 @@ public class RobotHardware {
     public double getGain(){
         return gain;
     }
+
+    public void moveServo(double pos){
+        classSer.setPosition(pos);
+    }
+
+
 }
