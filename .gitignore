@@ -79,3 +79,20 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+/Team2844/src/main/AndroidManifest.xml
+/Team12841/src/main/AndroidManifest.xml
+/Team2844/build.gradle
+/Team12841/build.gradle
+/Team2844/lib/OpModeAnnotationProcessor.jar
+/Team12841/lib/OpModeAnnotationProcessor.jar
+/Team12841/src/main/java/org/firstinspires/ftc/team12841/Team2844_Decode/Teleops/PrototypeClassify.java
+/Team2844/src/main/java/org/firstinspires/ftc/team2844/readme.md
+/Team2844/src/main/res/raw/readme.md
+/Team12841/src/main/java/org/firstinspires/ftc/team12841/readme.md
+/Team12841/src/main/res/raw/readme.md
+/Team12841/src/main/java/org/firstinspires/ftc/team12841/Team2844_Decode/Hardwares/RobotHardware.java
+/Team12841/src/main/java/org/firstinspires/ftc/team12841/Team2844_Decode/Hardwares/ShooterHardware.java
+/Team2844/src/main/res/values/strings.xml
+/Team12841/src/main/res/values/strings.xml
+/Team2844/src/main/res/xml/teamwebcamcalibrations.xml
+/Team12841/src/main/res/xml/teamwebcamcalibrations.xml
