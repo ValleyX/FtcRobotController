@@ -32,18 +32,18 @@ public class Constants {
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD);
 
     public static ThreeWheelIMUConstants localizerConstants = new ThreeWheelIMUConstants()
-            .forwardTicksToInches(.01621450)
+            .forwardTicksToInches(.00301478129)
             .strafeTicksToInches(.002811234)
-            .turnTicksToInches(.003965939)
+            .turnTicksToInches(.031948)
             .leftPodY(7.16)
             .rightPodY(-7.16)
-            .strafePodX(3)
+            .strafePodX(4.875)
             .leftEncoder_HardwareMapName("lbMotor")
             .rightEncoder_HardwareMapName("rbMotor")
             .strafeEncoder_HardwareMapName("rfMotor")
             .leftEncoderDirection(Encoder.FORWARD)
-            .rightEncoderDirection(Encoder.FORWARD)
-            .strafeEncoderDirection(Encoder.FORWARD)
+            .rightEncoderDirection(Encoder.REVERSE)
+            .strafeEncoderDirection(Encoder.REVERSE)
             .IMU_HardwareMapName("imu")
             .IMU_Orientation(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
     public static Follower createFollower(HardwareMap hardwareMap) {
