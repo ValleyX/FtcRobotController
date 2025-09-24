@@ -5,18 +5,15 @@ import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.Encoder;
-import com.pedropathing.ftc.localization.constants.ThreeWheelConstants;
 import com.pedropathing.ftc.localization.constants.ThreeWheelIMUConstants;
 import com.pedropathing.paths.PathConstraints;
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.team12841.RobotHardware;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-    .mass(3.8);
+    .mass(6.9);
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
@@ -34,7 +31,7 @@ public class Constants {
     public static ThreeWheelIMUConstants localizerConstants = new ThreeWheelIMUConstants()
             .forwardTicksToInches(.00301478129)
             .strafeTicksToInches(.002811234)
-            .turnTicksToInches(24.150)
+            .turnTicksToInches(.00314159265358979)
             .leftPodY(7.16)
             .rightPodY(-7.16)
             .strafePodX(4.875)
