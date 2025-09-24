@@ -3,8 +3,8 @@ repositories {
     mavenCentral()
     google() // Needed for androidx
     // Pedro Pathing
-    maven { url = 'https://maven.pedropathing.com' } //added by Tanman
-    maven { url = "https://mymaven.bylazar.com/releases" } //added by Tanman
+    maven { url = 'https://maven.pedropathing.com' } //added by Tanner
+    maven { url = "https://mymaven.bylazar.com/releases" } //added by Tanner
 }
 
 dependencies {
@@ -19,8 +19,8 @@ dependencies {
     implementation 'org.firstinspires.ftc:Vision:11.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     // Pedro Pathing
-    implementation 'com.pedropathing:ftc:2.0.1' //added by Tanman
-    implementation 'com.pedropathing:telemetry:0.0.6' //added by Tanman
-    implementation 'com.bylazar:fullpanels:1.0.6' //added by Tanman
+    implementation 'com.pedropathing:ftc:2.0.1' //added by Tanner
+    implementation 'com.pedropathing:telemetry:0.0.6' //added by Tanner
+    implementation 'com.bylazar:fullpanels:1.0.6' //added by Tanner
 }
 
