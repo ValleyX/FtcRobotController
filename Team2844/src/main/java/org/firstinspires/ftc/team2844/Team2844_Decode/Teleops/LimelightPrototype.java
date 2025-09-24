@@ -4,6 +4,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.team2844.Team2844_Decode.Hardwares.RobotHardware;
 
 public class LimelightPrototype extends LinearOpMode {
@@ -25,8 +26,15 @@ public class LimelightPrototype extends LinearOpMode {
         runtime.reset();
 
         while(opModeIsActive()){
-            LLResult result = robotHardware.limelight.getLatestResult();
+            LLResult llResult = robotHardware.limelight.getLatestResult();
 
+            if (llResult != null && llResult.isValid()) {
+                Pose3D botPose = llResult.getBotpose();  //pull in MT1 data
+                telemetry.addData("Tx", llResult.getTx());
+                telemetry.addData("Ty", llResult.getTy());
+                telemetry.addData("Tarea", llResult.getTa());
+
+            }
         }
     }
 }
