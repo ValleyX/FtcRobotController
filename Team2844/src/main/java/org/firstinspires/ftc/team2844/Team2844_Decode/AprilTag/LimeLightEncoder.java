@@ -40,7 +40,7 @@ public class LimeLightEncoder extends LinearOpMode {
     // They can/should be tweaked to suit the specific robot drive train.
     static final double     DRIVE_SPEED             = 0.4;     // Max driving speed for better distance accuracy.
     static final double     TURN_SPEED              = 0.2;     // Max turn speed to limit turn rate.
-    static final double     HEADING_THRESHOLD       = 1.0 ;    // How close must the heading get to the target before moving to next step.
+    static final double     HEADING_THRESHOLD       = 1.25 ;    // How close must the heading get to the target before moving to next step.
     // Requiring more accuracy (a smaller number) will often make the turn take longer to get into the final position.
     // Define the Proportional control coefficient (or GAIN) for "heading control".
     // We define one value when Turning (larger errors), and the other is used when Driving straight (smaller errors).
@@ -50,6 +50,7 @@ public class LimeLightEncoder extends LinearOpMode {
     static final double     P_DRIVE_GAIN           = 0.03;     // Larger is more responsive, but also less stable.
 
     private Limelight3A limelight;
+    LLResult llResult;
     //private IMU imu;
 
 
@@ -74,14 +75,14 @@ public class LimeLightEncoder extends LinearOpMode {
         while (opModeInInit()) {
             turnMotor = hardwareMap.get(DcMotor.class, "yawMotor");
             limelight = hardwareMap.get(Limelight3A.class, "limelight");
-            limelight.pipelineSwitch((1)); //april tag pipeline for red side
+            limelight.pipelineSwitch((0)); //april tag pipeline for red side
         }
         //Start Limelight when start is pressed
         limelight.start();
 
         //This section will run until stop or timeout
         while (opModeIsActive()) {
-            LLResult llResult = limelight.getLatestResult();
+            llResult = limelight.getLatestResult();
 
             if (llResult != null && llResult.isValid()) {
                 Pose3D botPose = llResult.getBotpose();  //pull in MT1 data
@@ -89,6 +90,10 @@ public class LimeLightEncoder extends LinearOpMode {
                 telemetry.addData("Ty", llResult.getTy());
                 telemetry.addData("Tarea", llResult.getTa());
                 telemetry.update();
+
+                if(Math.abs(llResult.getTx()) >= 1.25) {
+                    turnToHeading(0.25, getTurnMotorHeading() - llResult.getTx());
+                }
             }
 
 
@@ -147,6 +152,7 @@ public class LimeLightEncoder extends LinearOpMode {
 
         // keep looping while we are still active, and not on heading.
         while (opModeIsActive() && (Math.abs(headingError) > HEADING_THRESHOLD)) {
+            llResult = limelight.getLatestResult();
 
             // Determine required steering to keep on heading
             turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
@@ -209,6 +215,9 @@ public class LimeLightEncoder extends LinearOpMode {
      * @param straight  Set to true if we are driving straight, and the encoder positions should be included in the telemetry.
      */
     private void sendTelemetry(boolean straight) {
+        telemetry.addData("Tx", llResult.getTx());
+        telemetry.addData("Ty", llResult.getTy());
+        telemetry.addData("Tarea", llResult.getTa());
 
         if (straight) {
             telemetry.addData("Motion", "Drive Straight");
