@@ -83,17 +83,31 @@ public class LimeLightEncoder extends LinearOpMode {
         //This section will run until stop or timeout
         while (opModeIsActive()) {
             llResult = limelight.getLatestResult();
+            if(gamepad1.x) {
+                turnYawToPos(.25, 90);
+            }
+            if (gamepad1.a) {
+                turnYawToPos(.25, 180);
+            }
+            if(gamepad1.y){
+                turnYawToPos(.25, turnMotor.getCurrentPosition() +llResult.getTx());
+            }
+
 
             if (llResult != null && llResult.isValid()) {
                 Pose3D botPose = llResult.getBotpose();  //pull in MT1 data
                 telemetry.addData("Tx", llResult.getTx());
                 telemetry.addData("Ty", llResult.getTy());
                 telemetry.addData("Tarea", llResult.getTa());
+                telemetry.addData("Current Heading", getTurnMotorHeading());
+                telemetry.addData("Current Encoder Tics", turnMotor.getCurrentPosition());
                 telemetry.update();
 
-                if(Math.abs(llResult.getTx()) >= 1.25) {
-                    turnToHeading(0.25, getTurnMotorHeading() - llResult.getTx());
-                }
+
+
+                /*if(Math.abs(llResult.getTx()) >= 1.25) {
+                    turnYawToPos(0.25, getTurnMotorHeading() - llResult.getTx());
+                }*/
             }
 
 
@@ -130,6 +144,28 @@ public class LimeLightEncoder extends LinearOpMode {
 
         }
     }*/
+
+    public void turnYawToPos(double speed, double degrees){
+        double ticPerDegree = COUNTS_PER_MOTOR_REV/360.0;
+
+        int target = (int)((degrees*ticPerDegree)+0.5);
+        turnMotor.setTargetPosition(target);
+
+        turnMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turnMotor.setPower(speed);
+
+        int currentPos = turnMotor.getCurrentPosition();
+        while(!(currentPos <= target+3) && !(currentPos >= target-3)){
+            currentPos = turnMotor.getCurrentPosition();
+            telemetry.addData("Tx", llResult.getTx());
+            telemetry.addData("Ty", llResult.getTy());
+            telemetry.addData("Tarea", llResult.getTa());
+            telemetry.addData("Current Heading", getTurnMotorHeading());
+            telemetry.addData("Current Encoder Tics", turnMotor.getCurrentPosition());
+            telemetry.addData("in While", 0);
+            telemetry.update();
+        }
+    }
 
     /**
      *  Spin on the central axis to point in a new direction.
