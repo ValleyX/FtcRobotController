@@ -1,12 +1,13 @@
-package org.firstinspires.ftc.team12841;
+package org.firstinspires.ftc.team12841.tests;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.team12841.RobotHardware;
 import org.firstinspires.ftc.team12841.pedroPathing.Constants;
 
 import java.util.Arrays;
@@ -45,7 +46,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
         @TeleOp
         public class robotLimelightTest extends OpMode {
             // private Limelight3A limelight; //any limelight here
-            private RobotHardware robotHardware = new RobotHardware(this);
+            public RobotHardware robotHardware = new RobotHardware(this);
             private Follower follower;
             private boolean following = false;
             private final Pose TARGET_LOCATION = new Pose(); //Put the target location here
