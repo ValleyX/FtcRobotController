@@ -12,8 +12,10 @@ import com.pedropathing.ftc.localization.constants.ThreeWheelConstants;
 import com.pedropathing.ftc.localization.localizers.ThreeWheelLocalizer;
 import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -25,7 +27,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class RobotHardware{
-    LinearOpMode opMode_;
+    OpMode opMode_;
     private final ElapsedTime runtime = new ElapsedTime();
 
     // Motors
@@ -34,7 +36,9 @@ public class RobotHardware{
     public DcMotorEx lfMotor = null;
     public DcMotorEx lbMotor = null;
 
+    // Sensors
     IMU imu;
+    public Limelight3A limelight3A = null;
 
     // Odometry Wheels
 
@@ -42,7 +46,7 @@ public class RobotHardware{
     public GoBildaPinpointDriver.GoBildaOdometryPods strafeLocalizer = null;
     public GoBildaPinpointDriver.GoBildaOdometryPods leftLocalizer = null;
 
-    public RobotHardware(LinearOpMode opMode) {
+    public RobotHardware(OpMode opMode) {
 
         opMode_ = opMode; // I think everything dies if you delete this
 
@@ -72,6 +76,10 @@ public class RobotHardware{
         rfMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lfMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lbMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Sensor HardwareMaps
+
+        limelight3A = opMode_.hardwareMap.get(Limelight3A.class, "limelight");
 
         imu = opMode_.hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
