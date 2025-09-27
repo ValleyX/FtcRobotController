@@ -28,13 +28,9 @@
  */
 package org.firstinspires.ftc.team12841.TeleOP;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -58,7 +54,7 @@ import org.firstinspires.ftc.team12841.RobotHardware;
  */
 @TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
 // @Disabled
-public class RobotTeleopMecanumFieldRelativeDrive extends LinearOpMode {
+public class TeleOpColton extends LinearOpMode {
 
 
     @Override
@@ -110,8 +106,8 @@ public class RobotTeleopMecanumFieldRelativeDrive extends LinearOpMode {
         double r = Math.hypot(right, forward);
 
         // Second, rotate angle by the angle the robot is pointing
-        theta = AngleUnit.normalizeRadians(theta -
-                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        //theta = AngleUnit.normalizeRadians(theta -
+          //      imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
 
         // Third, convert back to cartesian
         double newForward = r * Math.sin(theta);
@@ -144,9 +140,9 @@ public class RobotTeleopMecanumFieldRelativeDrive extends LinearOpMode {
         // We multiply by maxSpeed so that it can be set lower for outreaches
         // When a young child is driving the robot, we may not want to allow full
         // speed.
-        frontLeftDrive.setPower(maxSpeed * (frontLeftPower / maxPower));
-        frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
-        backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
-        backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
+        //frontLeftDrive.setPower(maxSpeed * (frontLeftPower / maxPower));
+        //frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
+        //backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
+        //backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
     }
 }
