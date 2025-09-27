@@ -87,12 +87,23 @@ public class LimeLightEncoder extends LinearOpMode {
                 turnYawToPos(.25, 90);
             }
             if (gamepad1.a) {
-                turnYawToPos(.25, 180);
+                turnYawToPos(.25, -90);
+            }
+            if(gamepad1.b){
+                turnYawToPos(.25, 0);
             }
             if(gamepad1.y){
-                turnYawToPos(.25, turnMotor.getCurrentPosition() +llResult.getTx());
+                if(Math.abs(getTurnMotorHeading()-llResult.getTx()) <= 90) {
+                    turnYawToPos(.5, turnMotor.getCurrentPosition() - llResult.getTx());
+                }
             }
 
+            telemetry.addData("Tx", llResult.getTx());
+            telemetry.addData("Ty", llResult.getTy());
+            telemetry.addData("Tarea", llResult.getTa());
+            telemetry.addData("Current Heading", getTurnMotorHeading());
+            telemetry.addData("Current Encoder Tics", turnMotor.getCurrentPosition());
+            telemetry.update();
 
             if (llResult != null && llResult.isValid()) {
                 Pose3D botPose = llResult.getBotpose();  //pull in MT1 data
@@ -105,9 +116,11 @@ public class LimeLightEncoder extends LinearOpMode {
 
 
 
-                /*if(Math.abs(llResult.getTx()) >= 1.25) {
-                    turnYawToPos(0.25, getTurnMotorHeading() - llResult.getTx());
-                }*/
+                if(Math.abs(llResult.getTx()) >= 1.25) {
+                    if(Math.abs(getTurnMotorHeading()-llResult.getTx()) <= 90) {
+                        turnYawToPos(1, getTurnMotorHeading() - llResult.getTx());
+                    }
+                }
             }
 
 
