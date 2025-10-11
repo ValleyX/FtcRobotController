@@ -4,11 +4,16 @@ import android.graphics.Color;
 
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class RobotHardware {
     LinearOpMode opMode_;
@@ -18,7 +23,13 @@ public class RobotHardware {
     public Servo classSer = null;
     public DcMotorEx yawMotor;
 
-    //sensor
+    //drive motors
+    public DcMotor rightBackDrive;
+    public DcMotor leftBackDrive;
+    public DcMotor rightFrontDrive;
+    public DcMotor leftFrontDrive;
+    //sensor and IMU
+    public IMU imu;
     public NormalizedColorSensor colorSensor;
     public NormalizedRGBA colors;
     double gain = 2.5;
@@ -34,6 +45,15 @@ public class RobotHardware {
 
         //motor hardwaremaps and stuffs
         yawMotor = opMode_.hardwareMap.get(DcMotorEx.class, "yawMotor");
+
+        //drive motor hardwarmaps
+        rightFrontDrive = opMode_.hardwareMap.get(DcMotor.class, "rightFront");
+        rightBackDrive = opMode_.hardwareMap.get(DcMotor.class, "rightBack");
+        leftFrontDrive = opMode_.hardwareMap.get(DcMotor.class, "leftFront");
+        leftBackDrive = opMode_.hardwareMap.get(DcMotor.class, "leftBack");
+
+        rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //sensor hardware maps and stuffs
         colorSensor = opMode_.hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
@@ -68,5 +88,20 @@ public class RobotHardware {
         classSer.setPosition(pos);
     }
 
+    public void powerMotors(double leftFront, double leftBack, double rightBack, double rightFront){
+        leftFrontDrive.setPower(leftFront);
+        leftBackDrive.setPower(leftBack);
+        rightFrontDrive.setPower(rightFront);
+        rightBackDrive.setPower(rightBack);
+    }
+
+
+    public double robotHeadingRadians(){
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+    }
+
+    public double robotHeadingAngles(){
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    }
 
 }
