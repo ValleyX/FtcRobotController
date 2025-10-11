@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-    .mass(6.9);
+    .mass(5.75);
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
@@ -29,18 +29,18 @@ public class Constants {
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD);
 
     public static ThreeWheelIMUConstants localizerConstants = new ThreeWheelIMUConstants()
-            .forwardTicksToInches(.003141592653589789)
-            .strafeTicksToInches(.00314159265358979)
-            .turnTicksToInches(.00314159265358979)
-            .leftPodY(7.16)
-            .rightPodY(-7.16)
-            .strafePodX(4.875)
+            .forwardTicksToInches(0.006645353359010687)
+            .strafeTicksToInches(0.002056499314456375)
+            .turnTicksToInches(0.0061979936959655185)
+            .leftPodY(-2.25)
+            .rightPodY(3.75)
+            .strafePodX(5.08)
             .leftEncoder_HardwareMapName("lbMotor")
             .rightEncoder_HardwareMapName("rbMotor")
             .strafeEncoder_HardwareMapName("rfMotor")
             .leftEncoderDirection(Encoder.FORWARD)
             .rightEncoderDirection(Encoder.REVERSE)
-            .strafeEncoderDirection(Encoder.REVERSE)
+            .strafeEncoderDirection(Encoder.FORWARD)
             .IMU_HardwareMapName("imu")
             .IMU_Orientation(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
     public static Follower createFollower(HardwareMap hardwareMap) {
