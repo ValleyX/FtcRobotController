@@ -8,6 +8,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -22,7 +23,7 @@ public class RobotHardware{
     public DcMotorEx lbMotor = null;
 
     // Sensors
-    IMU imu;
+    public IMU imu;
     public Limelight3A limelight3A = null;
 
     // Odometry Wheels
@@ -64,7 +65,7 @@ public class RobotHardware{
 
         // Sensor HardwareMaps
 
-        limelight3A = opMode_.hardwareMap.get(Limelight3A.class, "limelight");
+        //limelight3A = opMode_.hardwareMap.get(Limelight3A.class, "limelight");
 
         imu = opMode_.hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
