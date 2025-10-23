@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.Hardwares;
 import android.graphics.Color;
 
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -40,11 +41,11 @@ public class RobotHardware {
     public RobotHardware(LinearOpMode opMode) {
         opMode_ = opMode;
         //servos
-        classSer = opMode_.hardwareMap.get(Servo.class, "classSer");
-        classSer.setPosition(0.5);
+        //classSer = opMode_.hardwareMap.get(Servo.class, "classSer");
+        //classSer.setPosition(0.5);
 
         //motor hardwaremaps and stuffs
-        yawMotor = opMode_.hardwareMap.get(DcMotorEx.class, "yawMotor");
+        //yawMotor = opMode_.hardwareMap.get(DcMotorEx.class, "yawMotor");
 
         //drive motor hardwarmaps
         rightFrontDrive = opMode_.hardwareMap.get(DcMotor.class, "rightFront");
@@ -52,16 +53,32 @@ public class RobotHardware {
         leftFrontDrive = opMode_.hardwareMap.get(DcMotor.class, "leftFront");
         leftBackDrive = opMode_.hardwareMap.get(DcMotor.class, "leftBack");
 
-        rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        //IMU
+        imu = opMode_.hardwareMap.get(IMU.class, "imu");
+        imu.initialize(
+                new IMU.Parameters(
+                        new RevHubOrientationOnRobot(
+                                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
+                        )
+                )
+        );
 
         //sensor hardware maps and stuffs
-        colorSensor = opMode_.hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
-        colors = colorSensor.getNormalizedColors();
-        colorSensor.setGain((float)gain);
+        //colorSensor = opMode_.hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
+        //colors = colorSensor.getNormalizedColors();
+        //colorSensor.setGain((float)gain);
 
         //limelight stuffs and hardware map
-        limelight = opMode_.hardwareMap.get(Limelight3A.class, "limelight");
+        //limelight = opMode_.hardwareMap.get(Limelight3A.class, "limelight");
 
     }
 

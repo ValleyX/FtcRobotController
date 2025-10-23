@@ -24,23 +24,29 @@ public class OnePersonDrive extends LinearOpMode {
         robotHardware = new RobotHardware(this);
         OpMode_ = this;
 
+        waitForStart();
 
 
-        x = gamepad1.right_stick_x;
-        rx = gamepad1.left_stick_x;
-        y = gamepad1.left_stick_y;
+        while (opModeIsActive()) {
+            x = gamepad1.left_stick_x;
+            rx = gamepad1.right_stick_x;
+            y = -gamepad1.left_stick_y;
 
-        //code for field centric (Idk how it works, pretty sure it's magic or makes triangles or something)
-        //REMEMBER IT USES RADIANS
-        telemetry.addData("botHeading", botHeading);
-        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = (rotY + rotX + rx) / denominator;
-        double backLeftPower = (rotY - rotX + rx) / denominator;
-        double frontRightPower = (rotY - rotX - rx) / denominator;
-        double backRightPower = (rotY + rotX - rx) / denominator;
+            //botHeading = robotHardware.robotHeadingRadians();
+            botHeading = 0;
 
-        robotHardware.powerMotors(frontLeftPower, backLeftPower, backRightPower, frontRightPower);
+            //code for field centric (Idk how it works, pretty sure it's magic or makes triangles or something)
+            //REMEMBER IT USES RADIANS
+            telemetry.addData("botHeading", botHeading);
+            double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+            double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (rotY + rotX + rx) / denominator;
+            double backLeftPower = (rotY - rotX + rx) / denominator;
+            double frontRightPower = (rotY - rotX - rx) / denominator;
+            double backRightPower = (rotY + rotX - rx) / denominator;
+
+            robotHardware.powerMotors(frontLeftPower, backLeftPower, backRightPower, frontRightPower);
+        }
     }
 }
