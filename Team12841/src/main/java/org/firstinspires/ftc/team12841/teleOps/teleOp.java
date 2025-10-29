@@ -12,6 +12,7 @@ public class teleOp extends OpMode {
     private RobotHardware robot;
     private double headingOffset = 0;
     private boolean babyMode = false;
+    private final double BABYMODEVAL = 0.4;
 
     @Override
     public void init() {
@@ -27,7 +28,7 @@ public class teleOp extends OpMode {
         double y = -gamepad1.left_stick_y;   // Forward/backward
         double rotation = gamepad1.right_stick_x;  // Rotation
 
-        // Dpad controls
+        // Controls
         // if (gamepad1.a) headingOffset = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS); // Reset heading
         // if (gamepad1.dpad_down) babyMode = true;
         // if (gamepad1.dpad_up) babyMode = false;
@@ -40,12 +41,12 @@ public class teleOp extends OpMode {
         double rotY = x * Math.sin(heading) + y * Math.cos(heading);
 
         // Baby Mode
-        double speedScale = babyMode ? 0.4 : 1.0;
+        double speedScale = babyMode ? BABYMODEVAL : 1.0; // If BabyMode, SpeedScale = 0.4, else, SpeedScale = 1.0
         rotX *= speedScale;
         rotY *= speedScale;
         rotation *= speedScale;
 
-        //  OUTPUT
+        //  Motor Outputs
         double frontLeftPower  = rotY + rotX + rotation;
         double frontRightPower = rotY - rotX - rotation;
         double backLeftPower   = rotY - rotX + rotation;
@@ -67,11 +68,10 @@ public class teleOp extends OpMode {
         robot.lbMotor.setPower(backLeftPower);
         robot.rbMotor.setPower(backRightPower);
 
-        // FEEDBACK / TELEMETRY
-
+        // Telemetry
         telemetry.addData("Heading (°)", Math.toDegrees(heading));
         telemetry.addData("Offset (°)", Math.toDegrees(headingOffset));
-        telemetry.addData("Slow Mode", babyMode);
+        telemetry.addData("Baby Mode", babyMode);
         telemetry.addData("Powers", "FL: %.2f | FR: %.2f | BL: %.2f | BR: %.2f",
                 frontLeftPower, frontRightPower, backLeftPower, backRightPower);
         telemetry.update();
