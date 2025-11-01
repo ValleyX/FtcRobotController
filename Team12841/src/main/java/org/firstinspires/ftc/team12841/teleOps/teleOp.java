@@ -18,20 +18,21 @@ public class teleOp extends OpMode {
     public void init() {
         robot = new RobotHardware(this);
         telemetry.addLine("Initialized");
+        robot.imu.resetYaw();
     }
 
     @Override
     public void loop() {
 
         // Get inputs from controller
-        double x = -gamepad1.left_stick_x;   // Strafe (invert if needed)
+        double x = gamepad1.left_stick_x;   // Strafe (invert if needed)
         double y = -gamepad1.left_stick_y;   // Forward/backward
         double rotation = gamepad1.right_stick_x;  // Rotation
 
         // Controls
         // if (gamepad1.a) headingOffset = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS); // Reset heading
-        // if (gamepad1.dpad_down) babyMode = true;
-        // if (gamepad1.dpad_up) babyMode = false;
+        if (gamepad1.right_bumper) babyMode = true;
+        if (gamepad1.b) babyMode = false;
 
         // The IMU heading
         double heading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - headingOffset;
