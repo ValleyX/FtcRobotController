@@ -12,27 +12,23 @@ public class LimelightHardware {
     //limelight
     public Limelight3A limelight;
     LLResult llResult;
+    boolean pipelineCalled = false;
 
-    public LimelightHardware(LinearOpMode opMode, boolean red){
+    public LimelightHardware(LinearOpMode opMode){
         opMode_ = opMode;
 
         //hardware map
         limelight = opMode_.hardwareMap.get(Limelight3A.class, "limelight");
-
-        //switch the pipeline
-        if(red) {
-            limelight.pipelineSwitch(0);
-        } else {
-            limelight.pipelineSwitch(1);
-        }
-
-
-
-
+    }
+    public void innit(int pipeline){
+        limelight.pipelineSwitch(pipeline);
         limelight.start();
-        llResult = limelight.getLatestResult();
+        pipelineCalled = true;
     }
 
+    public int getPipeline(){
+        return limelight.getStatus().getPipelineIndex();
+    }
     public LLResult getLatestResult(){
         return limelight.getLatestResult();
     }

@@ -29,6 +29,8 @@ public class RobotHardware {
     //sensor and IMU
     public IMU imu;
 
+    public final double TURN_THRESH = 1.5;
+
 
     public RobotHardware(LinearOpMode opMode) {
         opMode_ = opMode;
@@ -78,5 +80,75 @@ public class RobotHardware {
 
     public void resetImu(){
         imu.resetYaw();
+    }
+
+
+    public void alignFree(double llx){
+        //Use the Limelight llx to fine tune without stoping the driver
+        turnToFree(robotHeadingAngles()+llx, .4);
+    }
+
+    public void align(double llx){
+        //Use the Limelight llx to fine tune
+        turnTo(robotHeadingAngles()+llx, .4);
+    }
+
+    public void turnToEstimate(boolean red){
+        //use the IMU to go to the estimated degrees
+        if(red){
+            //if we are red side and IMU is set to the back, turn sorta towards the goal
+            turnTo(45, .8);
+        } else {
+            turnTo(-45, .8);
+        }
+
+    }
+
+    public void turnTo(double degrees, double speed){
+        double oppDeg;
+
+        if(degrees <0){
+            oppDeg = degrees + 180;
+            if(oppDeg < robotHeadingAngles() && robotHeadingAngles() < degrees){
+                while(!( degrees - TURN_THRESH < robotHeadingAngles() && robotHeadingAngles() < degrees + TURN_THRESH)){
+                    powerMotors(-speed, -speed, speed, speed);
+                }
+            } else {
+                while(!( degrees - TURN_THRESH < robotHeadingAngles() && robotHeadingAngles() < degrees + TURN_THRESH)){
+                    powerMotors(speed, speed, -speed, -speed);
+                }
+            }
+        } else {
+            oppDeg = degrees - 180;
+            if(degrees < robotHeadingAngles() && robotHeadingAngles() < oppDeg){
+                while(!( degrees - TURN_THRESH < robotHeadingAngles() && robotHeadingAngles() < degrees + TURN_THRESH)){
+                    powerMotors(speed, speed, -speed, -speed);
+                }
+            } else {
+                while(!( degrees - TURN_THRESH < robotHeadingAngles() && robotHeadingAngles() < degrees + TURN_THRESH)){
+                    powerMotors(-speed, -speed, speed, speed);
+                }
+            }
+        }
+    }
+
+    public void turnToFree(double degrees, double speed){
+        double oppDeg;
+
+        if(degrees <0){
+            oppDeg = degrees + 180;
+            if(oppDeg < robotHeadingAngles() && robotHeadingAngles() < degrees){
+                powerMotors(-speed, -speed, speed, speed);
+            } else {
+                powerMotors(speed, speed, -speed, -speed);
+            }
+        } else {
+            oppDeg = degrees - 180;
+            if(degrees < robotHeadingAngles() && robotHeadingAngles() < oppDeg){
+                powerMotors(speed, speed, -speed, -speed);
+            } else {
+                powerMotors(-speed, -speed, speed, speed);
+            }
+        }
     }
 }

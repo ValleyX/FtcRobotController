@@ -17,7 +17,7 @@ public class LimelightPrototype extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robotHardware = new RobotHardware(this);
-        limelightHardware = new LimelightHardware(this, true);
+        limelightHardware = new LimelightHardware(this);
         opMode_ = this;
 
         //limelight stuff
@@ -28,6 +28,7 @@ public class LimelightPrototype extends LinearOpMode {
         runtime.reset();
 
         while(opModeIsActive()){
+            limelightHardware.innit(9);
             LLResult llResult = limelightHardware.limelight.getLatestResult();
 
             if (llResult != null && llResult.isValid()) {
