@@ -63,6 +63,12 @@ public class RobotHardware{
         lfMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lbMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        rbMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rfMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lbMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lfMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
         // Sensor HardwareMaps
 
         //limelight3A = opMode_.hardwareMap.get(Limelight3A.class, "limelight");
@@ -70,9 +76,9 @@ public class RobotHardware{
         imu = opMode_.hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
