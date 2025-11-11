@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.Hardwares;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class ShooterHardware {
@@ -23,13 +24,26 @@ public class ShooterHardware {
     private Servo blockSer;
     private Servo hoodSer;
     //Constants
-    private final double CLOSE_POS = 0.1;
-    private final double OPEN_POS = 0.0;
+    private final double CLOSE_POS = 0.2;
+    private final double OPEN_POS = 0.9;
+
+    private boolean servoClosed;
 
 
     /*
      * Sensors
      */
+
+    //BeamBreaks (BB)
+    private DigitalChannel BB0;
+    private DigitalChannel BB1;
+    private DigitalChannel BB2;
+    private DigitalChannel BB3;
+
+    /*
+     * Shooter Conversions
+     */
+    public final double ENCODER_TICS = 28;
 
     public ShooterHardware(LinearOpMode opMode) {
         /*
@@ -45,6 +59,8 @@ public class ShooterHardware {
 
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         /*
          * Hardware maps and config for Servos
          */
@@ -55,10 +71,15 @@ public class ShooterHardware {
 
 
 
+
+
         /*
          * hardware maps and config for sensors
          */
-
+        BB0 = opMode_.hardwareMap.get(DigitalChannel.class, "BB0");
+        BB1 = opMode_.hardwareMap.get(DigitalChannel.class, "BB1");
+        BB2 = opMode_.hardwareMap.get(DigitalChannel.class, "BB2");
+        BB3 = opMode_.hardwareMap.get(DigitalChannel.class, "BB3");
 
     }
 
@@ -95,8 +116,8 @@ public class ShooterHardware {
      */
 
     public void feed(){
+        intake(0.8);
         openServo();
-        intake(0.7);
     }
 
     /**
@@ -108,11 +129,25 @@ public class ShooterHardware {
         closeServo();
     }
 
+    public double getShootVelocity(){
+        return (shooterMotor.getVelocity()/ENCODER_TICS);
+    }
+
     /*
      * Servo methods
      */
-    public void openServo(){blockSer.setPosition(OPEN_POS);}
-    public void closeServo(){blockSer.setPosition(CLOSE_POS);}
+    public void openServo(){
+        blockSer.setPosition(OPEN_POS);
+        servoClosed = false;
+    }
+
+
+    public void closeServo(){
+        blockSer.setPosition(CLOSE_POS);
+        servoClosed = true;
+    }
+
+    public boolean servoClosed(){return servoClosed;}
 
     public void aimHood(double pos){hoodSer.setPosition(pos);}
 
