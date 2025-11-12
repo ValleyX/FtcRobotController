@@ -32,7 +32,7 @@ public class Constants {
             .forwardTicksToInches(0.006645353359010687)
             .strafeTicksToInches(0.002056499314456375)
             .turnTicksToInches(0.0061979936959655185)
-            .leftPodY(2.5)
+            .leftPodY(-2.5)
             .rightPodY(3.75)
             .strafePodX(6.3)
             .leftEncoder_HardwareMapName("lbMotor")

@@ -71,13 +71,13 @@ public class RobotHardware {
         }
 
         // === Initialize Limelight 3A ===
-        try {
-            limelight3A = opMode_.hardwareMap.get(Limelight3A.class, "limelight");
-            limelight3A.pipelineSwitch(0);  // default pipeline
-            limelight3A.start();             // begin capturing
-        } catch (Exception e) {
-            opMode_.telemetry.addLine("Limelight3A not found. Skipping vision initialization.");
-        }
+      //  try {
+      //      limelight3A = opMode_.hardwareMap.get(Limelight3A.class, "limelight");
+      //      limelight3A.pipelineSwitch(0);  // default pipeline
+      //      limelight3A.start();             // begin capturing
+      //  } catch (Exception e) {
+      //      opMode_.telemetry.addLine("Limelight3A not found. Skipping vision initialization.");
+      //  }
 
         // === Motor Configuration ===
         try {

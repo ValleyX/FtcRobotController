@@ -4,9 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.hardware.limelightvision.Limelight3AResults;
-import com.qualcomm.hardware.limelightvision.tag.TagResult;
+import com.qualcomm.hardware.limelightvision.*;
 
 import com.pedropathing.geometry.Pose;
 
@@ -41,8 +39,6 @@ public class teleOpPathing extends OpMode {
     private final double SHOOTER_FIRE = 0.85;
     private final double[] TURNTABLE_POSITIONS = {0.2, 0.8, 0.0};
 
-    // --- Limelight 3A ---
-    private Limelight3A limelight;
     private final double TARGET_TAG_ID = 4;        // change to your correct tag ID
     private final double DESIRED_DISTANCE_IN = 48; // target shooting distance (inches)
     private final double AIM_KP = 0.012;           // rotation proportional gain
@@ -55,11 +51,12 @@ public class teleOpPathing extends OpMode {
         robot = new RobotHardware(this);
 
         // Limelight setup
-        limelight = robot.limelight3A;
-        if (limelight != null) {
-            limelight.pipelineSwitch(0); // use default pipeline
-            limelight.start();           // enable streaming
-        }
+        // --- Limelight 3A ---
+     //   Limelight3A limelight = robot.limelight3A;
+     //   if (limelight != null) {
+     //       limelight.pipelineSwitch(0); // use default pipeline
+     //       limelight.start();           // enable streaming
+     //   }
 
         telemetry.addLine("TeleOp initialized with LL3A");
         telemetry.update();
@@ -84,7 +81,7 @@ public class teleOpPathing extends OpMode {
         rot *= scale;
 
         if (robot.getFollower() != null)
-            robot.getFollower().setTeleOpDrive(y, x, rot, false);
+            robot.getFollower().setTeleOpDrive(y, x, rot, true);
         else
             driveManual(y, x, rot);
 
@@ -138,51 +135,51 @@ public class teleOpPathing extends OpMode {
         }
 
         // --- LL3A auto-aim ---
-        if (gamepad2.left_trigger >= 0.8 && limelight != null) {
-            Limelight3AResults results = limelight.getLatestResults();
+//        if (gamepad2.left_trigger >= 0.8 && limelight != null) {
+//            Limelight3AResults results = limelight.getLatestResults();
+//
+ //            if (results != null && results.isValid()) {
+//                TagResult tag = results.getTagById(TARGET_TAG_ID);
+//
+ //                if (tag != null) {
+//                    double tx = tag.tx(); // horizontal offset (degrees)
+//                    double tz = tag.tz(); // forward distance (inches)
+//
+ //                    // Proportional control
+//                    double rotCmd = tx * AIM_KP;
+//                    double distError = (DESIRED_DISTANCE_IN - tz);
+//                    double driveCmd = distError * DRIVE_KP;
+//
+ //                    // Send correction commands
+//                    if (robot.getFollower() != null)
+//                        robot.getFollower().setTeleOpDrive(driveCmd, 0, rotCmd, true);
+//                    else
+//                        driveManual(driveCmd, 0, rotCmd);
 
-            if (results != null && results.isValid()) {
-                TagResult tag = results.getTagById(TARGET_TAG_ID);
+//                    // Optional: blend LL pose with Pedro localization
+//                    if (robot.getFollower() != null) {
+//                        Pose estPose = robot.getFollower().getPose();
+//                        Pose llPose = new Pose(tag.fieldX(), tag.fieldY(), tag.fieldYaw());
+//                        Pose corrected = new Pose(
+//                                (estPose.x * 0.9) + (llPose.x * 0.1),
+//                                (estPose.y * 0.9) + (llPose.y * 0.1),
+//                                estPose.heading
+//                        );
+//                        robot.getFollower().setPose(corrected);
+//                    }
 
-                if (tag != null) {
-                    double tx = tag.tx(); // horizontal offset (degrees)
-                    double tz = tag.tz(); // forward distance (inches)
-
-                    // Proportional control
-                    double rotCmd = tx * AIM_KP;
-                    double distError = (DESIRED_DISTANCE_IN - tz);
-                    double driveCmd = distError * DRIVE_KP;
-
-                    // Send correction commands
-                    if (robot.getFollower() != null)
-                        robot.getFollower().setTeleOpDrive(driveCmd, 0, rotCmd, true);
-                    else
-                        driveManual(driveCmd, 0, rotCmd);
-
-                    // Optional: blend LL pose with Pedro localization
-                    if (robot.getFollower() != null) {
-                        Pose estPose = robot.getFollower().getPose();
-                        Pose llPose = new Pose(tag.fieldX(), tag.fieldY(), tag.fieldYaw());
-                        Pose corrected = new Pose(
-                                (estPose.x * 0.9) + (llPose.x * 0.1),
-                                (estPose.y * 0.9) + (llPose.y * 0.1),
-                                estPose.heading
-                        );
-                        robot.getFollower().setPose(corrected);
-                    }
-
-                    telemetry.addData("LL Target", tag.getId());
-                    telemetry.addData("tx (deg)", tx);
-                    telemetry.addData("tz (in)", tz);
-                    telemetry.addData("RotCmd", rotCmd);
-                    telemetry.addData("DriveCmd", driveCmd);
-                } else {
-                    telemetry.addLine("LL3A: No tag visible");
-                }
-            } else {
-                telemetry.addLine("LL3A: No valid data");
-            }
-        }
+//                    telemetry.addData("LL Target", tag.getId());
+//                    telemetry.addData("tx (deg)", tx);
+//                    telemetry.addData("tz (in)", tz);
+//                    telemetry.addData("RotCmd", rotCmd);
+//                    telemetry.addData("DriveCmd", driveCmd);
+//                } else {
+//                    telemetry.addLine("LL3A: No tag visible");
+//                }
+//            } else {
+//                telemetry.addLine("LL3A: No valid data");
+//            }
+//        }
 
         // --- Index correction safety (in case of manual override) ---
         if (currentTurntableIndex < 0 || currentTurntableIndex >= TURNTABLE_POSITIONS.length) {
