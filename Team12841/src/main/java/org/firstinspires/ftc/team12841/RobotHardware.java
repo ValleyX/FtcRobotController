@@ -86,9 +86,13 @@ public class RobotHardware {
             rbMotor.setDirection(DcMotor.Direction.FORWARD);
             rfMotor.setDirection(DcMotor.Direction.FORWARD);
 
-            for (DcMotorEx motor : new DcMotorEx[]{rfMotor, rbMotor, lfMotor, lbMotor}) {
+            for (DcMotorEx motor : new DcMotorEx[]{rfMotor, rbMotor, lbMotor}) {
                 motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            }
+
+            if (lfMotor != null) {
+                lfMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
 
             if (shooterMotor != null) {
