@@ -8,119 +8,122 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.team12841.pedroPathing.Constants;
 import com.pedropathing.follower.Follower;
 
 public class RobotHardware {
-    public final OpMode opMode_;
+
+    public final OpMode opMode;
     private final ElapsedTime runtime = new ElapsedTime();
 
     // --- Drive Motors ---
-    public DcMotorEx rfMotor;
-    public DcMotorEx rbMotor;
-    public DcMotorEx lfMotor;
-    public DcMotorEx lbMotor;
+    public DcMotorEx rfMotor, rbMotor, lfMotor, lbMotor;
 
-    // --- Shooter Motor ---
+    // Shooter
     public DcMotorEx shooterMotor;
 
-    // --- Servos ---
-    public Servo turntableServo;
-    public Servo shooterServo;
+    // --- Odometry Encoders (Expansion Hub 1–3) ---
+    public DcMotorEx leftOdo;
+    public DcMotorEx rightOdo;
+    public DcMotorEx strafeOdo;
 
-    // --- Sensors ---
+    // Servos
+    public Servo turntableServo, shooterServo;
+
+    // Sensors
     public IMU imu;
-    public Limelight3A limelight3A;
+    public Limelight3A limelight;
 
-    // --- Pedro Pathing ---
+    // Pedro
     private Follower follower;
 
     public RobotHardware(OpMode opMode) {
-        this.opMode_ = opMode;
+        this.opMode = opMode;
 
-        // === Initialize Motors ===
         try {
-            rfMotor = opMode_.hardwareMap.get(DcMotorEx.class, "rfMotor");
-            rbMotor = opMode_.hardwareMap.get(DcMotorEx.class, "rbMotor");
-            lfMotor = opMode_.hardwareMap.get(DcMotorEx.class, "lfMotor");
-            lbMotor = opMode_.hardwareMap.get(DcMotorEx.class, "lbMotor");
+            // Drive motors
+            rfMotor = opMode.hardwareMap.get(DcMotorEx.class, "rfMotor");
+            rbMotor = opMode.hardwareMap.get(DcMotorEx.class, "rbMotor");
+            lfMotor = opMode.hardwareMap.get(DcMotorEx.class, "lfMotor");
+            lbMotor = opMode.hardwareMap.get(DcMotorEx.class, "lbMotor");
 
-            shooterMotor = opMode_.hardwareMap.get(DcMotorEx.class, "shooterMotor");
+            // Shooter
+            shooterMotor = opMode.hardwareMap.get(DcMotorEx.class, "shooterMotor");
+
+            // ✔ Correct odometry names
+            leftOdo = opMode.hardwareMap.get(DcMotorEx.class, "leftOdo");
+            rightOdo = opMode.hardwareMap.get(DcMotorEx.class, "rightOdo");
+            strafeOdo = opMode.hardwareMap.get(DcMotorEx.class, "strafeOdo");
+
         } catch (Exception e) {
-            opMode_.telemetry.addLine("Motor mapping error: check configuration names!");
+            opMode.telemetry.addLine("ERROR: Motor/Odo mapping failed!");
         }
 
-        // === Initialize Servos ===
+        // Servos
         try {
-            turntableServo = opMode_.hardwareMap.get(Servo.class, "turntableServo");
-            shooterServo = opMode_.hardwareMap.get(Servo.class, "shooterServo");
+            shooterServo = opMode.hardwareMap.get(Servo.class, "shooterServo");
+            turntableServo = opMode.hardwareMap.get(Servo.class, "turntableServo");
         } catch (Exception e) {
-            opMode_.telemetry.addLine("Servo mapping error: check servo names!");
+            opMode.telemetry.addLine("ERROR: Servo mapping failed!");
         }
 
-        // === Initialize IMU ===
+        // IMU
         try {
-            imu = opMode_.hardwareMap.get(IMU.class, "imu");
-            RevHubOrientationOnRobot orientation = new RevHubOrientationOnRobot(
-                    RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                    RevHubOrientationOnRobot.UsbFacingDirection.UP
-            );
-            imu.initialize(new IMU.Parameters(orientation));
+            imu = opMode.hardwareMap.get(IMU.class, "imu");
+            imu.initialize(new IMU.Parameters(
+                    new RevHubOrientationOnRobot(
+                            RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                            RevHubOrientationOnRobot.UsbFacingDirection.UP
+                    )
+            ));
         } catch (Exception e) {
-            opMode_.telemetry.addLine("IMU not found or not initialized.");
+            opMode.telemetry.addLine("ERROR: IMU failed!");
         }
 
-        // === Initialize Limelight 3A ===
-      //  try {
-      //      limelight3A = opMode_.hardwareMap.get(Limelight3A.class, "limelight");
-      //      limelight3A.pipelineSwitch(0);  // default pipeline
-      //      limelight3A.start();             // begin capturing
-      //  } catch (Exception e) {
-      //      opMode_.telemetry.addLine("Limelight3A not found. Skipping vision initialization.");
-      //  }
-
-        // === Motor Configuration ===
+        // Drive config
         try {
-            lbMotor.setDirection(DcMotor.Direction.REVERSE);
             lfMotor.setDirection(DcMotor.Direction.REVERSE);
-            rbMotor.setDirection(DcMotor.Direction.FORWARD);
+            lbMotor.setDirection(DcMotor.Direction.REVERSE);
+
             rfMotor.setDirection(DcMotor.Direction.FORWARD);
+            rbMotor.setDirection(DcMotor.Direction.FORWARD);
 
-            for (DcMotorEx motor : new DcMotorEx[]{rfMotor, rbMotor, lbMotor}) {
-                motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            for (DcMotorEx m : new DcMotorEx[]{lfMotor, lbMotor, rfMotor, rbMotor}) {
+                m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
 
-            if (lfMotor != null) {
-                lfMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            // Encoders should NOT output power
+            DcMotorEx[] odos = {leftOdo, rightOdo, strafeOdo};
+            for (DcMotorEx odo : odos) {
+                odo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                odo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                odo.setPower(0);
             }
 
-            if (shooterMotor != null) {
-                shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            }
         } catch (Exception e) {
-            opMode_.telemetry.addLine("Motor direction/config setup failed.");
+            opMode.telemetry.addLine("ERROR: motor/encoder config failed!");
         }
 
-        // === Pedro Pathing Follower ===
+        // Pedro init
         try {
-            follower = Constants.createFollower(opMode_.hardwareMap);
-            opMode_.telemetry.addLine("Pedro Pathing initialized successfully");
+            follower = Constants.createFollower(opMode.hardwareMap);
+            opMode.telemetry.addLine("Pedro Pathing OK");
         } catch (Exception e) {
             follower = null;
-            opMode_.telemetry.addLine("Pedro Pathing not available — running basic mode");
+            opMode.telemetry.addLine("Pedro FAILED");
         }
 
-        opMode_.telemetry.update();
+        opMode.telemetry.update();
     }
 
-    /** Safe getter for Pedro follower */
     public Follower getFollower() {
         return follower;
     }
 
-    /** Reset IMU heading for field centric */
     public void resetIMU() {
         if (imu != null) imu.resetYaw();
     }
