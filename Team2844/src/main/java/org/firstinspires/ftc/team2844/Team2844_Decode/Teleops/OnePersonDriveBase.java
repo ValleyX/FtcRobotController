@@ -39,6 +39,10 @@ public class OnePersonDriveBase extends LinearOpMode {
     boolean dPadUp = false;
     boolean dPadDown = false;
     double shooterSpeed = 0.5;
+    double shooterVelocity = 30;
+    double time = 0;
+    double spinupTime = 0;
+    boolean firstTime = true;
 
     //shooter
     boolean stopAutoShoot = true;
@@ -46,6 +50,11 @@ public class OnePersonDriveBase extends LinearOpMode {
 
     //Intake
     boolean intaking = false;
+
+    //hood shooter
+    double hoodPos = 0.0;
+    boolean dPadRight = false;
+    boolean dPadLeft = false;
 
 
 
@@ -108,9 +117,10 @@ public class OnePersonDriveBase extends LinearOpMode {
             //shooter
             if(gamepad1.right_bumper){
                 if(!aligned) {
-                    if(limelightHardware.getTx() == -999) {
-                        robotHardware.turnToEstimate(red);
-                    }
+//                    if(limelightHardware.getTx() == -999) {
+//                        robotHardware.turnToEstimate(red);
+//                    }
+                    time = getRuntime();
                     aligned = true;
                 }
                 double limelightResult = limelightHardware.getTx();
@@ -118,16 +128,25 @@ public class OnePersonDriveBase extends LinearOpMode {
                     robotHardware.alignFree(limelightResult);
                 }
                 stopAutoShoot = false;
-                shooterHardware.shoot(shooterSpeed);
-                shooterHardware.feed();
+                shooterHardware.setShootVelocity(shooterVelocity);
+                if(shooterHardware.withinVel(shooterVelocity)) {
+                    if(firstTime){
+                        spinupTime = getRuntime() - time;
+                        firstTime = false;
+                    }
+                    shooterHardware.feed();
+                } else if(shooterHardware.belowVel(shooterVelocity)) {
+                    shooterHardware.stopFeed();
+                }
             } else {
                 aligned = false;
                 stopAutoShoot = true;
+                firstTime = true;
             }
 
             if(gamepad1.left_bumper){
                 stopManShoot = false;
-                shooterHardware.shoot(1);
+                shooterHardware.shoot(shooterSpeed);
                 shooterHardware.feed();
             } else {
                 stopManShoot = true;
@@ -162,6 +181,7 @@ public class OnePersonDriveBase extends LinearOpMode {
             if(gamepad1.dpad_up){
                 if(!dPadUp){
                     shooterSpeed += 0.01;
+                    shooterVelocity += 1;
                     dPadUp = true;
                 }
             } else {
@@ -171,11 +191,32 @@ public class OnePersonDriveBase extends LinearOpMode {
             if(gamepad1.dpad_down){
                 if(!dPadDown){
                     shooterSpeed -= 0.01;
+                    shooterVelocity -= 1;
                     dPadDown = true;
                 }
             } else {
                 dPadDown = false;
             }
+
+            if(gamepad1.dpad_left){
+                if(!dPadLeft){
+                    hoodPos -= 0.01;
+                    dPadLeft = true;
+                }
+            } else {
+                dPadLeft = false;
+            }
+
+            if(gamepad1.dpad_right){
+                if(!dPadRight){
+                    hoodPos += 0.01;
+                    dPadRight = true;
+                }
+            } else {
+                dPadRight = false;
+            }
+
+            shooterHardware.aimHood(hoodPos);
 
             if(autoAlign){
                 double limelightResult = limelightHardware.getTx();
@@ -199,9 +240,15 @@ public class OnePersonDriveBase extends LinearOpMode {
             }
 
 
+            telemetry.addData("hood pos:", hoodPos);
+            telemetry.addData("Shooter Speed", shooterSpeed);
+            telemetry.addData("Velocity: ", shooterHardware.getShootVelocity());
+            telemetry.addData("Spinup Time: ", spinupTime);
+            telemetry.addData("Target Velocity: ", shooterVelocity);
             telemetry.addData("IMU (Degrees)", robotHardware.robotHeadingAngles());
             telemetry.addData("Limelight Tx", limelightHardware.getTx());
-            telemetry.addData("Shooter Speed", shooterSpeed);
+            telemetry.addData("LImelight TArea", limelightHardware.getTarea());
+            telemetry.addData("LImelight Cam Z", limelightHardware.getBotCamZ());
             telemetry.addData("Servo Closed", shooterHardware.servoClosed());
             telemetry.addData("Babymode", babymode);
             telemetry.update();

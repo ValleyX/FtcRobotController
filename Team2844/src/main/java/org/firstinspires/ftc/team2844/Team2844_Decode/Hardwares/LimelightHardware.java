@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.Hardwares;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
+import java.util.List;
 
 public class LimelightHardware {
     private LinearOpMode opMode_;
@@ -64,6 +67,33 @@ public class LimelightHardware {
         if (llResult != null && llResult.isValid()) {
             Pose3D botPose = llResult.getBotpose();
             return botPose.getPosition().z;
+        }
+        return -999;
+    }
+
+    public double getBotCamZ(){
+        updateResult();
+        if (llResult != null && llResult.isValid()) {
+            List< LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
+            return ((fiducials.get(0).getCameraPoseTargetSpace().getPosition().z *100)/2.54)*-1.635;
+        }
+        return -999;
+    }
+
+    public double getBotCamY(){
+        updateResult();
+        if (llResult != null && llResult.isValid()) {
+            List< LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
+            return ((fiducials.get(0).getCameraPoseTargetSpace().getPosition().y *100)/2.54)*-1.635;
+        }
+        return -999;
+    }
+
+    public double getBotCamX(){
+        updateResult();
+        if (llResult != null && llResult.isValid()) {
+            List< LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
+            return ((fiducials.get(0).getCameraPoseTargetSpace().getPosition().x *100)/2.54)*-1.635;
         }
         return -999;
     }

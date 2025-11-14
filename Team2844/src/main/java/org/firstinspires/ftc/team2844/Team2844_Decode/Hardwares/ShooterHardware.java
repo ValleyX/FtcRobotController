@@ -24,8 +24,8 @@ public class ShooterHardware {
     private Servo blockSer;
     private Servo hoodSer;
     //Constants
-    private final double CLOSE_POS = 0.2;
-    private final double OPEN_POS = 0.9;
+    private final double CLOSE_POS = 0.35;
+    private final double OPEN_POS = 0.7;
 
     private boolean servoClosed;
 
@@ -44,6 +44,8 @@ public class ShooterHardware {
      * Shooter Conversions
      */
     public final double ENCODER_TICS = 28;
+    public final double VEL_THRESH = 1;
+    public final double VEL_BOTTOM_THRESH = 3;
 
     public ShooterHardware(LinearOpMode opMode) {
         /*
@@ -116,8 +118,13 @@ public class ShooterHardware {
      */
 
     public void feed(){
-        intake(0.8);
+        intake(0.9);
         openServo();
+    }
+
+    public void stopFeed(){
+        intake(0.0);
+        closeServo();
     }
 
     /**
@@ -125,12 +132,23 @@ public class ShooterHardware {
      */
     public void stopShooter(){
         shooterMotor.setPower(0);
-        intake(0.0);
-        closeServo();
+        stopFeed();
     }
 
     public double getShootVelocity(){
         return (shooterMotor.getVelocity()/ENCODER_TICS);
+    }
+
+    public void setShootVelocity(double velocity){
+        shooterMotor.setVelocity(velocity*ENCODER_TICS);
+    }
+
+    public boolean withinVel(double targVel){
+        return ((targVel) < getShootVelocity()) && (getShootVelocity() < (targVel + VEL_THRESH));
+    }
+
+    public boolean belowVel(double targVel){
+        return (getShootVelocity() < (targVel - VEL_BOTTOM_THRESH));
     }
 
     /*
@@ -151,5 +169,11 @@ public class ShooterHardware {
 
     public void aimHood(double pos){hoodSer.setPosition(pos);}
 
+    public boolean oneBall(){
+        return (BB0.getState() || BB1.getState()) || (BB2.getState() || BB3.getState());
+    }
 
+    public boolean twoBall(){
+        return (BB0.getState() || BB1.getState()) && (BB2.getState() || BB3.getState());
+    }
 }
