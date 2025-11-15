@@ -40,12 +40,16 @@ public class LimelightHardware {
         llResult = limelight.getLatestResult();
     }
 
+    public void updateIMU(double IMUHeading){
+        limelight.updateRobotOrientation(IMUHeading);
+    }
+
     //Returns the y of the bot on the field through metatags
     public double getBotY(){
         updateResult();
         if (llResult != null && llResult.isValid()) {
             Pose3D botPose = llResult.getBotpose();
-            return botPose.getPosition().y;
+            return botPose.getPosition().y*254;
         }
         return -999;
     }
@@ -56,7 +60,24 @@ public class LimelightHardware {
         updateResult();
         if (llResult != null && llResult.isValid()) {
             Pose3D botPose = llResult.getBotpose();
-            return botPose.getPosition().x;
+            return botPose.getPosition().x*254;
+        }
+        return -999;
+    }
+
+    public double getBotZ(){
+        updateResult();
+        if (llResult != null && llResult.isValid()) {
+            Pose3D botPose = llResult.getBotpose();
+            return botPose.getPosition().z*254;
+        }
+        return -999;
+    }
+
+    public double getBotDis(){
+        updateResult();
+        if (llResult != null && llResult.isValid()) {
+            return 68.86747*Math.pow(llResult.getTa(), -0.5169279); //using the equation we got from the graph we insert the ta as the x and return distance as y
         }
         return -999;
     }
@@ -97,6 +118,8 @@ public class LimelightHardware {
         }
         return -999;
     }
+
+
 
     public double getTy(){
         updateResult();

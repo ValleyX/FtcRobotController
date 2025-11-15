@@ -24,7 +24,7 @@ public class ShooterHardware {
     private Servo blockSer;
     private Servo hoodSer;
     //Constants
-    private final double CLOSE_POS = 0.35;
+    private final double CLOSE_POS = 0.4;
     private final double OPEN_POS = 0.7;
 
     private boolean servoClosed;
@@ -141,6 +141,22 @@ public class ShooterHardware {
 
     public void setShootVelocity(double velocity){
         shooterMotor.setVelocity(velocity*ENCODER_TICS);
+    }
+
+    public double getShootSpeed(double distance) {
+        if (distance != -999) {
+            return ((0.19*distance) + 24.96);
+        } else {
+            return 30;
+        }
+    }
+
+    public double getHoodAim(double distance) {
+        if (distance != -999) {
+            return ((.0038895*distance) + -0.111817);
+        } else {
+            return 0.0;
+        }
     }
 
     public boolean withinVel(double targVel){

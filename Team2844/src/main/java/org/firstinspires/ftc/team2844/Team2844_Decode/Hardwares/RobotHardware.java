@@ -1,17 +1,10 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.Hardwares;
 
-import android.graphics.Color;
-
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -31,15 +24,21 @@ public class RobotHardware {
 
 
     //motor speed adding
-    public double leftFrontSpeed = 0.0;
-    public double rightFrontSpeed = 0.0;
-    public double leftBackSpeed = 0.0;
-    public double rightBackSpeed = 0.0;
+    public double lFDriveSpeed = 0.0;
+    public double rFDriveSpeed = 0.0;
+    public double lBDriveSpeed = 0.0;
+    public double rBDriveSpeed = 0.0;
+
+    public double lFAlignSpeed = 0.0;
+    public double rFAlignSpeed = 0.0;
+    public double lBAlignSpeed = 0.0;
+    public double rBAlignSpeed = 0.0;
+
 
 
     public final double TURN_THRESH = 2.3;
     public final double SLOW_THRESH = 15;
-    public final double PGAIN = 0.15;
+    public final double PGAIN = 0.023;
 
 
 
@@ -74,37 +73,77 @@ public class RobotHardware {
     }
 
     public void powerMotors(double leftFront, double leftBack, double rightBack, double rightFront){
-        leftFrontSpeed = leftFront;
-        rightFrontSpeed = rightFront;
-        leftBackSpeed = leftBack;
-        rightBackSpeed = rightBack;
 
-        leftFrontDrive.setPower(leftFrontSpeed);
-        leftBackDrive.setPower(leftBackSpeed);
-        rightFrontDrive.setPower(rightFrontSpeed);
-        rightBackDrive.setPower(rightBackSpeed);
+        leftFrontDrive.setPower(leftFront);
+        leftBackDrive.setPower(leftBack);
+        rightFrontDrive.setPower(rightFront);
+        rightBackDrive.setPower(rightBack);
     }
 
     public void addDrivePower(double leftFront, double leftBack, double rightBack, double rightFront){
-        leftFrontSpeed += leftFront;
-        leftBackSpeed += leftBack;
-        rightFrontSpeed += rightFront;
-        rightBackSpeed += rightBack;
+        lFDriveSpeed = leftFront;
+        lBDriveSpeed = leftBack;
+        rFDriveSpeed = rightFront;
+        rBDriveSpeed = rightBack;
 
-        if(Math.abs(leftFrontSpeed) == 1){
-            leftFrontSpeed /= Math.abs(leftFrontSpeed);
+        if(Math.abs(lFDriveSpeed) >= 1){
+            lFDriveSpeed /= Math.abs(lFDriveSpeed);
         }
-        if(Math.abs(leftBackSpeed) == 1){
-            leftBackSpeed /= Math.abs(leftBackSpeed);
+        if(Math.abs(lBDriveSpeed) >= 1){
+            lBDriveSpeed /= Math.abs(lBDriveSpeed);
         }
-        if(Math.abs(rightFrontSpeed) == 1){
-            rightFrontSpeed /= Math.abs(rightFrontSpeed);
+        if(Math.abs(rFDriveSpeed) >= 1){
+            rFDriveSpeed /= Math.abs(rFDriveSpeed);
         }
-        if(Math.abs(rightBackSpeed) == 1){
-            rightBackSpeed /= Math.abs(rightBackSpeed);
+        if(Math.abs(rBDriveSpeed) >= 1){
+            rBDriveSpeed /= Math.abs(rBDriveSpeed);
         }
+        calculateDrive();
     }
 
+    public void addAlignPower(double leftFront, double leftBack, double rightBack, double rightFront){
+        lFAlignSpeed = leftFront;
+        lBAlignSpeed = leftBack;
+        rFAlignSpeed = rightFront;
+        rBAlignSpeed = rightBack;
+
+        if(Math.abs(lFAlignSpeed) >= 1){
+            lFAlignSpeed /= Math.abs(lFAlignSpeed);
+        }
+        if(Math.abs(lBAlignSpeed) >= 1){
+            lBAlignSpeed /= Math.abs(lBAlignSpeed);
+        }
+        if(Math.abs(rFAlignSpeed) >= 1){
+            rFAlignSpeed /= Math.abs(rFAlignSpeed);
+        }
+        if(Math.abs(rBAlignSpeed) >= 1){
+            rBAlignSpeed /= Math.abs(rBAlignSpeed);
+        }
+
+        calculateDrive();
+    }
+
+    public void calculateDrive(){
+        double leftFront = lFAlignSpeed + lFDriveSpeed;
+        double leftBack = lBAlignSpeed + lBDriveSpeed;
+        double rightFront = rFAlignSpeed + rFDriveSpeed;
+        double rightBack = rBAlignSpeed + rBDriveSpeed;
+
+        if(Math.abs(leftFront) >= 1){
+            leftFront /= Math.abs(leftFront);
+        }
+        if(Math.abs(leftBack) >= 1){
+            leftBack /= Math.abs(leftBack);
+        }
+        if(Math.abs(rightFront) >= 1){
+            rightFront /= Math.abs(rightFront);
+        }
+        if(Math.abs(rightBack) >= 1){
+            rightBack /= Math.abs(rightBack);
+        }
+
+        powerMotors(leftFront, leftBack, rightBack, rightFront);
+    }
 
     public double robotHeadingRadians(){
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
@@ -121,7 +160,7 @@ public class RobotHardware {
 
     public void alignFree(double llx){
         //Use the Limelight llx to fine tune without stoping the driver
-        turnToFree(robotHeadingAngles()-llx, .4);
+        turnToFree(robotHeadingAngles()-llx, .6);
     }
 
     public void align(double llx){
@@ -131,12 +170,15 @@ public class RobotHardware {
 
     public void turnToEstimate(boolean red){
         //use the IMU to go to the estimated degrees
+        double degrees = 0;
         if(red){
             //if we are red side and IMU is set to the back, turn sorta towards the goal
-            turnTo(-45, .5);
+            degrees = -45;
         } else {
-            turnTo(45, .5);
-        }
+            degrees = 45;
+         }
+
+        turnToFree(degrees, 0.5);
 
     }
 
@@ -212,46 +254,27 @@ public class RobotHardware {
     public void turnToFree(double degrees, double speed){
         double oppDeg;
         double mult;
+        double heading = robotHeadingAngles();
 
-        mult = Math.abs(Math.abs(degrees) - Math.abs(robotHeadingAngles())) * PGAIN;
-        if(degrees >0){
-            oppDeg = degrees - 180;
-            if(oppDeg < robotHeadingAngles() && robotHeadingAngles() < degrees){
-                if(!( degrees - TURN_THRESH < robotHeadingAngles() && robotHeadingAngles() < degrees + TURN_THRESH)) {
-                    if ((robotHeadingAngles() < degrees))
-                        powerMotors(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
-                    else{
-                        powerMotors(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                    }
+        mult = Math.abs(Math.abs(degrees) - Math.abs(heading)) * PGAIN;
+        if(!( degrees - TURN_THRESH < heading && heading < degrees + TURN_THRESH)) {
+            if (degrees > 0) {
+                oppDeg = degrees - 180;
+                if (oppDeg < heading && heading < degrees) {
+                    addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
+                } else {
+                    addAlignPower(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
                 }
             } else {
-                if(!( degrees - TURN_THRESH < robotHeadingAngles() && robotHeadingAngles() < degrees + TURN_THRESH)) {
-                    if ((robotHeadingAngles() > degrees))
-                        powerMotors(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                    else{
-                        powerMotors(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
-                    }
+                oppDeg = degrees + 180;
+                if (degrees < heading && heading < oppDeg) {
+                    addAlignPower(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
+                } else {
+                    addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
                 }
             }
         } else {
-            oppDeg = degrees + 180;
-            if(degrees < robotHeadingAngles() && robotHeadingAngles() < oppDeg){
-                if(!( degrees - TURN_THRESH < robotHeadingAngles() && robotHeadingAngles() < degrees + TURN_THRESH)) {
-                    if ((robotHeadingAngles() > degrees))
-                        powerMotors(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                    else{
-                        powerMotors(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
-                    }
-                }
-            } else {
-                if(!(degrees - TURN_THRESH < robotHeadingAngles() && robotHeadingAngles() < degrees + TURN_THRESH)) {
-                    if ((robotHeadingAngles() < degrees))
-                        powerMotors(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
-                    else{
-                        powerMotors(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                    }
-                }
-            }
+            addAlignPower(0,0,0,0);
         }
     }
 }

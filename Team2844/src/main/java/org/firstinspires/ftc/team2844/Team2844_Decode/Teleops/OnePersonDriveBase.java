@@ -24,7 +24,7 @@ public class OnePersonDriveBase extends LinearOpMode {
     //babymode stuff
     boolean pressingStick = false;
     boolean babymode = false;
-    private final double BABY_MULT = 0.25;
+    private final double BABY_MULT = 0.4;
 
     //What am I?
     boolean red = false;
@@ -47,6 +47,7 @@ public class OnePersonDriveBase extends LinearOpMode {
     //shooter
     boolean stopAutoShoot = true;
     boolean stopManShoot = true;
+    boolean shooterAlign = false;
 
     //Intake
     boolean intaking = false;
@@ -77,6 +78,8 @@ public class OnePersonDriveBase extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            limelightHardware.updateIMU(robotHardware.robotHeadingAngles());
+
             x = gamepad1.left_stick_x;
             rx = gamepad1.right_stick_x;
             y = -gamepad1.left_stick_y;
@@ -101,7 +104,8 @@ public class OnePersonDriveBase extends LinearOpMode {
                 frontRightPower = frontRightPower*BABY_MULT;
             }
 
-            robotHardware.powerMotors(frontLeftPower, backLeftPower, backRightPower, frontRightPower);
+
+            robotHardware.addDrivePower(frontLeftPower, backLeftPower, backRightPower, frontRightPower);
 
             //run intake if left trigger is pulled\
             if(gamepad1.left_trigger > 0.1) {
@@ -116,18 +120,11 @@ public class OnePersonDriveBase extends LinearOpMode {
 
             //shooter
             if(gamepad1.right_bumper){
-                if(!aligned) {
-//                    if(limelightHardware.getTx() == -999) {
-//                        robotHardware.turnToEstimate(red);
-//                    }
-                    time = getRuntime();
-                    aligned = true;
-                }
-                double limelightResult = limelightHardware.getTx();
-                if(limelightResult != -999) {
-                    robotHardware.alignFree(limelightResult);
-                }
+                shooterAlign = true;
                 stopAutoShoot = false;
+                shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
+                hoodPos = shooterHardware.getHoodAim(limelightHardware.getBotDis());
+                shooterHardware.aimHood(hoodPos);
                 shooterHardware.setShootVelocity(shooterVelocity);
                 if(shooterHardware.withinVel(shooterVelocity)) {
                     if(firstTime){
@@ -139,8 +136,8 @@ public class OnePersonDriveBase extends LinearOpMode {
                     shooterHardware.stopFeed();
                 }
             } else {
-                aligned = false;
                 stopAutoShoot = true;
+                shooterAlign = false;
                 firstTime = true;
             }
 
@@ -169,8 +166,10 @@ public class OnePersonDriveBase extends LinearOpMode {
             if(gamepad1.a){
                 if(!alignPress){
                     autoAlign = !autoAlign;
-                    if(limelightHardware.getTx() == -999) {
+                    if(limelightHardware.getTx() == -999){
                         robotHardware.turnToEstimate(red);
+                    } else {
+                        robotHardware.addAlignPower(0,0,0,0);
                     }
                     alignPress = true;
                 }
@@ -181,7 +180,6 @@ public class OnePersonDriveBase extends LinearOpMode {
             if(gamepad1.dpad_up){
                 if(!dPadUp){
                     shooterSpeed += 0.01;
-                    shooterVelocity += 1;
                     dPadUp = true;
                 }
             } else {
@@ -191,7 +189,6 @@ public class OnePersonDriveBase extends LinearOpMode {
             if(gamepad1.dpad_down){
                 if(!dPadDown){
                     shooterSpeed -= 0.01;
-                    shooterVelocity -= 1;
                     dPadDown = true;
                 }
             } else {
@@ -200,7 +197,6 @@ public class OnePersonDriveBase extends LinearOpMode {
 
             if(gamepad1.dpad_left){
                 if(!dPadLeft){
-                    hoodPos -= 0.01;
                     dPadLeft = true;
                 }
             } else {
@@ -209,20 +205,19 @@ public class OnePersonDriveBase extends LinearOpMode {
 
             if(gamepad1.dpad_right){
                 if(!dPadRight){
-                    hoodPos += 0.01;
                     dPadRight = true;
                 }
             } else {
                 dPadRight = false;
             }
 
-            shooterHardware.aimHood(hoodPos);
-
-            if(autoAlign){
+            if(autoAlign || shooterAlign){
                 double limelightResult = limelightHardware.getTx();
                 if(limelightResult != -999) {
                     robotHardware.alignFree(limelightResult);
                 }
+            } else {
+                robotHardware.addAlignPower(0,0,0,0);
             }
 
 //            if(gamepad1.a){
@@ -233,6 +228,8 @@ public class OnePersonDriveBase extends LinearOpMode {
 //                    robotHardware.alignFree(limelightResult);
 //                }
 //            }
+
+
 
             //supposed to be middle logitech button; resets the Imu
             if(gamepad1.guide){
@@ -248,7 +245,10 @@ public class OnePersonDriveBase extends LinearOpMode {
             telemetry.addData("IMU (Degrees)", robotHardware.robotHeadingAngles());
             telemetry.addData("Limelight Tx", limelightHardware.getTx());
             telemetry.addData("LImelight TArea", limelightHardware.getTarea());
-            telemetry.addData("LImelight Cam Z", limelightHardware.getBotCamZ());
+            telemetry.addData("Distance from tag", limelightHardware.getBotDis());
+            telemetry.addData("LImelight Bot Z", limelightHardware.getBotZ());
+            telemetry.addData("LImelight Bot X", limelightHardware.getBotX());
+            telemetry.addData("LImelight Bot Y", limelightHardware.getBotY());
             telemetry.addData("Servo Closed", shooterHardware.servoClosed());
             telemetry.addData("Babymode", babymode);
             telemetry.update();
