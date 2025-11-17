@@ -38,6 +38,8 @@ public class teleOpPathing extends OpMode {
         robot = new RobotHardware(this);
         follower = robot.getFollower();
 
+        robot.innit(0);
+
         telemetry.addLine("Init OK");
         telemetry.update();
     }
@@ -116,7 +118,7 @@ public class teleOpPathing extends OpMode {
             robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_IDLE);
         }
 //******************************JAE CODE****************************************
-        if (gamepad2.dpad_down == true && shootPwr >0) {
+        if (gamepad2.dpad_down && shootPwr >0) {
             if(!Dpad_Status){
                 shootPwr = shootPwr-0.025;
                 Dpad_Status = true;
@@ -124,7 +126,7 @@ public class teleOpPathing extends OpMode {
         } else {
             Dpad_Status = false;
         }
-        if (gamepad2.dpad_up == true && shootPwr < 1) {
+        if (gamepad2.dpad_up && shootPwr < 1) {
             if(!Dpad_Status_up){
                 shootPwr = shootPwr+0.025;
                 Dpad_Status_up = true;
@@ -210,6 +212,13 @@ public class teleOpPathing extends OpMode {
                 robot.turntableServo.setPosition(ttPositions[stage]);
             } else {
                 autoCycle = false;
+            }
+        }
+
+        if(gamepad1.left_trigger >= 80){
+            double limelightResult = robot.getTx();
+            if(limelightResult != -999) {
+                robot.alignFree(limelightResult);
             }
         }
 
