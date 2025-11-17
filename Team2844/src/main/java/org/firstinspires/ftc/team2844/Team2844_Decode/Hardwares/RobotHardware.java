@@ -71,6 +71,9 @@ public class RobotHardware {
         );
 
     }
+    public RobotHardware(LinearOpMode opMode, boolean auto) {
+        opMode_ = opMode;
+    }
 
     public void powerMotors(double leftFront, double leftBack, double rightBack, double rightFront){
 
@@ -158,14 +161,18 @@ public class RobotHardware {
     }
 
 
-    public void alignFree(double llx){
+    public void alignFree(double llx) {
         //Use the Limelight llx to fine tune without stoping the driver
-        turnToFree(robotHeadingAngles()-llx, .6);
+        if (llx != -999){
+            turnToFree(robotHeadingAngles() - llx, .6);
+        }
     }
 
     public void align(double llx){
         //Use the Limelight llx to fine tune
-        turnTo(robotHeadingAngles()-llx, .4);
+        if(llx != -999) {
+            turnTo(robotHeadingAngles() - llx, .6);
+        }
     }
 
     public void turnToEstimate(boolean red){
@@ -185,70 +192,32 @@ public class RobotHardware {
     public void turnTo(double degrees, double speed){
         double oppDeg;
         double mult;
-        mult = Math.abs(Math.abs(degrees) + robotHeadingAngles()) * PGAIN;
-        if(degrees >0){
-            oppDeg = degrees - 180;
-            if(oppDeg < robotHeadingAngles() && robotHeadingAngles() < degrees){
-                while(!( degrees + TURN_THRESH <= robotHeadingAngles() && robotHeadingAngles() <= degrees - TURN_THRESH) && opMode_.opModeIsActive()){
-                    System.out.println("2844 - Left side Positive");
-                    mult = Math.abs(Math.abs(degrees) - robotHeadingAngles()) * PGAIN;
-                    System.out.println("2844 - Error: " + (degrees-robotHeadingAngles()));
-                    if((robotHeadingAngles() < degrees )) {
-                        System.out.println("2844 - turning left");
-                        powerMotors(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
-                    }else{
-                        System.out.println("2844 - turning right");
-                        powerMotors(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                    }
-                    System.out.println("2844 - Mult: " + mult);
+        double heading = robotHeadingAngles();
+
+        mult = Math.abs(Math.abs(degrees) - Math.abs(heading)) * PGAIN;
+        while(!( degrees - TURN_THRESH < heading && heading < degrees + TURN_THRESH) && opMode_.opModeIsActive()) {
+            heading = robotHeadingAngles();
+            if (degrees > 0) {
+                oppDeg = degrees - 180;
+                if (oppDeg < heading && heading < degrees) {
+                    addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
+                } else  if(degrees < heading && heading < oppDeg){
+                    addAlignPower(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
+                } else {
+                    addAlignPower(0,0,0,0);
                 }
             } else {
-                while(!( degrees + TURN_THRESH <= robotHeadingAngles() && robotHeadingAngles() <= degrees - TURN_THRESH) && opMode_.opModeIsActive()){
-                    System.out.println("2844 - Right Side, Positive");
-                    mult = Math.abs(Math.abs(degrees) - robotHeadingAngles()) * PGAIN;
-                    System.out.println("2844 - Error: " + (degrees-robotHeadingAngles()));
-                    if((robotHeadingAngles() > degrees)) {
-                        System.out.println("2844 - turning right");
-                        powerMotors(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                    }else{
-                        System.out.println("2844 - Turning left");
-                        powerMotors(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
-                    }
-                    System.out.println("2844 - Mult: " + mult);
-                }
-            }
-        } else {
-            oppDeg = degrees + 180;
-            if(degrees < robotHeadingAngles() && robotHeadingAngles() < oppDeg){
-                while(!( degrees - TURN_THRESH < robotHeadingAngles() && robotHeadingAngles() < degrees + TURN_THRESH) && opMode_.opModeIsActive()){
-                    System.out.println("2844 - Left side, Negative");
-                    mult = Math.abs(Math.abs(degrees) + robotHeadingAngles()) * PGAIN;
-                    System.out.println("2844 - Error: " + (degrees-robotHeadingAngles()));
-                    if((robotHeadingAngles() < degrees)) {
-                        System.out.println("2844 - turning right");
-                        powerMotors(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                    }else{
-                        System.out.println("2844 - turning left");
-                        powerMotors(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
-                    }
-                    System.out.println("2844 - Mult: " + mult);
-                }
-            } else {
-                while(!( degrees - TURN_THRESH < robotHeadingAngles() && robotHeadingAngles() < degrees + TURN_THRESH) && opMode_.opModeIsActive()){
-                    System.out.println("2844 - right side, Negative");
-                    mult = Math.abs(Math.abs(degrees) + robotHeadingAngles()) * PGAIN;
-                    System.out.println("2844 - Error: " + (degrees-robotHeadingAngles()));
-                    if((robotHeadingAngles() < degrees)) {
-                        System.out.println("2844 - turning right");
-                        powerMotors(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
-                    }else{
-                        System.out.println("2844 - Turning left");
-                        powerMotors(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                    }
-                    System.out.println("2844 - Mult: " + mult);
+                oppDeg = degrees + 180;
+                if (degrees < heading && heading < oppDeg) {
+                    addAlignPower(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
+                } else if (oppDeg < heading && heading < degrees) {
+                    addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
+                } else {
+                    addAlignPower(0,0,0,0);
                 }
             }
         }
+        addAlignPower(0,0,0,0);
     }
 
     public void turnToFree(double degrees, double speed){
@@ -262,15 +231,19 @@ public class RobotHardware {
                 oppDeg = degrees - 180;
                 if (oppDeg < heading && heading < degrees) {
                     addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
-                } else {
+                } else  if(degrees < heading && heading < oppDeg){
                     addAlignPower(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
+                } else {
+                    addAlignPower(0,0,0,0);
                 }
             } else {
                 oppDeg = degrees + 180;
                 if (degrees < heading && heading < oppDeg) {
                     addAlignPower(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                } else {
+                } else if (oppDeg < heading && heading < degrees) {
                     addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
+                } else {
+                    addAlignPower(0,0,0,0);
                 }
             }
         } else {

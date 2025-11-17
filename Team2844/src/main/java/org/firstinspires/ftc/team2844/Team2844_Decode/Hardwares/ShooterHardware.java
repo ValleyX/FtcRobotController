@@ -186,10 +186,10 @@ public class ShooterHardware {
     public void aimHood(double pos){hoodSer.setPosition(pos);}
 
     public boolean oneBall(){
-        return (BB0.getState() || BB1.getState()) || (BB2.getState() || BB3.getState());
+        return (!BB0.getState() || !BB1.getState()) || (!BB2.getState() || !BB3.getState());
     }
 
     public boolean twoBall(){
-        return (BB0.getState() || BB1.getState()) && (BB2.getState() || BB3.getState());
+        return (!BB0.getState() || !BB1.getState()) && (!BB2.getState() || !BB3.getState());
     }
 }

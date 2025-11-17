@@ -237,18 +237,14 @@ public class OnePersonDriveBase extends LinearOpMode {
             }
 
 
-            telemetry.addData("hood pos:", hoodPos);
-            telemetry.addData("Shooter Speed", shooterSpeed);
+            telemetry.addData("(at least) One Ball: ", shooterHardware.oneBall());
+            telemetry.addData("(at least) Two Balls: ", shooterHardware.twoBall());
             telemetry.addData("Velocity: ", shooterHardware.getShootVelocity());
             telemetry.addData("Spinup Time: ", spinupTime);
             telemetry.addData("Target Velocity: ", shooterVelocity);
             telemetry.addData("IMU (Degrees)", robotHardware.robotHeadingAngles());
             telemetry.addData("Limelight Tx", limelightHardware.getTx());
-            telemetry.addData("LImelight TArea", limelightHardware.getTarea());
             telemetry.addData("Distance from tag", limelightHardware.getBotDis());
-            telemetry.addData("LImelight Bot Z", limelightHardware.getBotZ());
-            telemetry.addData("LImelight Bot X", limelightHardware.getBotX());
-            telemetry.addData("LImelight Bot Y", limelightHardware.getBotY());
             telemetry.addData("Servo Closed", shooterHardware.servoClosed());
             telemetry.addData("Babymode", babymode);
             telemetry.update();
