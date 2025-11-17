@@ -29,6 +29,8 @@ public class teleOpPathing extends OpMode {
     private boolean baby = false;
     private boolean babyPrev = false;
 
+    private boolean startShooter = false;
+
     private final ElapsedTime runtime = new ElapsedTime();
 
     @Override
@@ -59,6 +61,10 @@ public class teleOpPathing extends OpMode {
             follower.update();
         }
     }
+    //Shooter Power
+    double shootPwr = 1;  //set to 100% for default
+    boolean Dpad_Status = false;
+    boolean Dpad_Status_up = false;
 
     @Override
     public void loop() {
@@ -93,6 +99,8 @@ public class teleOpPathing extends OpMode {
             r *= TeleOpConfig.BABY_MODE_SCALE;
         }
 
+
+
         follower.setTeleOpDrive(y, x, r, false);
 
         // Baby mode toggle
@@ -107,9 +115,52 @@ public class teleOpPathing extends OpMode {
         } else {
             robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_IDLE);
         }
+//******************************JAE CODE****************************************
+        if (gamepad2.dpad_down == true && shootPwr >0) {
+            if(!Dpad_Status){
+                shootPwr = shootPwr-0.025;
+                Dpad_Status = true;
+            }
+        } else {
+            Dpad_Status = false;
+        }
+        if (gamepad2.dpad_up == true && shootPwr < 1) {
+            if(!Dpad_Status_up){
+                shootPwr = shootPwr+0.025;
+                Dpad_Status_up = true;
+            }
+        } else {
+            Dpad_Status_up = false;
+        }
+        telemetry.addData("Shoot Pwr = ", shootPwr);
 
+//        if (gamepad2.b && !bPrev) {
+//            //shooterActive = !shooterActive;
+//            robot.shooterMotor.setPower(shootPwr);
+//            bPrev = true;
+//        }
+//        if (gamepad2.b && bPrev)  {
+//            robot.shooterMotor.setPower(0.0);
+//            bPrev = false;
+//        }
+        if(gamepad2.b){
+            if(!bPrev){
+                startShooter = !startShooter;
+                bPrev = true;
+            }
+        } else {
+            bPrev = false;
+        }
+
+        if(startShooter){
+            robot.shooterMotor.setPower(shootPwr);
+        } else {
+            robot.shooterMotor.setPower(0.0);
+        }
+
+        //*******************************END JAE CODE *****************************
         // Shooter toggle with auto-off after 10s
-        if (gamepad2.b && !bPrev) {
+       /* if (gamepad2.b && !bPrev) {
             shooterActive = !shooterActive;
             shooterStart = runtime.seconds();
         }
@@ -123,7 +174,7 @@ public class teleOpPathing extends OpMode {
                 robot.shooterMotor.setPower(0.0);
             }
         }
-
+*/
         // Turntable bumpers
         double[] ttPositions = {
                 TeleOpConfig.TT_POS_0,

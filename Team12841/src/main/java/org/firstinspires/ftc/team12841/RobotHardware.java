@@ -17,16 +17,14 @@ public class RobotHardware {
     public final OpMode opMode;
     private final ElapsedTime runtime = new ElapsedTime();
 
-    // --- Drive Motors ---
+    // Drive Motors
     public DcMotorEx rfMotor, rbMotor, lfMotor, lbMotor;
 
     // Shooter
     public DcMotorEx shooterMotor;
 
-    // --- Odometry Encoders (Expansion Hub 1–3) ---
-    public DcMotorEx leftOdo;
-    public DcMotorEx rightOdo;
-    public DcMotorEx strafeOdo;
+    // Odometry Encoders
+    public DcMotorEx leftOdo, rightOdo, strafeOdo;
 
     // Servos
     public Servo turntableServo, shooterServo;
@@ -41,26 +39,24 @@ public class RobotHardware {
     public RobotHardware(OpMode opMode) {
         this.opMode = opMode;
 
+        // MOTORS + ODOMETRY
         try {
-            // Drive motors
             rfMotor = opMode.hardwareMap.get(DcMotorEx.class, "rfMotor");
             rbMotor = opMode.hardwareMap.get(DcMotorEx.class, "rbMotor");
             lfMotor = opMode.hardwareMap.get(DcMotorEx.class, "lfMotor");
             lbMotor = opMode.hardwareMap.get(DcMotorEx.class, "lbMotor");
 
-            // Shooter
             shooterMotor = opMode.hardwareMap.get(DcMotorEx.class, "shooterMotor");
 
-            // ✔ Correct odometry names
-            leftOdo = opMode.hardwareMap.get(DcMotorEx.class, "leftOdo");
-            rightOdo = opMode.hardwareMap.get(DcMotorEx.class, "rightOdo");
+            leftOdo   = opMode.hardwareMap.get(DcMotorEx.class, "leftOdo");
+            rightOdo  = opMode.hardwareMap.get(DcMotorEx.class, "rightOdo");
             strafeOdo = opMode.hardwareMap.get(DcMotorEx.class, "strafeOdo");
 
         } catch (Exception e) {
             opMode.telemetry.addLine("ERROR: Motor/Odo mapping failed!");
         }
 
-        // Servos
+        // SERVOS
         try {
             shooterServo = opMode.hardwareMap.get(Servo.class, "shooterServo");
             turntableServo = opMode.hardwareMap.get(Servo.class, "turntableServo");
@@ -81,7 +77,18 @@ public class RobotHardware {
             opMode.telemetry.addLine("ERROR: IMU failed!");
         }
 
-        // Drive config
+        // LIMELIGHT STUFF
+        try {
+            limelight = opMode.hardwareMap.get(Limelight3A.class, "limelight");
+            limelight.pipelineSwitch(0);   // default pipeline
+            limelight.start();             // begin streaming
+            opMode.telemetry.addLine("Limelight3A ONLINE");
+        } catch (Exception e) {
+            limelight = null;
+            opMode.telemetry.addLine("Limelight3A NOT FOUND");
+        }
+
+        // MOTOR CONFIG
         try {
             lfMotor.setDirection(DcMotor.Direction.REVERSE);
             lbMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -96,9 +103,7 @@ public class RobotHardware {
 
             shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-            // Encoders should NOT output power
-            DcMotorEx[] odos = {leftOdo, rightOdo, strafeOdo};
-            for (DcMotorEx odo : odos) {
+            for (DcMotorEx odo : new DcMotorEx[]{leftOdo, rightOdo, strafeOdo}) {
                 odo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 odo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 odo.setPower(0);
@@ -108,7 +113,7 @@ public class RobotHardware {
             opMode.telemetry.addLine("ERROR: motor/encoder config failed!");
         }
 
-        // Pedro init
+        // PEDRO FOLLOWER
         try {
             follower = Constants.createFollower(opMode.hardwareMap);
             opMode.telemetry.addLine("Pedro Pathing OK");
