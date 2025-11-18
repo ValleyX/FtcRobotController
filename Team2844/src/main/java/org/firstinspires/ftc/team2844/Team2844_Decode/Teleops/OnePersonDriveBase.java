@@ -84,8 +84,8 @@ public class OnePersonDriveBase extends LinearOpMode {
             rx = gamepad1.right_stick_x;
             y = -gamepad1.left_stick_y;
 
-            //botHeading = robotHardware.robotHeadingRadians();
-            botHeading = 0;
+            botHeading = robotHardware.robotHeadingRadians();
+            //botHeading = 0;
 
             //code for field centric (Idk how it works, pretty sure it's magic or makes triangles or something)
             //REMEMBER IT USES RADIANS
@@ -167,7 +167,7 @@ public class OnePersonDriveBase extends LinearOpMode {
                 if(!alignPress){
                     autoAlign = !autoAlign;
                     if(limelightHardware.getTx() == -999){
-                        robotHardware.turnToEstimate(red);
+                        //robotHardware.turnToEstimate(red);
                     } else {
                         robotHardware.addAlignPower(0,0,0,0);
                     }

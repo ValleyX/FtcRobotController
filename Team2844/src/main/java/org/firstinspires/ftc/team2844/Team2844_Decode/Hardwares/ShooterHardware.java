@@ -24,7 +24,7 @@ public class ShooterHardware {
     private Servo blockSer;
     private Servo hoodSer;
     //Constants
-    private final double CLOSE_POS = 0.4;
+    private final double CLOSE_POS = 0.387;
     private final double OPEN_POS = 0.7;
 
     private boolean servoClosed;

@@ -24,7 +24,7 @@ public class BlueCloseAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d initialPos = new Pose2d(50,50,0.785398);
+        Pose2d initialPos = new Pose2d(55,45,0.785398);
         ShooterHardware shooterHardware = new ShooterHardware(this);
         LimelightHardware limelightHardware = new LimelightHardware(this);
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, initialPos);
@@ -34,26 +34,26 @@ public class BlueCloseAuto extends LinearOpMode {
         if (isStopRequested()) return;
 
         TrajectoryActionBuilder moveToShoot1 = mecanumDrive.actionBuilder(initialPos)
-                .splineToConstantHeading(new Vector2d(40, 30), 0);
+                .lineToYConstantHeading(25);
 
 
-        TrajectoryActionBuilder pickupBalls1 = mecanumDrive.actionBuilder(mecanumDrive.localizer.getPose())
+        TrajectoryActionBuilder pickupBalls1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(40, 25), 0.785398))
                 .turnTo(Math.PI/2)
-                .splineToConstantHeading(new Vector2d(12, 30), 0.0)
-                .splineToConstantHeading(new Vector2d(12, 66), 0.0);
+                .strafeToConstantHeading(new Vector2d(8.5, 25))
+                .strafeToConstantHeading(new Vector2d(8.5, 60));
 
-        TrajectoryActionBuilder moveToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(66, 12), Math.PI/2))
-                .turnTo(0.785398)
-                .splineToConstantHeading(new Vector2d(24, 24), 0.0);
+        TrajectoryActionBuilder moveToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(8.5, 60), (Math.PI/2)))
+                .lineToYConstantHeading(50)
+                .splineToLinearHeading(new Pose2d(new Vector2d(24, 24), 0.785398), 0.785398);
 
         TrajectoryActionBuilder pickupBalls2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, 24), 0.785398))
                 .turnTo(Math.PI/2)
-                .splineToConstantHeading(new Vector2d(-12, 24), 0.0)
-                .splineToConstantHeading(new Vector2d(-12, 72), 0.0);
+                .strafeToConstantHeading(new Vector2d(-14.5, 24))
+                .strafeToConstantHeading(new Vector2d(-14.5, 66));
 
-        TrajectoryActionBuilder moveToShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(72, -12), Math.PI/2))
-                .turnTo(0.785398)
-                .splineToConstantHeading(new Vector2d(36, 24), 0.0);
+        TrajectoryActionBuilder moveToShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-13, 66), Math.PI/2))
+                .lineToYConstantHeading(40)
+                .splineToLinearHeading(new Pose2d(new Vector2d(36, 12), 0.785398), 0.785398);
 
 
 
