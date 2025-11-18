@@ -126,6 +126,37 @@ public class RobotHardware {
         calculateDrive();
     }
 
+    public void turnToFree(double degrees, double speed){
+        double oppDeg;
+        double mult;
+        double heading = robotHeadingAngles();
+
+        mult = Math.abs(Math.abs(degrees) - Math.abs(heading)) * PGAIN;
+        if(!( degrees - TURN_THRESH < heading && heading < degrees + TURN_THRESH)) {
+            if (degrees > 0) {
+                oppDeg = degrees - 180;
+                if (oppDeg < heading && heading < degrees) {
+                    addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
+                } else  if(degrees < heading && heading < oppDeg){
+                    addAlignPower(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
+                } else {
+                    addAlignPower(0,0,0,0);
+                }
+            } else {
+                oppDeg = degrees + 180;
+                if (degrees < heading && heading < oppDeg) {
+                    addAlignPower(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
+                } else if (oppDeg < heading && heading < degrees) {
+                    addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
+                } else {
+                    addAlignPower(0,0,0,0);
+                }
+            }
+        } else {
+            addAlignPower(0,0,0,0);
+        }
+    }
+
     public void calculateDrive(){
         double leftFront = lFAlignSpeed + lFDriveSpeed;
         double leftBack = lBAlignSpeed + lBDriveSpeed;
@@ -218,36 +249,5 @@ public class RobotHardware {
             }
         }
         addAlignPower(0,0,0,0);
-    }
-
-    public void turnToFree(double degrees, double speed){
-        double oppDeg;
-        double mult;
-        double heading = robotHeadingAngles();
-
-        mult = Math.abs(Math.abs(degrees) - Math.abs(heading)) * PGAIN;
-        if(!( degrees - TURN_THRESH < heading && heading < degrees + TURN_THRESH)) {
-            if (degrees > 0) {
-                oppDeg = degrees - 180;
-                if (oppDeg < heading && heading < degrees) {
-                    addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
-                } else  if(degrees < heading && heading < oppDeg){
-                    addAlignPower(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                } else {
-                    addAlignPower(0,0,0,0);
-                }
-            } else {
-                oppDeg = degrees + 180;
-                if (degrees < heading && heading < oppDeg) {
-                    addAlignPower(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                } else if (oppDeg < heading && heading < degrees) {
-                    addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
-                } else {
-                    addAlignPower(0,0,0,0);
-                }
-            }
-        } else {
-            addAlignPower(0,0,0,0);
-        }
     }
 }
