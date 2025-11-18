@@ -285,7 +285,7 @@ public class RobotHardware {
         if (imu != null) imu.resetYaw();
     }
 
-    // *******************************CARTERS STUFF*************************************88
+    // *******************************CARTERS STUFF*************************************
     public void powerMotors(double leftFront, double leftBack, double rightBack, double rightFront){
 
         lfMotor.setPower(leftFront);

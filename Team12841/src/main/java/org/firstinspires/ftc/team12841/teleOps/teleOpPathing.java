@@ -40,6 +40,7 @@ public class teleOpPathing extends OpMode {
 
         robot.innit(0);
 
+        telemetry.addLine("Limelight pipeline set");
         telemetry.addLine("Init OK");
         telemetry.update();
     }
@@ -223,6 +224,7 @@ public class teleOpPathing extends OpMode {
         }
 
         telemetry.addData("Heading", follower.getPose().getHeading());
+        telemetry.addData("Aligning", gamepad1.left_trigger >= 80);
         telemetry.addData("Baby Mode", baby);
         telemetry.addData("Shooter Active", shooterActive);
         telemetry.update();
