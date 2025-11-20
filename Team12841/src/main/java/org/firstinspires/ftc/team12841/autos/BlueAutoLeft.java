@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.team12841.autos;
 
-import static java.lang.Thread.sleep;
-
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
 import org.firstinspires.ftc.team12841.RobotHardware;
 import org.firstinspires.ftc.team12841.teleOps.TeleOpPathing;
 import org.firstinspires.ftc.team12841.configs.TeleOpConfig;
@@ -18,142 +17,187 @@ import org.firstinspires.ftc.team12841.pedroPathing.Constants;
 public class BlueAutoLeft extends OpMode {
 
     private RobotHardware robot;
-    private TeleOpPathing teleOpPathing;
     private Follower follower;
-    private Timer pathTimer, actionTimer, opmodeTimer;
+    private Timer pathTimer, opmodeTimer;
 
-    private int pathState;
-    private final Pose startPose = new Pose(67, -5, Math.toRadians(90)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(48, -5, Math.toRadians(151)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-    private final Pose endPose = new Pose(48, -5, Math.toRadians(90)); // Highest (First Set) of Artifacts from the Spike Mark.
+    private int pathState = 0;
+
+    private final Pose startPose = new Pose(48, -5, Math.toRadians(90));
+    private final Pose scorePose = new Pose(67, -5, Math.toRadians(61));
+    private final Pose endPose   = new Pose(67, -5, Math.toRadians(90));
+
     private PathChain scorePreload, endAuto;
 
+    // ---------------------------
+    // BUILD PATHS
+    // ---------------------------
     public void buildPaths() {
-        /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
         scorePreload = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
                 .build();
+
         endAuto = follower.pathBuilder()
                 .addPath(new BezierLine(scorePose, endPose))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), endPose.getHeading())
                 .build();
     }
 
-    public void autonomousPathUpdate() throws InterruptedException {
+
+    // ---------------------------
+    // AUTONOMOUS STATE MACHINE
+    // ---------------------------
+    public void autonomousPathUpdate() {
         switch (pathState) {
+
+            // --------------------------------
+            // STATE 0 – DRIVE TO SCORE & SPINUP SHOOTER
+            // --------------------------------
             case 0:
                 follower.followPath(scorePreload);
-                teleOpPathing.shootPwr = 0.725;
+                //double rotCmd = 0;
+                //double tx = robot.getTx(); // NEGATIVE stays negative
+                //if (tx != -999) {
+
+                    //double Kp = TeleOpConfig.KP;
+                    //double turn = -(tx * Kp);  // ← KEEP NEGATIVE
+
+                    //double maxTurn = 0.16;
+                    //if (turn > maxTurn) turn = maxTurn;
+                    //if (turn < -maxTurn) turn = -maxTurn;
+
+                    //rotCmd += turn;
+                //}
+                robot.shooterMotor.setPower(0.725);
                 robot.turntableServo.setPosition(TeleOpConfig.TT_POS_0);
-                teleOpPathing.startShooter = true;
-                sleep(2000);
-                robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_FIRE);
-                sleep(500);
-                robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_IDLE);
-                sleep(500);
-                robot.turntableServo.setPosition(TeleOpConfig.TT_POS_1);
-                sleep(750);
-                robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_FIRE);
-                sleep(500);
-                robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_IDLE);
-                sleep(500);
-                robot.turntableServo.setPosition(TeleOpConfig.TT_POS_2);
-                sleep(750);
-                robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_FIRE);
-                sleep(500);
-                robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_IDLE);
-                teleOpPathing.startShooter = false;
-                setPathState(1);
+
+                pathTimer.resetTimer();
+                setPathState(10);
                 break;
+
+
+            // --------------------------------
+            // STATE 10 – FIRST SHOT DELAY
+            // --------------------------------
+            case 10:
+                if (pathTimer.getElapsedTimeSeconds() > 4) {
+                    robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_FIRE);
+                    pathTimer.resetTimer();
+                    setPathState(11);
+                }
+                break;
+
+            case 11:
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                    robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_IDLE);
+                    pathTimer.resetTimer();
+                    setPathState(112);
+                }
+                break;
+
+            case 112:
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                    robot.turntableServo.setPosition(TeleOpConfig.TT_POS_1);
+                    pathTimer.resetTimer();
+                    setPathState(12);
+                }
+                break;
+            case 12:
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                    robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_FIRE);
+                    pathTimer.resetTimer();
+                    setPathState(13);
+                }
+                break;
+
+            case 13:
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                    robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_IDLE);
+                    pathTimer.resetTimer();
+                    setPathState(132);
+                }
+                break;
+
+            case 132:
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                    robot.turntableServo.setPosition(TeleOpConfig.TT_POS_2);
+                    pathTimer.resetTimer();
+                    setPathState(14);
+                }
+                break;
+            case 14:
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                    robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_FIRE);
+                    pathTimer.resetTimer();
+                    setPathState(15);
+                }
+                break;
+
+            case 15:
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                    robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_IDLE);
+                    pathTimer.resetTimer();
+                    setPathState(1);
+                }
+                break;
+
+            // --------------------------------
+            // STATE 1 – AFTER PRELOAD
+            // --------------------------------
             case 1:
-
-            /* You could check for
-            - Follower State: "if(!follower.isBusy()) {}"
-            - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
-            - Robot Position: "if(follower.getPose().getX() > 36) {}"
-            */
-
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if (!follower.isBusy()) {
-                    /* Score Preload */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
                     follower.followPath(endAuto, true);
+                    robot.shooterMotor.setPower(0);
                 }
                 break;
         }
     }
 
-    /**
-     * These change the states of the paths and actions. It will also reset the timers of the individual switches
-     **/
+
+    // ---------------------------
+    // STATE HELPER
+    // ---------------------------
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
     }
 
-    /**
-     * This is the main loop of the OpMode, it will run repeatedly after clicking "Play".
-     **/
+
+    // ---------------------------
+    // LOOP
+    // ---------------------------
     @Override
     public void loop() {
-
-        // These loop the movements of the robot, these must be called continuously in order to work
         follower.update();
-        try {
-            autonomousPathUpdate();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        autonomousPathUpdate();
 
-        // Feedback to Driver Hub for debugging
-        telemetry.addData("path state", pathState);
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("State", pathState);
+        telemetry.addData("X", follower.getPose().getX());
+        telemetry.addData("Y", follower.getPose().getY());
+        telemetry.addData("Heading", follower.getPose().getHeading());
         telemetry.update();
     }
 
-    /**
-     * This method is called once at the init of the OpMode.
-     **/
+
+    // ---------------------------
+    // INIT
+    // ---------------------------
     @Override
     public void init() {
-        teleOpPathing = new TeleOpPathing();
         robot = new RobotHardware(this);
         pathTimer = new Timer();
         opmodeTimer = new Timer();
-        opmodeTimer.resetTimer();
-
 
         follower = Constants.createFollower(hardwareMap);
-        buildPaths();
         follower.setStartingPose(startPose);
 
+        buildPaths();
     }
 
-    /**
-     * This method is called continuously after Init while waiting for "play".
-     **/
-    @Override
-    public void init_loop() {
-    }
 
-    /**
-     * This method is called once at the start of the OpMode.
-     * It runs all the setup actions, including building paths and starting the path system
-     **/
     @Override
     public void start() {
         opmodeTimer.resetTimer();
         setPathState(0);
-    }
-
-    /**
-     * We do not use this because everything should automatically disable
-     **/
-    @Override
-    public void stop() {
     }
 }
