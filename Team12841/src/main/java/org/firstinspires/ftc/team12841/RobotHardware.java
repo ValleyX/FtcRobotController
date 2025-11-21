@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.team12841;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -13,11 +12,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.team12841.pedroPathing.Constants;
 import com.pedropathing.follower.Follower;
-
-import java.util.List;
 
 public class RobotHardware {
 
@@ -105,7 +101,7 @@ public class RobotHardware {
         // LIMELIGHT STUFF
         try {
             limelight = opMode.hardwareMap.get(Limelight3A.class, "limelight");
-            limelight.pipelineSwitch(0);   // default pipeline
+            limelight.pipelineSwitch(0);   // default pipeline (All Hoops)
             limelight.start();             // begin streaming
             opMode.telemetry.addLine("Limelight3A ONLINE");
         } catch (Exception e) {
@@ -126,7 +122,7 @@ public class RobotHardware {
                 m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
 
-            shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             for (DcMotorEx odo : new DcMotorEx[]{leftOdo, rightOdo, strafeOdo}) {
                 odo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -176,35 +172,6 @@ public class RobotHardware {
         limelight.updateRobotOrientation(IMUHeading);
     }
 
-    //Returns the y of the bot on the field through metatags
-    public double getBotY(){
-        updateResult();
-        if (llResult != null && llResult.isValid()) {
-            Pose3D botPose = llResult.getBotpose();
-            return botPose.getPosition().y*254;
-        }
-        return -999;
-    }
-
-
-    //Returns the X of the bot on the field through metatags
-    public double getBotX(){
-        updateResult();
-        if (llResult != null && llResult.isValid()) {
-            Pose3D botPose = llResult.getBotpose();
-            return botPose.getPosition().x*254;
-        }
-        return -999;
-    }
-
-    public double getBotZ(){
-        updateResult();
-        if (llResult != null && llResult.isValid()) {
-            Pose3D botPose = llResult.getBotpose();
-            return botPose.getPosition().z*254;
-        }
-        return -999;
-    }
 
     public double getBotDis(){
         updateResult();
@@ -214,65 +181,11 @@ public class RobotHardware {
         return -999;
     }
 
-    //Returns the rotation of the bot on the field through metatags
-    public double getBotRot(){
-        updateResult();
-        if (llResult != null && llResult.isValid()) {
-            Pose3D botPose = llResult.getBotpose();
-            return botPose.getPosition().z;
-        }
-        return -999;
-    }
-
-    public double getBotCamZ(){
-        updateResult();
-        if (llResult != null && llResult.isValid()) {
-            List< LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
-            return ((fiducials.get(0).getCameraPoseTargetSpace().getPosition().z *100)/2.54)*-1.635;
-        }
-        return -999;
-    }
-
-    public double getBotCamY(){
-        updateResult();
-        if (llResult != null && llResult.isValid()) {
-            List< LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
-            return ((fiducials.get(0).getCameraPoseTargetSpace().getPosition().y *100)/2.54)*-1.635;
-        }
-        return -999;
-    }
-
-    public double getBotCamX(){
-        updateResult();
-        if (llResult != null && llResult.isValid()) {
-            List< LLResultTypes.FiducialResult> fiducials = llResult.getFiducialResults();
-            return ((fiducials.get(0).getCameraPoseTargetSpace().getPosition().x *100)/2.54)*-1.635;
-        }
-        return -999;
-    }
-
-
-
-    public double getTy(){
-        updateResult();
-        if (llResult != null && llResult.isValid()) {
-            return llResult.getTy();
-        }
-        return -999;
-    }
 
     public double getTx(){
         updateResult();
         if (llResult != null && llResult.isValid()) {
             return llResult.getTx();
-        }
-        return -999;
-    }
-
-    public double getTarea(){
-        updateResult();
-        if (llResult != null && llResult.isValid()) {
-            return llResult.getTa();
         }
         return -999;
     }
