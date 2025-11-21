@@ -24,8 +24,8 @@ public class ShooterHardware {
     private Servo blockSer;
     private Servo hoodSer;
     //Constants
-    private final double CLOSE_POS = 0.387;
-    private final double OPEN_POS = 0.7;
+    private final double OUT_POS = 0.16;
+    private final double IN_POS = 0.0;
 
     private boolean servoClosed;
 
@@ -39,6 +39,7 @@ public class ShooterHardware {
     private DigitalChannel BB1;
     private DigitalChannel BB2;
     private DigitalChannel BB3;
+    private DigitalChannel gobuildaBB;
 
     /*
      * Shooter Conversions
@@ -82,6 +83,7 @@ public class ShooterHardware {
         BB1 = opMode_.hardwareMap.get(DigitalChannel.class, "BB1");
         BB2 = opMode_.hardwareMap.get(DigitalChannel.class, "BB2");
         BB3 = opMode_.hardwareMap.get(DigitalChannel.class, "BB3");
+        gobuildaBB = opMode_.hardwareMap.get(DigitalChannel.class, "gobuildaBB");
 
     }
 
@@ -119,6 +121,11 @@ public class ShooterHardware {
 
     public void feed(){
         intake(0.9);
+        openServo();
+    }
+
+    public void extake(double power){
+        intake(-power);
         openServo();
     }
 
@@ -171,14 +178,18 @@ public class ShooterHardware {
      * Servo methods
      */
     public void openServo(){
-        blockSer.setPosition(OPEN_POS);
+        blockSer.setPosition(IN_POS);
         servoClosed = false;
     }
 
 
     public void closeServo(){
-        blockSer.setPosition(CLOSE_POS);
+        blockSer.setPosition(OUT_POS);
         servoClosed = true;
+    }
+
+    public void testServo(double pos){
+        blockSer.setPosition(pos);
     }
 
     public boolean servoClosed(){return servoClosed;}
@@ -186,10 +197,17 @@ public class ShooterHardware {
     public void aimHood(double pos){hoodSer.setPosition(pos);}
 
     public boolean oneBall(){
-        return (!BB0.getState() || !BB1.getState()) || (!BB2.getState() || !BB3.getState());
+        return (!BB0.getState() || !BB1.getState()) || (!BB2.getState() || !BB3.getState()) || !gobuildaBB.getState();
     }
 
     public boolean twoBall(){
-        return (!BB0.getState() || !BB1.getState()) && (!BB2.getState() || !BB3.getState());
+        boolean spot1 = (!BB0.getState() || !BB1.getState());
+        boolean spot2 = (!BB2.getState() || !BB3.getState());
+        boolean spot3 =  !gobuildaBB.getState();
+        return  (spot1 && spot2) || (spot1 && spot3) || (spot2 && spot3);
+    }
+
+    public boolean threeBall(){
+        return (!BB0.getState() || !BB1.getState()) && (!BB2.getState() || !BB3.getState()) && !gobuildaBB.getState();
     }
 }

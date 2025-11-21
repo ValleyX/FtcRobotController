@@ -51,6 +51,7 @@ public class OnePersonDriveBase extends LinearOpMode {
 
     //Intake
     boolean intaking = false;
+    boolean full = false;
 
     //hood shooter
     double hoodPos = 0.0;
@@ -107,15 +108,24 @@ public class OnePersonDriveBase extends LinearOpMode {
 
             robotHardware.addDrivePower(frontLeftPower, backLeftPower, backRightPower, frontRightPower);
 
+            full = shooterHardware.threeBall();
+
             //run intake if left trigger is pulled\
-            if(gamepad1.left_trigger > 0.1) {
+            if(gamepad1.left_trigger > 0.1 && !full) {
                 shooterHardware.intake(gamepad1.left_trigger);
                 intaking = true;
             } else if(gamepad1.right_trigger > 0.1) {
                 shooterHardware.intake(-gamepad1.right_trigger);
                 intaking = true;
+            } else if(gamepad1.dpad_down){
+                if(!dPadDown){
+                    intaking = true;
+                    shooterHardware.extake(1.0);
+                    dPadDown = true;
+                }
             } else {
                 intaking = false;
+                dPadDown = false;
             }
 
             //shooter
@@ -141,13 +151,13 @@ public class OnePersonDriveBase extends LinearOpMode {
                 firstTime = true;
             }
 
-            if(gamepad1.left_bumper){
-                stopManShoot = false;
-                shooterHardware.shoot(shooterSpeed);
-                shooterHardware.feed();
-            } else {
-                stopManShoot = true;
-            }
+//            if(gamepad1.left_bumper){
+//                stopManShoot = false;
+//                shooterHardware.shoot(shooterSpeed);
+//                shooterHardware.feed();
+//            } else {
+//                stopManShoot = true;
+//            }
 
             if(stopAutoShoot && stopManShoot && !intaking){
                 shooterHardware.stopShooter();
@@ -179,24 +189,17 @@ public class OnePersonDriveBase extends LinearOpMode {
 
             if(gamepad1.dpad_up){
                 if(!dPadUp){
-                    shooterSpeed += 0.01;
                     dPadUp = true;
                 }
             } else {
                 dPadUp = false;
             }
 
-            if(gamepad1.dpad_down){
-                if(!dPadDown){
-                    shooterSpeed -= 0.01;
-                    dPadDown = true;
-                }
-            } else {
-                dPadDown = false;
-            }
+
 
             if(gamepad1.dpad_left){
                 if(!dPadLeft){
+
                     dPadLeft = true;
                 }
             } else {
