@@ -12,8 +12,8 @@ import org.firstinspires.ftc.team12841.RobotHardware;
 import org.firstinspires.ftc.team12841.configs.TeleOpConfig;
 import org.firstinspires.ftc.team12841.pedroPathing.Constants;
 
-@Autonomous(name = "Blue Left", group = "Autos")
-public class BlueAutoLeft extends OpMode {
+@Autonomous(name = "Red Right", group = "Autos")
+public class RedAutoRight extends OpMode {
 
     private RobotHardware robot;
     private Follower follower;
@@ -150,7 +150,7 @@ public class BlueAutoLeft extends OpMode {
 
             // 12 – second shot
             case 12:
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
                     robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_FIRE);
                     pathTimer.resetTimer();
                     setPathState(13);
@@ -239,7 +239,7 @@ public class BlueAutoLeft extends OpMode {
         pathTimer = new Timer();
         alignTimer = new Timer();
         opmodeTimer = new Timer();
-        robot.innit(1);
+        robot.innit(2);
 
         follower = Constants.createFollower(hardwareMap);
         robot.turntableServo.setPosition(TeleOpConfig.TT_POS_0);
