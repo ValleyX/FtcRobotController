@@ -12,4 +12,7 @@ public class TeleOpConfig {
     public static double BABY_MODE_SCALE = 0.2;
     public static double OLDMAN_MODE_SCALE = 0.4;
     public static double KP = 0.02;
+    public static double TURN_THRESH = 2.3;   // allowable yaw error
+    public static double SLOW_THRESH = 15;    // unused here but used for slow mode
+    public static double PGAIN = 0.023;       // proportional gain for IMU-based turning
 }
