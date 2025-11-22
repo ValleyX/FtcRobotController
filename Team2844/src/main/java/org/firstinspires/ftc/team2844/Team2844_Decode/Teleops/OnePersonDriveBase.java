@@ -114,6 +114,7 @@ public class OnePersonDriveBase extends LinearOpMode {
             if(gamepad1.left_trigger > 0.1 && !full) {
                 shooterHardware.intake(gamepad1.left_trigger);
                 intaking = true;
+                shooterHardware.shoot(-0.15);//jae
             } else if(gamepad1.right_trigger > 0.1) {
                 shooterHardware.intake(-gamepad1.right_trigger);
                 intaking = true;
@@ -121,19 +122,27 @@ public class OnePersonDriveBase extends LinearOpMode {
                 if(!dPadDown){
                     intaking = true;
                     shooterHardware.extake(1.0);
+
                     dPadDown = true;
                 }
             } else {
                 intaking = false;
                 dPadDown = false;
+                //shooterHardware.shooterMotor.setPower(0);//jae
+            }
+
+            if(gamepad1.b){
+                shooterVelocity = shooterHardware.lastKnownSpeed();
+                hoodPos = shooterHardware.lastKnownAim();
+            } else {
+                shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
+                hoodPos = shooterHardware.getHoodAim(limelightHardware.getBotDis());
             }
 
             //shooter
             if(gamepad1.right_bumper){
                 shooterAlign = true;
                 stopAutoShoot = false;
-                shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
-                hoodPos = shooterHardware.getHoodAim(limelightHardware.getBotDis());
                 shooterHardware.aimHood(hoodPos);
                 shooterHardware.setShootVelocity(shooterVelocity);
                 if(shooterHardware.withinVel(shooterVelocity)) {
@@ -242,6 +251,7 @@ public class OnePersonDriveBase extends LinearOpMode {
 
             telemetry.addData("(at least) One Ball: ", shooterHardware.oneBall());
             telemetry.addData("(at least) Two Balls: ", shooterHardware.twoBall());
+            telemetry.addData("all three balls", full);
             telemetry.addData("Velocity: ", shooterHardware.getShootVelocity());
             telemetry.addData("Spinup Time: ", spinupTime);
             telemetry.addData("Target Velocity: ", shooterVelocity);

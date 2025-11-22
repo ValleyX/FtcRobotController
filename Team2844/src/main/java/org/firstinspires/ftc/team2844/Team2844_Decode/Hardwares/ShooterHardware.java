@@ -40,6 +40,7 @@ public class ShooterHardware {
     private DigitalChannel BB2;
     private DigitalChannel BB3;
     private DigitalChannel gobuildaBB;
+    private DigitalChannel gobuildaBB1;
 
     /*
      * Shooter Conversions
@@ -47,6 +48,9 @@ public class ShooterHardware {
     public final double ENCODER_TICS = 28;
     public final double VEL_THRESH = 1;
     public final double VEL_BOTTOM_THRESH = 3;
+
+    public double shooterVel = 30;
+    public double hoodAim = 0.0;
 
     public ShooterHardware(LinearOpMode opMode) {
         /*
@@ -84,6 +88,7 @@ public class ShooterHardware {
         BB2 = opMode_.hardwareMap.get(DigitalChannel.class, "BB2");
         BB3 = opMode_.hardwareMap.get(DigitalChannel.class, "BB3");
         gobuildaBB = opMode_.hardwareMap.get(DigitalChannel.class, "gobuildaBB");
+        gobuildaBB1 = opMode_.hardwareMap.get(DigitalChannel.class, "gobuildaBB1");
 
     }
 
@@ -101,6 +106,7 @@ public class ShooterHardware {
             temp/=Math.abs(temp);
         }
         intakeMotor.setPower(temp);
+        //shooterMotor.setPower(-0.15); //JAE add
     }
 
     /**
@@ -126,11 +132,13 @@ public class ShooterHardware {
 
     public void extake(double power){
         intake(-power);
+        shooterMotor.setPower(-power); //JAE add
         openServo();
     }
 
     public void stopFeed(){
         intake(0.0);
+        //shooterMotor.setPower(0); //jae
         closeServo();
     }
 
@@ -152,18 +160,28 @@ public class ShooterHardware {
 
     public double getShootSpeed(double distance) {
         if (distance != -999) {
-            return ((0.19*distance) + 24.96);
+            shooterVel = ((0.19*distance) + 24.96);
+            return shooterVel;
         } else {
             return 30;
         }
     }
 
+    public double lastKnownSpeed(){
+        return  shooterVel;
+    }
+
     public double getHoodAim(double distance) {
         if (distance != -999) {
-            return ((.0038895*distance) + -0.111817);
+            hoodAim = ((.0038895*distance) + -0.111817);
+            return hoodAim;
         } else {
             return 0.0;
         }
+    }
+
+    public double lastKnownAim(){
+        return hoodAim;
     }
 
     public boolean withinVel(double targVel){
@@ -197,17 +215,17 @@ public class ShooterHardware {
     public void aimHood(double pos){hoodSer.setPosition(pos);}
 
     public boolean oneBall(){
-        return (!BB0.getState() || !BB1.getState()) || (!BB2.getState() || !BB3.getState()) || !gobuildaBB.getState();
+        return ((!BB0.getState() || !BB1.getState()) && gobuildaBB1.getState()) || (!BB2.getState() || !BB3.getState()) || gobuildaBB.getState();
     }
 
     public boolean twoBall(){
-        boolean spot1 = (!BB0.getState() || !BB1.getState());
+        boolean spot1 = ((!BB0.getState() || !BB1.getState()) && gobuildaBB1.getState());
         boolean spot2 = (!BB2.getState() || !BB3.getState());
-        boolean spot3 =  !gobuildaBB.getState();
+        boolean spot3 =  gobuildaBB.getState();
         return  (spot1 && spot2) || (spot1 && spot3) || (spot2 && spot3);
     }
 
     public boolean threeBall(){
-        return (!BB0.getState() || !BB1.getState()) && (!BB2.getState() || !BB3.getState()) && !gobuildaBB.getState();
+        return ((!BB0.getState() || !BB1.getState()) && gobuildaBB1.getState()) && (!BB2.getState() || !BB3.getState()) && gobuildaBB.getState();
     }
 }

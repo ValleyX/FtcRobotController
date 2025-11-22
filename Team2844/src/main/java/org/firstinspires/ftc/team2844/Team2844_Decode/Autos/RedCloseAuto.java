@@ -14,7 +14,8 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.RoadrunnerStuff.Roadrunner
 @Autonomous(name = "Red Near Goal")
 public class RedCloseAuto extends LinearOpMode {
 
-    long BUFFER_TIME = 2000;
+    long BUFFER_TIME = 1200;
+    Pose2d estimate;
 
 
     @Override
@@ -24,6 +25,8 @@ public class RedCloseAuto extends LinearOpMode {
         LimelightHardware limelightHardware = new LimelightHardware(this);
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, initialPos);
         limelightHardware.innit(1);
+        mecanumDrive.updatePoseEstimate();
+        estimate = mecanumDrive.localizer.getPose();
 
         waitForStart();
         if (isStopRequested()) return;
@@ -31,13 +34,12 @@ public class RedCloseAuto extends LinearOpMode {
         TrajectoryActionBuilder moveToShoot1 = mecanumDrive.actionBuilder(initialPos)
                 .lineToYConstantHeading(-25);
 
-
         TrajectoryActionBuilder pickupBalls1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(40, -25), -0.785398))
                 .turnTo(-Math.PI/2)
                 .strafeToConstantHeading(new Vector2d(8.5, -25))
                 .strafeToConstantHeading(new Vector2d(8.5, -60));
 
-        TrajectoryActionBuilder moveToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-8.5, -60), (-Math.PI/2)))
+        TrajectoryActionBuilder moveToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(8.5, -60), (-Math.PI/2)))
                 .strafeToLinearHeading(new Vector2d(24, -24), -0.785398);
 
         TrajectoryActionBuilder pickupBalls2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, -24), -0.785398))
@@ -46,14 +48,17 @@ public class RedCloseAuto extends LinearOpMode {
                 .strafeToConstantHeading(new Vector2d(-14.5, -66));
 
         TrajectoryActionBuilder moveToShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-14.5, -66), -Math.PI/2))
-                .lineToYConstantHeading(-40)
-                .splineToLinearHeading(new Pose2d(new Vector2d(36, -12), -0.785398), 0.785398);
+                .lineToY(-40)
+                .strafeToLinearHeading(new Vector2d(36, -12), -0.785398);
 
 
-
-
-
+        //start of moving
         Actions.runBlocking(moveToShoot1.build());
+        if(limelightHardware.getTx() != -999){
+            TrajectoryActionBuilder rotateShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(40, -25), -0.785398))
+                    .turn(Math.toRadians(-limelightHardware.getTx()));
+            Actions.runBlocking(rotateShoot1.build());
+        }
 
         shoot(shooterHardware, limelightHardware);
 
@@ -61,18 +66,35 @@ public class RedCloseAuto extends LinearOpMode {
         Actions.runBlocking(pickupBalls1.build());
         shooterHardware.stopFeed();
 
+
+        shooterHardware.shoot(0.25);
         Actions.runBlocking(moveToShoot2.build());
+        if(limelightHardware.getTx() != -999){
+            TrajectoryActionBuilder rotateShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, -24), -0.785398))
+                    .turn(Math.toRadians(-limelightHardware.getTx()));
+            Actions.runBlocking(rotateShoot2.build());
+        }
+
         shoot(shooterHardware, limelightHardware);
 
         shooterHardware.intake(1.0);
         Actions.runBlocking(pickupBalls2.build());
         shooterHardware.stopFeed();
 
+
+        shooterHardware.shoot(0.25);
         Actions.runBlocking(moveToShoot3.build());
+        if(limelightHardware.getTx() != -999){
+            TrajectoryActionBuilder rotateShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(36, -12), -0.785398))
+                    .turn(Math.toRadians(-limelightHardware.getTx()));
+            Actions.runBlocking(rotateShoot3.build());
+        }
         shoot(shooterHardware, limelightHardware);
+
     }
 
     private void shoot(ShooterHardware shooterHardware, LimelightHardware limelightHardware){
+        //int count = 0;
         while (shooterHardware.oneBall() && opModeIsActive()) {
             double shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
             shooterHardware.setShootVelocity(shooterVelocity);
@@ -81,8 +103,13 @@ public class RedCloseAuto extends LinearOpMode {
                 shooterHardware.feed();
             } else if(shooterHardware.belowVel(shooterVelocity)) {
                 shooterHardware.stopFeed();
+                //count = 0;
             }
+            //count++;
         }
+        sleep((long) (BUFFER_TIME/2.0));
+        shooterHardware.feed();
+        sleep((long) (BUFFER_TIME/2.0));
         shooterHardware.setShootVelocity(0.0);
         shooterHardware.aimHood(0.0);
         shooterHardware.stopFeed();
