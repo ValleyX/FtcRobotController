@@ -23,8 +23,8 @@ public class BlueAutoLeft extends OpMode {
 
     // Field poses
     private final Pose startPose = new Pose(63, 9, Math.toRadians(180));
-    private final Pose scorePose = new Pose(46, 9, Math.toRadians(135));
-    private final Pose endPose   = new Pose(36, 9, Math.toRadians(80));
+    private final Pose scorePose = new Pose(46, 9, Math.toRadians(225));
+    private final Pose endPose   = new Pose(36, 9, Math.toRadians(270));
 
 
     private PathChain scorePreload, endAuto;

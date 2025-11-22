@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team12841.tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,223 +13,246 @@ import java.util.List;
 /**
  * ShooterQuadRegressionTest
  *
- * Collects data samples:
- *   - Limelight distance
- *   - Shooter wheel velocity (RPM)
- *   - Shooter motor power
- *   - Turntable position
- * Fires a shot and logs a sample on button press.
- * Then computes a **quadratic regression** live:
+ * Collects real-world shot data:
+ *   • Limelight distance (d)
+ *   • Shooter flywheel velocity (v = getVelocity())
+ *   • Shooter motor power (p)
+ *   • Turntable angle index (0,1,2)
  *
- *   velocity = a*distance^2 + b*distance + c
+ * Fits a QUADRATIC model:
  *
- * Displays the fitted coefficients (a, b, c) in telemetry.
- * Once regression is meaningful, it will also show the predicted power
- * needed for a target distance.
+ *      v = a*d² + b*d + c
+ *
+ * Coefficients update live in telemetry.
+ *
+ * The goal:
+ *   Build a hyper-accurate model for autonomous + teleop shooting.
+ *   You will take ~10–30 shots at different distances & TT angles.
  */
+@Disabled
 @TeleOp(name = "Shooter Quad Regression Test", group = "Tests")
 public class LinearRegressionTest extends LinearOpMode {
 
     private RobotHardware robot;
 
-    private final List<Double> distances = new ArrayList<>();
+    private final List<Double> distances  = new ArrayList<>();
     private final List<Double> velocities = new ArrayList<>();
     private final List<Double> powers     = new ArrayList<>();
 
-    // Shooter power manual start
+    // Manual shooter power
     private double shooterPower = 0.70;
 
-    // Turntable states
+    // Turntable values
     private int ttIndex = 0;
-    private final double[] TT_POSITIONS = {
+    private final double[] TT_POS = {
             TeleOpConfig.TT_POS_0,
             TeleOpConfig.TT_POS_1,
             TeleOpConfig.TT_POS_2
     };
 
-    // Button state trackers
-    private boolean xPrev = false;
+    // Buttons
+    private boolean bPrev = false;
+    private boolean rtPrev = false;
+    private boolean rbPrev = false;
+    private boolean lbPrev = false;
+    private boolean aPrev  = false;
     private boolean dpadUpPrev = false;
     private boolean dpadDownPrev = false;
 
+    // Shooter motor toggle
+    private boolean shooterRunning = false;
+
+    // Autocycle
+    private boolean autoCycle = false;
+    private double autoCycleStart = 0;
+
     // Regression coefficients
-    private double coefA = 0.0;
-    private double coefB = 0.0;
-    private double coefC = 0.0;
+    private double coefA = 0;
+    private double coefB = 0;
+    private double coefC = 0;
     private boolean regressionReady = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         robot = new RobotHardware(this);
-        robot.innit(0);  // Limelight pipeline
+        robot.innit(0);
 
-        // Setup initial servo positions
-        robot.turntableServo.setPosition(TT_POSITIONS[ttIndex]);
+        robot.turntableServo.setPosition(TT_POS[ttIndex]);
         robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_IDLE);
-        robot.shooterMotor.setPower(0);
 
-        telemetry.addLine("Shooter Quad Regression Test READY");
-        telemetry.addLine("Use D-Pad to adjust power, X to fire and log");
+        telemetry.addLine("Shooter Quad Regression Test — Ready");
+        telemetry.addLine("Right Trigger = fire shot + log data");
+        telemetry.addLine("Dpad Up/Down = adjust power");
         telemetry.update();
 
         waitForStart();
 
         while (opModeIsActive()) {
-            // Adjust shooter power
-            if (gamepad1.dpad_up && !dpadUpPrev) {
-                shooterPower += 0.01;
-            }
-            if (gamepad1.dpad_down && !dpadDownPrev) {
-                shooterPower -= 0.01;
-            }
-            dpadUpPrev   = gamepad1.dpad_up;
+
+            // ---------------- DRIVE (same as your teleOp) ----------------
+            double y = -gamepad1.left_stick_y;
+            double x = -gamepad1.left_stick_x;
+            double r = -gamepad1.right_stick_x;
+
+            double fl = y + x + r;
+            double fr = y - x - r;
+            double bl = y - x + r;
+            double br = y + x - r;
+
+            double max = Math.max(1.0,
+                    Math.max(Math.abs(fl),
+                            Math.max(Math.abs(fr),
+                                    Math.max(Math.abs(bl), Math.abs(br)))));
+
+            robot.lfMotor.setPower(fl / max);
+            robot.rfMotor.setPower(fr / max);
+            robot.lbMotor.setPower(bl / max);
+            robot.rbMotor.setPower(br / max);
+
+            // ---------------- SHOOTER MOTOR TOGGLE (B) ----------------
+            boolean bNow = gamepad1.b;
+            if (bNow && !bPrev) shooterRunning = !shooterRunning;
+            bPrev = bNow;
+
+            robot.shooterMotor.setPower(shooterRunning ? shooterPower : 0);
+
+            // ---------------- POWER ADJUSTMENT (DPAD) ----------------
+            if (gamepad1.dpad_up && !dpadUpPrev) shooterPower += 0.01;
+            if (gamepad1.dpad_down && !dpadDownPrev) shooterPower -= 0.01;
+
+            shooterPower = Math.max(0, Math.min(1, shooterPower));
+
+            dpadUpPrev = gamepad1.dpad_up;
             dpadDownPrev = gamepad1.dpad_down;
 
-            // Clamp power
-            shooterPower = Math.max(0.0, Math.min(1.0, shooterPower));
+            // ---------------- TURNTABLE ----------------
+            if (gamepad1.right_bumper && !rbPrev) {
+                ttIndex = (ttIndex + 1) % TT_POS.length;
+                robot.turntableServo.setPosition(TT_POS[ttIndex]);
+            }
+            rbPrev = gamepad1.right_bumper;
 
-            // Fire + log on X press
-            boolean xNow = gamepad1.x;
-            if (xNow && !xPrev) {
-                // Start shooter
+            if (gamepad1.left_bumper && !lbPrev) {
+                ttIndex--;
+                if (ttIndex < 0) ttIndex = TT_POS.length - 1;
+                robot.turntableServo.setPosition(TT_POS[ttIndex]);
+            }
+            lbPrev = gamepad1.left_bumper;
+
+            // ---------------- AUTO-CYCLE (A) ----------------
+            if (gamepad1.a && !aPrev && !autoCycle) {
+                autoCycle = true;
+                autoCycleStart = time;
+            }
+            aPrev = gamepad1.a;
+
+            if (autoCycle) {
+                int stage = (int)((time - autoCycleStart) / 1.5);
+                if (stage < TT_POS.length)
+                    robot.turntableServo.setPosition(TT_POS[stage]);
+                else
+                    autoCycle = false;
+            }
+
+            // ---------------- HEADING RESET ----------------
+            if (gamepad1.guide) robot.resetPedroHeading();
+
+            // ---------------- FIRE + LOG DATA (Right Trigger) ----------------
+            boolean rtNow = gamepad1.right_trigger > 0.8;
+
+            if (rtNow && !rtPrev) {
+
+                // Spin-up
                 robot.shooterMotor.setPower(shooterPower);
-                sleep(1000); // warm-up
+                sleep(2000);
 
-                // Fire servo
+                // Fire shot
                 robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_FIRE);
                 sleep(250);
                 robot.shooterServo.setPosition(TeleOpConfig.SHOOTER_IDLE);
-
-                // settle
                 sleep(200);
 
-                // Read data
-                double d  = robot.getBotDis();
-                double v  = robot.shooterMotor.getVelocity();
-                double p  = shooterPower;
+                // Read sensors
+                double d = robot.getBotDis();
+                double v = robot.shooterMotor.getVelocity();
 
                 if (d > 0 && v > 0) {
                     distances.add(d);
                     velocities.add(v);
-                    powers.add(p);
-
-                    // Compute regression
-                    computeQuadraticRegression();
+                    powers.add(shooterPower);
+                    computeRegression();
                 }
-
-                // Step turret
-                ttIndex = (ttIndex + 1) % TT_POSITIONS.length;
-                robot.turntableServo.setPosition(TT_POSITIONS[ttIndex]);
             }
-            xPrev = xNow;
+            rtPrev = rtNow;
 
-            // Telemetry
-            telemetry.addLine("Shooter Quad Regression Test");
+            // ---------------- TELEMETRY ----------------
+            telemetry.addLine("Shooter Regression:");
             telemetry.addData("Samples", distances.size());
-            telemetry.addData("Current Power", "%.3f", shooterPower);
+            telemetry.addData("Power", "%.3f", shooterPower);
             telemetry.addData("TT Index", ttIndex);
-            telemetry.addData("TT Pos", "%.3f", TT_POSITIONS[ttIndex]);
-            telemetry.addData("LL Distance", "%.2f", robot.getBotDis());
+            telemetry.addData("Distance", "%.1f", robot.getBotDis());
+            telemetry.addData("Velocity", "%.0f", robot.shooterMotor.getVelocity());
 
             if (regressionReady) {
-                telemetry.addLine("");
-                telemetry.addLine("Fitted model:");
-                telemetry.addData("velocity = %.6f*d^2 + %.6f*d + %.6f", String.valueOf(coefA), coefB, coefC);
+                telemetry.addLine("\nModel:");
+                telemetry.addData("v = a*d² + b*d + c",
+                        "\na=%.6f  b=%.6f  c=%.6f",
+                        coefA, coefB, coefC);
 
-                // Example: predict velocity, then convert to power
-                double targetDist = robot.getBotDis();
-                double predictedVel = coefA * targetDist * targetDist
-                        + coefB * targetDist
-                        + coefC;
-                telemetry.addData("Predicted velocity @ %.2f in = %.0f rpm", String.valueOf(targetDist), predictedVel);
+                double dist = robot.getBotDis();
+                double vel = coefA*dist*dist + coefB*dist + coefC;
+                telemetry.addData("Predicted Vel @ %.1f in", "%.0f rpm", dist, vel);
 
-                // Estimate k factor (average vel/power)
                 double k = estimateK();
                 if (k > 0) {
-                    double predictedPower = predictedVel / k;
-                    telemetry.addData("Estimated k (vel/power) = %.3f", k);
-                    telemetry.addData("Predicted power = %.3f", predictedPower);
+                    double p = vel / k;
+                    telemetry.addData("Predicted Power", "%.3f", p);
                 }
             } else {
-                telemetry.addLine("");
-                telemetry.addLine("Need at least 3 valid samples for quadratic regression.");
+                telemetry.addLine("Need ≥ 3 samples for regression");
             }
 
             telemetry.update();
         }
 
-        // Stop shooter
         robot.shooterMotor.setPower(0);
     }
 
-    /**
-     * Computes coefficients a, b, c for
-     *   velocity = a*d^2 + b*d + c
-     * using least-squares method.
-     */
-    private void computeQuadraticRegression() {
+    // ============================================================
+    // QUADRATIC REGRESSION (3x3 normal equation)
+    // ============================================================
+    private void computeRegression() {
         int n = distances.size();
         if (n < 3) {
             regressionReady = false;
             return;
         }
 
-        // Sums
-        double sumD   = 0;
-        double sumD2  = 0;
-        double sumD3  = 0;
-        double sumD4  = 0;
-        double sumV   = 0;
-        double sumDv  = 0;
-        double sumD2v = 0;
+        double S0= n, S1=0,S2=0,S3=0,S4=0;
+        double T0=0,T1=0,T2=0;
 
-        for (int i = 0; i < n; i++) {
-            double d  = distances.get(i);
-            double v  = velocities.get(i);
+        for (int i=0;i<n;i++){
+            double d = distances.get(i);
+            double v = velocities.get(i);
 
-            double d2 = d * d;
-            double d3 = d2 * d;
-            double d4 = d3 * d;
+            double d2 = d*d;
+            double d3 = d2*d;
+            double d4 = d3*d;
 
-            sumD   += d;
-            sumD2  += d2;
-            sumD3  += d3;
-            sumD4  += d4;
-            sumV   += v;
-            sumDv  += d * v;
-            sumD2v += d2 * v;
+            S1+=d;
+            S2+=d2;
+            S3+=d3;
+            S4+=d4;
+            T0+=v;
+            T1+=d*v;
+            T2+=d2*v;
         }
 
-        // Set up normal equations:
-        // [ n     Σd     Σd^2 ] [ c ]   [ Σv     ]
-        // [ Σd   Σd^2   Σd^3 ] [ b ] = [ Σdv    ]
-        // [ Σd^2 Σd^3   Σd^4 ] [ a ]   [ Σd2v   ]
-
-        double S0  = n;
-        double S1  = sumD;
-        double S2  = sumD2;
-        double S3  = sumD3;
-        double S4  = sumD4;
-        double T0  = sumV;
-        double T1  = sumDv;
-        double T2  = sumD2v;
-
-        // Solve using Cramer’s rule (3x3)
-        double det  =   S0*(S2*S4 - S3*S3)
-                - S1*(S1*S4 - S3*S2)
-                + S2*(S1*S3 - S2*S2);
-
-        double detA =   T0*(S2*S4 - S3*S3)
-                - S1*(T1*S4 - S3*T2)
-                + S2*(T1*S3 - S2*T2);
-
-        double detB =   S0*(T1*S4 - S3*T2)
-                - T0*(S1*S4 - S3*S2)
-                + S2*(S1*T2 - T1*S2);
-
-        double detC =   S0*(S2*T2 - T1*S3)
-                - S1*(S1*T2 - T1*S2)
-                + T0*(S1*S3 - S2*S2);
+        double det  = S0*(S2*S4 - S3*S3) - S1*(S1*S4 - S3*S2) + S2*(S1*S3 - S2*S2);
+        double detC = T0*(S2*S4 - S3*S3) - S1*(T1*S4 - S3*T2) + S2*(T1*S3 - S2*T2);
+        double detB = S0*(T1*S4 - S3*T2) - T0*(S1*S4 - S3*S2) + S2*(S1*T2 - T1*S2);
+        double detA = S0*(S2*T2 - T1*S3) - S1*(S1*T2 - T1*S2) + T0*(S1*S3 - S2*S2);
 
         coefA = detA / det;
         coefB = detB / det;
@@ -237,18 +261,14 @@ public class LinearRegressionTest extends LinearOpMode {
         regressionReady = true;
     }
 
-    /**
-     * Estimate constant k = average(vel / power)
-     * using all logged samples.
-     */
+    // Average velocity/power ratio
     private double estimateK() {
         double sum = 0;
         int count = 0;
-        for (int i = 0; i < velocities.size(); i++) {
-            double v = velocities.get(i);
+        for (int i=0;i<velocities.size();i++) {
             double p = powers.get(i);
             if (p > 0) {
-                sum += v / p;
+                sum += velocities.get(i) / p;
                 count++;
             }
         }
