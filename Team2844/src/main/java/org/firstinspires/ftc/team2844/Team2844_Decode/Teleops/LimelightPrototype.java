@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.Teleops;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.team2844.Team2844_Decode.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.Hardwares.RobotHardware;
-
+@Disabled
 public class LimelightPrototype extends LinearOpMode {
     LinearOpMode opMode_;
     private ElapsedTime runtime = new ElapsedTime();

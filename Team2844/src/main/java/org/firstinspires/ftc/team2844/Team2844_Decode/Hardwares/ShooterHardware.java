@@ -24,7 +24,7 @@ public class ShooterHardware {
     private Servo blockSer;
     private Servo hoodSer;
     //Constants
-    private final double OUT_POS = 0.16;
+    private final double OUT_POS = 0.2;
     private final double IN_POS = 0.0;
 
     private boolean servoClosed;
@@ -47,7 +47,7 @@ public class ShooterHardware {
      */
     public final double ENCODER_TICS = 28;
     public final double VEL_THRESH = 1;
-    public final double VEL_BOTTOM_THRESH = 3;
+    public final double VEL_BOTTOM_THRESH = 1.5;
 
     public double shooterVel = 30;
     public double hoodAim = 0.0;
@@ -126,7 +126,7 @@ public class ShooterHardware {
      */
 
     public void feed(){
-        intake(0.9);
+        intake(1);
         openServo();
     }
 

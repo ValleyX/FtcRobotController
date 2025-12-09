@@ -2,6 +2,8 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.Teleops;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.Hardwares.RobotHardware;
@@ -118,24 +120,24 @@ public class OnePersonDriveBase extends LinearOpMode {
             } else if(gamepad1.right_trigger > 0.1) {
                 shooterHardware.intake(-gamepad1.right_trigger);
                 intaking = true;
-            } else if(gamepad1.dpad_down){
-                if(!dPadDown){
-                    intaking = true;
-                    shooterHardware.extake(1.0);
+            //} else if(gamepad1.dpad_down){
+                //if(!dPadDown){
+                  //  intaking = true;
+                    //shooterHardware.extake(1.0);
 
-                    dPadDown = true;
-                }
+                    //dPadDown = true;
+               // }
             } else {
                 intaking = false;
-                dPadDown = false;
+                //dPadDown = false;
                 //shooterHardware.shooterMotor.setPower(0);//jae
             }
 
             if(gamepad1.b){
-                shooterVelocity = shooterHardware.lastKnownSpeed();
+                //shooterVelocity = shooterHardware.lastKnownSpeed();
                 hoodPos = shooterHardware.lastKnownAim();
             } else {
-                shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
+                //shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
                 hoodPos = shooterHardware.getHoodAim(limelightHardware.getBotDis());
             }
 
@@ -198,13 +200,21 @@ public class OnePersonDriveBase extends LinearOpMode {
 
             if(gamepad1.dpad_up){
                 if(!dPadUp){
+                    shooterVelocity += 1;
                     dPadUp = true;
                 }
             } else {
                 dPadUp = false;
             }
 
-
+            if(gamepad1.dpad_down){
+                if(!dPadDown){
+                    shooterVelocity -= 1;
+                    dPadDown = true;
+                }
+            } else {
+                dPadDown = false;
+            }
 
             if(gamepad1.dpad_left){
                 if(!dPadLeft){
@@ -249,6 +259,10 @@ public class OnePersonDriveBase extends LinearOpMode {
             }
 
 
+            PIDFCoefficients shooterCoefficients = shooterHardware.shooterMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+            //OG values P:10 I:3 D:0 F:0
+            PIDFCoefficients newShooterCoefficients = new PIDFCoefficients(3.5, 1.2, 0, .25);
+            shooterHardware.shooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
             telemetry.addData("(at least) One Ball: ", shooterHardware.oneBall());
             telemetry.addData("(at least) Two Balls: ", shooterHardware.twoBall());
             telemetry.addData("all three balls", full);
@@ -260,6 +274,10 @@ public class OnePersonDriveBase extends LinearOpMode {
             telemetry.addData("Distance from tag", limelightHardware.getBotDis());
             telemetry.addData("Servo Closed", shooterHardware.servoClosed());
             telemetry.addData("Babymode", babymode);
+            telemetry.addData("Shooter P:", shooterCoefficients.p);
+            telemetry.addData("Shooter I:", shooterCoefficients.i);
+            telemetry.addData("Shooter D:", shooterCoefficients.d);
+            telemetry.addData("Shooter F:", shooterCoefficients.f);
             telemetry.update();
         }
     }

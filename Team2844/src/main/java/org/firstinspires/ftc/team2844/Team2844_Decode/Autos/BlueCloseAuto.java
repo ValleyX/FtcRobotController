@@ -50,8 +50,8 @@ public class BlueCloseAuto extends LinearOpMode {
 
         TrajectoryActionBuilder pickupBalls2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, 24), 0.785398))
                 .turnTo(Math.PI/2)
-                .strafeToConstantHeading(new Vector2d(-14.5, 24))
-                .strafeToConstantHeading(new Vector2d(-14.5, 66));
+                .strafeToConstantHeading(new Vector2d(-15, 24))
+                .strafeToConstantHeading(new Vector2d(-15, 66));
 
         TrajectoryActionBuilder moveToShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-14.5, 66), Math.PI/2))
                 .lineToY(40)
@@ -60,15 +60,11 @@ public class BlueCloseAuto extends LinearOpMode {
 
         //start of moving
         Actions.runBlocking(moveToShoot1.build());
-        if(limelightHardware.getTx() != -999){
-            TrajectoryActionBuilder rotateShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(40, 25), 0.785398))
-                    .turn(Math.toRadians(-limelightHardware.getTx()));
-            Actions.runBlocking(rotateShoot1.build());
-        }
 
         shoot(shooterHardware, limelightHardware);
 
-        shooterHardware.intake(1.0);
+        shooterHardware.intake(0.75);
+        shooterHardware.shoot(-0.25);
         Actions.runBlocking(pickupBalls1.build());
         shooterHardware.stopFeed();
 
@@ -83,7 +79,8 @@ public class BlueCloseAuto extends LinearOpMode {
 
         shoot(shooterHardware, limelightHardware);
 
-        shooterHardware.intake(1.0);
+        shooterHardware.intake(0.75);
+        shooterHardware.shoot(-0.25);
         Actions.runBlocking(pickupBalls2.build());
         shooterHardware.stopFeed();
 

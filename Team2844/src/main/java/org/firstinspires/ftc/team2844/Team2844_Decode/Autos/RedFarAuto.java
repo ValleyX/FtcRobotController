@@ -11,20 +11,21 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.Hardwares.LimelightHardwar
 import org.firstinspires.ftc.team2844.Team2844_Decode.Hardwares.ShooterHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.RoadrunnerStuff.RoadrunnerQuickstart.MecanumDrive;
 
-@Autonomous(name = "Red Near Goal")
-public class RedCloseAuto extends LinearOpMode {
+@Autonomous(name = "Red Far Goal")
+public class RedFarAuto extends LinearOpMode {
 
     long BUFFER_TIME = 1200;
     Pose2d estimate;
 
 
+
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d initialPos = new Pose2d(55,-45,-0.785398);
+        Pose2d initialPos = new Pose2d(-63.25,-8.75,0.0);
         ShooterHardware shooterHardware = new ShooterHardware(this);
         LimelightHardware limelightHardware = new LimelightHardware(this);
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, initialPos);
-        limelightHardware.innit(1);
+        limelightHardware.innit(0);
         mecanumDrive.updatePoseEstimate();
         estimate = mecanumDrive.localizer.getPose();
 
@@ -32,61 +33,29 @@ public class RedCloseAuto extends LinearOpMode {
         if (isStopRequested()) return;
 
         TrajectoryActionBuilder moveToShoot1 = mecanumDrive.actionBuilder(initialPos)
-                .lineToYConstantHeading(-25);
+                .lineToX(-60)
+                .turnTo(Math.toRadians(-25));
 
-        TrajectoryActionBuilder pickupBalls1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(40, -25), -0.785398))
-                .turnTo(-Math.PI/2)
-                .strafeToConstantHeading(new Vector2d(8.5, -25))
-                .strafeToConstantHeading(new Vector2d(8.5, -60));
+        TrajectoryActionBuilder moveOut = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, -8.75), Math.toRadians(-25)))
+                .strafeTo(new Vector2d(-60, -34))
+                .turnTo(Math.toRadians(90));
 
-        TrajectoryActionBuilder moveToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(8.5, -60), (-Math.PI/2)))
-                .strafeToLinearHeading(new Vector2d(24, -24), -0.785398);
 
-        TrajectoryActionBuilder pickupBalls2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, -24), -0.785398))
-                .turnTo(-Math.PI/2)
-                .strafeToConstantHeading(new Vector2d(-14.5, -24))
-                .strafeToConstantHeading(new Vector2d(-14.5, -66));
-
-        TrajectoryActionBuilder moveToShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-14.5, -66), -Math.PI/2))
-                .lineToY(-40)
-                .strafeToLinearHeading(new Vector2d(36, -12), -0.785398);
 
 
         //start of moving
         Actions.runBlocking(moveToShoot1.build());
-
-        shoot(shooterHardware, limelightHardware);
-
-        shooterHardware.intake(0.75);
-        shooterHardware.shoot(-0.25);
-        Actions.runBlocking(pickupBalls1.build());
-        shooterHardware.stopFeed();
-
-
-        shooterHardware.shoot(0.25);
-        Actions.runBlocking(moveToShoot2.build());
         if(limelightHardware.getTx() != -999){
-            TrajectoryActionBuilder rotateShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, -24), -0.785398))
+            TrajectoryActionBuilder rotateShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 8.75), Math.toRadians(25)))
                     .turn(Math.toRadians(-limelightHardware.getTx()));
-            Actions.runBlocking(rotateShoot2.build());
+            Actions.runBlocking(rotateShoot1.build());
         }
 
         shoot(shooterHardware, limelightHardware);
 
-        shooterHardware.intake(0.75);
-        shooterHardware.shoot(-0.25);
-        Actions.runBlocking(pickupBalls2.build());
-        shooterHardware.stopFeed();
+        Actions.runBlocking(moveOut.build());
 
 
-        shooterHardware.shoot(0.25);
-        Actions.runBlocking(moveToShoot3.build());
-        if(limelightHardware.getTx() != -999){
-            TrajectoryActionBuilder rotateShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(36, -12), -0.785398))
-                    .turn(Math.toRadians(-limelightHardware.getTx()));
-            Actions.runBlocking(rotateShoot3.build());
-        }
-        shoot(shooterHardware, limelightHardware);
 
     }
 
@@ -104,9 +73,8 @@ public class RedCloseAuto extends LinearOpMode {
             }
             //count++;
         }
-        sleep((long) (BUFFER_TIME/2.0));
         shooterHardware.feed();
-        sleep((long) (BUFFER_TIME/2.0));
+        sleep(BUFFER_TIME);
         shooterHardware.setShootVelocity(0.0);
         shooterHardware.aimHood(0.0);
         shooterHardware.stopFeed();

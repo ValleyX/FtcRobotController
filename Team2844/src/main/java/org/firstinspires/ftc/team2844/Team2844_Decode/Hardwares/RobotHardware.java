@@ -38,7 +38,7 @@ public class RobotHardware {
 
     public final double TURN_THRESH = 2.3;
     public final double SLOW_THRESH = 15;
-    public final double PGAIN = 0.023;
+    public final double PGAIN = 0.04;
 
 
 
@@ -137,19 +137,15 @@ public class RobotHardware {
                 oppDeg = degrees - 180;
                 if (oppDeg < heading && heading < degrees) {
                     addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
-                } else  if(degrees < heading && heading < oppDeg){
+                } else{
                     addAlignPower(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                } else {
-                    addAlignPower(0,0,0,0);
                 }
             } else {
                 oppDeg = degrees + 180;
                 if (degrees < heading && heading < oppDeg) {
                     addAlignPower(Math.min(speed * mult, 1), Math.min(speed * mult, 1), Math.min(-speed * mult, 1), Math.min(-speed * mult, 1));
-                } else if (oppDeg < heading && heading < degrees) {
-                    addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
                 } else {
-                    addAlignPower(0,0,0,0);
+                    addAlignPower(Math.min(-speed * mult, 1), Math.min(-speed * mult, 1), Math.min(speed * mult, 1), Math.min(speed * mult, 1));
                 }
             }
         } else {
