@@ -89,18 +89,10 @@ public class RobotHardware {
         rFDriveSpeed = rightFront;
         rBDriveSpeed = rightBack;
 
-        if(Math.abs(lFDriveSpeed) >= 1){
-            lFDriveSpeed /= Math.abs(lFDriveSpeed);
-        }
-        if(Math.abs(lBDriveSpeed) >= 1){
-            lBDriveSpeed /= Math.abs(lBDriveSpeed);
-        }
-        if(Math.abs(rFDriveSpeed) >= 1){
-            rFDriveSpeed /= Math.abs(rFDriveSpeed);
-        }
-        if(Math.abs(rBDriveSpeed) >= 1){
-            rBDriveSpeed /= Math.abs(rBDriveSpeed);
-        }
+        lFDriveSpeed = Math.max(lFDriveSpeed, -1);
+        lBDriveSpeed = Math.max(lBDriveSpeed, -1);
+        rFDriveSpeed = Math.max(rFDriveSpeed, -1);
+        rBDriveSpeed = Math.max(rBDriveSpeed, -1);
         calculateDrive();
     }
 
@@ -110,18 +102,10 @@ public class RobotHardware {
         rFAlignSpeed = rightFront;
         rBAlignSpeed = rightBack;
 
-        if(Math.abs(lFAlignSpeed) >= 1){
-            lFAlignSpeed /= Math.abs(lFAlignSpeed);
-        }
-        if(Math.abs(lBAlignSpeed) >= 1){
-            lBAlignSpeed /= Math.abs(lBAlignSpeed);
-        }
-        if(Math.abs(rFAlignSpeed) >= 1){
-            rFAlignSpeed /= Math.abs(rFAlignSpeed);
-        }
-        if(Math.abs(rBAlignSpeed) >= 1){
-            rBAlignSpeed /= Math.abs(rBAlignSpeed);
-        }
+        lFAlignSpeed = Math.max(lFAlignSpeed, -1);
+        lBAlignSpeed = Math.max(lBAlignSpeed, -1);
+        rFAlignSpeed = Math.max(rFAlignSpeed, -1);
+        rBAlignSpeed = Math.max(rBAlignSpeed, -1);
 
         calculateDrive();
     }

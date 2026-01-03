@@ -113,7 +113,7 @@ public class ShooterHardware {
      * This method sets the power of the shooter motor
      * @param power Takes a double from -1.0 to 1.0, numbers over 1 will be set to 1, numbers under -1 will be set to -1
      */
-    public void shoot(double power){
+    public void setShootPower(double power){
         double temp = power;
         if(Math.abs(temp) > 1){
             temp/=Math.abs(temp);
@@ -160,11 +160,15 @@ public class ShooterHardware {
 
     public double getShootSpeed(double distance) {
         if (distance != -999) {
-            shooterVel = ((0.19*distance) + 24.96);
+            shooterVel = ((0.1547058824*distance) + 26.43294118);
             return shooterVel;
         } else {
             return 30;
         }
+    }
+
+    public double getShootPowerLINREG(double vel){
+        return ((0.012034*vel) - 0.00615);
     }
 
     public double lastKnownSpeed(){

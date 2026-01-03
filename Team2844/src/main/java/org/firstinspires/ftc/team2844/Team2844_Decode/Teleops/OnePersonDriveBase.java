@@ -23,6 +23,9 @@ public class OnePersonDriveBase extends LinearOpMode {
     double rx;
     double botHeading;
 
+    final double rotCorrection = 1.0;
+    final double strafeCorrection = 1.45;
+
     //babymode stuff
     boolean pressingStick = false;
     boolean babymode = false;
@@ -45,6 +48,7 @@ public class OnePersonDriveBase extends LinearOpMode {
     double time = 0;
     double spinupTime = 0;
     boolean firstTime = true;
+    boolean timeBool = true;
 
     //shooter
     boolean stopAutoShoot = true;
@@ -84,7 +88,7 @@ public class OnePersonDriveBase extends LinearOpMode {
             limelightHardware.updateIMU(robotHardware.robotHeadingAngles());
 
             x = gamepad1.left_stick_x;
-            rx = gamepad1.right_stick_x;
+            rx = gamepad1.right_stick_x * rotCorrection;
             y = -gamepad1.left_stick_y;
 
             botHeading = robotHardware.robotHeadingRadians();
@@ -94,10 +98,10 @@ public class OnePersonDriveBase extends LinearOpMode {
             //REMEMBER IT USES RADIANS
             double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
             double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (rotY + rotX + rx) / denominator;
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+            double frontLeftPower = (rotY + (rotX * strafeCorrection) + rx) / denominator;
             double backLeftPower = (rotY - rotX + rx) / denominator;
-            double frontRightPower = (rotY - rotX - rx) / denominator;
+            double frontRightPower = (rotY - (rotX * strafeCorrection) - rx) / denominator;
             double backRightPower = (rotY + rotX - rx) / denominator;
 
             if(babymode){
@@ -116,7 +120,7 @@ public class OnePersonDriveBase extends LinearOpMode {
             if(gamepad1.left_trigger > 0.1 && !full) {
                 shooterHardware.intake(gamepad1.left_trigger);
                 intaking = true;
-                shooterHardware.shoot(-0.15);//jae
+                shooterHardware.setShootPower(-0.15);//jae
             } else if(gamepad1.right_trigger > 0.1) {
                 shooterHardware.intake(-gamepad1.right_trigger);
                 intaking = true;
@@ -134,10 +138,10 @@ public class OnePersonDriveBase extends LinearOpMode {
             }
 
             if(gamepad1.b){
-                //shooterVelocity = shooterHardware.lastKnownSpeed();
+                shooterVelocity = shooterHardware.lastKnownSpeed();
                 hoodPos = shooterHardware.lastKnownAim();
             } else {
-                //shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
+                shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
                 hoodPos = shooterHardware.getHoodAim(limelightHardware.getBotDis());
             }
 
@@ -147,11 +151,18 @@ public class OnePersonDriveBase extends LinearOpMode {
                 stopAutoShoot = false;
                 shooterHardware.aimHood(hoodPos);
                 shooterHardware.setShootVelocity(shooterVelocity);
+
+                if(timeBool) {
+                    time = getRuntime();
+                    timeBool = false;
+                }
+
                 if(shooterHardware.withinVel(shooterVelocity)) {
                     if(firstTime){
                         spinupTime = getRuntime() - time;
                         firstTime = false;
                     }
+                    shooterHardware.setShootPower(shooterHardware.getShootPowerLINREG(shooterVelocity));
                     shooterHardware.feed();
                 } else if(shooterHardware.belowVel(shooterVelocity)) {
                     shooterHardware.stopFeed();
@@ -160,6 +171,7 @@ public class OnePersonDriveBase extends LinearOpMode {
                 stopAutoShoot = true;
                 shooterAlign = false;
                 firstTime = true;
+                timeBool = true;
             }
 
 //            if(gamepad1.left_bumper){
@@ -200,7 +212,7 @@ public class OnePersonDriveBase extends LinearOpMode {
 
             if(gamepad1.dpad_up){
                 if(!dPadUp){
-                    shooterVelocity += 1;
+                    //shooterVelocity += 1;
                     dPadUp = true;
                 }
             } else {
@@ -209,7 +221,7 @@ public class OnePersonDriveBase extends LinearOpMode {
 
             if(gamepad1.dpad_down){
                 if(!dPadDown){
-                    shooterVelocity -= 1;
+                    //shooterVelocity -= 1;
                     dPadDown = true;
                 }
             } else {
@@ -261,12 +273,14 @@ public class OnePersonDriveBase extends LinearOpMode {
 
             PIDFCoefficients shooterCoefficients = shooterHardware.shooterMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
             //OG values P:10 I:3 D:0 F:0
-            PIDFCoefficients newShooterCoefficients = new PIDFCoefficients(3.5, 1.2, 0, .25);
+            PIDFCoefficients newShooterCoefficients = new PIDFCoefficients(3.6, 3.2, 2.8, 3.7);
             shooterHardware.shooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
             telemetry.addData("(at least) One Ball: ", shooterHardware.oneBall());
             telemetry.addData("(at least) Two Balls: ", shooterHardware.twoBall());
             telemetry.addData("all three balls", full);
             telemetry.addData("Velocity: ", shooterHardware.getShootVelocity());
+            telemetry.addData("Shooter Power", shooterHardware.shooterMotor.getPower());
+
             telemetry.addData("Spinup Time: ", spinupTime);
             telemetry.addData("Target Velocity: ", shooterVelocity);
             telemetry.addData("IMU (Degrees)", robotHardware.robotHeadingAngles());
@@ -278,6 +292,11 @@ public class OnePersonDriveBase extends LinearOpMode {
             telemetry.addData("Shooter I:", shooterCoefficients.i);
             telemetry.addData("Shooter D:", shooterCoefficients.d);
             telemetry.addData("Shooter F:", shooterCoefficients.f);
+
+            telemetry.addData("Front Left", frontLeftPower);
+            telemetry.addData("Back Left", backLeftPower);
+            telemetry.addData("Front Right:", frontRightPower);
+            telemetry.addData("Back Right", backRightPower);
             telemetry.update();
         }
     }

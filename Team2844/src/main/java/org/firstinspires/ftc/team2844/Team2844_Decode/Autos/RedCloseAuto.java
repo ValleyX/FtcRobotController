@@ -58,12 +58,12 @@ public class RedCloseAuto extends LinearOpMode {
         shoot(shooterHardware, limelightHardware);
 
         shooterHardware.intake(0.75);
-        shooterHardware.shoot(-0.25);
+        shooterHardware.setShootPower(-0.25);
         Actions.runBlocking(pickupBalls1.build());
         shooterHardware.stopFeed();
 
 
-        shooterHardware.shoot(0.25);
+        shooterHardware.setShootPower(0.25);
         Actions.runBlocking(moveToShoot2.build());
         if(limelightHardware.getTx() != -999){
             TrajectoryActionBuilder rotateShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, -24), -0.785398))
@@ -74,12 +74,12 @@ public class RedCloseAuto extends LinearOpMode {
         shoot(shooterHardware, limelightHardware);
 
         shooterHardware.intake(0.75);
-        shooterHardware.shoot(-0.25);
+        shooterHardware.setShootPower(-0.25);
         Actions.runBlocking(pickupBalls2.build());
         shooterHardware.stopFeed();
 
 
-        shooterHardware.shoot(0.25);
+        shooterHardware.setShootPower(0.25);
         Actions.runBlocking(moveToShoot3.build());
         if(limelightHardware.getTx() != -999){
             TrajectoryActionBuilder rotateShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(36, -12), -0.785398))
