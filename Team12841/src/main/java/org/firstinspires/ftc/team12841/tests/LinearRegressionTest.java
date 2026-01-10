@@ -29,7 +29,7 @@ import java.util.List;
  *   Build a hyper-accurate model for autonomous + teleop shooting.
  *   You will take ~10–30 shots at different distances & TT angles.
  */
-@Disabled
+
 @TeleOp(name = "Shooter Quad Regression Test", group = "Tests")
 public class LinearRegressionTest extends LinearOpMode {
 
