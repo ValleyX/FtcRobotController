@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.team12841.configs.TeleOpConfig;
+import org.firstinspires.ftc.team12841.configs.PanelsConfig;
 import org.firstinspires.ftc.team12841.pedroPathing.Constants;
 
 public class RobotHardware {
@@ -21,18 +21,15 @@ public class RobotHardware {
 
     /* ===================== CONSTANTS ===================== */
 
-    private static final double SHOOTER_TICKS_PER_REV = 5880.0;
+    public static final double SHOOTER_TICKS_PER_REV = 5880.0;
+    private static final double LIMELIGHT_YAW_OFFSET_DEG = 180.0; // LL faces backwards
 
     /* ===================== MOTORS ===================== */
 
-    // Drive
     public DcMotorEx lf, lb, rf, rb;
-
-    // Mechanisms
     public DcMotorEx shooter;
     public DcMotorEx intake;
 
-    // Odometry
     public DcMotorEx leftOdo, rightOdo, strafeOdo;
 
     /* ===================== SERVOS ===================== */
@@ -66,7 +63,7 @@ public class RobotHardware {
         initLimelight();
         initPedro();
 
-        opMode.telemetry.addLine("All systems GO, Houston we are ready for launch!");
+        opMode.telemetry.addLine("Robot ready");
         opMode.telemetry.update();
     }
 
@@ -113,7 +110,6 @@ public class RobotHardware {
             odo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             odo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
-        opMode.telemetry.addLine("Motors Configured");
     }
 
     private void initIMU() {
@@ -124,7 +120,6 @@ public class RobotHardware {
                         RevHubOrientationOnRobot.UsbFacingDirection.UP
                 )
         ));
-        opMode.telemetry.addLine("IMU Initialized");
     }
 
     private void initLimelight() {
@@ -135,26 +130,20 @@ public class RobotHardware {
         } catch (Exception e) {
             limelight = null;
         }
-        opMode.telemetry.addLine("LL Initialized");
     }
 
     private void initPedro() {
         follower = Constants.createFollower(opMode.hardwareMap);
-        opMode.telemetry.addLine("Pedro Pathing Initialized");
     }
 
-    /* ===================== SHOOTER (RPM CONTROL) ===================== */
+    /* ===================== SHOOTER (RPM) ===================== */
 
     public void setShooterRPM(double rpm) {
-        shooter.setVelocity(rpmToTicksPerSec(rpm));
+        shooter.setVelocity((rpm * SHOOTER_TICKS_PER_REV) / 60.0);
     }
 
     public void stopShooter() {
         shooter.setVelocity(0);
-    }
-
-    private double rpmToTicksPerSec(double rpm) {
-        return (rpm * SHOOTER_TICKS_PER_REV) / 60.0;
     }
 
     /* ===================== INTAKE ===================== */
@@ -202,15 +191,7 @@ public class RobotHardware {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
-    public double headingRad() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-    }
-
-    public void resetIMU() {
-        imu.resetYaw();
-    }
-
-    /* ===================== LIMELIGHT ===================== */
+    /* ===================== LIMELIGHT (BACKWARDS) ===================== */
 
     private void updateLL() {
         if (limelight != null) {
@@ -218,9 +199,12 @@ public class RobotHardware {
         }
     }
 
+    /** tx must be inverted because camera faces backwards */
     public double getTx() {
         updateLL();
-        return (llResult != null && llResult.isValid()) ? llResult.getTx() : -999;
+        return (llResult != null && llResult.isValid())
+                ? -llResult.getTx()
+                : -999;
     }
 
     public double getDistance() {
@@ -230,9 +214,12 @@ public class RobotHardware {
                 : -999;
     }
 
+    /** Robot heading sent to LL must be offset by 180° */
     public void updateLLHeading() {
         if (limelight != null) {
-            limelight.updateRobotOrientation(headingDeg());
+            double correctedHeading =
+                    headingDeg() + LIMELIGHT_YAW_OFFSET_DEG;
+            limelight.updateRobotOrientation(correctedHeading);
         }
     }
 
@@ -240,9 +227,23 @@ public class RobotHardware {
 
     public void turnToFree(double targetDeg, double speed) {
         double error = targetDeg - headingDeg();
-        double power = clamp(error * TeleOpConfig.LLPGAIN) * speed;
+        double power = clamp(error * PanelsConfig.LLPGAIN) * speed;
         addAlign(-power, -power, power, power);
     }
+
+    public void alignWithLimelight(double speed) {
+        double tx = getTx();
+
+        if (tx == -999) {
+            addAlign(0, 0, 0, 0);
+            return;
+        }
+
+        double power = clamp(tx * PanelsConfig.LLPGAIN) * speed;
+
+        addAlign(-power, -power, power, power);
+    }
+
 
     /* ===================== PEDRO ===================== */
 
