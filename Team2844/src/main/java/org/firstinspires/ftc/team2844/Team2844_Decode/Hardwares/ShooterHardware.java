@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class ShooterHardware {
@@ -52,6 +53,10 @@ public class ShooterHardware {
     public double shooterVel = 30;
     public double hoodAim = 0.0;
 
+    public PIDFCoefficients shooterCoefficients;
+    //OG values P:10 I:3 D:0 F:0
+    PIDFCoefficients newShooterCoefficients;
+
     public ShooterHardware(LinearOpMode opMode) {
         /*
          * must haves
@@ -90,6 +95,10 @@ public class ShooterHardware {
         gobuildaBB = opMode_.hardwareMap.get(DigitalChannel.class, "gobuildaBB");
         gobuildaBB1 = opMode_.hardwareMap.get(DigitalChannel.class, "gobuildaBB1");
 
+        shooterCoefficients = shooterMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        newShooterCoefficients = new PIDFCoefficients(3.6, 3.2, 2.8, 3.7);
+        shooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
+
     }
 
     /*
@@ -110,7 +119,7 @@ public class ShooterHardware {
     }
 
     /**
-     * This method sets the power of the shooter motor
+     * This method sets the power of the shooter motor and nothing else
      * @param power Takes a double from -1.0 to 1.0, numbers over 1 will be set to 1, numbers under -1 will be set to -1
      */
     public void setShootPower(double power){

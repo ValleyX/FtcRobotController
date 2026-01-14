@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.Arclength;
+import com.acmerobotics.roadrunner.CompositeAccelConstraint;
 import com.acmerobotics.roadrunner.MinMax;
 import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -13,6 +14,7 @@ import com.acmerobotics.roadrunner.PosePath;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
+import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -42,79 +44,138 @@ public class BlueCloseAuto extends LinearOpMode {
         limelightHardware.innit(0);
         mecanumDrive.updatePoseEstimate();
         estimate = mecanumDrive.localizer.getPose();
+        boolean skip = false;
+
+        boolean highVoltage = hardwareMap.voltageSensor.get("Control Hub").getVoltage() > 13.0;
 
         VelConstraint baseSpeed = new MinVelConstraint(Arrays.asList(
-                new TranslationalVelConstraint(250),
-                new AngularVelConstraint((4*Math.PI))
+                new TranslationalVelConstraint(60),
+                new AngularVelConstraint((6*Math.PI))
         ));
 
-        VelConstraint basePickupSpeed = new MinVelConstraint(Arrays.asList(
-                new TranslationalVelConstraint(200),
-                new AngularVelConstraint((4*Math.PI))
+        VelConstraint lastSpeed = new MinVelConstraint(Arrays.asList(
+                new TranslationalVelConstraint(50),
+                new AngularVelConstraint((6*Math.PI))
         ));
 
-        AccelConstraint baseAccelConstraint = new ProfileAccelConstraint(-50.0, 50.0);
+        TurnConstraints shakeConstraints = new TurnConstraints((Math.PI), -(3*Math.PI), (3*Math.PI));
+
+        AccelConstraint baseAccelConstraint = new ProfileAccelConstraint(-55.0, 55.0);
+        AccelConstraint backUpAccelConstraint = new ProfileAccelConstraint(-30.0, 30.0);
+        AccelConstraint longAccelConstraint = new ProfileAccelConstraint(-35.0, 35.0);
+
 
         waitForStart();
         if (isStopRequested()) return;
 
         TrajectoryActionBuilder moveToShoot1 = mecanumDrive.actionBuilder(initialPos)
-                .lineToYConstantHeading(25, baseSpeed, baseAccelConstraint);
+                .lineToYSplineHeading(25, (0.785398+Math.toRadians(5)), baseSpeed, baseAccelConstraint);
 
         TrajectoryActionBuilder pickupBalls1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(40, 25), 0.785398))
                 .splineToLinearHeading(new Pose2d(8.5, 25, Math.PI/2), Math.PI/2, baseSpeed, baseAccelConstraint)
-                .strafeToConstantHeading(new Vector2d(8.5, 60), basePickupSpeed, baseAccelConstraint);
+                .setReversed(true)
+                .strafeToConstantHeading(new Vector2d(8.5, 60), baseSpeed, baseAccelConstraint)
+                .lineToYConstantHeading(45, lastSpeed, backUpAccelConstraint);
 
-        TrajectoryActionBuilder moveToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(8.5, 60), (Math.PI/2)))
-                .splineToLinearHeading(new Pose2d(24, 24, 0.785398), (3*Math.PI)/2, baseSpeed, baseAccelConstraint);
+        TrajectoryActionBuilder backUpToShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(8.5, 45), Math.PI/2))
+                .splineToSplineHeading(new Pose2d(24, 24, Math.PI/3.5), Math.PI/2, lastSpeed, longAccelConstraint);
 
-        TrajectoryActionBuilder pickupBalls2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, 24), 0.785398))
+        TrajectoryActionBuilder backUp1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(8.5, 45), Math.PI/2))
+                .turn(Math.toRadians(-15), shakeConstraints)
+                .turn(Math.toRadians(30), shakeConstraints);
+
+
+        TrajectoryActionBuilder moveToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(8.5, 45), (Math.PI/2)+Math.toRadians(15)))
+                .splineToLinearHeading(new Pose2d(24, 24, Math.PI/3.5), 2*Math.PI/3, lastSpeed, backUpAccelConstraint);
+
+        TrajectoryActionBuilder pickupBalls2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, 24), Math.PI/3.5))
                 .splineToLinearHeading(new Pose2d(-15, 24, Math.PI/2), (Math.PI)/2, baseSpeed, baseAccelConstraint)
-                .strafeToConstantHeading(new Vector2d(-15, 66), basePickupSpeed, baseAccelConstraint);
+                .setReversed(true)
+                .strafeToConstantHeading(new Vector2d(-15, 66), baseSpeed, baseAccelConstraint)
+                .lineToYConstantHeading(50, lastSpeed, backUpAccelConstraint);;
 
-        TrajectoryActionBuilder moveToShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-14.5, 66), Math.PI/2))
-                .lineToY(40, baseSpeed, baseAccelConstraint)
-                .splineToLinearHeading(new Pose2d(36, 12, 0.785398), (Math.PI)/2, baseSpeed, baseAccelConstraint);
+        TrajectoryActionBuilder backUpToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-15, 45), Math.PI/2))
+                .splineToSplineHeading(new Pose2d(36, 12, (Math.PI/3.5)), (Math.PI/3.5), lastSpeed, longAccelConstraint);
+
+        TrajectoryActionBuilder backUp2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-15, 45), Math.PI/2))
+                .lineToY(40, baseSpeed, backUpAccelConstraint)
+                .turn(Math.toRadians(-15), shakeConstraints)
+                .turn(Math.toRadians(30), shakeConstraints);
+
+        TrajectoryActionBuilder moveToShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-14.5, 45), (Math.PI/2)+Math.toRadians(15)))
+                .splineToSplineHeading(new Pose2d(36, 12, (Math.PI/3.5)), 0, lastSpeed, new ProfileAccelConstraint(-30, 30));
 
 
         //start of moving
+        shooterHardware.setShootPower(0.2);
         Actions.runBlocking(moveToShoot1.build());
 
         shoot(shooterHardware, limelightHardware);
 
-        shooterHardware.intake(1);
-        shooterHardware.setShootPower(-0.25);
+        shooterHardware.closeServo();
+        if(highVoltage){
+            shooterHardware.intake(.9);
+            shooterHardware.setShootPower(-0.35);
+        } else {
+            shooterHardware.intake(1);
+            shooterHardware.setShootPower(-.25);
+        }
         Actions.runBlocking(pickupBalls1.build());
 
 
         if(shooterHardware.threeBall()){
+            shooterHardware.intake(0);
+            shooterHardware.setShootPower(0.2);
+            Actions.runBlocking(backUpToShoot1.build());
+        } else {
+            skip = true;
+            Actions.runBlocking(backUp1.build());
             shooterHardware.stopFeed();
-            shooterHardware.setShootPower(0.1);
+            highVoltage = hardwareMap.voltageSensor.get("Control Hub").getVoltage() > 13.0;
+            shooterHardware.setShootPower(0.2);
+            Actions.runBlocking(moveToShoot2.build());
         }
 
-        Actions.runBlocking(moveToShoot2.build());
         shooterHardware.stopFeed();
+
         if(limelightHardware.getTx() != -999){
-            TrajectoryActionBuilder rotateShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, 24), 0.785398))
-                    .turn(Math.toRadians(-limelightHardware.getTx() + 5));
+            TrajectoryActionBuilder rotateShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, 24), Math.PI/3.5))
+                    .turn(Math.toRadians(-limelightHardware.getTx()+6));
             Actions.runBlocking(rotateShoot2.build());
         }
 
         shoot(shooterHardware, limelightHardware);
 
-        shooterHardware.intake(1);
-        shooterHardware.setShootPower(-0.25);
-        Actions.runBlocking(pickupBalls2.build());
-
-        if(shooterHardware.threeBall()){
-            shooterHardware.stopFeed();
-            shooterHardware.setShootPower(0.1);
+        shooterHardware.closeServo();
+        if(highVoltage){
+            shooterHardware.intake(.8);
+            shooterHardware.setShootPower(-0.35);
+        } else {
+            shooterHardware.intake(1);
+            shooterHardware.setShootPower(-.25);
         }
 
-        Actions.runBlocking(moveToShoot3.build());
+        Actions.runBlocking(pickupBalls2.build());
+
+        if(shooterHardware.threeBall() || skip){
+            shooterHardware.setShootPower(0.2);
+            Actions.runBlocking(backUpToShoot2.build());
+            shooterHardware.intake(0);
+        } else {
+            Actions.runBlocking(backUp2.build());
+
+            shooterHardware.stopFeed();
+            highVoltage = hardwareMap.voltageSensor.get("Control Hub").getVoltage() > 13.0;
+            shooterHardware.setShootPower(0.2);
+
+            Actions.runBlocking(moveToShoot3.build());
+        }
+
         shooterHardware.stopFeed();
+        shooterHardware.setShootPower(0.2);
+
         if(limelightHardware.getTx() != -999){
-            TrajectoryActionBuilder rotateShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(36, 12), 0.785398))
+            TrajectoryActionBuilder rotateShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(36, 12), (Math.PI/3.5)))
                     .turn(Math.toRadians(-limelightHardware.getTx()));
             Actions.runBlocking(rotateShoot3.build());
         }
@@ -124,8 +185,9 @@ public class BlueCloseAuto extends LinearOpMode {
 
     private void shoot(ShooterHardware shooterHardware, LimelightHardware limelightHardware){
         //int count = 0;
+        double shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
+
         while (shooterHardware.oneBall() && opModeIsActive()) {
-            double shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
             shooterHardware.setShootVelocity(shooterVelocity);
             shooterHardware.aimHood(shooterHardware.getHoodAim(limelightHardware.getBotDis()));
             if(shooterHardware.withinVel(shooterVelocity)) {
