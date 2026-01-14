@@ -271,10 +271,7 @@ public class OnePersonDriveBase extends LinearOpMode {
             }
 
 
-            PIDFCoefficients shooterCoefficients = shooterHardware.shooterMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-            //OG values P:10 I:3 D:0 F:0
-            PIDFCoefficients newShooterCoefficients = new PIDFCoefficients(3.6, 3.2, 2.8, 3.7);
-            shooterHardware.shooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
+
             telemetry.addData("(at least) One Ball: ", shooterHardware.oneBall());
             telemetry.addData("(at least) Two Balls: ", shooterHardware.twoBall());
             telemetry.addData("all three balls", full);
@@ -288,10 +285,10 @@ public class OnePersonDriveBase extends LinearOpMode {
             telemetry.addData("Distance from tag", limelightHardware.getBotDis());
             telemetry.addData("Servo Closed", shooterHardware.servoClosed());
             telemetry.addData("Babymode", babymode);
-            telemetry.addData("Shooter P:", shooterCoefficients.p);
-            telemetry.addData("Shooter I:", shooterCoefficients.i);
-            telemetry.addData("Shooter D:", shooterCoefficients.d);
-            telemetry.addData("Shooter F:", shooterCoefficients.f);
+            telemetry.addData("Shooter P:", shooterHardware.shooterCoefficients.p);
+            telemetry.addData("Shooter I:", shooterHardware.shooterCoefficients.i);
+            telemetry.addData("Shooter D:", shooterHardware.shooterCoefficients.d);
+            telemetry.addData("Shooter F:", shooterHardware.shooterCoefficients.f);
 
             telemetry.addData("Front Left", frontLeftPower);
             telemetry.addData("Back Left", backLeftPower);
