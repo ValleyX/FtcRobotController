@@ -8,6 +8,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -21,7 +22,8 @@ public class RobotHardware {
 
     /* ===================== CONSTANTS ===================== */
 
-    public static final double SHOOTER_TICKS_PER_REV = 5880.0;
+    public static final double SHOOTER_TICKS_PER_REV = 112.0;
+
     private static final double LIMELIGHT_YAW_OFFSET_DEG = 180.0; // LL faces backwards
 
     /* ===================== MOTORS ===================== */
@@ -34,7 +36,7 @@ public class RobotHardware {
 
     /* ===================== SERVOS ===================== */
 
-    public Servo shooterServo;
+    public Servo leftFlick, rightFlick;
     public Servo turntableServo;
 
     /* ===================== SENSORS ===================== */
@@ -62,6 +64,7 @@ public class RobotHardware {
         initIMU();
         initLimelight();
         initPedro();
+        follower = Constants.createFollower(opMode.hardwareMap);
 
         opMode.telemetry.addLine("Robot ready");
         opMode.telemetry.update();
@@ -78,11 +81,12 @@ public class RobotHardware {
         shooter = motor("shooterMotor");
         intake  = motor("intakeMotor");
 
-        leftOdo   = motor("leftOdo");
+        leftOdo   = motor("intakeMotor");
         rightOdo  = motor("rightOdo");
         strafeOdo = motor("strafeOdo");
 
-        shooterServo   = opMode.hardwareMap.get(Servo.class, "shooterServo");
+        leftFlick = opMode.hardwareMap.get(Servo.class, "leftFlick");
+        rightFlick = opMode.hardwareMap.get(Servo.class, "rightFlick");
         turntableServo = opMode.hardwareMap.get(Servo.class, "turntableServo");
     }
 
@@ -94,6 +98,8 @@ public class RobotHardware {
 
         lf.setDirection(DcMotor.Direction.REVERSE);
         lb.setDirection(DcMotor.Direction.REVERSE);
+        intake.setDirection(DcMotor.Direction.REVERSE);
+        shooter.setDirection(DcMotor.Direction.REVERSE);
 
         for (DcMotorEx m : new DcMotorEx[]{lf, lb, rf, rb}) {
             m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -104,7 +110,7 @@ public class RobotHardware {
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         for (DcMotorEx odo : new DcMotorEx[]{leftOdo, rightOdo, strafeOdo}) {
             odo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -134,7 +140,11 @@ public class RobotHardware {
 
     private void initPedro() {
         follower = Constants.createFollower(opMode.hardwareMap);
+
+        // RE-ASSERT shooter mode AFTER Pedro
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
 
     /* ===================== SHOOTER (RPM) ===================== */
 
@@ -146,25 +156,8 @@ public class RobotHardware {
         shooter.setVelocity(0);
     }
 
-    /* ===================== INTAKE ===================== */
-
-    public void runIntake(double power) {
-        intake.setPower(clamp(power));
-    }
-
-    public void stopIntake() {
-        intake.setPower(0);
-    }
 
     /* ===================== DRIVE ===================== */
-
-    public void addDrive(double lf, double lb, double rf, double rb) {
-        lfDrive = lf;
-        lbDrive = lb;
-        rfDrive = rf;
-        rbDrive = rb;
-        applyDrive();
-    }
 
     public void addAlign(double lf, double lb, double rf, double rb) {
         lfAlign = lf;
