@@ -17,7 +17,7 @@ public class Regression extends OpMode {
     private RobotHardware robot;
     private Follower follower;
 
-    /* ===================== PEDRO SAFETY ===================== */
+    /* ===================== PEDRO ===================== */
 
     private boolean poseReady = false;
 
@@ -27,38 +27,43 @@ public class Regression extends OpMode {
     private static final double RPM_STEP = 100.0;
 
     // Limelight rotation tuning
-    private static final double LL_KP = 0.015;
+    private static final double LL_KP      = 0.015;
     private static final double LL_MAX_ROT = 0.6;
 
     /* ===================== STATE ===================== */
 
-    private double targetRPM = 1000.0;
+    private double  targetRPM      = 1000.0;
     private boolean shooterEnabled = false;
 
-    private boolean dpadUpLast, dpadDownLast;
-    private boolean aLast;
+    // Button edge tracking
+    private boolean dpadUpLast   = false;
+    private boolean dpadDownLast = false;
+    private boolean aLast        = false;
+
+    // Turntable
+    private int     ttIndex = 0;
+    private boolean lbLast  = false;
+    private boolean rbLast  = false;
 
     /* ===================== INIT ===================== */
 
     @Override
     public void init() {
-        robot = new RobotHardware(this);
+        robot    = new RobotHardware(this);
         follower = robot.getFollower();
 
+        // Shooter PIDF (velocity mode)
         PIDFCoefficients pidf = new PIDFCoefficients(
-                0.0003,  // P
-                0.0,
-                0.0,
-                2.9      // F (critical)
+                0.0003, // P
+                0.0,    // I
+                0.0,    // D
+                2.9     // F
         );
 
         robot.shooter.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
                 pidf
         );
-
-
-        //  applyShooterPID();
 
         telemetry.addLine("Init OK — warming localization");
         telemetry.update();
@@ -68,14 +73,15 @@ public class Regression extends OpMode {
 
     @Override
     public void init_loop() {
-
-        if (follower != null) follower.update();
+        if (follower != null) {
+            follower.update();
+        }
 
         if (follower != null && follower.getPose() != null) {
             poseReady = true;
             telemetry.addLine("POSE READY");
         } else {
-            telemetry.addLine("Warming localization…");
+            telemetry.addLine("Warming localization...");
         }
 
         telemetry.update();
@@ -96,7 +102,7 @@ public class Regression extends OpMode {
     @Override
     public void loop() {
 
-        /* ===================== SAFETY ===================== */
+        /* ---------- SAFETY ---------- */
 
         if (follower == null || !poseReady || follower.getPose() == null) {
             telemetry.addLine("Drive unavailable");
@@ -106,13 +112,13 @@ public class Regression extends OpMode {
 
         follower.update();
 
-        /* ===================== DRIVE (CORRECT AXES) ===================== */
+        /* ---------- DRIVE INPUTS ---------- */
 
-        double rotate = -gamepad1.left_stick_y;   // forward/back
-        double strafe  =  gamepad1.left_stick_x;   // left/right (NOT inverted)
-        double forward  =  -gamepad1.right_stick_x;  // rotation ONLY here
+        double forward = -gamepad1.right_stick_x; // rotation
+        double strafe  =  gamepad1.left_stick_x;  // left / right
+        double rotate  = -gamepad1.left_stick_y;  // forward / back
 
-        /* ===================== LIMELIGHT ALIGN ===================== */
+        /* ---------- LIMELIGHT ALIGN ---------- */
 
         if (gamepad1.left_trigger > 0.2) {
 
@@ -120,19 +126,19 @@ public class Regression extends OpMode {
             double tx = robot.getTx();
 
             if (tx == -999) {
-                follower.setTeleOpDrive(0, 0, 0); // HARD STOP
+                follower.setTeleOpDrive(0, 0, 0);
             } else {
-                double correction = clamp(-tx * LL_KP, -LL_MAX_ROT, LL_MAX_ROT);
-                follower.setTeleOpDrive(0, 0, correction); // ROTATE ONLY
+                double correction =
+                        clamp(-tx * LL_KP, -LL_MAX_ROT, LL_MAX_ROT);
+
+                follower.setTeleOpDrive(0, 0, correction);
             }
 
         } else {
             follower.setTeleOpDrive(forward, strafe, rotate);
         }
 
-
-
-        /* ===================== INTAKE (NO DRIVE COUPLING) ===================== */
+        /* ---------- INTAKE ---------- */
 
         if (gamepad1.right_trigger > 0.2) {
             intakeOn();
@@ -140,66 +146,89 @@ public class Regression extends OpMode {
             intakeOff();
         }
 
-        /* ===================== TURN TABLE ===================== */
+        /* ---------- TURNTABLE ---------- */
 
-        if (gamepad1.left_bumper) {
-            rotateTTLeft();
-        } else if (gamepad1.right_bumper) {
-            rotateTTRight();
-        }
+        rotateTurntable();
 
-        /* ===================== SHOOTER TOGGLE ===================== */
+        /* ---------- SHOOTER TOGGLE ---------- */
 
         boolean a = gamepad1.a;
-        if (a) {
+        if (a && !aLast) {
             shooterEnabled = !shooterEnabled;
         }
-
+        aLast = a;
 
         if (shooterEnabled) {
             robot.setShooterRPM(targetRPM);
-            //robot.shooter.setPower(1);
         } else {
             robot.stopShooter();
         }
 
-        /* ===================== RPM ADJUST ===================== */
+        /* ---------- RPM ADJUST ---------- */
 
-        boolean up = gamepad1.dpad_up;
+        boolean up   = gamepad1.dpad_up;
         boolean down = gamepad1.dpad_down;
 
-        if (up && !dpadUpLast) targetRPM += RPM_STEP;
+        if (up && !dpadUpLast)     targetRPM += RPM_STEP;
         if (down && !dpadDownLast) targetRPM -= RPM_STEP;
 
-        dpadUpLast = up;
+        dpadUpLast   = up;
         dpadDownLast = down;
 
-        targetRPM = clamp(targetRPM);
+        targetRPM = clampRPM(targetRPM);
 
-
-        /* ===================== TELEMETRY ===================== */
+        /* ---------- TELEMETRY ---------- */
 
         double actualRPM =
-                (robot.shooter.getVelocity() * 60.0) / RobotHardware.SHOOTER_TICKS_PER_REV;
+                (robot.shooter.getVelocity() * 60.0)
+                        / RobotHardware.SHOOTER_TICKS_PER_REV;
 
         telemetry.addData("Target RPM", targetRPM);
         telemetry.addData("Actual RPM", actualRPM);
+        telemetry.addData("TT Index", ttIndex);
         telemetry.addData("LL tx", robot.getTx());
         telemetry.update();
     }
 
-    /* ===================== SUBSYSTEMS ===================== */
+    /* ===================== TURNTABLE ===================== */
 
-    private void rotateTTLeft() {
-        // TODO
+    private void rotateTurntable() {
+
+        boolean lb = gamepad1.left_bumper;
+        boolean rb = gamepad1.right_bumper;
+
+        if (lb && !lbLast) {
+            ttIndex = (ttIndex + 2) % 3; // left wrap
+            applyTTPosition();
+        }
+
+        if (rb && !rbLast) {
+            ttIndex = (ttIndex + 1) % 3; // right wrap
+            applyTTPosition();
+        }
+
+        lbLast = lb;
+        rbLast = rb;
     }
 
-    private void rotateTTRight() {
-        // TODO
+    private void applyTTPosition() {
+        switch (ttIndex) {
+            case 0:
+                robot.turntableServo.setPosition(PanelsConfig.TT_POS0);
+                break;
+            case 1:
+                robot.turntableServo.setPosition(PanelsConfig.TT_POS1);
+                break;
+            case 2:
+                robot.turntableServo.setPosition(PanelsConfig.TT_POS2);
+                break;
+        }
     }
+
+    /* ===================== INTAKE ===================== */
 
     private void intakeOn() {
-        robot.intake.setPower(1);
+        robot.intake.setPower(1.0);
     }
 
     private void intakeOff() {
@@ -212,7 +241,7 @@ public class Regression extends OpMode {
         return Math.max(min, Math.min(max, val));
     }
 
-    private double clamp(double rpm) {
-        return Math.max(0, Math.min(MAX_RPM, rpm));
+    private double clampRPM(double rpm) {
+        return Math.max(0.0, Math.min(MAX_RPM, rpm));
     }
 }

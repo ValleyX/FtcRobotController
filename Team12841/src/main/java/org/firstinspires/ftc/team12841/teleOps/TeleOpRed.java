@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.pedropathing.geometry.Pose;
 
 
 import org.firstinspires.ftc.team12841.RobotHardware;
@@ -65,7 +64,7 @@ public class TeleOpRed extends OpMode {
 
         // pad1.guide = reset PP heading
         if (gamepad1.guide) {
-            robot.resetPedroHeading();
+            robot.resetHeading();
         }
 
         // pad1.lt > 20% = LL align
@@ -114,6 +113,8 @@ public class TeleOpRed extends OpMode {
         // pad2.rt = flick
         if (gamepad2.right_trigger > 0.2) {
             flick();
+        } else {
+            unflick();
         }
 
         /* ===================== RPM LOGIC ===================== */
@@ -227,7 +228,13 @@ public class TeleOpRed extends OpMode {
     /* ===================== HELPERS ===================== */
 
     private void flick() {
-        //robot.
+        robot.leftFlick.setPosition(PanelsConfig.LEFT_SERVO_FLICK);
+        robot.rightFlick.setPosition(PanelsConfig.RIGHT_SERVO_FLICK);
+    }
+
+    private void unflick() {
+        robot.leftFlick.setPosition(PanelsConfig.LEFT_SERVO_IDLE);
+        robot.rightFlick.setPosition(PanelsConfig.RIGHT_SERVO_IDLE);
     }
 
     private void intakeOn() {

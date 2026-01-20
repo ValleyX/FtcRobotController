@@ -8,7 +8,6 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -244,7 +243,7 @@ public class RobotHardware {
         return follower;
     }
 
-    public void resetPedroHeading() {
+    public void resetHeading() {
         imu.resetYaw();
         Pose pose = follower.getPose();
         follower.setPose(new Pose(pose.getX(), pose.getY(), 0));

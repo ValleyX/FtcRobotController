@@ -29,6 +29,8 @@ public class PanelsConfig {
 
     public static double LEFT_SERVO_FLICK = 0;
     public static double RIGHT_SERVO_FLICK = 0;
+    public static double LEFT_SERVO_IDLE = 0;
+    public static double RIGHT_SERVO_IDLE = 0;
     public static double TT_POS0 = 0;
     public static double TT_POS1 = 0.5;
     public static double TT_POS2 = 1;
