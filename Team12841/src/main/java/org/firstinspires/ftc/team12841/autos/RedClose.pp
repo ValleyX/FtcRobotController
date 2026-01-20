@@ -1,6 +1,6 @@
 {
   "startPoint": {
-    "x": 26.5,
+    "x": 117.5,
     "y": 129.1,
     "heading": "linear",
     "startDeg": 90,
@@ -12,11 +12,11 @@
       "id": "line-qa3jtq4ctm",
       "name": "START_TO_SHOOT",
       "endPoint": {
-        "x": 59.5,
+        "x": 84.5,
         "y": 84,
         "heading": "linear",
-        "startDeg": 324,
-        "endDeg": 312
+        "startDeg": 216,
+        "endDeg": 230
       },
       "controlPoints": [],
       "color": "#ff0000",
@@ -30,7 +30,7 @@
       "id": "mkk5x80r-9xz767",
       "name": "INTAKE1",
       "endPoint": {
-        "x": 16,
+        "x": 128,
         "y": 84,
         "heading": "tangential",
         "reverse": false
@@ -46,12 +46,12 @@
       "id": "mkk605ms-7g4ik5",
       "name": "INTAKE1_TO_SHOOT",
       "endPoint": {
-        "x": 59.5,
+        "x": 84.5,
         "y": 84,
         "heading": "linear",
         "reverse": true,
-        "startDeg": 180,
-        "endDeg": 312
+        "startDeg": 0,
+        "endDeg": 230
       },
       "controlPoints": [],
       "color": "#DC97A5",
@@ -64,12 +64,12 @@
       "id": "mkk6579c-m4nfq2",
       "name": "SHOOT1_TO_INTAKE2_ALIGN",
       "endPoint": {
-        "x": 43,
+        "x": 101,
         "y": 60,
         "heading": "linear",
         "reverse": false,
-        "startDeg": 312,
-        "endDeg": 180
+        "startDeg": 230,
+        "endDeg": 0
       },
       "controlPoints": [],
       "color": "#A779CB",
@@ -82,7 +82,7 @@
       "id": "mkk66wem-9n0wp8",
       "name": "INTAKE2",
       "endPoint": {
-        "x": 9,
+        "x": 135,
         "y": 60,
         "heading": "tangential",
         "reverse": false
@@ -98,12 +98,12 @@
       "id": "mkk6ebpo-wffu5p",
       "name": "INTAKE2_TO_SHOOT",
       "endPoint": {
-        "x": 59.5,
+        "x": 84.5,
         "y": 84,
         "heading": "linear",
         "reverse": false,
-        "startDeg": 180,
-        "endDeg": 312
+        "startDeg": 0,
+        "endDeg": 230
       },
       "controlPoints": [],
       "color": "#88AC8B",
@@ -116,12 +116,12 @@
       "id": "mkk6np3a-6t2w5x",
       "name": "MOVE_AWAY",
       "endPoint": {
-        "x": 60,
+        "x": 84,
         "y": 36,
         "heading": "linear",
         "reverse": false,
-        "startDeg": 312,
-        "endDeg": 180
+        "startDeg": 230,
+        "endDeg": 0
       },
       "controlPoints": [],
       "color": "#C9D7AD",
@@ -261,5 +261,5 @@
     "onionNextPointOnly": false
   },
   "version": "1.2.1",
-  "timestamp": "2026-01-20T01:38:21.901Z"
+  "timestamp": "2026-01-20T02:01:57.492Z"
 }

@@ -1,200 +1,229 @@
 package org.firstinspires.ftc.team12841.autos;
 
+import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.util.Timer;
-
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.team12841.pedroPathing.Constants;
 
-@TeleOp
-public class BlueAutoClose extends OpMode
-{
-    private Follower follower;
-    private Timer pathTimer, opModeTimer;
+@Autonomous(name = "Blue Close", group = "Autonomous")
+@Configurable // Panels
+public class BlueAutoClose extends OpMode {
 
-    // State Machine
-    public enum PathState
-    {
-        // StartPose - EndPose
-        // Drive - Movement
-        // Shoot - Scoring
-        START_TO_SHOOT,
-        SHOOT_PRELOAD,
-        INTAKE1,
-        INTAKE1_TO_SHOOT,
-        SHOOT1_TO_INTAKE2,
-        INTAKE2,
-        INTAKE2_BUFFER,
-        INTAKE2_TO_SHOOT,
-        SHOOT2,
-        MOVE_AWAY
+    private TelemetryManager panelsTelemetry; // Panels Telemetry instance
+    public Follower follower; // Pedro Pathing follower instance
+    private int pathState; // Current autonomous path state (state machine)
+    private Timer pathTimer; // Timer for path state machine
+    private Paths paths; // Paths defined in the Paths class
+
+    @Override
+    public void init() {
+        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(new Pose(72, 8, Math.toRadians(90)));
+
+        pathTimer = new Timer();
+        paths = new Paths(follower); // Build paths
+
+        panelsTelemetry.debug("Status", "Initialized");
+        panelsTelemetry.update(telemetry);
     }
 
-    PathState pathState;
+    @Override
+    public void loop() {
+        follower.update(); // Update Pedro Pathing
+        pathState = autonomousPathUpdate(); // Update autonomous state machine
 
-    // TEMPLATE
-    // private final Pose poseName = new Pose(x, y, Math.toRadians(heading));
-
-    private final Pose startPose = new Pose(26.5, 129.1, Math.toRadians(324));
-    private final Pose shootPose = new Pose(59.5, 84, Math.toRadians(312));
-    private final Pose intake1 = new Pose(16, 84, Math.toRadians(180));
-    private final Pose intake2Align = new Pose(48, 60, Math.toRadians(180));
-    private final Pose intake2 = new Pose(9, 60, Math.toRadians(180));
-    private final Pose endPose = new Pose(14.8, 72, Math.toRadians(270));
-
-    private PathChain drive_StartPos_ShootPos, drive_ShootPos_Intake1Pos, drive_Intake1Pos_ShootPos, drive_ShootPos_Intake2AlignPos, drive_Intake2AlignPos_Intake2Pos, drive_Intake2Pos_ShootPos, drive_ShootPos_EndPos;
-
-    public void buildPaths()
-    {
-        // StartingPose Coords - Ending Pose Coords
-
-        drive_StartPos_ShootPos = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, shootPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
-                .build();
-
-        drive_ShootPos_Intake1Pos = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, intake1))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), intake1.getHeading())
-                .build();
-
-        drive_Intake1Pos_ShootPos = follower.pathBuilder()
-                .addPath(new BezierLine(intake1, shootPose))
-                .setLinearHeadingInterpolation(intake1.getHeading(), shootPose.getHeading())
-                .build();
-
-        drive_ShootPos_Intake2AlignPos = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, intake2Align))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), intake2Align.getHeading())
-                .build();
-
-        drive_Intake2AlignPos_Intake2Pos = follower.pathBuilder()
-                .addPath(new BezierLine(intake2Align, intake2))
-                .setLinearHeadingInterpolation(intake2Align.getHeading(), intake2.getHeading())
-                .build();
-
-        drive_Intake2Pos_ShootPos = follower.pathBuilder()
-                .addPath(new BezierLine(intake2, shootPose))
-                .setLinearHeadingInterpolation(intake2.getHeading(), shootPose.getHeading())
-                .build();
-
-        drive_ShootPos_EndPos = follower.pathBuilder()
-                .addPath(new BezierLine(shootPose, endPose))
-                .setLinearHeadingInterpolation(shootPose.getHeading(), endPose.getHeading())
-                .build();
-
+        // Log values to Panels and Driver Station
+        panelsTelemetry.debug("Path State", pathState);
+        panelsTelemetry.debug("X", follower.getPose().getX());
+        panelsTelemetry.debug("Y", follower.getPose().getY());
+        panelsTelemetry.debug("Heading", follower.getPose().getHeading());
+        panelsTelemetry.update(telemetry);
     }
 
-    public void statePathUpdate()
-    {
-        switch(pathState)
-        {
-            case START_TO_SHOOT:
-                // TODO: Shooter ON with Regression
-                follower.followPath(drive_StartPos_ShootPos, true);
-                setPathState(PathState.SHOOT_PRELOAD);
-                        break;
+    public static class Paths {
 
-            case SHOOT_PRELOAD:
-                // Check if follower is done
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 5)
-                {
-                    // TODO: Shoot, Turn, Shoot, Turn, Shoot, Turn Back
-                    setPathState(PathState.INTAKE1);
-                }
-                break;
+        public PathChain STARTTOSHOOT;
+        public PathChain INTAKE1;
+        public PathChain INTAKE1TOSHOOT;
+        public PathChain SHOOT1TOINTAKE2ALIGN;
+        public PathChain INTAKE2;
+        public PathChain INTAKE2TOSHOOT;
+        public PathChain MOVEAWAY;
 
-            case INTAKE1:
-                if(!follower.isBusy())
-                {
-                    // TODO: Intake ON, TT Spinning
-                    follower.followPath(drive_ShootPos_Intake1Pos, true);
-                    // TODO: Intake OFF
-                    setPathState(PathState.INTAKE1_TO_SHOOT);
-                }
+        public Paths(Follower follower) {
+            STARTTOSHOOT = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierCurve(
+                                    new Pose(26.600, 129.000),
+                                    new Pose(40.368, 110.102),
+                                    new Pose(36.187, 115.940),
+                                    new Pose(59.500, 84.000)
+                            )
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(324), Math.toRadians(312))
+                    .build();
 
-            case INTAKE1_TO_SHOOT:
-                if(!follower.isBusy())
-                {
-                    follower.followPath(drive_Intake1Pos_ShootPos, true);
-                    // TODO: Shoot thing
-                    setPathState(PathState.SHOOT1_TO_INTAKE2);
-                }
+            INTAKE1 = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(59.500, 84.000), new Pose(16.000, 84.000))
+                    )
+                    .setTangentHeadingInterpolation()
+                    .build();
 
-            case SHOOT1_TO_INTAKE2:
-                if(!follower.isBusy())
-                {
-                    follower.followPath(drive_ShootPos_Intake2AlignPos, true);
-                    // TODO: Intake + TT
-                    follower.followPath(drive_Intake2AlignPos_Intake2Pos);
-                    // TODO: Intake
-                    setPathState(PathState.INTAKE2_TO_SHOOT);
-                }
+            INTAKE1TOSHOOT = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(16.000, 84.000), new Pose(59.500, 84.000))
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(312))
+                    .setReversed()
+                    .build();
 
-            case INTAKE2_TO_SHOOT:
-                if(!follower.isBusy())
-                {
-                    // TODO: Shooter ON
-                    follower.followPath(drive_Intake2Pos_ShootPos, true);
-                    // TODO: SHoot
-                    setPathState(PathState.MOVE_AWAY);
-                }
+            SHOOT1TOINTAKE2ALIGN = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(59.500, 84.000), new Pose(43.000, 60.000))
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(312), Math.toRadians(180))
+                    .build();
 
-            case MOVE_AWAY:
-                if(!follower.isBusy())
-                {
-                    follower.followPath(drive_ShootPos_EndPos, true);
-                }
+            INTAKE2 = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(43.000, 60.000), new Pose(14.000, 60.000))
+                    )
+                    .setTangentHeadingInterpolation()
+                    .build();
 
-            default:
-                telemetry.addLine("No State");
-                break;
+            INTAKE2TOSHOOT = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(14.000, 60.000), new Pose(59.500, 84.000))
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(312))
+                    .build();
 
+            MOVEAWAY = follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(new Pose(59.500, 84.000), new Pose(60.000, 36.000))
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(312), Math.toRadians(180))
+                    .build();
         }
     }
 
-    // Helper Function
-    public void setPathState(PathState newState)
-    {
-        pathState = newState;
+    public int autonomousPathUpdate() {
+        switch (pathState) {
+            case 0:
+                follower.followPath(paths.STARTTOSHOOT, true);
+                setPathState(1);
+                break;
+            case 1:
+                if (!follower.isBusy()) {
+                    setPathState(2);
+                }
+                break;
+            case 2:
+                setPathState(3);
+                break;
+            case 3:
+                if (pathTimer.getElapsedTimeSeconds() > 3) {
+                    setPathState(4);
+                }
+                break;
+            case 4:
+                follower.followPath(paths.INTAKE1, true);
+                setPathState(5);
+                break;
+            case 5:
+                if (!follower.isBusy()) {
+                    setPathState(6);
+                }
+                break;
+            case 6:
+                follower.followPath(paths.INTAKE1TOSHOOT, true);
+                setPathState(7);
+                break;
+            case 7:
+                if (!follower.isBusy()) {
+                    setPathState(8);
+                }
+                break;
+            case 8:
+                setPathState(9);
+                break;
+            case 9:
+                if (pathTimer.getElapsedTimeSeconds() > 3) {
+                    setPathState(10);
+                }
+                break;
+            case 10:
+                follower.followPath(paths.SHOOT1TOINTAKE2ALIGN, true);
+                setPathState(11);
+                break;
+            case 11:
+                if (!follower.isBusy()) {
+                    setPathState(12);
+                }
+                break;
+            case 12:
+                follower.followPath(paths.INTAKE2, true);
+                setPathState(13);
+                break;
+            case 13:
+                if (!follower.isBusy()) {
+                    setPathState(14);
+                }
+                break;
+            case 14:
+                follower.followPath(paths.INTAKE2TOSHOOT, true);
+                setPathState(15);
+                break;
+            case 15:
+                if (!follower.isBusy()) {
+                    setPathState(16);
+                }
+                break;
+            case 16:
+                setPathState(17);
+                break;
+            case 17:
+                if (pathTimer.getElapsedTimeSeconds() > 3) {
+                    setPathState(18);
+                }
+                break;
+            case 18:
+                follower.followPath(paths.MOVEAWAY, true);
+                setPathState(19);
+                break;
+            case 19:
+                if (!follower.isBusy()) {
+                    setPathState(20);
+                }
+                break;
+            case 20:
+                requestOpModeStop();
+                pathState = -1;
+                break;
+        }
+        return pathState;
+    }
+
+    public void setPathState(int pState) {
+        pathState = pState;
         pathTimer.resetTimer();
-    }
-
-    @Override
-    public void init()
-    {
-        pathState = PathState.START_TO_SHOOT;
-        pathTimer = new Timer();
-        opModeTimer = new Timer();
-        follower = Constants.createFollower(hardwareMap);
-        // TODO Add other Mechanisms
-
-        buildPaths();
-        follower.setPose(startPose);
-    }
-
-    public void start()
-    {
-        opModeTimer.resetTimer();
-        setPathState(pathState);
-    }
-
-    @Override
-    public void loop()
-    {
-        // Update Pose
-        follower.update();
-        statePathUpdate();
-
-        telemetry.addData("Path State", pathState.toString());
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("Heading", Math.toDegrees(follower.getPose().getHeading()));
-        telemetry.addData("Path Time", pathTimer.getElapsedTimeSeconds());
     }
 }
