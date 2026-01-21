@@ -3,16 +3,19 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
+import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.hardware.motors.CRServo;
+import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCmdArcade;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCmdTank;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
@@ -20,6 +23,8 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Li
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.TankDriveSubsystem;
+
+import java.util.function.BooleanSupplier;
 
 public class TankDriveCmdTeleOp extends CommandOpMode {
     /* ------------------- Motor Declarations -------------------*/
@@ -58,7 +63,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
     /**Drive Subsystem*/
     private TankDriveSubsystem tankDriveSubsystem;
     /**Intake Subsystem*/
-    private IntakeSubsystem intake;
+    private IntakeSubsystem intakeSubsystem;
     /**Aim Subsystem*/
     private AimSubsystem aimSubsystem;
     /**Shooter Subsystem*/
@@ -73,6 +78,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
     private DriveCmdTank driveCmdTank;
     private DriveCmdArcade driveCmdArcade;
+    private IntakeCmd intakeCmd;
 
     /* ------------------- Gamepad Declaration ------------------- */
     private GamepadEx m_driveOp;
@@ -111,8 +117,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
         // ----- Kicker Servos ----- //
         kickerRotate = hardwareMap.get(Servo.class, "kickerRotate");
-        kickerSpin = hardwareMap.get(CRServo.class, "kickerSpin");
         sFeed = hardwareMap.get(CRServo.class, "sFeed");
+        kickerSpin = hardwareMap.get(CRServo.class, "kickerSpin");
+
 
         // ----- Spindexer Servo ----- //
         spindexer = hardwareMap.get(Servo.class, "spindexer");
@@ -137,7 +144,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         //1. drive subsystem
         tankDriveSubsystem = new TankDriveSubsystem(leftMotorGroup,rightMotorGroup);
         //2. Intake subsystem
-        intake = new IntakeSubsystem(intakeMotor);
+        intakeSubsystem = new IntakeSubsystem(intakeMotor);
         //3. Kick subsystem
         kickSubsystem = new KickSubsystem(kickerRotate, kickerSpin, sFeed);
         //4. Spindexer subsystem
@@ -156,6 +163,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         //driveCmdTank = new DriveCmdTank(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightY);
             //Arcade Drive controls
         driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightX);
+        intakeCmd = new IntakeCmd(intakeSubsystem, m_driveOp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
 
 
 
@@ -164,14 +172,20 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
         /* -------------- Button Bindings -------------- */
 
-        m_driveOp.getGamepadButton(GamepadKeys.Button.A)
-                .whenHeld(new InstantCommand(intake::activate, intake))
-                .whenReleased(new InstantCommand(intake::stop, intake));
+        TriggerReader triggerReader = new TriggerReader(
+                m_driveOp, GamepadKeys.Trigger.RIGHT_TRIGGER
+        );
+        m_driveOp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+
+        if ( triggerReader.isDown() ) {
+            //(new InstantCommand(intakeCmd);
+        }
+        //Trigger rightTrigger = new Trigger(() -> true);
+        //rightTrigger.whenActive(intakeCmd);
+
         m_driveOp.getGamepadButton(GamepadKeys.Button.B)
-                .whenHeld(new InstantCommand(intake::reverse, intake))
-                .whenReleased(new InstantCommand(intake::stop, intake));
-
-
+                .whenHeld(new InstantCommand(intakeSubsystem::reverse, intakeSubsystem))
+                .whenReleased(new InstantCommand(intakeSubsystem::stop, intakeSubsystem));
 
 
 

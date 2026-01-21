@@ -17,8 +17,8 @@ public class IntakeSubsystem extends SubsystemBase {
        this.intakeMotor = intakeMotor;
     }
 
-    public void activate() {
-        intakeMotor.set(0.75);
+    public void activate(double power) {
+        intakeMotor.set(power);
        // rightMotor.set(-0.75);
     }
 

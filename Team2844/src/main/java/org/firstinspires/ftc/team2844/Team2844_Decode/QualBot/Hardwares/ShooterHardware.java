@@ -47,7 +47,7 @@ public class ShooterHardware {
      * Shooter Conversions
      */
     public final double ENCODER_TICS = 28;
-    public final double VEL_THRESH = 1;
+    public double velThresh = 1;
     public final double VEL_BOTTOM_THRESH = 1.5;
 
     public double shooterVel = 30;
@@ -99,6 +99,11 @@ public class ShooterHardware {
         newShooterCoefficients = new PIDFCoefficients(3.6, 3.2, 2.8, 3.7);
         shooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
 
+    }
+
+    public ShooterHardware(LinearOpMode opMode, boolean auto){
+        new ShooterHardware(opMode);
+        velThresh = 1;
     }
 
     /*
@@ -198,7 +203,7 @@ public class ShooterHardware {
     }
 
     public boolean withinVel(double targVel){
-        return ((targVel) < getShootVelocity()) && (getShootVelocity() < (targVel + VEL_THRESH));
+        return ((targVel) < getShootVelocity()) && (getShootVelocity() < (targVel + velThresh));
     }
 
     public boolean belowVel(double targVel){
