@@ -15,43 +15,48 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Constants {
 
+    /* ===================== ROBOT PHYSICAL PROPERTIES ===================== */
 
-    // ---------- ROBOT PHYSICAL PROPERTIES ----------
-    public static final double ROBOT_MASS_KG;
+    public static final double ROBOT_MASS_KG = 12.05;
 
-    public static final double FORWARD_ZERO_POWER_ACCEL;
-    public static final double LATERAL_ZERO_POWER_ACCEL;
+    public static final double FORWARD_ZERO_POWER_ACCEL = 0;   // placeholder
+    public static final double LATERAL_ZERO_POWER_ACCEL = 0;   // placeholder
 
-    // ---------- PIDF COEFFICIENTS ----------
-    public static final double TRANSLATIONAL_P;
-    public static final double TRANSLATIONAL_I;
-    public static final double TRANSLATIONAL_D;
-    public static final double TRANSLATIONAL_F;
+    /* ===================== PIDF COEFFICIENTS ===================== */
 
-    public static final double HEADING_P;
-    public static final double HEADING_I;
-    public static final double HEADING_D;
-    public static final double HEADING_F;
+    public static final double TRANSLATIONAL_P = 8.0; // placeholder
+    public static final double TRANSLATIONAL_I = 0.0;// placeholder// placeholder
+    public static final double TRANSLATIONAL_D = 0.4;// placeholder
+    public static final double TRANSLATIONAL_F = 0.0;// placeholder
 
-    // ---------- PATH CONSTRAINTS ----------
-    public static final double MAX_PATH_POWER;
-    public static final double MAX_PATH_VELOCITY;
-    public static final double MAX_PATH_ACCEL;
-    public static final double MAX_PATH_DECEL;
+    public static final double HEADING_P = 6.0;// placeholder
+    public static final double HEADING_I = 0.0;// placeholder
+    public static final double HEADING_D = 0.3;// placeholder
+    public static final double HEADING_F = 0.0;// placeholder
 
-    // ---------- MECANUM VELOCITIES ----------
-    public static final double MAX_X_VELOCITY;
-    public static final double MAX_Y_VELOCITY;
+    /* ===================== PATH CONSTRAINTS ===================== */
 
-    // ---------- ODOMETRY CONVERSIONS ----------
-    public static final double FORWARD_TICKS_TO_INCHES;
-    public static final double STRAFE_TICKS_TO_INCHES;
-    public static final double TURN_TICKS_TO_INCHES;
+    public static final double MAX_PATH_POWER   = 1.0;
+    public static final double MAX_PATH_VELOCITY = 60.0; // in/s
+    public static final double MAX_PATH_ACCEL    = 60.0; // in/s^2
+    public static final double MAX_PATH_DECEL    = 60.0; // in/s^2
 
-    // ---------- ODOMETRY POD POSITIONS ----------
-    public static final double LEFT_POD_Y;
-    public static final double RIGHT_POD_Y;
-    public static final double STRAFE_POD_X;
+    /* ===================== MECANUM VELOCITIES ===================== */
+
+    public static final double MAX_X_VELOCITY = 60.0;
+    public static final double MAX_Y_VELOCITY = 60.0;
+
+    /* ===================== ODOMETRY CONVERSIONS ===================== */
+
+    public static final double FORWARD_TICKS_TO_INCHES = 0.000975; // placeholder
+    public static final double STRAFE_TICKS_TO_INCHES  = 0.000975; // placeholder
+    public static final double TURN_TICKS_TO_INCHES    = 0.000975; // placeholder
+
+    /* ===================== ODOMETRY POD POSITIONS ===================== */
+
+    public static final double LEFT_POD_Y   = 7.0;// placeholder  16.8 total 5.1 apart
+    public static final double RIGHT_POD_Y  = -7.0;// placeholder
+    public static final double STRAFE_POD_X = -6.0;// placeholder
 
     /* ===================== FOLLOWER CONSTANTS ===================== */
 
@@ -81,9 +86,11 @@ public class Constants {
                                     TRANSLATIONAL_P,
                                     TRANSLATIONAL_I,
                                     TRANSLATIONAL_D,
+                                    0.02,                 // T = derivative filter time constant
                                     TRANSLATIONAL_F
                             )
                     );
+
 
     /* ===================== PATH CONSTRAINTS ===================== */
 
@@ -106,8 +113,8 @@ public class Constants {
                     .leftRearMotorName("lbMotor")
                     .leftFrontMotorName("lfMotor")
 
-                    .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-                    .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
+                    .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+                    .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
                     .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
                     .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
 
@@ -126,13 +133,13 @@ public class Constants {
                     .rightPodY(RIGHT_POD_Y)
                     .strafePodX(STRAFE_POD_X)
 
-                    .leftEncoder_HardwareMapName("leftOdo")
+                    .leftEncoder_HardwareMapName("intakeMotor")
                     .rightEncoder_HardwareMapName("rightOdo")
                     .strafeEncoder_HardwareMapName("strafeOdo")
 
                     .leftEncoderDirection(Encoder.FORWARD)
-                    .rightEncoderDirection(Encoder.FORWARD)
-                    .strafeEncoderDirection(Encoder.FORWARD)
+                    .rightEncoderDirection(Encoder.REVERSE)
+                    .strafeEncoderDirection(Encoder.REVERSE)
 
                     .IMU_HardwareMapName("imu")
                     .IMU_Orientation(
