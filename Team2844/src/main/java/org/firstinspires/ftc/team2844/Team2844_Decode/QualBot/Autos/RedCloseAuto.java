@@ -20,7 +20,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuicksta
 
 import java.util.Arrays;
 
-@Autonomous(name = "Red Near Goal: Backup")
+@Autonomous(name = "Red Near Goal")
 public class RedCloseAuto extends LinearOpMode {
 
     long BUFFER_TIME = 1200;
@@ -54,7 +54,7 @@ public class RedCloseAuto extends LinearOpMode {
         TurnConstraints shakeConstraints = new TurnConstraints((Math.PI), -(3*Math.PI), (3*Math.PI));
 
         AccelConstraint baseAccelConstraint = new ProfileAccelConstraint(-55.0, 55.0);
-        AccelConstraint backUpAccelConstraint = new ProfileAccelConstraint(-30.0, 30.0);
+        AccelConstraint backUpAccelConstraint = new ProfileAccelConstraint(-25.0, 25.0);
         AccelConstraint longAccelConstraint = new ProfileAccelConstraint(-35.0, 35.0);
 
 
@@ -65,38 +65,39 @@ public class RedCloseAuto extends LinearOpMode {
                 .lineToYSplineHeading(-25, -(0.785398+Math.toRadians(5)), baseSpeed, baseAccelConstraint);
 
         TrajectoryActionBuilder pickupBalls1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(40, -25), -0.785398))
-                .splineToLinearHeading(new Pose2d(8.5, -25, -Math.PI/2), -Math.PI/2, baseSpeed, baseAccelConstraint)
+                .splineToLinearHeading(new Pose2d(12, -25, -Math.PI/2), -Math.PI/2, baseSpeed, baseAccelConstraint)
                 .setReversed(true)
-                .strafeToConstantHeading(new Vector2d(8.5, -60), baseSpeed, baseAccelConstraint)
+                .strafeToConstantHeading(new Vector2d(12, -60), baseSpeed, baseAccelConstraint)
                 .lineToYConstantHeading(-45, lastSpeed, backUpAccelConstraint);
 
-        TrajectoryActionBuilder backUpToShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(8.5, -45), -Math.PI/2))
+        TrajectoryActionBuilder backUpToShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(12, -45), -Math.PI/2))
                 .splineToSplineHeading(new Pose2d(24, -24, -Math.PI/3.5), -Math.PI/2, lastSpeed, longAccelConstraint);
 
-        TrajectoryActionBuilder backUp1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(8.5, -45), -Math.PI/2))
+        TrajectoryActionBuilder backUp1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(12, -45), -Math.PI/2))
                 .turn(Math.toRadians(-15), shakeConstraints)
                 .turn(Math.toRadians(30), shakeConstraints);
 
 
-        TrajectoryActionBuilder moveToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(8.5, -45), -((Math.PI/2)+Math.toRadians(15))))
+        TrajectoryActionBuilder moveToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(12, -45), -((Math.PI/2)+Math.toRadians(15))))
                 .splineToLinearHeading(new Pose2d(24, -24, -Math.PI/3.5), -2*Math.PI/3, lastSpeed, backUpAccelConstraint);
 
         TrajectoryActionBuilder pickupBalls2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, -24), -Math.PI/3.5))
-                .splineToLinearHeading(new Pose2d(-15, -24, -Math.PI/2), -(Math.PI)/2, baseSpeed, baseAccelConstraint)
+                .splineToLinearHeading(new Pose2d(-12, -24, -Math.PI/2), -(Math.PI)/2, baseSpeed, baseAccelConstraint)
                 .setReversed(true)
-                .strafeToConstantHeading(new Vector2d(-15, -66), baseSpeed, baseAccelConstraint)
+                .strafeToConstantHeading(new Vector2d(-12, -66), baseSpeed, baseAccelConstraint)
                 .lineToYConstantHeading(-50, lastSpeed, backUpAccelConstraint);;
 
-        TrajectoryActionBuilder backUpToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-15, -45), -Math.PI/2))
-                .splineToSplineHeading(new Pose2d(36, -12, -(Math.PI/3.5)), -(Math.PI/3.5), lastSpeed, longAccelConstraint);
+        TrajectoryActionBuilder backUpToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-12, -45), -Math.PI/2))
+                .lineToY(-35, lastSpeed)
+                .strafeToLinearHeading(new Vector2d(36, -20), -(Math.PI/3.5), lastSpeed, new ProfileAccelConstraint(-35, 35));
 
-        TrajectoryActionBuilder backUp2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-15, -45), -Math.PI/2))
+        TrajectoryActionBuilder backUp2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-12, -45), -Math.PI/2))
                 .lineToY(-40, baseSpeed, backUpAccelConstraint)
                 .turn(Math.toRadians(-15), shakeConstraints)
                 .turn(Math.toRadians(30), shakeConstraints);
 
-        TrajectoryActionBuilder moveToShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-14.5, -45), -((Math.PI/2)+Math.toRadians(15))))
-                .splineToSplineHeading(new Pose2d(36, -12, -(Math.PI/3.5)), 0, lastSpeed, new ProfileAccelConstraint(-30, 30));
+        TrajectoryActionBuilder moveToShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-12, -45), -((Math.PI/2)+Math.toRadians(15))))
+                .splineToSplineHeading(new Pose2d(36, -20, -(Math.PI/3.5)), 0, lastSpeed, new ProfileAccelConstraint(-30, 30));
 
 
         //start of moving
@@ -168,7 +169,7 @@ public class RedCloseAuto extends LinearOpMode {
         shooterHardware.setShootPower(0.2);
 
         if(limelightHardware.getTx() != -999){
-            TrajectoryActionBuilder rotateShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(36, -12), -(Math.PI/3.5)))
+            TrajectoryActionBuilder rotateShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(36, -20), -(Math.PI/3.5)))
                     .turn(Math.toRadians(-limelightHardware.getTx()));
             Actions.runBlocking(rotateShoot3.build());
         }
@@ -192,6 +193,7 @@ public class RedCloseAuto extends LinearOpMode {
             }
             //count++;
         }
+        shooterHardware.setShootPower(shooterHardware.getShootPowerLINREG(shooterVelocity));
         shooterHardware.feed();
         sleep(BUFFER_TIME);
         shooterHardware.setShootVelocity(0.0);

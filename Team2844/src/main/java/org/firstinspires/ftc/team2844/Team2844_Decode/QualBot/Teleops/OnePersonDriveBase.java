@@ -208,40 +208,40 @@ public class OnePersonDriveBase extends LinearOpMode {
                  alignPress = false;
             }
 
-            if(gamepad1.dpad_up){
-                if(!dPadUp){
-                    //shooterVelocity += 1;
-                    dPadUp = true;
-                }
-            } else {
-                dPadUp = false;
-            }
-
-            if(gamepad1.dpad_down){
-                if(!dPadDown){
-                    //shooterVelocity -= 1;
-                    dPadDown = true;
-                }
-            } else {
-                dPadDown = false;
-            }
-
-            if(gamepad1.dpad_left){
-                if(!dPadLeft){
-
-                    dPadLeft = true;
-                }
-            } else {
-                dPadLeft = false;
-            }
-
-            if(gamepad1.dpad_right){
-                if(!dPadRight){
-                    dPadRight = true;
-                }
-            } else {
-                dPadRight = false;
-            }
+//            if(gamepad1.dpad_up){
+//                if(!dPadUp){
+//                    //shooterVelocity += 1;
+//                    dPadUp = true;
+//                }
+//            } else {
+//                dPadUp = false;
+//            }
+//
+//            if(gamepad1.dpad_down){
+//                if(!dPadDown){
+//                    //shooterVelocity -= 1;
+//                    dPadDown = true;
+//                }
+//            } else {
+//                dPadDown = false;
+//            }
+//
+//            if(gamepad1.dpad_left){
+//                if(!dPadLeft){
+//
+//                    dPadLeft = true;
+//                }
+//            } else {
+//                dPadLeft = false;
+//            }
+//
+//            if(gamepad1.dpad_right){
+//                if(!dPadRight){
+//                    dPadRight = true;
+//                }
+//            } else {
+//                dPadRight = false;
+//            }
 
             if(autoAlign || shooterAlign){
                 double limelightResult = limelightHardware.getTx();

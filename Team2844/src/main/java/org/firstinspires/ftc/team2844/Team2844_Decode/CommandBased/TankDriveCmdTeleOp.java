@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Dr
 
 import java.util.function.BooleanSupplier;
 
+@Disabled
 public class TankDriveCmdTeleOp extends CommandOpMode {
     /* ------------------- Motor Declarations -------------------*/
     /**Drive motor parameter pass-ins*/
