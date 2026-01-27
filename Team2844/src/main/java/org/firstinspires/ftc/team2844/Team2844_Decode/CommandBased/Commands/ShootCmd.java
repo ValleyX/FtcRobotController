@@ -17,7 +17,7 @@ public class ShootCmd extends CommandBase {
 
     @Override
     public void execute(){
-        shooterSubsystem.
+       // shooterSubsystem.
     }
 }
 
