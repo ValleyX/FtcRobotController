@@ -5,12 +5,14 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.MotorExGroup;
+
 //Shooter Subsystem for the turret targeting, and the shooter motor
 public class ShooterSubsystem extends SubsystemBase {
 
     //Shooting Motor
     /**The group of motors that run the flywheel*/
-    private MotorGroup shooterMotors;
+    private MotorExGroup shooterMotors;
     /**The continuous servo that runs the feeder in the neck of the shooter*/
     private CRServo tFeed;
 
@@ -23,9 +25,13 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param shooterMotors The Flywheel motor group that shoots the artifacts
      * @param tFeed The last intaker that is located on the neck of the shooter and determines when the artifact is launched
      */
-    public ShooterSubsystem(MotorGroup shooterMotors, CRServo tFeed){
+    public ShooterSubsystem(MotorExGroup shooterMotors, CRServo tFeed){
         this.shooterMotors = shooterMotors;
         this.tFeed = tFeed;
+    }
+
+    public void setPower(){
+        //shooterMotors.();
     }
 
 }

@@ -17,6 +17,7 @@ public class IntakeCmd extends CommandBase {
     @Override
     public void execute(){
         intakeSubsystem.activate(power);
+
     }
 
     @Override

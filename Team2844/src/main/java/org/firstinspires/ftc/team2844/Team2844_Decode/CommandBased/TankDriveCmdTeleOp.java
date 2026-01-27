@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
-import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.RunCommand;
-import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -25,7 +25,9 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Sh
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.TankDriveSubsystem;
 
-import java.util.function.BooleanSupplier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Disabled
 public class TankDriveCmdTeleOp extends CommandOpMode {
@@ -36,9 +38,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
     private MotorGroup leftMotorGroup, rightMotorGroup;
 
     /**Motors for shooter subsystem pass-ins (one the motors in the pair of shooter motors)*/
-    private Motor shooterLeft, shooterRight;
+    private MotorEx shooterLeft, shooterRight;
     /**Motor group of the shooters, the left shooter should be inverted*/
-    private MotorGroup shooterPair;
+    private MotorExGroup shooterPair;
 
     /**Intake Motor*/
     private Motor intakeMotor;
@@ -80,10 +82,12 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
     private DriveCmdTank driveCmdTank;
     private DriveCmdArcade driveCmdArcade;
-    private IntakeCmd intakeCmd;
+    IntakeCmd stopIntakeCmd;
+    IntakeCmd runIntakeCmd;
 
     /* ------------------- Gamepad Declaration ------------------- */
     private GamepadEx m_driveOp;
+    TriggerReader rightTriggerReader;
 
     /* ------------------- Variable Declarations ------------------- */
     public int pipelineNum = 0;
@@ -104,11 +108,12 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         rightMotorGroup = new MotorGroup(this.frontRight,this.backRight);
 
         // ----- Shooter Motors ----- //
-        shooterLeft = new Motor(hardwareMap, "shooterLeft");
-        shooterRight = new Motor(hardwareMap, "shooterRight");
+        shooterLeft = new MotorEx(hardwareMap, "shooterLeft");
+        shooterRight = new MotorEx(hardwareMap, "shooterRight");
         shooterLeft.setInverted(true);
 
-        shooterPair = new MotorGroup(this.shooterLeft, this.shooterRight);
+        shooterPair = new MotorExGroup(new ArrayList<>(Arrays.asList(this.shooterLeft, this.shooterRight)));
+        shooterPair.setRunMode(Motor.RunMode.VelocityControl);
 
         // ----- Aim Servos ----- //
         turretAim = hardwareMap.get(Servo.class, "turretAim");
@@ -116,6 +121,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
         // ----- Intake ----- //
         intakeMotor = new Motor(hardwareMap, "intakeMotor");
+        intakeMotor.setInverted(true);
 
         // ----- Kicker Servos ----- //
         kickerRotate = hardwareMap.get(Servo.class, "kickerRotate");
@@ -164,8 +170,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
             //Create a new drive command and pass in the drive subsystem and the gamepad control values
         //driveCmdTank = new DriveCmdTank(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightY);
             //Arcade Drive controls
-        driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightX);
-        intakeCmd = new IntakeCmd(intakeSubsystem, m_driveOp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+        driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getLeftX);
+        runIntakeCmd = new IntakeCmd(intakeSubsystem, 0.75);
+        stopIntakeCmd = new IntakeCmd(intakeSubsystem, 0.0);
 
 
 
@@ -174,21 +181,15 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
         /* -------------- Button Bindings -------------- */
 
-        TriggerReader triggerReader = new TriggerReader(
+        rightTriggerReader = new TriggerReader(
                 m_driveOp, GamepadKeys.Trigger.RIGHT_TRIGGER
         );
-        m_driveOp.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
 
-        if ( triggerReader.isDown() ) {
-            //(new InstantCommand(intakeCmd);
-        }
-        //Trigger rightTrigger = new Trigger(() -> true);
-        //rightTrigger.whenActive(intakeCmd);
-
+/*
         m_driveOp.getGamepadButton(GamepadKeys.Button.B)
                 .whenHeld(new InstantCommand(intakeSubsystem::reverse, intakeSubsystem))
                 .whenReleased(new InstantCommand(intakeSubsystem::stop, intakeSubsystem));
-
+*/
 
 
         /* -------------- Driving Command Loop -------------- */
@@ -206,5 +207,30 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
             // update telemetry every loop
         schedule(new RunCommand(telemetry::update));
 
+    }
+
+    public void runOpMode(){
+        CommandScheduler.getInstance().reset();
+        initialize();
+        waitForStart();
+
+
+        while (opModeIsActive()){
+            //Scheduler must be loop called for everything else to run
+            CommandScheduler.getInstance().run();
+
+
+            //Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
+            if ( rightTriggerReader.isDown() ) {
+                runIntakeCmd.schedule();
+                telemetry.addData("Right Trigger is down: ", true);
+            } else {
+                stopIntakeCmd.schedule();
+                telemetry.addData("Right Trigger is down: ", false);
+            }
+
+
+            rightTriggerReader.readValue();
+        }
     }
 }

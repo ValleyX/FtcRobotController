@@ -14,12 +14,11 @@ public class IntakeSubsystem extends SubsystemBase {
     IntakeSubsystem Class Constructor
      */
     public IntakeSubsystem(Motor intakeMotor) {
-       this.intakeMotor = intakeMotor;
+        this.intakeMotor = intakeMotor;
     }
 
     public void activate(double power) {
         intakeMotor.set(power);
-       // rightMotor.set(-0.75);
     }
 
     public void stop() {
