@@ -2,6 +2,8 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Teleops;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.RobotHardware;
@@ -28,6 +30,8 @@ public class OnePersonDriveBase extends LinearOpMode {
     boolean pressingStick = false;
     boolean babymode = false;
     private final double BABY_MULT = 0.4;
+    boolean dUp = false;
+    boolean dDown = false;
 
     //What am I?
     boolean red = false;
@@ -70,6 +74,10 @@ public class OnePersonDriveBase extends LinearOpMode {
         shooterHardware = new ShooterHardware(this);
         //limelightHardware = new LimelightHardware(this);
         OpMode_ = this;
+
+        PIDFCoefficients shooterCoefficients = shooterHardware.shooterMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        PIDFCoefficients newShooterCoefficients = new PIDFCoefficients(40, 0, 15, 25);
+        shooterHardware.shooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
 
         //If we end auto facing the back of the field (away from audience) then comment out this line
         robotHardware.resetImu();
@@ -206,6 +214,25 @@ public class OnePersonDriveBase extends LinearOpMode {
                 }
             } else {
                  alignPress = false;
+            }
+
+
+            if(gamepad1.dpad_up){
+                if(!dUp) {
+                    shooterVelocity += .5;
+                    dUp = !dUp;
+                }
+            } else {
+                dUp = false;
+            }
+
+            if(gamepad1.dpad_down){
+                if(!dDown) {
+                    shooterVelocity -= .5;
+                    dDown = !dDown;
+                }
+            } else {
+                dDown = false;
             }
 
 //            if(gamepad1.dpad_up){

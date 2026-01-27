@@ -47,7 +47,7 @@ public class ShooterHardware {
      * Shooter Conversions
      */
     public final double ENCODER_TICS = 28;
-    public double velThresh = 1;
+    public double velThresh = 10;
     public final double VEL_BOTTOM_THRESH = 1.5;
 
     public double shooterVel = 30;
@@ -174,7 +174,8 @@ public class ShooterHardware {
 
     public double getShootSpeed(double distance) {
         if (distance != -999) {
-            shooterVel = ((0.1547058824*distance) + 26.43294118);
+            shooterVel = ((0.1445058824*distance) + 25.99294118);
+            //shooterVel = ((0.1824324324*distance) + 21.88378378);
             return shooterVel;
         } else {
             return 30;

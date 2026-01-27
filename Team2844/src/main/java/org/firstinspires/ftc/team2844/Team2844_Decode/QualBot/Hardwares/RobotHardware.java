@@ -36,7 +36,7 @@ public class RobotHardware {
 
 
 
-    public final double TURN_THRESH = 2.3;
+    public final double TURN_THRESH = 1.8;
     public final double SLOW_THRESH = 15;
     public final double PGAIN = 0.04;
 
