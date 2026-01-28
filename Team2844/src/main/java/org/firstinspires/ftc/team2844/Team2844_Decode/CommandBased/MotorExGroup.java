@@ -17,51 +17,51 @@ public class MotorExGroup{
 
     /**Sets velocity to the motor in ticks per second*/
     public void setVelocity(double velocity){
-        for(int i = 0; i <= motorExList.size(); i++){
+        for(int i = 0; i < motorExList.size(); i++){
             motorExList.get(i).setVelocity(velocity);
         }
     }
 
     /** Reverses the directions of the motors in the motor groutp*/
     public void setInverted(){
-        for(int i = 0; i <= motorExList.size(); i++){
+        for(int i = 0; i < motorExList.size(); i++){
             motorExList.get(i).setInverted(!motorExList.get(i).getInverted());
         }
     }
 
     /**Sets the power to the motors; ranges -1 to 1, (0 is stopped)*/
     public void set(double power){
-        for(int i = 0; i <= motorExList.size(); i++){
+        for(int i = 0; i < motorExList.size(); i++){
             motorExList.get(i).set(power);
         }
     }
 
     public void setZeroPowerBehavior(Motor.ZeroPowerBehavior behavior){
-        for(int i = 0; i <= motorExList.size(); i++){
+        for(int i = 0; i < motorExList.size(); i++){
             motorExList.get(i).setZeroPowerBehavior(behavior);
         }
     }
 
     public void setVeloCoefficients(double kp, double ki, double kd){
-        for(int i = 0; i <= motorExList.size(); i++){
+        for(int i = 0; i < motorExList.size(); i++){
             motorExList.get(i).setVeloCoefficients(kp, ki, kd);
         }
     }
 
     public void setFeedforwardCoefficients(double ks, double kv, double ka){
-        for(int i = 0; i <= motorExList.size(); i++){
+        for(int i = 0; i < motorExList.size(); i++){
             motorExList.get(i).setFeedforwardCoefficients(ks, kv, ka);
         }
     }
 
     public void setFeedforwardCoefficients(double ks, double kv){
-        for(int i = 0; i <= motorExList.size(); i++){
+        for(int i = 0; i < motorExList.size(); i++){
             motorExList.get(i).setFeedforwardCoefficients(ks, kv);
         }
     }
 
     public void setRunMode(MotorEx.RunMode runMode){
-        for(int i = 0; i <= motorExList.size(); i++){
+        for(int i = 0; i < motorExList.size(); i++){
             motorExList.get(i).setRunMode(runMode);
         }
     }

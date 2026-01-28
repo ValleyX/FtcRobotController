@@ -4,17 +4,17 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.IntakeSubsystem;
 
-public class IntakeCmd extends CommandBase {
+public class StopIntakeCmd  extends CommandBase {
     private IntakeSubsystem intakeSubsystem;
 
-    public IntakeCmd(IntakeSubsystem intakeSubsystem){
+    public StopIntakeCmd(IntakeSubsystem intakeSubsystem){
         this.intakeSubsystem = intakeSubsystem;
         addRequirements(intakeSubsystem);
     }
 
     @Override
     public void execute(){
-        intakeSubsystem.activate(0.9);
+        intakeSubsystem.activate(0.0);
     }
 
     @Override

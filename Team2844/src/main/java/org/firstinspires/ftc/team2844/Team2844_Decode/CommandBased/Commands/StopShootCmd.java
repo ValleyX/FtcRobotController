@@ -3,21 +3,19 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterSubsystem;
-import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.ShooterHardware;
 
-public class ShootCmd extends CommandBase {
+public class StopShootCmd extends CommandBase {
 
     ShooterSubsystem shooterSubsystem;
 
-    public ShootCmd(ShooterSubsystem shooterSubsystem){
+    public StopShootCmd(ShooterSubsystem shooterSubsystem) {
         this.shooterSubsystem = shooterSubsystem;
-
         addRequirements(shooterSubsystem);
     }
 
     @Override
-    public void execute(){
-        shooterSubsystem.setPower(0.5);
+    public void execute() {
+        shooterSubsystem.setPower(0.0);
     }
 
     @Override
@@ -25,4 +23,3 @@ public class ShootCmd extends CommandBase {
         return true;
     }
 }
-

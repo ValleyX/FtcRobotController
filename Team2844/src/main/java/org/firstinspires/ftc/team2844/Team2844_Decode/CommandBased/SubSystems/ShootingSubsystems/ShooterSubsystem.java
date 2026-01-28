@@ -30,8 +30,12 @@ public class ShooterSubsystem extends SubsystemBase {
         this.tFeed = tFeed;
     }
 
-    public void setPower(){
-        //shooterMotors.();
+    public void setPower(double power){
+        shooterMotors.set(power);
+    }
+
+    public void setVelocity(double velocity){
+        shooterMotors.setVelocity(velocity);
     }
 
 }

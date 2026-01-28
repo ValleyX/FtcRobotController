@@ -27,6 +27,37 @@ public class KickSubsystem extends SubsystemBase {
         this.kickerRotate = kickerRotate;
         this.kickerSpin = kickerSpin;
         this.sFeed = sFeed;
+    }
 
+    public void runSFeedForward(){
+        sFeed.setPower(-1);
+    }
+
+    public void runSFeedBackward(){
+        sFeed.setPower(1);
+    }
+
+    public void stopSFeed(){
+        sFeed.setPower(0.0);
+    }
+
+    public void runKickerSpin(){
+        kickerSpin.setPower(-1);
+    }
+
+    public void stopKickerSpin(){
+        kickerSpin.setPower(0.0);
+    }
+
+    public void rotateKickerDown(){
+        kickerRotate.setPosition(0.28);
+    }
+
+    public void rotateKickerUp(){
+        kickerRotate.setPosition(0.0);
+    }
+
+    public double getKickerRotate(){
+        return kickerRotate.getPosition();
     }
 }

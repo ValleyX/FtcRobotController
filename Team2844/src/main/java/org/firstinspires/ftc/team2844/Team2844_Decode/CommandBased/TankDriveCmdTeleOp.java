@@ -17,6 +17,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCmdArcade;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCmdTank;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.StopIntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.StopShootCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.StopUptakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.UptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
@@ -82,8 +87,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
     private DriveCmdTank driveCmdTank;
     private DriveCmdArcade driveCmdArcade;
-    IntakeCmd stopIntakeCmd;
+    StopIntakeCmd stopIntakeCmd;
     IntakeCmd runIntakeCmd;
+    UptakeCmd uptakeCmd;
 
     /* ------------------- Gamepad Declaration ------------------- */
     private GamepadEx m_driveOp;
@@ -113,7 +119,8 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         shooterLeft.setInverted(true);
 
         shooterPair = new MotorExGroup(new ArrayList<>(Arrays.asList(this.shooterLeft, this.shooterRight)));
-        shooterPair.setRunMode(Motor.RunMode.VelocityControl);
+        shooterPair.setRunMode(Motor.RunMode.RawPower);
+        shooterPair.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
         // ----- Aim Servos ----- //
         turretAim = hardwareMap.get(Servo.class, "turretAim");
@@ -125,6 +132,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
         // ----- Kicker Servos ----- //
         kickerRotate = hardwareMap.get(Servo.class, "kickerRotate");
+        kickerRotate.setPosition(0.0);
         sFeed = hardwareMap.get(CRServo.class, "sFeed");
         kickerSpin = hardwareMap.get(CRServo.class, "kickerSpin");
 
@@ -171,8 +179,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         //driveCmdTank = new DriveCmdTank(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightY);
             //Arcade Drive controls
         driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getLeftX);
-        runIntakeCmd = new IntakeCmd(intakeSubsystem, 0.75);
-        stopIntakeCmd = new IntakeCmd(intakeSubsystem, 0.0);
+        runIntakeCmd = new IntakeCmd(intakeSubsystem);
+        stopIntakeCmd = new StopIntakeCmd(intakeSubsystem);
+        uptakeCmd = new UptakeCmd(kickSubsystem);
 
 
 
@@ -184,6 +193,14 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         rightTriggerReader = new TriggerReader(
                 m_driveOp, GamepadKeys.Trigger.RIGHT_TRIGGER
         );
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whenHeld(new ShootCmd(shooterSubsystem))
+                        .whenReleased(new StopShootCmd(shooterSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.A)
+                .whenHeld(new UptakeCmd(kickSubsystem))
+                .whenReleased(new StopUptakeCmd(kickSubsystem));
 
 /*
         m_driveOp.getGamepadButton(GamepadKeys.Button.B)
@@ -229,7 +246,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
                 telemetry.addData("Right Trigger is down: ", false);
             }
 
-
+            telemetry.addData("The rotating kicker value: ", kickSubsystem.getKickerRotate());
             rightTriggerReader.readValue();
         }
     }
