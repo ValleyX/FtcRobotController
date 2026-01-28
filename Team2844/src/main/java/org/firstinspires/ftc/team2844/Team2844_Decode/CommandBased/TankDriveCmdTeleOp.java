@@ -2,6 +2,8 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -14,14 +16,24 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCmdArcade;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCmdTank;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.StopIntakeCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.StopShootCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.StopUptakeCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.UptakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimHoodCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimTurretCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodPositive;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretNegative;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretPositive;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.DriveCmdArcade;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.DriveCmdTank;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ShootCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopShootCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopTransferCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.TransferCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.BayOneCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.BayThreeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.BayTwoCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
@@ -32,7 +44,6 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Dr
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @Disabled
 public class TankDriveCmdTeleOp extends CommandOpMode {
@@ -122,6 +133,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         shooterPair.setRunMode(Motor.RunMode.RawPower);
         shooterPair.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
+        // ----- Shooter Servos ----- //
+        tFeed = hardwareMap.get(CRServo.class, "tFeed");
+
         // ----- Aim Servos ----- //
         turretAim = hardwareMap.get(Servo.class, "turretAim");
         hoodAim = hardwareMap.get(Servo.class, "hoodAim");
@@ -199,8 +213,33 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
                         .whenReleased(new StopShootCmd(shooterSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)
-                .whenHeld(new UptakeCmd(kickSubsystem))
-                .whenReleased(new StopUptakeCmd(kickSubsystem));
+                .whenHeld(new ParallelCommandGroup( new UptakeCmd(kickSubsystem),
+                        new TransferCmd(shooterSubsystem)))
+                .whenReleased( new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem),
+                        new StopTransferCmd(shooterSubsystem)));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.X)
+                .whenPressed(new BayOneCmd(spindexerSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.B)
+                .whenPressed(new BayTwoCmd(spindexerSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(new BayThreeCmd(spindexerSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(new AimTurretCmd(aimSubsystem, limelightSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new MoveTurretPositive(aimSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
+                .whenPressed(new AimHoodCmd(aimSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
+                .whenPressed(new MoveHoodPositive(aimSubsystem));
+
+
 
 /*
         m_driveOp.getGamepadButton(GamepadKeys.Button.B)
@@ -231,6 +270,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         initialize();
         waitForStart();
 
+        aimSubsystem.aimTurret(0.0);
 
         while (opModeIsActive()){
             //Scheduler must be loop called for everything else to run
@@ -247,6 +287,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
             }
 
             telemetry.addData("The rotating kicker value: ", kickSubsystem.getKickerRotate());
+            telemetry.addData("The Value of the Turret: ", aimSubsystem.getTurretValue());
             rightTriggerReader.readValue();
         }
     }

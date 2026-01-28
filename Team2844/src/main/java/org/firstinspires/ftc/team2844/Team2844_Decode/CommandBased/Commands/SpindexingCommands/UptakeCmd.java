@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands;
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
@@ -9,6 +9,7 @@ public class UptakeCmd extends CommandBase {
 
     public UptakeCmd(KickSubsystem kickSubsystem){
         this.kickSubsystem = kickSubsystem;
+        addRequirements(kickSubsystem);
     }
 
     @Override

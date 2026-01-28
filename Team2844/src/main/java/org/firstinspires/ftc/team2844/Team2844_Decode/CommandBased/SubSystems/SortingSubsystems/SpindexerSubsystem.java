@@ -45,5 +45,15 @@ public class SpindexerSubsystem extends SubsystemBase {
         color2Bay3 = opMode.hardwareMap.get(ColorSensor.class, "color2Bay3");
     }
 
+    public void runToBayOne(){
+        spindexer.setPosition(0.0);
+    }
 
+    public void runToBayTwo(){
+        spindexer.setPosition(0.39);
+    }
+
+    public void runToBayThree(){
+        spindexer.setPosition(0.78);
+    }
 }

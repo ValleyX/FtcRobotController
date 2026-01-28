@@ -1,23 +1,24 @@
-package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands;
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.TankDriveSubsystem;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 
 import java.util.function.DoubleSupplier;
 
-public class DriveCmdTank extends CommandBase {
+public class DriveCommand extends CommandBase {
 
-    private TankDriveSubsystem tankDriveSubsystem;
-    private DoubleSupplier leftSpeed, rightSpeed;
+    private DriveSubsystem driveSubsystem;
+    private DoubleSupplier strafe, forward, turn;
 
-    public DriveCmdTank(TankDriveSubsystem tankDriveSubsystem, DoubleSupplier leftSpeed, DoubleSupplier rightSpeed) {
-        this.tankDriveSubsystem = tankDriveSubsystem;
-        this.leftSpeed = leftSpeed;
-        this.rightSpeed = rightSpeed;
+    public DriveCommand(DriveSubsystem driveSubsystem, DoubleSupplier strafe, DoubleSupplier forward, DoubleSupplier turn) {
+        this.driveSubsystem = driveSubsystem;
+        this.strafe = strafe;
+        this.forward = forward;
+        this.turn = turn;
 
         //this will prevent the drive subsystem from being used by another command
-        addRequirements(tankDriveSubsystem);
+        addRequirements(driveSubsystem);
     }
 
     /* The normal process for a command is:
@@ -45,7 +46,7 @@ public class DriveCmdTank extends CommandBase {
      */
     @Override
     public void execute() {
-        tankDriveSubsystem.drive(leftSpeed.getAsDouble(), rightSpeed.getAsDouble());
-    }
+        driveSubsystem.drive(strafe.getAsDouble(), forward.getAsDouble(), turn.getAsDouble());
 
+    }
 }

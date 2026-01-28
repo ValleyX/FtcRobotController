@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands;
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 

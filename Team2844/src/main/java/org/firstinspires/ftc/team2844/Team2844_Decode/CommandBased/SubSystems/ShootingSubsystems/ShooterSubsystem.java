@@ -38,4 +38,14 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotors.setVelocity(velocity);
     }
 
+    public void runTFeedForward() {
+        tFeed.setPower(1.0);
+    }
+
+    public void stopTFeed(){
+        tFeed.setPower(0.0);
+    }
+    public void runTFeedBackward(){
+        tFeed.setPower(-1.0);
+    }
 }

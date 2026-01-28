@@ -50,7 +50,7 @@ public class KickSubsystem extends SubsystemBase {
     }
 
     public void rotateKickerDown(){
-        kickerRotate.setPosition(0.28);
+        kickerRotate.setPosition(0.25);
     }
 
     public void rotateKickerUp(){
