@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.team12841.teleOps;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.team12841.RobotHardware;
 import org.firstinspires.ftc.team12841.configs.PanelsConfig;
@@ -24,26 +23,36 @@ public class Regression extends OpMode {
     /* ===================== CONSTANTS ===================== */
 
     private static final double MAX_RPM  = 6000.0;
-    private static final double RPM_STEP = 100.0;
+    private static final double RPM_STEP = 50.0;
 
     // Limelight rotation tuning
     private static final double LL_KP      = 0.015;
     private static final double LL_MAX_ROT = 0.6;
 
+    // Turntable settle tolerance
+    private static final double TT_TOL = 0.02;
+
     /* ===================== STATE ===================== */
 
-    private double  targetRPM      = 1000.0;
+    private double  targetRPM      = 2800.0;
     private boolean shooterEnabled = false;
 
     // Button edge tracking
     private boolean dpadUpLast   = false;
     private boolean dpadDownLast = false;
     private boolean aLast        = false;
+    private boolean yLast        = false;
 
     // Turntable
     private int     ttIndex = 0;
     private boolean lbLast  = false;
     private boolean rbLast  = false;
+
+    private boolean servoFlick = false;
+
+    /* ===================== Y SEQUENCE ===================== */
+
+    private Timer yTimer;
 
     /* ===================== INIT ===================== */
 
@@ -52,18 +61,11 @@ public class Regression extends OpMode {
         robot    = new RobotHardware(this);
         follower = robot.getFollower();
 
-        // Shooter PIDF (velocity mode)
-        PIDFCoefficients pidf = new PIDFCoefficients(
-                0.0003, // P
-                0.0,    // I
-                0.0,    // D
-                2.9     // F
-        );
+        resetServo();
+        yTimer = new Timer();
 
-        robot.shooter.setPIDFCoefficients(
-                DcMotor.RunMode.RUN_USING_ENCODER,
-                pidf
-        );
+        ttIndex = 0;
+        applyTTPosition();
 
         telemetry.addLine("Init OK — warming localization");
         telemetry.update();
@@ -92,7 +94,7 @@ public class Regression extends OpMode {
     @Override
     public void start() {
         if (follower != null) {
-            follower.startTeleopDrive();
+            follower.startTeleopDrive(true);
             follower.update();
         }
     }
@@ -114,80 +116,90 @@ public class Regression extends OpMode {
 
         /* ---------- DRIVE INPUTS ---------- */
 
-        double forward = -gamepad1.right_stick_x; // rotation
-        double strafe  =  gamepad1.left_stick_x;  // left / right
-        double rotate  = -gamepad1.left_stick_y;  // forward / back
+        double rotate  = -gamepad1.right_stick_x;
+        double strafe  = -gamepad1.left_stick_x;
+        double forward = -gamepad1.left_stick_y;
 
         /* ---------- LIMELIGHT ALIGN ---------- */
 
         if (gamepad1.left_trigger > 0.2) {
-
-            robot.updateLLHeading();
-            double tx = robot.getTx();
-
-            if (tx == -999) {
-                follower.setTeleOpDrive(0, 0, 0);
-            } else {
-                double correction =
-                        clamp(-tx * LL_KP, -LL_MAX_ROT, LL_MAX_ROT);
-
-                follower.setTeleOpDrive(0, 0, correction);
-            }
-
+            robot.alignWithLimelight(-1);
         } else {
-            follower.setTeleOpDrive(forward, strafe, rotate);
+            follower.setTeleOpDrive(forward, strafe, rotate, false);
         }
 
         /* ---------- INTAKE ---------- */
 
-        if (gamepad1.right_trigger > 0.2) {
-            intakeOn();
+        if (gamepad1.right_trigger > 0.2){
+            robot.intake.setPower(1);
+        } else if (gamepad1.b) {
+            robot.intake.setPower(-1);
         } else {
-            intakeOff();
+            robot.intake.setPower(0);
         }
 
-        /* ---------- TURNTABLE ---------- */
+        if(gamepad1.guide)
+        {
+            robot.resetHeading();
+        }
 
-        rotateTurntable();
 
         /* ---------- SHOOTER TOGGLE ---------- */
 
         boolean a = gamepad1.a;
-        if (a && !aLast) {
-            shooterEnabled = !shooterEnabled;
-        }
+        if (a && !aLast) shooterEnabled = !shooterEnabled;
         aLast = a;
 
-        if (shooterEnabled) {
-            robot.setShooterRPM(targetRPM);
+        targetRPM = updateRPM();
+        if (shooterEnabled) robot.setShooterRPM(targetRPM);
+        else robot.stopShooter();
+
+        //if (gamepad1.dpad_up)
+        //    targetRPM = targetRPM + 200;
+
+        //if (gamepad1.dpad_down)
+        //{
+        //    targetRPM = targetRPM - 200;
+        //}
+
+
+        /* ---------- Y SEQUENCE ---------- */
+
+        boolean y = gamepad1.y;
+
+        if (y && !yLast)
+            servoFlick = !servoFlick;
+
+        if(servoFlick) {
+            robot.leftFlick.setPosition(PanelsConfig.LEFT_SERVO_FLICK);
+            if(gamepad1.x){
+                robot.rightFlick.setPosition(PanelsConfig.RIGHT_SERVO_FLICK);
+            } else {
+                robot.rightFlick.setPosition(PanelsConfig.RIGHT_SERVO_IDLE);
+            }
         } else {
-            robot.stopShooter();
+            robot.leftFlick.setPosition(PanelsConfig.LEFT_SERVO_IDLE);
+            robot.rightFlick.setPosition(PanelsConfig.RIGHT_SERVO_IDLE);
         }
+        yLast = y;
 
-        /* ---------- RPM ADJUST ---------- */
-
-        boolean up   = gamepad1.dpad_up;
-        boolean down = gamepad1.dpad_down;
-
-        if (up && !dpadUpLast)     targetRPM += RPM_STEP;
-        if (down && !dpadDownLast) targetRPM -= RPM_STEP;
-
-        dpadUpLast   = up;
-        dpadDownLast = down;
-
-        targetRPM = clampRPM(targetRPM);
+        rotateTurntable();
 
         /* ---------- TELEMETRY ---------- */
 
         double actualRPM =
-                (robot.shooter.getVelocity() * 60.0)
-                        / RobotHardware.SHOOTER_TICKS_PER_REV;
+                (robot.shooter.getVelocity() * 60.0) /
+                        RobotHardware.SHOOTER_TICKS_PER_REV;
 
         telemetry.addData("Target RPM", targetRPM);
         telemetry.addData("Actual RPM", actualRPM);
         telemetry.addData("TT Index", ttIndex);
-        telemetry.addData("LL tx", robot.getTx());
+        telemetry.addData("LL Dis", robot.getDistance());
         telemetry.update();
+    }
+
+    private boolean ttAtTarget(double target) {
+        return Math.abs(robot.turntableServo.getPosition() - target) < TT_TOL;
     }
 
     /* ===================== TURNTABLE ===================== */
@@ -198,12 +210,12 @@ public class Regression extends OpMode {
         boolean rb = gamepad1.right_bumper;
 
         if (lb && !lbLast) {
-            ttIndex = (ttIndex + 2) % 3; // left wrap
+            ttIndex = (ttIndex + 3) % 4;
             applyTTPosition();
         }
 
         if (rb && !rbLast) {
-            ttIndex = (ttIndex + 1) % 3; // right wrap
+            ttIndex = (ttIndex + 1) % 4;
             applyTTPosition();
         }
 
@@ -222,26 +234,19 @@ public class Regression extends OpMode {
             case 2:
                 robot.turntableServo.setPosition(PanelsConfig.TT_POS2);
                 break;
+            case 3:
+                robot.turntableServo.setPosition(PanelsConfig.TT_POS3);
         }
-    }
-
-    /* ===================== INTAKE ===================== */
-
-    private void intakeOn() {
-        robot.intake.setPower(1.0);
-    }
-
-    private void intakeOff() {
-        robot.intake.setPower(0.0);
     }
 
     /* ===================== UTILS ===================== */
 
-    private double clamp(double val, double min, double max) {
-        return Math.max(min, Math.min(max, val));
+    private double updateRPM() {
+        return robot.calculateRegression(robot.getDistance());
     }
 
-    private double clampRPM(double rpm) {
-        return Math.max(0.0, Math.min(MAX_RPM, rpm));
+    private void resetServo() {
+        robot.rightFlick.setPosition(PanelsConfig.RIGHT_SERVO_IDLE);
+        robot.leftFlick.setPosition(PanelsConfig.LEFT_SERVO_IDLE);
     }
 }
