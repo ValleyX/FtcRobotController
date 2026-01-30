@@ -13,7 +13,7 @@ public class AimHoodCmd extends CommandBase {
     }
 
     @Override
-    public void execute(){
+    public void initialize(){
         aimSubsystem.aimHood(0.0);
     }
 

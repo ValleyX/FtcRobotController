@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimHoodCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimTurretCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodNegative;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodPositive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretNegative;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretPositive;
@@ -120,9 +121,14 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         backLeft = new Motor(hardwareMap, "backLeft");
         backRight = new Motor(hardwareMap, "backRight");
 
+        backLeft.setInverted(false);
+        backRight.setInverted(false);
+
         //Create motor group with Front as the leader
         leftMotorGroup = new MotorGroup(this.frontLeft,this.backLeft);
         rightMotorGroup = new MotorGroup(this.frontRight,this.backRight);
+
+//        rightMotorGroup.setInverted(true);
 
         // ----- Shooter Motors ----- //
         shooterLeft = new MotorEx(hardwareMap, "shooterLeft");
@@ -192,8 +198,8 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
             //Create a new drive command and pass in the drive subsystem and the gamepad control values
         //driveCmdTank = new DriveCmdTank(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightY);
             //Arcade Drive controls
-        driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getLeftX);
-        runIntakeCmd = new IntakeCmd(intakeSubsystem);
+        driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightX);
+        runIntakeCmd = new IntakeCmd(intakeSubsystem, spindexerSubsystem);
         stopIntakeCmd = new StopIntakeCmd(intakeSubsystem);
         uptakeCmd = new UptakeCmd(kickSubsystem);
 
@@ -227,17 +233,18 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         m_driveOp.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(new BayThreeCmd(spindexerSubsystem));
 
+
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(new AimTurretCmd(aimSubsystem, limelightSubsystem));
+                .whenHeld(new MoveTurretNegative(aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                .whenPressed(new MoveTurretPositive(aimSubsystem));
+                .whenHeld(new MoveTurretPositive(aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-                .whenPressed(new AimHoodCmd(aimSubsystem));
+                .whenHeld(new MoveHoodNegative(aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(new MoveHoodPositive(aimSubsystem));
+                .whenHeld(new MoveHoodPositive(aimSubsystem));
 
 
 
@@ -261,6 +268,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
         /* -------------- Update Telemetry -------------- */
             // update telemetry every loop
+
         schedule(new RunCommand(telemetry::update));
 
     }
@@ -270,7 +278,8 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         initialize();
         waitForStart();
 
-        aimSubsystem.aimTurret(0.0);
+        aimSubsystem.aimTurret(0.5);
+        aimSubsystem.aimHood(0.0);
 
         while (opModeIsActive()){
             //Scheduler must be loop called for everything else to run
@@ -280,15 +289,42 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
             //Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
             if ( rightTriggerReader.isDown() ) {
                 runIntakeCmd.schedule();
-                telemetry.addData("Right Trigger is down: ", true);
             } else {
                 stopIntakeCmd.schedule();
-                telemetry.addData("Right Trigger is down: ", false);
             }
 
-            telemetry.addData("The rotating kicker value: ", kickSubsystem.getKickerRotate());
-            telemetry.addData("The Value of the Turret: ", aimSubsystem.getTurretValue());
+            telemetry();
             rightTriggerReader.readValue();
         }
+    }
+
+    public void telemetry(){
+        telemetry.addData("The rotating kicker value: ", kickSubsystem.getKickerRotate());
+        telemetry.addData("The Value of the Turret: ", aimSubsystem.getTurretValue());
+
+        telemetry.addData("Ball in Bay One: ", spindexerSubsystem.ballInBayOne());
+        telemetry.addData("Ball in Bay Two: ", spindexerSubsystem.ballInBayTwo());
+        telemetry.addData("Ball in Bay Three: ", spindexerSubsystem.ballInBayThree());
+
+        telemetry.addData("Color in Bay One: ", spindexerSubsystem.bayOneColor());
+        telemetry.addData("Color in Bay Two: ", spindexerSubsystem.bayTwoColor());
+        telemetry.addData("Color in Bay Three: ", spindexerSubsystem.bayThreeColor());
+
+        telemetry.addData("Bay Number", spindexerSubsystem.getBay());
+
+        //Bay One
+        telemetry.addData("Bay One Blue Values: ", spindexerSubsystem.bayOneBlue()[0] + ", " +spindexerSubsystem.bayOneBlue()[1]);
+        telemetry.addData("Bay One Red Values: ", spindexerSubsystem.bayOneRed()[0] + ", " +spindexerSubsystem.bayOneRed()[1]);
+        telemetry.addData("Bay One Green Values: ", spindexerSubsystem.bayOneGreen()[0] + ", " +spindexerSubsystem.bayOneGreen()[1]);
+
+        //Bay Two
+        telemetry.addData("Bay Two Blue Values: ", spindexerSubsystem.bayTwoBlue()[0] + ", " +spindexerSubsystem.bayTwoBlue()[1]);
+        telemetry.addData("Bay Two Red Values: ", spindexerSubsystem.bayTwoRed()[0] + ", " +spindexerSubsystem.bayTwoRed()[1]);
+        telemetry.addData("Bay Two Green Values: ", spindexerSubsystem.bayTwoGreen()[0] + ", " +spindexerSubsystem.bayTwoGreen()[1]);
+
+        //Bay Three
+        telemetry.addData("Bay Three Blue Values: ", spindexerSubsystem.bayThreeBlue()[0] + ", " +spindexerSubsystem.bayThreeBlue()[1]);
+        telemetry.addData("Bay Three Red Values: ", spindexerSubsystem.bayThreeRed()[0] + ", " +spindexerSubsystem.bayThreeRed()[1]);
+        telemetry.addData("Bay Three Green Values: ", spindexerSubsystem.bayThreeGreen()[0] + ", " +spindexerSubsystem.bayThreeGreen()[1]);
     }
 }

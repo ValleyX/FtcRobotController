@@ -12,7 +12,7 @@ public class MoveHoodPositive extends CommandBase {
     }
 
     @Override
-    public void execute(){
+    public void initialize(){
         aimSubsystem.moveHood(-0.1);
     }
 

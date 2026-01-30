@@ -16,7 +16,7 @@ public class AimTurretCmd extends CommandBase {
         addRequirements(aimSubsystem, limelightSubsystem);
     }
 
-    public void execute(){
+    public void initialize(){
         aimSubsystem.aimTurret(0.5);
     }
 

@@ -4,6 +4,8 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
+
 
 public class KickSubsystem extends SubsystemBase {
     /* ---------- Declarations ----------*/
@@ -50,7 +52,7 @@ public class KickSubsystem extends SubsystemBase {
     }
 
     public void rotateKickerDown(){
-        kickerRotate.setPosition(0.25);
+        kickerRotate.setPosition(Constants.MAX_KICKDOWN);
     }
 
     public void rotateKickerUp(){
