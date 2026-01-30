@@ -8,7 +8,9 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -21,7 +23,7 @@ public class RobotHardware {
 
     /* ===================== CONSTANTS ===================== */
 
-    public static final double SHOOTER_TICKS_PER_REV = 112.0;
+    public static final double SHOOTER_TICKS_PER_REV = 28.0;
 
     private static final double LIMELIGHT_YAW_OFFSET_DEG = 180.0; // LL faces backwards
 
@@ -58,13 +60,20 @@ public class RobotHardware {
     public RobotHardware(OpMode opMode) {
         this.opMode = opMode;
 
+
+
         mapHardware();
+
+        PIDFCoefficients original = shooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+
         configureMotors();
         initIMU();
         initLimelight();
         initPedro();
         follower = Constants.createFollower(opMode.hardwareMap);
 
+
+        opMode.telemetry.addData("Old PIDF", "%.04f, %.04f, %.04f, %.04f", original.p, original.i, original.d, original.f);
         opMode.telemetry.addLine("Robot ready");
         opMode.telemetry.update();
     }
@@ -95,8 +104,8 @@ public class RobotHardware {
 
     private void configureMotors() {
 
-        lf.setDirection(DcMotor.Direction.REVERSE);
-        lb.setDirection(DcMotor.Direction.REVERSE);
+        lf.setDirection(DcMotor.Direction.FORWARD);
+        lb.setDirection(DcMotor.Direction.FORWARD);
         intake.setDirection(DcMotor.Direction.REVERSE);
         shooter.setDirection(DcMotor.Direction.REVERSE);
 
@@ -106,6 +115,12 @@ public class RobotHardware {
         }
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.setVelocityPIDFCoefficients(
+                999,   // kP
+                0.0,    // kI
+                0.0,    // kD
+                1 // kF
+        );
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -231,9 +246,18 @@ public class RobotHardware {
             return;
         }
 
-        double power = clamp(tx * PanelsConfig.LLPGAIN) * speed;
+        double power = -(clamp(tx * PanelsConfig.LLPGAIN) * speed)                                     ;
 
         addAlign(-power, -power, power, power);
+    }
+
+    public double calculateRegression(double distance) {
+        if(distance == -999)
+            return 3500;
+        double A = PanelsConfig.REGRESSION_A;
+        double B = PanelsConfig.REGRESSION_B;
+        double C = PanelsConfig.REGRESSION_C;
+        return (A * (distance * distance)) + (B * distance) + C;
     }
 
 

@@ -166,7 +166,9 @@ public class RedAutoFar extends OpMode {
                 }
                 break;
             case 4:
-                follower.followPath(paths.INTAKE1ALIGN, true);
+                if(!follower.isBusy()) {
+                    follower.followPath(paths.INTAKE1ALIGN, true);
+                }
                 setPathState(5);
                 break;
             case 5:
@@ -175,7 +177,9 @@ public class RedAutoFar extends OpMode {
                 }
                 break;
             case 6:
-                follower.followPath(paths.INTAKE1, true);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.INTAKE1, true);
+                }
                 setPathState(7);
                 break;
             case 7:
@@ -184,7 +188,9 @@ public class RedAutoFar extends OpMode {
                 }
                 break;
             case 8:
-                follower.followPath(paths.INTAKE1TOSHOOT, true);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.INTAKE1TOSHOOT, true);
+                }
                 setPathState(9);
                 break;
             case 9:
@@ -201,7 +207,9 @@ public class RedAutoFar extends OpMode {
                 }
                 break;
             case 12:
-                follower.followPath(paths.INTAKE2ALIGN, true);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.INTAKE2ALIGN, true);
+                }
                 setPathState(13);
                 break;
             case 13:
@@ -210,7 +218,9 @@ public class RedAutoFar extends OpMode {
                 }
                 break;
             case 14:
-                follower.followPath(paths.INTAKE2, true);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.INTAKE2, true);
+                }
                 setPathState(15);
                 break;
             case 15:
@@ -219,7 +229,9 @@ public class RedAutoFar extends OpMode {
                 }
                 break;
             case 16:
-                follower.followPath(paths.INTAKE2TOSHOOT, true);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.INTAKE2TOSHOOT, true);
+                }
                 setPathState(17);
                 break;
             case 17:
@@ -236,7 +248,9 @@ public class RedAutoFar extends OpMode {
                 }
                 break;
             case 20:
-                follower.followPath(paths.INTAKE3ALIGN, true);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.INTAKE3ALIGN, true);
+                }
                 setPathState(21);
                 break;
             case 21:
@@ -245,7 +259,9 @@ public class RedAutoFar extends OpMode {
                 }
                 break;
             case 22:
-                follower.followPath(paths.INTAKE3, true);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.INTAKE3, true);
+                }
                 setPathState(23);
                 break;
             case 23:
@@ -254,7 +270,9 @@ public class RedAutoFar extends OpMode {
                 }
                 break;
             case 24:
-                follower.followPath(paths.MOVEAWAY, true);
+                if (!follower.isBusy()) {
+                    follower.followPath(paths.MOVEAWAY, true);
+                }
                 setPathState(25);
                 break;
             case 25:
