@@ -8,10 +8,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.team12841.configs.PanelsConfig;
@@ -25,20 +22,15 @@ public class RobotHardware {
 
     public static final double SHOOTER_TICKS_PER_REV = 28.0;
 
-    private static final double LIMELIGHT_YAW_OFFSET_DEG = 180.0; // LL faces backwards
-
     /* ===================== MOTORS ===================== */
 
     public DcMotorEx lf, lb, rf, rb;
     public DcMotorEx shooter;
     public DcMotorEx intake;
+    public DcMotorEx flick;
 
     public DcMotorEx leftOdo, rightOdo, strafeOdo;
 
-    /* ===================== SERVOS ===================== */
-
-    public Servo leftFlick, rightFlick;
-    public Servo turntableServo;
 
     /* ===================== SENSORS ===================== */
 
@@ -60,22 +52,12 @@ public class RobotHardware {
     public RobotHardware(OpMode opMode) {
         this.opMode = opMode;
 
-
-
         mapHardware();
-
-        PIDFCoefficients original = shooter.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-
         configureMotors();
         initIMU();
         initLimelight();
         initPedro();
         follower = Constants.createFollower(opMode.hardwareMap);
-
-
-        opMode.telemetry.addData("Old PIDF", "%.04f, %.04f, %.04f, %.04f", original.p, original.i, original.d, original.f);
-        opMode.telemetry.addLine("Robot ready");
-        opMode.telemetry.update();
     }
 
     /* ===================== INITIALIZATION ===================== */
@@ -88,14 +70,11 @@ public class RobotHardware {
 
         shooter = motor("shooterMotor");
         intake  = motor("intakeMotor");
+        flick   = motor("flickMotor");
 
         leftOdo   = motor("intakeMotor");
         rightOdo  = motor("rightOdo");
         strafeOdo = motor("strafeOdo");
-
-        leftFlick = opMode.hardwareMap.get(Servo.class, "leftFlick");
-        rightFlick = opMode.hardwareMap.get(Servo.class, "rightFlick");
-        turntableServo = opMode.hardwareMap.get(Servo.class, "turntableServo");
     }
 
     private DcMotorEx motor(String name) {
@@ -116,15 +95,17 @@ public class RobotHardware {
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setVelocityPIDFCoefficients(
-                999,   // kP
-                0.0,    // kI
-                0.0,    // kD
-                1 // kF
+                999,  // kP
+                0.0,     // kI
+                0.0,     // kD
+                1        // kF
         );
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        flick.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        flick.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         for (DcMotorEx odo : new DcMotorEx[]{leftOdo, rightOdo, strafeOdo}) {
             odo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -224,9 +205,7 @@ public class RobotHardware {
     /** Robot heading sent to LL must be offset by 180° */
     public void updateLLHeading() {
         if (limelight != null) {
-            double correctedHeading =
-                    headingDeg() + LIMELIGHT_YAW_OFFSET_DEG;
-            limelight.updateRobotOrientation(correctedHeading);
+            limelight.updateRobotOrientation(headingDeg());
         }
     }
 
@@ -253,7 +232,7 @@ public class RobotHardware {
 
     public double calculateRegression(double distance) {
         if(distance == -999)
-            return 3500;
+            return 3000;
         double A = PanelsConfig.REGRESSION_A;
         double B = PanelsConfig.REGRESSION_B;
         double C = PanelsConfig.REGRESSION_C;
@@ -271,14 +250,5 @@ public class RobotHardware {
         imu.resetYaw();
         Pose pose = follower.getPose();
         follower.setPose(new Pose(pose.getX(), pose.getY(), 0));
-    }
-
-    /* ===================== FULL STOP ===================== */
-
-    public void fullBrake() {
-        for (DcMotorEx m : new DcMotorEx[]{lf, lb, rf, rb}) {
-            m.setPower(0);
-            m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
     }
 }
