@@ -47,6 +47,10 @@ public class KickSubsystem extends SubsystemBase {
         kickerSpin.setPower(-1);
     }
 
+    public void runKickerSpinBackwards(){
+        kickerSpin.setPower(1);
+    }
+
     public void stopKickerSpin(){
         kickerSpin.setPower(0.0);
     }

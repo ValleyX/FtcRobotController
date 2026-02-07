@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.RobotHardware;
@@ -66,6 +67,12 @@ public class OnePersonDriveBase extends LinearOpMode {
     boolean dPadRight = false;
     boolean dPadLeft = false;
 
+    //light timing
+    double startTime;
+    final double BLINK_TIME = 0.2;
+    double lastBlink = 0.0;
+    boolean color = false;
+
 
 
     @Override
@@ -86,7 +93,9 @@ public class OnePersonDriveBase extends LinearOpMode {
             red = true;
         }
 
+        startTime = 0.0;
         waitForStart();
+        startTime = getRuntime();
 
 
         while (opModeIsActive()) {
@@ -295,7 +304,25 @@ public class OnePersonDriveBase extends LinearOpMode {
                 robotHardware.resetImu();
             }
 
-
+            if(getRuntime()-startTime <= 60){
+                robotHardware.setGobildaLight(0.5);
+            } else if( getRuntime()-startTime <= 100){
+                robotHardware.setGobildaLight(0.333);
+            } else if(getRuntime()-startTime <= 120) {
+                double time = getRuntime();
+                if(time >= lastBlink+BLINK_TIME){
+                    lastBlink = time;
+                    if(color){
+                        robotHardware.setGobildaLight(0.0);
+                        color = false;
+                    } else {
+                        robotHardware.setGobildaLight(0.28);
+                        color = true;
+                    }
+                }
+            } else {
+                robotHardware.setGobildaLight(0.611);
+            }
 
             telemetry.addData("(at least) One Ball: ", shooterHardware.oneBall());
             telemetry.addData("(at least) Two Balls: ", shooterHardware.twoBall());

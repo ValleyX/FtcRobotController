@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.S
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 /*
 This Class will run the Intake system motor
@@ -9,11 +10,14 @@ This Class will run the Intake system motor
 public class IntakeSubsystem extends SubsystemBase {
 
     private Motor intakeMotor;
+    private DigitalChannel intakeBB;
+
 
     /*
     IntakeSubsystem Class Constructor
      */
-    public IntakeSubsystem(Motor intakeMotor) {
+    public IntakeSubsystem(Motor intakeMotor, DigitalChannel intakeBB) {
+        this.intakeBB = intakeBB;
         this.intakeMotor = intakeMotor;
     }
 
@@ -29,6 +33,10 @@ public class IntakeSubsystem extends SubsystemBase {
     public void reverse() {
         intakeMotor.set(-0.75);
         //rightMotor.set(0.75);
+    }
+
+    public boolean ballInBeam(){
+        return intakeBB.getState();
     }
 
 

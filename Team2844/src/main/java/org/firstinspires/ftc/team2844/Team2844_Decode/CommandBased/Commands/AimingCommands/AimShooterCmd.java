@@ -1,31 +1,29 @@
+/*
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands;
 
-import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.LimelightSubsystem;
 
-public class AimHoodCmd extends CommandBase {
+public class AimShooterCmd extends ParallelCommandGroup {
     AimSubsystem aimSubsystem;
     LimelightSubsystem limelightSubsystem;
 
-    public AimHoodCmd(AimSubsystem aimSubsystem, LimelightSubsystem limelightSubsystem){
+    public AimShooterCmd(AimSubsystem aimSubsystem, LimelightSubsystem limelightSubsystem){
         this.aimSubsystem = aimSubsystem;
         this.limelightSubsystem = limelightSubsystem;
+
         addRequirements(aimSubsystem, limelightSubsystem);
     }
 
     @Override
-    public void execute(){
-        double tx = limelightSubsystem.getTx();
-        if(tx != Constants.NO_LL){
-            aimSubsystem.aimHood(limelightSubsystem.hoodLinReg());
-        }
+    public void execute() {
+        new ParallelCommandGroup(new AimHoodCmd(aimSubsystem, limelightSubsystem), new AimToLLCmd(aimSubsystem, limelightSubsystem)).schedule();
     }
 
-    @Override
-    public boolean isFinished() {
-        return true;
+    public boolean isFinished(){
+        return false;
     }
 }
+*/

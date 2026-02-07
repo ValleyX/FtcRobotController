@@ -4,6 +4,10 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.drivebase.DifferentialDrive;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.hardware.IMU;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class TankDriveSubsystem extends SubsystemBase {
     //private double leftSpeed, rightSpeed;
@@ -12,13 +16,13 @@ public class TankDriveSubsystem extends SubsystemBase {
 
     MotorGroup leftMotors;
     MotorGroup rightMotors;
+    GoBildaPinpointDriver pinpoint;
 
 
-    public TankDriveSubsystem(MotorGroup leftMotors, MotorGroup rightMotors ){
-
+    public TankDriveSubsystem(MotorGroup leftMotors, MotorGroup rightMotors, GoBildaPinpointDriver pinpoint){
         this.leftMotors = leftMotors;
         this.rightMotors = rightMotors;
-
+        this.pinpoint = pinpoint;
 
         drive = new DifferentialDrive(leftMotors, rightMotors);
     }

@@ -3,21 +3,136 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased;
 public class Constants {
 
     //turret
-    public static final double MAX_TURN = 0.8;
+    //24 tooth servo head to 130 turret teeth
+    private static final double FULL_SERVO_TURN = 0.2;
+    private static final double SERVO_TEETH = 24.0;
+    private static final double TURRET_TEETH = 130.0; //r u sure its 130?
+    private static final double TURRET_GEAR_RATIO = TURRET_TEETH/SERVO_TEETH;
+    private static final double DEGREES_IN_FULL_SERVO_TURN = (360.0/TURRET_GEAR_RATIO);
+    public static final double DEGREE_TO_SERVO = (FULL_SERVO_TURN/DEGREES_IN_FULL_SERVO_TURN);
+//    public static final double DEGREES = 1/((5.0*24.0*360.0)/130.0);
+
+    public static final double TURRET_THRESHHOLD = 1.0;
+
+    public static final double MAX_TURN = 332* DEGREE_TO_SERVO;
     public static final double MIN_TURN = 0.0;
-    public static final double TURN_TICK = 0.01;
+    public static final double TURN_TICK = 1;
+
+    public static final double TURRET_OFFSET = 90.0;
+
+    private static final double ENCODER_TICKS_PER_REV = 8192;
+    private static final double SERVO_GEAR_TEETH = 48.0;
+    private static final double ENCODER_GEAR_TEETH = 40.0;
+    private static final double SERVO_TO_ENCODER_GEAR = (40.0/48.0);
+    public static final double SERVO_CMD_PER_TICK = (SERVO_TO_ENCODER_GEAR*FULL_SERVO_TURN)/ENCODER_TICKS_PER_REV;
+    public static final double DEGREES_PER_TICK = (SERVO_CMD_PER_TICK)/DEGREE_TO_SERVO;
+    public static final double ENCODER_OFFSET = TURRET_OFFSET;
+
+
+
+
 
     //Uptake
-    public static final double MAX_KICKDOWN = 0.22;
+    public static final double MAX_KICKDOWN = 0.3;
 
 
     //spindexer
-    public static final double BAY_ONE_POS = 0.0;
-    public static final double BAY_TWO_POS = 0.39;
-    public static final double BAY_THREE_POS = 0.78;
+    public static final double SLOT_ONE = 0.0;
+    public static final double SLOT_TWO = 0.2/3;
+    public static final double SLOT_THREE = 2*(0.2/3);
+
+    public static final double SLOT_ONE_LOOPED_ONE = 0.2;
+    public static final double SLOT_TWO_LOOPED_ONE = 4*(0.2/3);
+    public static final double SLOT_THREE_LOOPED_ONE = 5*(0.2/3);
+
+    public static final double[] SLOT_ARRAY = {SLOT_ONE, SLOT_TWO, SLOT_THREE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE, SLOT_THREE_LOOPED_ONE};
 
     public static final int MIN_COLOR_SUM = 900;
 
     public static final int PURPLE = 1;
     public static final int GREEN = 0;
+    public static final int UNKNOWN_COLOR = 999;
+
+    //Limelight
+    public static final int NO_LL = -999;
+    public static final String LL = "limelight";
+
+    //Control Hub Ports
+        //Motor Ports
+    public static final String CM0 = "frontLeft";
+    public static final String CM1 = "backLeft";
+    public static final String CM2 = "backRight";
+    public static final String CM3 = "frontRight";
+
+        //Servo Ports
+    public static final String CS0 = "hoodAim";
+    public static final String CS1 = "kickerRotate";
+    public static final String CS2 = "turretAim";
+    public static final String CS3 = "kickerSpin";
+    public static final String CS4 = "sFeed";
+    public static final String CS5 = "spindexer";
+
+        //I2C Busses
+    public static final String CBUS0 = "pinpointIMU";
+    public static final String CBUS1 = "turretIMU";
+    public static final String CBUS2 = "color1Bay1";
+    public static final String CBUS3 = "color2Bay1";
+
+        // Digital Inputs
+    public static final String CDI0 = "";
+    public static final String CDI1 = "topBreak";
+    public static final String CDI2 = "";
+    public static final String CDI3 = "intakeBB";
+    public static final String CDI4 = "";
+    public static final String CDI5 = "";
+    public static final String CDI6 = "";
+    public static final String CDI7 = "";
+
+
+
+    //Expansion Hub Ports
+        //Motor Ports
+    public static final String EM0 = "tFeed";
+    public static final String EM1 = "intakeMotor";
+    public static final String EM2 = "shooterRight";
+    public static final String EM3 = "shooterLeft";
+
+        //Servo Ports
+    public static final String ES0 = "";
+    public static final String ES1 = "";
+    public static final String ES2 = "";
+    public static final String ES3 = "";
+    public static final String ES4 = "";
+    public static final String ES5 = "";
+
+        //I2C Busses
+    public static final String EBUS0 = "color1Bay3";
+    public static final String EBUS1 = "color2Bay3";
+    public static final String EBUS2 = "color1Bay2";
+    public static final String EBUS3 = "color2Bay2";
+
+        // Digital Inputs
+    public static final String EDI0 = "";
+    public static final String EDI1 = "";
+    public static final String EDI2 = "";
+    public static final String EDI3 = "";
+    public static final String EDI4 = "";
+    public static final String EDI5 = "";
+    public static final String EDI6 = "";
+    public static final String EDI7 = "";
+
+
+
+    //Intake
+    public static final double INTAKE_SPEED = 0.9;
+
+    /* TODO LIST
+      - Get Shooter Velocity Working
+      - Get Intake Spindexer working with new beambreak (stop intaking when full)
+ in prog - Get new encoder working with auto-alin
+      - get the spindexer to spin the feeds while spinning
+      - get the linreg for shooter
+      - get distace from limelight
+      - get hood linreg working
+     */
 }

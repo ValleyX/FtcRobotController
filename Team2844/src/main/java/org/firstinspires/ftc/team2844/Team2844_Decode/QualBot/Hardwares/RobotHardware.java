@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -21,6 +22,8 @@ public class RobotHardware {
     public DcMotor leftFrontDrive;
     //sensor and IMU
     public IMU imu;
+
+    public Servo gobildaLight;
 
 
     //motor speed adding
@@ -69,10 +72,8 @@ public class RobotHardware {
                         )
                 )
         );
-
-    }
-    public RobotHardware(LinearOpMode opMode, boolean auto) {
-        opMode_ = opMode;
+        gobildaLight = opMode_.hardwareMap.get(Servo.class, "gobildaLight");
+        gobildaLight.setPosition(0.611);
     }
 
     public void powerMotors(double leftFront, double leftBack, double rightBack, double rightFront){
@@ -229,5 +230,13 @@ public class RobotHardware {
             }
         }
         addAlignPower(0,0,0,0);
+    }
+
+
+    //light Stuff
+
+    /**Sets the color of the Gobilda light with values like a servo*/
+    public void setGobildaLight(double color){
+        gobildaLight.setPosition(color);
     }
 }

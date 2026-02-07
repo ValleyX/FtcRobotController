@@ -25,7 +25,7 @@ public class SpindexerSubsystem extends SubsystemBase {
             color1Bay2, color2Bay2,
             color1Bay3, color2Bay3;
 
-
+    private double pos = 0.0;
      /**
      * This is the constructor for the spindexer Subsystem
      * it sets the motors/servos equal to the object passed in,
@@ -39,51 +39,62 @@ public class SpindexerSubsystem extends SubsystemBase {
     public SpindexerSubsystem(OpMode opMode, Servo spindexer){
         this.spindexer = spindexer;
 
-        color1Bay1 = opMode.hardwareMap.get(ColorSensor.class, "color1Bay1");
-        color2Bay1 = opMode.hardwareMap.get(ColorSensor.class, "color2Bay1");
-        color1Bay2 = opMode.hardwareMap.get(ColorSensor.class, "color1Bay2");
-        color2Bay2 = opMode.hardwareMap.get(ColorSensor.class, "color2Bay2");
-        color1Bay3 = opMode.hardwareMap.get(ColorSensor.class, "color1Bay3");
-        color2Bay3 = opMode.hardwareMap.get(ColorSensor.class, "color2Bay3");
+        color1Bay1 = opMode.hardwareMap.get(ColorSensor.class, Constants.CBUS2);
+        color2Bay1 = opMode.hardwareMap.get(ColorSensor.class, Constants.CBUS3);
+        color1Bay2 = opMode.hardwareMap.get(ColorSensor.class, Constants.EBUS2);
+        color2Bay2 = opMode.hardwareMap.get(ColorSensor.class, Constants.EBUS3);
+        color1Bay3 = opMode.hardwareMap.get(ColorSensor.class, Constants.EBUS0);
+        color2Bay3 = opMode.hardwareMap.get(ColorSensor.class, Constants.EBUS1);
     }
 
-    public void runToBayOne(){
-        spindexer.setPosition(Constants.BAY_ONE_POS);
+    public void runToSlotOne(){
+        spindexer.setPosition(Constants.SLOT_ONE);
     }
 
-    public void runToBayTwo(){
-        spindexer.setPosition(Constants.BAY_TWO_POS);
+    public void runToSlotTwo(){
+        spindexer.setPosition(Constants.SLOT_TWO);
     }
 
-    public void runToBayThree(){
-        spindexer.setPosition(Constants.BAY_THREE_POS);
+    public void runToSlotThree(){
+        spindexer.setPosition(Constants.SLOT_THREE);
     }
 
-    public int getBay(){
-        if(spindexer.getPosition() == Constants.BAY_ONE_POS){
+    public void runToSlot(int desiredSlot){
+        spindexer.setPosition(Constants.SLOT_ARRAY[desiredSlot-1]);
+    }
+
+    public int getSlot(){
+//        switch (spindexer.getPosition()){
+//            case (Constants.SLOT_ARRAY[0]):
+//                return 0;
+//                break;
+//
+//
+//        }
+        if(spindexer.getPosition() == Constants.SLOT_ARRAY[0]){
             return 1;
-        } else if (spindexer.getPosition() == Constants.BAY_TWO_POS){
+        } else if(spindexer.getPosition() == Constants.SLOT_ARRAY[1]){
             return 2;
-        } else if (spindexer.getPosition() == Constants.BAY_THREE_POS){
+        }else if(spindexer.getPosition() == Constants.SLOT_ARRAY[2]){
             return 3;
-        } else {
+        }else{
             return 0;
         }
     }
 
-    public void nextBay(){
-        if(getBay() == 1){
-            runToBayTwo();
-        } else if(getBay() == 2){
-            runToBayThree();
+    public void nextSlot(){
+        if(getSlot() == 1){
+            runToSlotTwo();
+        } else if(getSlot() == 2){
+            runToSlotThree();
         }
     }
 
-    public void previousBay(){
-        if(getBay() == 2){
-            runToBayOne();
-        } else if(getBay() == 3){
-            runToBayTwo();
+    public void previousSlot(){
+        if(getSlot() == 2){
+            runToSlotOne();
+        } else if(getSlot() == 3){
+            runToSlotTwo();
         }
     }
 
@@ -114,39 +125,49 @@ public class SpindexerSubsystem extends SubsystemBase {
         }
     }
 
+    public boolean full(){
+        return (ballInBayOne() && ballInBayTwo() && ballInBayThree());
+    }
+
     public int bayOneColor(){
         if(ballInBayOne()){
-            if(Math.max(bayOneGreen()[0] + bayOneGreen()[1], bayOneBlue()[0] + bayOneBlue()[1]) == bayOneGreen()[0] + bayOneGreen()[1]){
+            int[] green = bayOneGreen();
+            int[] blue = bayOneBlue();
+            if(Math.max(green[0] + green[1], blue[0] + blue[1]) == green[0] + green[1]){
                 return Constants.GREEN;
             } else {
                 return Constants.PURPLE;
             }
         } else {
-            return 999;
+            return Constants.UNKNOWN_COLOR;
         }
     }
 
     public int bayTwoColor(){
         if(ballInBayTwo()){
-            if(Math.max(bayTwoGreen()[0] + bayTwoGreen()[1], bayTwoBlue()[0] + bayTwoBlue()[1]) == bayTwoGreen()[0] + bayTwoGreen()[1]){
+            int[] green = bayTwoGreen();
+            int[] blue = bayTwoBlue();
+            if(Math.max(green[0] + green[1], blue[0] + blue[1]) == green[0] + green[1]){
                 return Constants.GREEN;
             } else {
                 return Constants.PURPLE;
             }
         } else {
-            return 999;
+            return Constants.UNKNOWN_COLOR;
         }
     }
 
     public int bayThreeColor(){
         if(ballInBayThree()){
-            if(Math.max(bayThreeGreen()[0] + bayThreeGreen()[1], bayThreeBlue()[0] + bayThreeBlue()[1]) == bayThreeGreen()[0] + bayThreeGreen()[1]){
+            int[] green = bayThreeGreen();
+            int[] blue = bayThreeBlue();
+            if(Math.max(green[0] + green[1], blue[0] + blue[1]) == green[0] + green[1]){
                 return Constants.GREEN;
             } else {
                 return Constants.PURPLE;
             }
         } else {
-            return 999;
+            return Constants.UNKNOWN_COLOR;
         }
     }
 
