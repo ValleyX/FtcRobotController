@@ -5,13 +5,13 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.team12841.RobotHardware;
 
-@Autonomous(name="Blue Close", group="AUTO")
-public class BlueAutoClose extends OpMode {
+@TeleOp(name="Blue Close (FULL FIXED)", group="AUTO")
+public class BlueAutoCloseTester extends OpMode {
 
     private Follower follower;
     private RobotHardware robot;
@@ -19,11 +19,6 @@ public class BlueAutoClose extends OpMode {
 
     private int state = 0;
 
-    // ---------------- DRIVE SPEEDS ----------------
-    private static final double NORMAL_DRIVE_POWER = 1.0;
-    private static final double INTAKE_DRIVE_POWER = 0.45;
-
-    // ---------------- PATHS ----------------
     private PathChain START_TO_SHOOT;
     private PathChain SHOOT_TO_ALIGN1;
     private PathChain ALIGN1_TO_INTAKE1;
@@ -35,13 +30,14 @@ public class BlueAutoClose extends OpMode {
 
     private PathChain SHOOT_TO_ALIGN3;
     private PathChain ALIGN3_TO_INTAKE3;
-    private PathChain INTAKE3_TO_SHOOT_FAR;
 
+    private PathChain INTAKE3_TO_SHOOT_FAR;
     private PathChain SHOOT_FAR_TO_PARK;
 
-    // ---------------- INTAKE STATE ----------------
+    // ---------------- INTAKE LATCH ----------------
     private boolean runIntake = false;
     private boolean intakeCaptured = false;
+    private boolean lastBeamBroken = false;
 
     // ---------------- FLICK CONTROL ----------------
 
@@ -55,24 +51,12 @@ public class BlueAutoClose extends OpMode {
         robot.flick.setPower(power);
     }
 
-    // ---------------- INTAKE LOGIC ----------------
+    // ---------------- INTAKE ----------------
 
     private void runIntakeForward() {
-        boolean beamNotBroken = robot.isBroken(); // ACTIVE LOW SENSOR
-        boolean beamBroken = !beamNotBroken;
-
+        boolean beamBroken = robot.isBroken(); // true = note present
+        intakeFlick(beamBroken ? 0 : -1);
         robot.intake.setPower(1);
-
-        if (!intakeCaptured) {
-            if (!beamBroken) {
-                intakeFlick(-1); // pull note in
-            } else {
-                intakeCaptured = true;
-                intakeFlick(0);  // latch stop
-            }
-        } else {
-            intakeFlick(0);
-        }
     }
 
     private void stopIntake() {
@@ -100,8 +84,8 @@ public class BlueAutoClose extends OpMode {
         Pose intake2Pose = new Pose(-34.43, 45.38, 0.85);
         Pose shoot2Pose = new Pose(-54.35, 14.66, 0.002);
 
-        Pose alignIntake3 = new Pose(-71.88, 28.33, 0.86);
-        Pose intake3Pose = new Pose(-46.63, 56.38, 0.85);
+        Pose alignIntake3 = new Pose(-70.96, 34.38, 0.80);
+        Pose intake3Pose = new Pose(-38.39, 58.36, 0.85);
 
         Pose shootFarPose = new Pose(-86.82, 41.8, -0.355);
         Pose parkPose = new Pose(-66.48, 32.19, -0.703);
@@ -164,11 +148,15 @@ public class BlueAutoClose extends OpMode {
                 .build();
     }
 
+    // ---------------- START ----------------
+
     @Override
     public void start() {
         state = 0;
         pathTimer.resetTimer();
     }
+
+    // ---------------- LOOP ----------------
 
     @Override
     public void loop() {
@@ -177,46 +165,61 @@ public class BlueAutoClose extends OpMode {
         switch (state) {
 
             case 0:
-                follower.setMaxPower(NORMAL_DRIVE_POWER);
                 robot.shooter.setVelocity(2500);
                 follower.followPath(START_TO_SHOOT);
                 pathTimer.resetTimer();
-                state++;
-                break;
+                if(gamepad1.aWasPressed())
+                    ;
+            {
+                state++;break;
+            }
 
             case 1:
                 if (!follower.isBusy()) {
                     robot.alignWithLimelight(-1);
                     pathTimer.resetTimer();
-                    state++;
+                    gamepad1.aWasPressed();
+                    {
+                        state++;
+                    }
                 }
                 break;
 
             case 2:
-                if (pathTimer.getElapsedTimeSeconds() > 0.2) shootFlick(-1);
-                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.2) {
+                    intakeCaptured = false; // NOTE IS LEAVING
+                    shootFlick(-1);
+                }
+                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
                     shootFlick(0);
-                    intakeCaptured = false;
                     follower.followPath(SHOOT_TO_ALIGN1);
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
             case 3:
-                runIntake = true;
-                follower.setMaxPower(INTAKE_DRIVE_POWER);
+                runIntake = true;//JAE NOTE TO TANNER - try calling intake directly, don't set this bool.  The
+                //program has to wait before it check Beam Break until the case is done and then gets to bottom of switch statement
                 if (!follower.isBusy()) {
                     follower.followPath(ALIGN1_TO_INTAKE1);
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
             case 4:
                 if (!follower.isBusy()) {
                     stopIntake();
-                    follower.setMaxPower(NORMAL_DRIVE_POWER);
                     follower.followPath(INTAKE1_TO_SHOOT);
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
@@ -225,35 +228,47 @@ public class BlueAutoClose extends OpMode {
                     robot.shooter.setVelocity(2500);
                     robot.alignWithLimelight(-1);
                     pathTimer.resetTimer();
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
             case 6:
-                if (pathTimer.getElapsedTimeSeconds() > 0.8) shootFlick(-1);
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
+                    intakeCaptured = false;
+                    shootFlick(-1);
+                }
                 if (pathTimer.getElapsedTimeSeconds() > 1.5) {
                     shootFlick(0);
-                    intakeCaptured = false;
                     follower.followPath(SHOOT_TO_ALIGN2);
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
             case 7:
                 runIntake = true;
-                follower.setMaxPower(INTAKE_DRIVE_POWER);
                 if (!follower.isBusy()) {
                     follower.followPath(ALIGN2_TO_INTAKE2);
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
             case 8:
                 if (!follower.isBusy()) {
                     stopIntake();
-                    follower.setMaxPower(NORMAL_DRIVE_POWER);
                     follower.followPath(INTAKE2_TO_SHOOT);
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
@@ -262,35 +277,47 @@ public class BlueAutoClose extends OpMode {
                     robot.shooter.setVelocity(2500);
                     robot.alignWithLimelight(-1);
                     pathTimer.resetTimer();
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
             case 10:
-                if (pathTimer.getElapsedTimeSeconds() > 0.8) shootFlick(-1);
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
+                    intakeCaptured = false;
+                    shootFlick(-1);
+                }
                 if (pathTimer.getElapsedTimeSeconds() > 1.5) {
                     shootFlick(0);
-                    intakeCaptured = false;
                     follower.followPath(SHOOT_TO_ALIGN3);
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
             case 11:
                 runIntake = true;
-                follower.setMaxPower(INTAKE_DRIVE_POWER);
                 if (!follower.isBusy()) {
                     follower.followPath(ALIGN3_TO_INTAKE3);
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
             case 12:
                 if (!follower.isBusy()) {
                     stopIntake();
-                    follower.setMaxPower(NORMAL_DRIVE_POWER);
                     follower.followPath(INTAKE3_TO_SHOOT_FAR);
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
@@ -299,16 +326,25 @@ public class BlueAutoClose extends OpMode {
                     robot.shooter.setVelocity(3900);
                     robot.alignWithLimelight(-1);
                     pathTimer.resetTimer();
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
             case 14:
-                if (pathTimer.getElapsedTimeSeconds() > 0.8) shootFlick(-1);
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
+                    intakeCaptured = false;
+                    shootFlick(-1);
+                }
                 if (pathTimer.getElapsedTimeSeconds() > 1.5) {
                     shootFlick(0);
                     follower.followPath(SHOOT_FAR_TO_PARK);
-                    state++;
+                    if(gamepad1.aWasPressed());
+                    {
+                        state++;
+                    }
                 }
                 break;
 
@@ -318,6 +354,14 @@ public class BlueAutoClose extends OpMode {
                 break;
         }
 
-        if (runIntake) runIntakeForward();
+        if (runIntake) {
+            runIntakeForward();
+        }
+
+        telemetry.addData("State", state);
+        telemetry.addData("Beam", robot.isBroken());
+        telemetry.addData("Captured", intakeCaptured);
+        telemetry.addData("Run Intake", runIntake);
+        telemetry.update();
     }
 }
