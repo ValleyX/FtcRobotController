@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.team12841.teleOps;
 
+import com.bylazar.panels.Panels;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.team12841.RobotHardware;
+import org.firstinspires.ftc.team12841.configs.PanelsConfig;
 
-@TeleOp(name = "TeleOpTanner", group = "MAIN")
+@TeleOp(name = "TeleOpMain", group = "MAIN")
 public class TeleOpTanner extends OpMode {
 
     /* ===================== HARDWARE ===================== */
@@ -37,6 +39,8 @@ public class TeleOpTanner extends OpMode {
     private boolean dpadUpLast   = false;
     private boolean dpadDownLast = false;
     private boolean aLast        = false;
+
+    public boolean babyMode = false;
 
 
     /* ===================== INIT ===================== */
@@ -99,28 +103,46 @@ public class TeleOpTanner extends OpMode {
         double strafe  = -gamepad1.left_stick_x;
         double forward = -gamepad1.left_stick_y;
 
+        if(gamepad1.startWasPressed())
+        {
+            babyMode = !babyMode;
+        }
+
         /* ---------- LIMELIGHT ALIGN ---------- */
 
         if (gamepad1.left_trigger > 0.2) {
-            robot.alignWithLimelight(1);
-        } else {
+            robot.alignWithLimelight(-1);
+        } else if (babyMode) {
+            follower.setTeleOpDrive((forward * PanelsConfig.BABY), (strafe * PanelsConfig.BABY), (rotate * PanelsConfig.BABY), false);
+        } else if (!babyMode) {
             follower.setTeleOpDrive(forward, strafe, rotate, false);
         }
 
         /* ---------- INTAKE ---------- */
 
-        if (gamepad1.right_trigger > 0.2){
+        if (gamepad1.right_trigger > 0.2 && !robot.isBroken()){
+            robot.intake.setPower(1);
+            robot.flick.setPower(-1);
+        } else if (gamepad1.right_trigger > 0.2 && robot.isBroken()) {
             robot.intake.setPower(1);
         } else if (gamepad1.b) {
-            robot.intake.setPower(-1);
+                robot.intake.setPower(-1);
+        } else if (gamepad1.x){
+            robot.flick.setPower(-1);
+        } else if (gamepad1.y){
+            robot.flick.setPower(1);
         } else {
             robot.intake.setPower(0);
+            robot.flick.setPower(0);
         }
+
 
         if(gamepad1.guide)
         {
             robot.resetHeading();
         }
+
+
 
 
         /* ---------- SHOOTER TOGGLE ---------- */
@@ -129,28 +151,30 @@ public class TeleOpTanner extends OpMode {
         if (a && !aLast) shooterEnabled = !shooterEnabled;
         aLast = a;
 
-        // targetRPM = updateRPM();
+        targetRPM = updateRPM();
         if (shooterEnabled) robot.setShooterRPM(targetRPM);
         else robot.stopShooter();
 
         dpadUpLast   = gamepad1.dpad_up;
         dpadDownLast = gamepad1.dpad_down;
 
-        if (gamepad1.dpad_up && !dpadUpLast)
-            targetRPM = targetRPM + 200;
+        //if (gamepad1.dpadUpWasPressed())
+        //    targetRPM = targetRPM + 100;
 
-        if (gamepad1.dpad_down && !dpadDownLast)
-        {
-            targetRPM = targetRPM - 200;
-        }
+        //if (gamepad1.dpadDownWasPressed())
+        //{
+        //    targetRPM = targetRPM - 100;
+        //}
 
 
         /* ---------- SHOOTER STUFF ---------- */
 
         if(gamepad1.x){
-            moveArtifact();
-        } else {
-            robot.intake.setPower(0);
+            robot.flick.setPower(-1);
+        } else if(gamepad1.y){
+            robot.flick.setPower(1);
+        }else {
+            robot.flick.setPower(0);
         }
 
         /* ---------- TELEMETRY ---------- */
@@ -162,6 +186,7 @@ public class TeleOpTanner extends OpMode {
         telemetry.addData("Target RPM", targetRPM);
         telemetry.addData("Actual RPM", actualRPM);
         telemetry.addData("LL Dis", robot.getDistance());
+        telemetry.addData("Beam Broken?", robot.isBroken());
         telemetry.update();
     }
 
@@ -170,10 +195,5 @@ public class TeleOpTanner extends OpMode {
 
     private double updateRPM() {
         return robot.calculateRegression(robot.getDistance());
-    }
-
-    public void moveArtifact()
-    {
-        robot.flick.setPower(1);
     }
 }

@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(12.05)
+            .mass(13.2)
             .forwardZeroPowerAcceleration(-32.20906457774129)
             .lateralZeroPowerAcceleration(-39.73511957623294)
 
@@ -41,15 +41,15 @@ public class Constants {
             .forwardTicksToInches(0.00197913724762) // 0.0019727156766619694, 0.001966752403543089, 0.00199794366264916
             .strafeTicksToInches(0.001195489955537)
             .turnTicksToInches(0.014324695549060188)
-            .leftPodY(2.375) // 2 3/8in
-            .rightPodY(-2.3125) // 2 5/16
-            .strafePodX(-7)
-            .leftEncoder_HardwareMapName("intakeMotor")
-            .rightEncoder_HardwareMapName("rightOdo")
-            .strafeEncoder_HardwareMapName("strafeOdo")
+            .leftPodY(3.5) // 2 3/8in
+            .rightPodY(-2.3) // 2 5/16
+            .strafePodX(-5.75)
+            .leftEncoder_HardwareMapName("lfMotor")
+            .rightEncoder_HardwareMapName("rbMotor")
+            .strafeEncoder_HardwareMapName("lbMotor")
             .leftEncoderDirection(Encoder.FORWARD)
-            .rightEncoderDirection(Encoder.REVERSE)
-            .strafeEncoderDirection(Encoder.REVERSE)
+            .rightEncoderDirection(Encoder.FORWARD)
+            .strafeEncoderDirection(Encoder.FORWARD)
             .IMU_HardwareMapName("imu")
             .IMU_Orientation(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT, RevHubOrientationOnRobot.UsbFacingDirection.UP));
 

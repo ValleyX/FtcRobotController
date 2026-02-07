@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.team12841;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -8,9 +10,13 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.team12841.configs.PanelsConfig;
 import org.firstinspires.ftc.team12841.pedroPathing.Constants;
 
@@ -37,6 +43,7 @@ public class RobotHardware {
     public IMU imu;
     public Limelight3A limelight;
     private LLResult llResult;
+    private DigitalChannel beambreak;
 
     /* ===================== PEDRO ===================== */
 
@@ -72,9 +79,11 @@ public class RobotHardware {
         intake  = motor("intakeMotor");
         flick   = motor("flickMotor");
 
-        leftOdo   = motor("intakeMotor");
-        rightOdo  = motor("rightOdo");
-        strafeOdo = motor("strafeOdo");
+        leftOdo   = motor("lfMotor");
+        rightOdo  = motor("rbMotor");
+        strafeOdo = motor("lbMotor");
+
+        beambreak = opMode.hardwareMap.get(DigitalChannel.class, "distanceSensor");
     }
 
     private DcMotorEx motor(String name) {
@@ -95,10 +104,10 @@ public class RobotHardware {
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setVelocityPIDFCoefficients(
-                999,  // kP
+                500,  // kP
                 0.0,     // kI
                 0.0,     // kD
-                1        // kF
+                0.6        // kF
         );
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -232,13 +241,17 @@ public class RobotHardware {
 
     public double calculateRegression(double distance) {
         if(distance == -999)
-            return 3000;
+            return 2400;
         double A = PanelsConfig.REGRESSION_A;
         double B = PanelsConfig.REGRESSION_B;
         double C = PanelsConfig.REGRESSION_C;
         return (A * (distance * distance)) + (B * distance) + C;
     }
 
+    public boolean isBroken()
+    {
+        return beambreak.getState();
+    }
 
     /* ===================== PEDRO ===================== */
 

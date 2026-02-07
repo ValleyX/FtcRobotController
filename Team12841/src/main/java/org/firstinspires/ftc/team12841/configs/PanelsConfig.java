@@ -12,8 +12,10 @@ public class PanelsConfig {
 
     /* ===================== SHOOTER TUNING ===================== */
 
-    public static double REGRESSION_A = 0.3334689294;
-    public static double REGRESSION_B = -51.09719017;
-    public static double REGRESSION_C = 4694.418688;
+    public static double REGRESSION_A = 0.1808240941;
+    public static double REGRESSION_B = -17.6978079;
+    public static double REGRESSION_C = 2968.268173;
+
+    public static double BABY = 0.4;
 
 }
