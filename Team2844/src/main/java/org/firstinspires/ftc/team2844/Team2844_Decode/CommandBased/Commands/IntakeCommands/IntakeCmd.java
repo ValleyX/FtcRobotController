@@ -36,7 +36,7 @@ public class IntakeCmd extends CommandBase {
             passed = false;
         }
 
-        if((!spindexerSubsystem.ballInBayThree() || !spindexerSubsystem.ballInBayTwo())){
+        if(spindexerSubsystem.ballInBayOne() && (!spindexerSubsystem.ballInBayThree() || !spindexerSubsystem.ballInBayTwo())){
             new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot()+1);
         }
     }

@@ -42,11 +42,11 @@ public class SlotCmd extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double waitTime = (Math.abs(slot-desiredSlot))*300 + 750;
-        if(waitTime < timer.startTime()) {
-            return true;
-        } else {
+        double waitTime = (Math.abs(slot-desiredSlot))*3000 + 7500;
+        if(timer.startTime() < waitTime) {
             return false;
+        } else {
+            return true;
         }
     }
 
