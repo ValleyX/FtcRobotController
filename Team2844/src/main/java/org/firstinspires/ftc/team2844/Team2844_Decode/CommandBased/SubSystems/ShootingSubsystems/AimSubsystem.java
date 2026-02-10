@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
 
 public class AimSubsystem extends SubsystemBase {
@@ -36,6 +38,8 @@ public class AimSubsystem extends SubsystemBase {
         this.turretIMU = turretIMU;
         this.pinpoint = pinpoint;
         this.encoder = encoder;
+
+        pinpoint.setOffsets(0.0, 0.0, DistanceUnit.INCH);
     }
 
     public void aimTurret(double degrees){
@@ -127,6 +131,18 @@ public class AimSubsystem extends SubsystemBase {
 
     public double getRobotHeadingRadians(){
         return pinpoint.getHeading(AngleUnit.RADIANS);
+    }
+
+
+    public Pose3D getBotPose(){
+
+
+        return null;
+    }
+
+
+    public void periodic(){
+        pinpoint.update();
     }
 
 }

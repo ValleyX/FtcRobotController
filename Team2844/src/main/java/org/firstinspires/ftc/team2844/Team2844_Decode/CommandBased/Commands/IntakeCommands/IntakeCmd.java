@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Int
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.NextSlotCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
@@ -19,23 +20,24 @@ public class IntakeCmd extends CommandBase {
         this.intakeSubsystem = intakeSubsystem;
         this.spindexerSubsystem = spindexerSubsystem;
         this.kickSubsystem = kickSubsystem;
-        addRequirements(intakeSubsystem, spindexerSubsystem);
-        passed = false;
+        addRequirements(intakeSubsystem);
+        passed = true;
     }
 
     @Override
     public void execute(){
         if(!spindexerSubsystem.full()) {
             intakeSubsystem.activate(Constants.INTAKE_SPEED);
+        } else {
+            intakeSubsystem.stop();
         }
 
         if(intakeSubsystem.ballInBeam()){
-            passed = true;
+            passed = false;
         }
 
         if((!spindexerSubsystem.ballInBayThree() || !spindexerSubsystem.ballInBayTwo())){
-
-            new NextSlotCmd(spindexerSubsystem, kickSubsystem);
+            new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot()+1);
         }
     }
 

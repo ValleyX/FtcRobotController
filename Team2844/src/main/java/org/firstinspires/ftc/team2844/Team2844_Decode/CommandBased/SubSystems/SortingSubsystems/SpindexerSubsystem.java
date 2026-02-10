@@ -25,7 +25,7 @@ public class SpindexerSubsystem extends SubsystemBase {
             color1Bay2, color2Bay2,
             color1Bay3, color2Bay3;
 
-    private double pos = 0.0;
+    private int pos = 0;
      /**
      * This is the constructor for the spindexer Subsystem
      * it sets the motors/servos equal to the object passed in,
@@ -47,20 +47,24 @@ public class SpindexerSubsystem extends SubsystemBase {
         color2Bay3 = opMode.hardwareMap.get(ColorSensor.class, Constants.EBUS1);
     }
 
+    public void runToSlotZero(){
+        pos = 0;
+        spindexer.setPosition(Constants.SLOT_ZERO);
+    }
+
     public void runToSlotOne(){
+        pos = 1;
         spindexer.setPosition(Constants.SLOT_ONE);
     }
 
     public void runToSlotTwo(){
+        pos = 2;
         spindexer.setPosition(Constants.SLOT_TWO);
     }
 
-    public void runToSlotThree(){
-        spindexer.setPosition(Constants.SLOT_THREE);
-    }
-
     public void runToSlot(int desiredSlot){
-        spindexer.setPosition(Constants.SLOT_ARRAY[desiredSlot-1]);
+        pos = desiredSlot;
+        spindexer.setPosition(Constants.SLOT_ARRAY[desiredSlot]);
     }
 
     public int getSlot(){
@@ -72,29 +76,29 @@ public class SpindexerSubsystem extends SubsystemBase {
 //
 //        }
         if(spindexer.getPosition() == Constants.SLOT_ARRAY[0]){
-            return 1;
-        } else if(spindexer.getPosition() == Constants.SLOT_ARRAY[1]){
-            return 2;
-        }else if(spindexer.getPosition() == Constants.SLOT_ARRAY[2]){
-            return 3;
-        }else{
             return 0;
+        } else if(spindexer.getPosition() == Constants.SLOT_ARRAY[1]){
+            return 1;
+        }else if(spindexer.getPosition() == Constants.SLOT_ARRAY[2]){
+            return 2;
+        }else{
+            return -999;
         }
     }
 
     public void nextSlot(){
-        if(getSlot() == 1){
+        if(getSlot() == 0){
+            runToSlotOne();
+        } else if(getSlot() == 1){
             runToSlotTwo();
-        } else if(getSlot() == 2){
-            runToSlotThree();
         }
     }
 
     public void previousSlot(){
-        if(getSlot() == 2){
+        if(getSlot() == 1){
+            runToSlotZero();
+        } else if(getSlot() == 2){
             runToSlotOne();
-        } else if(getSlot() == 3){
-            runToSlotTwo();
         }
     }
 

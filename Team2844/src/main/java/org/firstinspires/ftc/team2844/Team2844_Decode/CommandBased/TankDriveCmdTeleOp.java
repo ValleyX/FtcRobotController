@@ -15,7 +15,6 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -270,13 +269,13 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
                         new StopTransferCmd(shooterSubsystem)));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(new SlotCmd(spindexerSubsystem, kickSubsystem, 1));
+                .whenPressed(new SlotCmd(spindexerSubsystem, kickSubsystem, 0));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(new SlotCmd(spindexerSubsystem, kickSubsystem, 2));
+                .whenPressed(new SlotCmd(spindexerSubsystem, kickSubsystem, 1));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new SlotCmd(spindexerSubsystem, kickSubsystem, 3));
+                .whenPressed(new SlotCmd(spindexerSubsystem, kickSubsystem, 2));
 
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
@@ -335,7 +334,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
 
         aimSubsystem.aimHood(0.0);
-        spindexerSubsystem.runToSlotOne();
+        spindexerSubsystem.runToSlotZero();
 
         while (opModeIsActive()){
             //Scheduler must be loop called for everything else to run
