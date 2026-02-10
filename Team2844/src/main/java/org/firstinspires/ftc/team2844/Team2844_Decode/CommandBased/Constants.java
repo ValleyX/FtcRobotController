@@ -2,6 +2,8 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased;
 
 public class Constants {
 
+    //This is me testing pushing code from my home computer
+
     //turret
     //24 tooth servo head to 130 turret teeth
     private static final double FULL_SERVO_TURN = 0.2;
@@ -37,15 +39,15 @@ public class Constants {
 
 
     //spindexer
-    public static final double SLOT_ONE = 0.0;
-    public static final double SLOT_TWO = 0.2/3;
-    public static final double SLOT_THREE = 2*(0.2/3);
+    public static final double SLOT_ZERO = 0.0;
+    public static final double SLOT_ONE = 0.2/3;
+    public static final double SLOT_TWO = 2*(0.2/3);
 
-    public static final double SLOT_ONE_LOOPED_ONE = 0.2;
-    public static final double SLOT_TWO_LOOPED_ONE = 4*(0.2/3);
-    public static final double SLOT_THREE_LOOPED_ONE = 5*(0.2/3);
+    public static final double SLOT_ZERO_LOOPED_ONE = 0.2;
+    public static final double SLOT_ONE_LOOPED_ONE = 4*(0.2/3);
+    public static final double SLOT_TWO_LOOPED_ONE = 5*(0.2/3);
 
-    public static final double[] SLOT_ARRAY = {SLOT_ONE, SLOT_TWO, SLOT_THREE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE, SLOT_THREE_LOOPED_ONE};
+    public static final double[] SLOT_ARRAY = {SLOT_ZERO, SLOT_ONE, SLOT_TWO, SLOT_ZERO_LOOPED_ONE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE};
 
     public static final int MIN_COLOR_SUM = 900;
 
@@ -127,12 +129,27 @@ public class Constants {
     public static final double INTAKE_SPEED = 0.9;
 
     /* TODO LIST
-      - Get Shooter Velocity Working
       - Get Intake Spindexer working with new beambreak (stop intaking when full)
- in prog - Get new encoder working with auto-alin
       - get the spindexer to spin the feeds while spinning
-      - get the linreg for shooter
-      - get distace from limelight
-      - get hood linreg working
+
+      - Get Shooter Velocity Working
+         * get the linreg for shooter
+         * get hood linreg working
+
+      - get pose tracking with the odometry pods
+        * get distance from limelight
+      - get Metatags with the limelight
+        * update pinpoint pose with metatag pos
+
+      After rebuild of turret
+      - get axon to track degrees of turret
+      - change auto-alin to continuous
+
+      After Mecanum
+      - Change drive cmd
+      - get roadrunner working
+
+      - Auto!!!
+
      */
 }

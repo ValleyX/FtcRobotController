@@ -13,7 +13,6 @@ public class NextSlotCmd extends CommandBase {
     public NextSlotCmd(SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem){
         this.spindexerSubsystem = spindexerSubsystem;
         this.kickSubsystem = kickSubsystem;
-        addRequirements(spindexerSubsystem, kickSubsystem);
     }
 
     @Override

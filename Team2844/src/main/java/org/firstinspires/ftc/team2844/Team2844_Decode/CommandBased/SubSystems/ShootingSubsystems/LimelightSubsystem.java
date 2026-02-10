@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
 
 public class LimelightSubsystem extends SubsystemBase {
@@ -62,7 +63,8 @@ public class LimelightSubsystem extends SubsystemBase {
     public double getDis(){
         updateResult();
         if (llResult != null && llResult.isValid()){
-            return 0.0;
+            //Convert meters to inches
+            return llResult.getBotposeAvgDist()*39.37008;
         }
         return Constants.NO_LL;
     }
@@ -74,5 +76,26 @@ public class LimelightSubsystem extends SubsystemBase {
             return distance;
         }
         return Constants.NO_LL;
+    }
+
+    public void updateOrientation(double imuDegrees){
+        limelight.updateRobotOrientation(imuDegrees);
+    }
+
+    public Pose3D getBotPose(double imuDegrees){
+        updateOrientation(imuDegrees);
+        updateResult();
+
+        if (llResult != null && llResult.isValid()) {
+            Pose3D botpose_mt2 = llResult.getBotpose_MT2();
+            if (botpose_mt2 != null) {
+                return botpose_mt2;
+            }
+        }
+        return null;
+    }
+
+    public void periodic(){
+        updateResult();
     }
 }
