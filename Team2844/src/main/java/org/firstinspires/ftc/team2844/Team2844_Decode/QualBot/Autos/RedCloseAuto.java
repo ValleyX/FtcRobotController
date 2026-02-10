@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.ShooterHardware;
@@ -38,6 +39,8 @@ public class RedCloseAuto extends LinearOpMode {
         mecanumDrive.updatePoseEstimate();
         estimate = mecanumDrive.localizer.getPose();
         boolean skip = false;
+        Servo gobildaLight = hardwareMap.get(Servo.class, "gobildaLight");
+        gobildaLight.setPosition(0.611);
 
         boolean highVoltage = hardwareMap.voltageSensor.get("Control Hub").getVoltage() > 13.0;
 

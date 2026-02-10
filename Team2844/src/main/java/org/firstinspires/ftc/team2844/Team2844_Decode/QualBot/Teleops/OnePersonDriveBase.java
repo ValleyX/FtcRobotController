@@ -83,7 +83,8 @@ public class OnePersonDriveBase extends LinearOpMode {
         OpMode_ = this;
 
         PIDFCoefficients shooterCoefficients = shooterHardware.shooterMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        PIDFCoefficients newShooterCoefficients = new PIDFCoefficients(40, 0, 15, 25);
+        PIDFCoefficients newShooterCoefficients = new PIDFCoefficients(60, 0, 10, 35);
+        shooterHardware.shooterMotor.setVelocityPIDFCoefficients(60, 0, 10, 35);
         shooterHardware.shooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
 
         //If we end auto facing the back of the field (away from audience) then comment out this line

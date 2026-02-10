@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.ShooterHardware;
@@ -29,6 +30,9 @@ public class RedFarAuto extends LinearOpMode {
         mecanumDrive.updatePoseEstimate();
         estimate = mecanumDrive.localizer.getPose();
 
+        Servo gobildaLight = hardwareMap.get(Servo.class, "gobildaLight");
+        gobildaLight.setPosition(0.611);
+
         waitForStart();
         if (isStopRequested()) return;
 
@@ -38,7 +42,7 @@ public class RedFarAuto extends LinearOpMode {
 
         TrajectoryActionBuilder moveOut = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, -8.75), Math.toRadians(-25)))
                 .strafeTo(new Vector2d(-60, -34))
-                .turnTo(Math.toRadians(90));
+                .turnTo(Math.toRadians(-90));
 
 
 
@@ -62,9 +66,15 @@ public class RedFarAuto extends LinearOpMode {
     private void shoot(ShooterHardware shooterHardware, LimelightHardware limelightHardware){
         //int count = 0;
         while (shooterHardware.oneBall() && opModeIsActive()) {
-            double shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
+            double shooterVelocity;
+            if(limelightHardware.getTx() != -999){
+                shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
+                shooterHardware.aimHood(shooterHardware.getHoodAim(limelightHardware.getBotDis()));
+            } else {
+                shooterVelocity = shooterHardware.getShootSpeed(120.0);
+                shooterHardware.aimHood(shooterHardware.getHoodAim(120.0));
+            }
             shooterHardware.setShootVelocity(shooterVelocity);
-            shooterHardware.aimHood(shooterHardware.getHoodAim(limelightHardware.getBotDis()));
             if(shooterHardware.withinVel(shooterVelocity)) {
                 shooterHardware.feed();
             } else if(shooterHardware.belowVel(shooterVelocity)) {

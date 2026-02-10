@@ -96,8 +96,8 @@ public class ShooterHardware {
         gobuildaBB1 = opMode_.hardwareMap.get(DigitalChannel.class, "gobuildaBB1");
 
         shooterCoefficients = shooterMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        newShooterCoefficients = new PIDFCoefficients(52.1, 0.0, 15, 25);
-        shooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
+        newShooterCoefficients = new PIDFCoefficients(60.0, 0.0, 10, 35);
+        shooterMotor.setVelocityPIDFCoefficients(60.0, 0.0, 10, 35);
 
     }
 
@@ -174,7 +174,7 @@ public class ShooterHardware {
 
     public double getShootSpeed(double distance) {
         if (distance != -999) {
-            shooterVel = ((0.1733847*distance)+ 27.44517);
+            shooterVel = ((0.1730847*distance)+ 24.34517);
             // shooterVel = ((0.1445058824*distance) + 25.99294118);
             //shooterVel = ((0.1824324324*distance) + 21.88378378);
             return shooterVel;

@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.ShooterHardware;
@@ -28,6 +29,8 @@ public class BlueFarAuto extends LinearOpMode {
         limelightHardware.innit(0);
         mecanumDrive.updatePoseEstimate();
         estimate = mecanumDrive.localizer.getPose();
+        Servo gobildaLight = hardwareMap.get(Servo.class, "gobildaLight");
+        gobildaLight.setPosition(0.611);
 
         waitForStart();
         if (isStopRequested()) return;
@@ -63,8 +66,14 @@ public class BlueFarAuto extends LinearOpMode {
         //int count = 0;
         while (shooterHardware.oneBall() && opModeIsActive()) {
             double shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
+            if(limelightHardware.getTx() != -999){
+                shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
+                shooterHardware.aimHood(shooterHardware.getHoodAim(limelightHardware.getBotDis()));
+            } else {
+                shooterVelocity = shooterHardware.getShootSpeed(120.0);
+                shooterHardware.aimHood(shooterHardware.getHoodAim(120.0));
+            }
             shooterHardware.setShootVelocity(shooterVelocity);
-            shooterHardware.aimHood(shooterHardware.getHoodAim(limelightHardware.getBotDis()));
             if(shooterHardware.withinVel(shooterVelocity)) {
                 shooterHardware.feed();
             } else if(shooterHardware.belowVel(shooterVelocity)) {
