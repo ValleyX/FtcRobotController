@@ -2,18 +2,19 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Sho
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterFeedSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterSubsystem;
 
 public class StopTransferCmd extends CommandBase {
-    ShooterSubsystem shooterSubsystem;
+    ShooterFeedSubsystem shooterFeedSubsystem;
 
-    public StopTransferCmd(ShooterSubsystem shooterSubsystem){
-        this.shooterSubsystem = shooterSubsystem;
+    public StopTransferCmd(ShooterFeedSubsystem shooterFeedSubsystem){
+        this.shooterFeedSubsystem = shooterFeedSubsystem;
     }
 
     @Override
     public void execute() {
-        shooterSubsystem.stopTFeed();
+        shooterFeedSubsystem.stopTFeed();
     }
 
     @Override

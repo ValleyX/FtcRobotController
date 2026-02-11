@@ -26,7 +26,8 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Aimi
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretPositive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.DriveCmdArcade;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.DriveCmdTank;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeLineCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeSortCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopShootCmd;
@@ -37,6 +38,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Spin
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterFeedSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterSubsystem;
@@ -91,6 +93,8 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
     private AimSubsystem aimSubsystem;
     /**Shooter Subsystem*/
     private ShooterSubsystem shooterSubsystem;
+    /**Shooter feed Subsystem*/
+    private ShooterFeedSubsystem shooterFeedSubsystem;
     /**Kick Subsystem*/
     private KickSubsystem kickSubsystem;
     /**Spindexer Subsystem*/
@@ -104,9 +108,10 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
     private DriveCmdTank driveCmdTank;
     private DriveCmdArcade driveCmdArcade;
     StopIntakeCmd stopIntakeCmd;
-    IntakeCmd runIntakeCmd;
+    IntakeSortCmd runIntakeSortCmd;
     UptakeCmd uptakeCmd;
     FullAimToLLCmd aimCmd;
+    IntakeLineCmd intakeLineCmd;
 
     /* ------------------- Gamepad Declaration ------------------- */
     private GamepadEx m_driveOp;
@@ -211,8 +216,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
          * 3. Kick
          * 4. Spindexer
          * 5. Shooter
-         * 6. Aim
-         * 7. Sensor */
+         * 6. ShooterFeed
+         * 7. Aim
+         * 8. Sensor */
 
         //1. drive subsystem
         tankDriveSubsystem = new TankDriveSubsystem(leftMotorGroup,rightMotorGroup, pinpoint);
@@ -223,10 +229,12 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         //4. Spindexer subsystem
         spindexerSubsystem = new SpindexerSubsystem(this, spindexer);
         //5. Shooter subsystem
-        shooterSubsystem = new ShooterSubsystem(shooterPair, tFeed, topBreak);
-        //6. Aim subsystem
+        shooterSubsystem = new ShooterSubsystem(shooterPair);
+        //6. ShooterFeed subsystem
+        shooterFeedSubsystem = new ShooterFeedSubsystem(tFeed, topBreak);
+        //7. Aim subsystem
         aimSubsystem = new AimSubsystem(hoodAim, turretAim, axonIn);
-        //7. Sensor Subsystem
+        //8. Sensor Subsystem
         sensorSubsystem = new SensorSubsystem(pinpoint, limelight, pipelineNum);
 
 
@@ -237,10 +245,11 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         //driveCmdTank = new DriveCmdTank(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightY);
             //Arcade Drive controls
         driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightX);
-        runIntakeCmd = new IntakeCmd(intakeSubsystem, spindexerSubsystem, kickSubsystem);
+        runIntakeSortCmd = new IntakeSortCmd(intakeSubsystem, spindexerSubsystem, kickSubsystem);
         stopIntakeCmd = new StopIntakeCmd(intakeSubsystem);
         uptakeCmd = new UptakeCmd(kickSubsystem);
         aimCmd = new FullAimToLLCmd(aimSubsystem, sensorSubsystem);
+        intakeLineCmd = new IntakeLineCmd(shooterFeedSubsystem, intakeSubsystem, spindexerSubsystem, kickSubsystem);
 
 
 
@@ -259,9 +268,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)
                 .whenHeld(new ParallelCommandGroup( new UptakeCmd(kickSubsystem),
-                        new TransferCmd(shooterSubsystem)))
+                        new TransferCmd(shooterFeedSubsystem)))
                 .whenReleased( new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem),
-                        new StopTransferCmd(shooterSubsystem)));
+                        new StopTransferCmd(shooterFeedSubsystem)));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.X)
                 .whenPressed(new SlotCmd(spindexerSubsystem, kickSubsystem, 0));
@@ -333,7 +342,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
             //Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
             if ( rightTriggerReader.isDown() ) {
-                runIntakeCmd.schedule();
+                intakeLineCmd.schedule();
             } else {
                 stopIntakeCmd.schedule();
             }

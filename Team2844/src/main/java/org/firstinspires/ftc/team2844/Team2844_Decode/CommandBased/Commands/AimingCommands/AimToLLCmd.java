@@ -3,24 +3,24 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Aim
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.LimelightSubsystem;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 
 public class AimToLLCmd extends CommandBase {
     AimSubsystem aimSubsystem;
-    LimelightSubsystem limelightSubsystem;
+    SensorSubsystem sensorSubsystem;
 
-    public AimToLLCmd(AimSubsystem aimSubsystem, LimelightSubsystem limelightSubsystem){
+    public AimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem){
         this.aimSubsystem = aimSubsystem;
-        this.limelightSubsystem = limelightSubsystem;
-        addRequirements(aimSubsystem, limelightSubsystem);
+        this.sensorSubsystem = sensorSubsystem;
+        addRequirements(aimSubsystem, sensorSubsystem);
     }
 
     @Override
     public void execute(){
-        double tx = limelightSubsystem.getTx();
+        double tx = sensorSubsystem.getTx();
         if(tx != Constants.NO_LL && (Math.abs(tx) < Constants.TURRET_THRESHHOLD)){
-            aimSubsystem.moveTurret(limelightSubsystem.getTx());
+            aimSubsystem.moveTurret(sensorSubsystem.getTx());
         }
     }
 

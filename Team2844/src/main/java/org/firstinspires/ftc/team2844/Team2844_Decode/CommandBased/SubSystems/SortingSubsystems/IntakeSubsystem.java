@@ -39,5 +39,4 @@ public class IntakeSubsystem extends SubsystemBase {
         return intakeBB.getState();
     }
 
-
 }

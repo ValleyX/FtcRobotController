@@ -128,7 +128,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         }
     }
 
-    public boolean full(){
+    public boolean fullSpindexer(){
         return (ballInBayOne() && ballInBayTwo() && ballInBayThree());
     }
 

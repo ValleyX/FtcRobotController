@@ -15,10 +15,6 @@ public class ShooterSubsystem extends SubsystemBase {
     //Shooting Motor
     /**The group of motors that run the flywheel*/
     private MotorExGroup shooterMotors;
-    /**The continuous servo that runs the feeder in the neck of the shooter*/
-    private Motor tFeed;
-
-    private DigitalChannel topBreak;
 
     /**
      * This is the constructor for the shooter Subsystem
@@ -27,12 +23,9 @@ public class ShooterSubsystem extends SubsystemBase {
      * new Motor(hardwaremap, "____"); for motors,
      * and hardwaremap.get(___.class, "____"); for servos
      * @param shooterMotors The Flywheel motor group that shoots the artifacts
-     * @param tFeed The last intaker that is located on the neck of the shooter and determines when the artifact is launched
      */
-    public ShooterSubsystem(MotorExGroup shooterMotors, Motor tFeed, DigitalChannel topBreak){
+    public ShooterSubsystem(MotorExGroup shooterMotors){
         this.shooterMotors = shooterMotors;
-        this.tFeed = tFeed;
-        this.topBreak = topBreak;
     }
 
     public void setPower(double power){
@@ -42,17 +35,4 @@ public class ShooterSubsystem extends SubsystemBase {
     public void setVelocity(double velocity){
         shooterMotors.setVelocity(velocity);
     }
-
-    public void runTFeedForward() {
-        tFeed.set(1.0);
-    }
-
-    public void stopTFeed(){
-        tFeed.set(0.0);
-    }
-
-    public void runTFeedBackward(){tFeed.set(-1.0);}
-
-    /** returns true if there is a ball in the top chamber*/
-    public boolean topBroken(){return !topBreak.getState();}
 }
