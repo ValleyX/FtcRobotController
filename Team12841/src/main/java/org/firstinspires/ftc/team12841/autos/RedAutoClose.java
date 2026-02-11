@@ -1,255 +1,331 @@
 package org.firstinspires.ftc.team12841.autos;
 
-import com.bylazar.configurables.annotations.Configurable;
-import com.bylazar.telemetry.PanelsTelemetry;
-import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import org.firstinspires.ftc.team12841.pedroPathing.Constants;
 
-@Autonomous(name = "Red Close", group = "Autonomous")
-@Configurable // Panels
+import org.firstinspires.ftc.team12841.RobotHardware;
+
+@Autonomous(name="Red Close", group="AUTO")
 public class RedAutoClose extends OpMode {
 
-    private TelemetryManager panelsTelemetry; // Panels Telemetry instance
-    public Follower follower; // Pedro Pathing follower instance
-    private int pathState; // Current autonomous path state (state machine)
-    private Timer pathTimer; // Timer for path state machine
-    private Paths paths; // Paths defined in the Paths class
+    private Follower follower;
+    private RobotHardware robot;
+    private Timer pathTimer;
+
+    private int state = 0;
+
+    // ---------------- DRIVE SPEEDS ----------------
+    private static final double NORMAL_DRIVE_POWER = 1.0;
+    private static final double INTAKE_DRIVE_POWER = 0.5;
+
+    // ---------------- PATHS ----------------
+    private PathChain START_TO_SHOOT;
+    private PathChain SHOOT_TO_ALIGN1;
+    private PathChain ALIGN1_TO_INTAKE1;
+    private PathChain INTAKE1_TO_SHOOT;
+
+    private PathChain SHOOT_TO_ALIGN2;
+    private PathChain ALIGN2_TO_INTAKE2;
+    private PathChain INTAKE2_TO_SHOOT;
+
+    private PathChain SHOOT_TO_ALIGN3;
+    private PathChain ALIGN3_TO_INTAKE3;
+    private PathChain INTAKE3_TO_SHOOT_FAR;
+
+    private PathChain SHOOT_FAR_TO_PARK;
+
+    // ---------------- INTAKE STATE ----------------
+    private boolean runIntake = false;
+    private boolean intakeCaptured = false;
+
+    private boolean aligning = false;
+    // ---------------- FLICK CONTROL ----------------
+
+    private void shootFlick(double power) {
+        if (!runIntake) {
+            robot.intake.setPower(1);
+            robot.flick.setPower(power);
+        }
+    }
+
+    private void intakeFlick(double power) {
+        robot.flick.setPower(power);
+    }
+
+    // ---------------- INTAKE LOGIC ----------------
+
+    private void runIntakeForward() {
+        boolean beamNotBroken = robot.isBroken(); // ACTIVE LOW SENSOR
+        boolean beamBroken = !beamNotBroken;
+
+        robot.intake.setPower(1);
+
+        if (!intakeCaptured) {
+            if (!beamBroken) {
+                intakeFlick(-1); // pull note in
+            } else {
+                intakeCaptured = true;
+                intakeFlick(0);  // latch stop
+            }
+        } else {
+            intakeFlick(0);
+        }
+    }
+
+    private void align()
+    {
+        robot.alignWithLimelight(-1);
+    }
+
+    private void stopIntake() {
+        runIntake = false;
+        robot.intake.setPower(0);
+        intakeFlick(0);
+    }
+
+    // ---------------- INIT ----------------
 
     @Override
     public void init() {
-        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
-
-        follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(72, 8, Math.toRadians(90)));
-
+        robot = new RobotHardware(this);
+        follower = robot.getFollower();
         pathTimer = new Timer();
-        paths = new Paths(follower); // Build paths
 
-        panelsTelemetry.debug("Status", "Initialized");
-        panelsTelemetry.update(telemetry);
+        Pose startPose = new Pose(0, 0, 0);
+        Pose shootPreloadPose = new Pose(-54.24, -6, -0.0621);
+
+        Pose alignIntake1 = new Pose(-42.878, -12.635, -0.7688);
+        Pose intake1Pose = new Pose(-21.81, -28.279, -0.7956);
+        Pose shoot1Pose = new Pose(-45.53, -11, 0.0724);
+        Pose alignIntake2 = new Pose(-57.186,-24.007,-0.826);
+        Pose intake2 = new Pose( -34.783,-49.315,-0.832);
+        Pose shoot2Pose = new Pose(-56.3622,-16.36,0.0954);
+        Pose parkPose = new Pose(-26.779, 0.0829, -0.805);
+
+        follower.setStartingPose(startPose);
+
+        START_TO_SHOOT = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, shootPreloadPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPreloadPose.getHeading())
+                .build();
+
+        SHOOT_TO_ALIGN1 = follower.pathBuilder()
+                .addPath(new BezierLine(shootPreloadPose, alignIntake1))
+                .setLinearHeadingInterpolation(shootPreloadPose.getHeading(), alignIntake1.getHeading())
+                .build();
+
+        ALIGN1_TO_INTAKE1 = follower.pathBuilder()
+                .addPath(new BezierLine(alignIntake1, intake1Pose))
+                .setLinearHeadingInterpolation(alignIntake1.getHeading(), intake1Pose.getHeading())
+                .build();
+
+        INTAKE1_TO_SHOOT = follower.pathBuilder()
+                .addPath(new BezierLine(intake1Pose, shoot1Pose))
+                .setLinearHeadingInterpolation(intake1Pose.getHeading(), shoot1Pose.getHeading())
+                .build();
+
+        /*SHOOT_TO_ALIGN2 = follower.pathBuilder()
+                .addPath(new BezierLine(shoot1Pose, alignIntake2))
+                .setLinearHeadingInterpolation(shoot1Pose.getHeading(), alignIntake2.getHeading())
+                .build();
+
+        ALIGN2_TO_INTAKE2 = follower.pathBuilder()
+                .addPath(new BezierLine(alignIntake2, intake2Pose))
+                .setLinearHeadingInterpolation(alignIntake2.getHeading(), intake2Pose.getHeading())
+                .build();
+
+        INTAKE2_TO_SHOOT = follower.pathBuilder()
+                .addPath(new BezierLine(intake2Pose, shoot2Pose))
+                .setLinearHeadingInterpolation(intake2Pose.getHeading(), shoot2Pose.getHeading())
+                .build();
+
+        SHOOT_TO_ALIGN3 = follower.pathBuilder()
+                .addPath(new BezierLine(shoot2Pose, alignIntake3))
+                .setLinearHeadingInterpolation(shoot2Pose.getHeading(), alignIntake3.getHeading())
+                .build();
+
+        ALIGN3_TO_INTAKE3 = follower.pathBuilder()
+                .addPath(new BezierLine(alignIntake3, intake3Pose))
+                .setLinearHeadingInterpolation(alignIntake3.getHeading(), intake3Pose.getHeading())
+                .build();
+
+        INTAKE3_TO_SHOOT_FAR = follower.pathBuilder()
+                .addPath(new BezierLine(intake3Pose, shootFarPose))
+                .setLinearHeadingInterpolation(intake3Pose.getHeading(), shootFarPose.getHeading())
+                .build();*/
+
+        SHOOT_FAR_TO_PARK = follower.pathBuilder()
+                .addPath(new BezierLine(shoot1Pose, parkPose))
+                .setLinearHeadingInterpolation(shoot1Pose.getHeading(), parkPose.getHeading())
+                .build();
+    }
+
+    @Override
+    public void start() {
+        state = 0;
+        pathTimer.resetTimer();
     }
 
     @Override
     public void loop() {
-        follower.update(); // Update Pedro Pathing
-        pathState = autonomousPathUpdate(); // Update autonomous state machine
+        follower.update();
 
-        // Log values to Panels and Driver Station
-        panelsTelemetry.debug("Path State", pathState);
-        panelsTelemetry.debug("X", follower.getPose().getX());
-        panelsTelemetry.debug("Y", follower.getPose().getY());
-        panelsTelemetry.debug("Heading", follower.getPose().getHeading());
-        panelsTelemetry.update(telemetry);
-    }
+        switch (state) {
 
-    public static class Paths {
-
-        public PathChain STARTTOSHOOT;
-        public PathChain INTAKE1;
-        public PathChain INTAKE1TOSHOOT;
-        public PathChain SHOOT1TOINTAKE2ALIGN;
-        public PathChain INTAKE2;
-        public PathChain INTAKE2TOSHOOT;
-        public PathChain MOVEAWAY;
-
-        public Paths(Follower follower) {
-            STARTTOSHOOT = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierCurve(
-                                    new Pose(117.500, 129.100),
-                                    new Pose(100.033, 105.794),
-                                    new Pose(106.130, 114.205),
-                                    new Pose(104.948, 111.870),
-                                    new Pose(84.500, 84.000)
-                            )
-                    )
-                    .setLinearHeadingInterpolation(Math.toRadians(216), Math.toRadians(230))
-                    .build();
-
-            INTAKE1 = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierLine(new Pose(84.500, 84.000), new Pose(128.000, 84.000))
-                    )
-                    .setTangentHeadingInterpolation()
-                    .build();
-
-            INTAKE1TOSHOOT = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierCurve(
-                                    new Pose(128.000, 84.000),
-                                    new Pose(101.700, 84.043),
-                                    new Pose(84.500, 84.000)
-                            )
-                    )
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(230))
-                    .setReversed()
-                    .build();
-
-            SHOOT1TOINTAKE2ALIGN = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierLine(new Pose(84.500, 84.000), new Pose(101.000, 60.000))
-                    )
-                    .setLinearHeadingInterpolation(Math.toRadians(230), Math.toRadians(0))
-                    .build();
-
-            INTAKE2 = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierLine(new Pose(101.000, 60.000), new Pose(130.000, 60.000))
-                    )
-                    .setTangentHeadingInterpolation()
-                    .build();
-
-            INTAKE2TOSHOOT = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierLine(new Pose(130.000, 60.000), new Pose(84.500, 84.000))
-                    )
-                    .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(230))
-                    .build();
-
-            MOVEAWAY = follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierCurve(
-                                    new Pose(84.500, 84.000),
-                                    new Pose(83.853, 53.303),
-                                    new Pose(84.153, 56.314),
-                                    new Pose(84.000, 36.000)
-                            )
-                    )
-                    .setLinearHeadingInterpolation(Math.toRadians(230), Math.toRadians(0))
-                    .build();
-        }
-    }
-
-    public int autonomousPathUpdate() {
-        switch (pathState) {
             case 0:
-                // Shooter ON with Regression
-                follower.followPath(paths.STARTTOSHOOT, true);
-                setPathState(1);
+                follower.setMaxPower(NORMAL_DRIVE_POWER);
+                robot.shooter.setVelocity(1300);
+                follower.followPath(START_TO_SHOOT);
+                pathTimer.resetTimer();
+                state++;
                 break;
+
             case 1:
                 if (!follower.isBusy()) {
-                    // Shoot Cycle
-                    setPathState(2);
+                    aligning = true;
+                    pathTimer.resetTimer();
+                    state++;
                 }
                 break;
+
             case 2:
-                setPathState(3);
-                break;
-            case 3:
-                if (pathTimer.getElapsedTimeSeconds() > 3) {
-                    setPathState(4);
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) shootFlick(-1);
+                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                    aligning = false;
+                    shootFlick(0);
+                    intakeCaptured = false;
+                    follower.followPath(SHOOT_TO_ALIGN1);
+                    state++;
                 }
                 break;
-            case 4:
-                // Shooter OFF
-                // Intake ON
-                // TT READY
-                follower.followPath(paths.INTAKE1, true);
-                setPathState(5);
+
+            case 3:
+                runIntake = true;
+                follower.setMaxPower(INTAKE_DRIVE_POWER);
+                if (!follower.isBusy()) {
+                    follower.followPath(ALIGN1_TO_INTAKE1);
+                    pathTimer.resetTimer();
+                    state++;
+                }
                 break;
+
+            case 4:
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
+                    stopIntake();
+                    follower.setMaxPower(NORMAL_DRIVE_POWER);
+                    follower.followPath(INTAKE1_TO_SHOOT);
+                    state++;
+                }
+                break;
+
             case 5:
                 if (!follower.isBusy()) {
-                    setPathState(6);
+                    robot.shooter.setVelocity(1250);
+                    aligning = true;
+                    pathTimer.resetTimer();
+                    state++;
                 }
                 break;
+
             case 6:
-                // Intake OFF
-                // Shooter ON
-                follower.followPath(paths.INTAKE1TOSHOOT, true);
-                setPathState(7);
-                break;
-            case 7:
-                if (!follower.isBusy()) {
-                    // Shoot Cycle
-                    setPathState(8);
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) shootFlick(-1);
+                if (pathTimer.getElapsedTimeSeconds() > 1.8) {
+                    shootFlick(0);
+                    aligning = false;
+                    intakeCaptured = false;
+                    follower.followPath(SHOOT_FAR_TO_PARK);
+                    state++;
                 }
                 break;
+
+           /* case 7:
+                runIntake = true;
+                follower.setMaxPower(INTAKE_DRIVE_POWER);
+                if (!follower.isBusy()) {
+                    follower.followPath(ALIGN2_TO_INTAKE2);
+                    state++;
+                }
+                break;
+
             case 8:
-                setPathState(9);
+                if (!follower.isBusy()) {
+                    stopIntake();
+                    follower.setMaxPower(NORMAL_DRIVE_POWER);
+                    follower.followPath(INTAKE2_TO_SHOOT);
+                    state++;
+                }
                 break;
+
             case 9:
-                if (pathTimer.getElapsedTimeSeconds() > 3) {
-                    setPathState(10);
+                if (!follower.isBusy()) {
+                    robot.shooter.setVelocity(2200);
+                    robot.alignWithLimelight(-1);
+                    pathTimer.resetTimer();
+                    state++;
                 }
                 break;
+
             case 10:
-                // Shooter OFF
-                follower.followPath(paths.SHOOT1TOINTAKE2ALIGN, true);
-                setPathState(11);
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) shootFlick(-1);
+                if (pathTimer.getElapsedTimeSeconds() > 1.8) {
+                    shootFlick(0);
+                    intakeCaptured = false;
+                    follower.followPath(SHOOT_TO_ALIGN3);
+                    state++;
+                }
                 break;
+
             case 11:
+                runIntake = true;
+                follower.setMaxPower(INTAKE_DRIVE_POWER);
                 if (!follower.isBusy()) {
-                    setPathState(12);
+                    follower.followPath(ALIGN3_TO_INTAKE3);
+                    state++;
                 }
                 break;
+
             case 12:
-                // Intake ON
-                // TT READY
-                follower.followPath(paths.INTAKE2, true);
-                setPathState(13);
-                break;
-            case 13:
                 if (!follower.isBusy()) {
-                    setPathState(14);
+                    stopIntake();
+                    follower.setMaxPower(NORMAL_DRIVE_POWER);
+                    follower.followPath(INTAKE3_TO_SHOOT_FAR);
+                    state++;
                 }
-                break;
-            case 14:
-                // Intake OFF
-                // Shooter ON
-                follower.followPath(paths.INTAKE2TOSHOOT, true);
-                setPathState(15);
-                break;
-            case 15:
+                break;*/
+
+            /*case 7: //13
                 if (!follower.isBusy()) {
-                    // Shoot Cycle
-                    setPathState(16);
+                    robot.shooter.setVelocity(3700);
+                    robot.alignWithLimelight(-1);
+                    pathTimer.resetTimer();
+                    state++;
                 }
                 break;
-            case 16:
-                setPathState(17);
-                break;
-            case 17:
-                if (pathTimer.getElapsedTimeSeconds() > 3) {
-                    setPathState(18);
+
+            case 8: //14
+                if (pathTimer.getElapsedTimeSeconds() > 1) shootFlick(-1);
+                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                    shootFlick(0);
+                    follower.followPath(SHOOT_FAR_TO_PARK);
+                    state++;
                 }
-                break;
-            case 18:
-                // All OFF
-                // TT POS 0
-                follower.followPath(paths.MOVEAWAY, true);
-                setPathState(19);
-                break;
-            case 19:
-                if (!follower.isBusy()) {
-                    setPathState(20);
-                }
-                break;
-            case 20:
-                requestOpModeStop(); // If we get lights do something fun with them here
-                pathState = -1;
+                break;*/
+
+            default:
+                stopIntake();
+                robot.shooter.setVelocity(0);
                 break;
         }
-        return pathState;
-    }
+        telemetry.addData("RPM", robot.shooter.getVelocity());
+        telemetry.update();
 
-    public void setPathState(int pState) {
-        pathState = pState;
-        pathTimer.resetTimer();
+        if (aligning) align();
+
+        if (runIntake) runIntakeForward();
     }
 }

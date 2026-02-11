@@ -25,6 +25,7 @@ public class TeleOpTanner extends OpMode {
     private static final double MAX_RPM  = 6000.0;
     private static final double RPM_STEP = 50.0;
 
+
     // Limelight rotation tuning
     private static final double LL_KP      = 0.04;
     private static final double LL_MAX_ROT = 0.6;
@@ -33,7 +34,7 @@ public class TeleOpTanner extends OpMode {
     /* ===================== STATE ===================== */
 
     private double  targetRPM      = 2800.0;
-    private boolean shooterEnabled = false;
+    private boolean shooterEnabled = true;
 
     // Button edge tracking
     private boolean dpadUpLast   = false;
@@ -52,6 +53,8 @@ public class TeleOpTanner extends OpMode {
 
         telemetry.addLine("Init OK — warming localization");
         telemetry.update();
+
+        robot.limelight.pipelineSwitch(0);
     }
 
     /* ===================== INIT LOOP ===================== */
@@ -147,9 +150,9 @@ public class TeleOpTanner extends OpMode {
 
         /* ---------- SHOOTER TOGGLE ---------- */
 
-        boolean a = gamepad1.a;
-        if (a && !aLast) shooterEnabled = !shooterEnabled;
-        aLast = a;
+        //boolean a = gamepad1.a;
+        //if (a && !aLast) shooterEnabled = !shooterEnabled;
+        //aLast = a;
 
         targetRPM = updateRPM();
         if (shooterEnabled) robot.setShooterRPM(targetRPM);
