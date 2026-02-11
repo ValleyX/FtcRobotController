@@ -27,6 +27,7 @@ public class RobotHardware {
     /* ===================== CONSTANTS ===================== */
 
     public static final double SHOOTER_TICKS_PER_REV = 28.0;
+    public static double rpm = 2400;
 
     /* ===================== MOTORS ===================== */
 
@@ -65,6 +66,8 @@ public class RobotHardware {
         initLimelight();
         initPedro();
         follower = Constants.createFollower(opMode.hardwareMap);
+
+        limelight.pipelineSwitch(0);
     }
 
     /* ===================== INITIALIZATION ===================== */
@@ -104,10 +107,10 @@ public class RobotHardware {
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setVelocityPIDFCoefficients(
-                500,  // kP
+                400,  // kP
                 0.0,     // kI
                 0.0,     // kD
-                0.6        // kF
+                0.4        // kF
         );
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -241,11 +244,12 @@ public class RobotHardware {
 
     public double calculateRegression(double distance) {
         if(distance == -999)
-            return 2400;
+            return rpm;
         double A = PanelsConfig.REGRESSION_A;
         double B = PanelsConfig.REGRESSION_B;
         double C = PanelsConfig.REGRESSION_C;
-        return (A * (distance * distance)) + (B * distance) + C;
+        rpm = (A * (distance * distance)) + (B * distance) + C;
+        return rpm;
     }
 
     public boolean isBroken()

@@ -43,10 +43,12 @@ public class BlueAutoClose extends OpMode {
     private boolean runIntake = false;
     private boolean intakeCaptured = false;
 
+    private boolean aligning = false;
     // ---------------- FLICK CONTROL ----------------
 
     private void shootFlick(double power) {
         if (!runIntake) {
+            robot.intake.setPower(1);
             robot.flick.setPower(power);
         }
     }
@@ -58,7 +60,7 @@ public class BlueAutoClose extends OpMode {
     // ---------------- INTAKE LOGIC ----------------
 
     private void runIntakeForward() {
-        boolean beamNotBroken = robot.isBroken(); // ACTIVE LOW SENSOR
+        boolean beamNotBroken = robot.isBroken();
         boolean beamBroken = !beamNotBroken;
 
         robot.intake.setPower(1);
@@ -73,6 +75,11 @@ public class BlueAutoClose extends OpMode {
         } else {
             intakeFlick(0);
         }
+    }
+
+    private void align()
+    {
+        robot.alignWithLimelight(-1);
     }
 
     private void stopIntake() {
@@ -90,21 +97,12 @@ public class BlueAutoClose extends OpMode {
         pathTimer = new Timer();
 
         Pose startPose = new Pose(0, 0, 0);
-        Pose shootPreloadPose = new Pose(-43.7, 0.5, 0.1);
+        Pose shootPreloadPose = new Pose(-51.06, 4.4943, 0.05156);
 
-        Pose alignIntake1 = new Pose(-46.24, 4.47, 0.79);
-        Pose intake1Pose = new Pose(-19.46, 30.81, 0.78);
-        Pose shoot1Pose = new Pose(-55.9, 7.37, 0.021);
-
-        Pose alignIntake2 = new Pose(-56.4, 21, 0.85);
-        Pose intake2Pose = new Pose(-34.43, 45.38, 0.85);
-        Pose shoot2Pose = new Pose(-54.35, 14.66, 0.002);
-
-        Pose alignIntake3 = new Pose(-71.88, 28.33, 0.86);
-        Pose intake3Pose = new Pose(-46.63, 56.38, 0.85);
-
-        Pose shootFarPose = new Pose(-86.82, 41.8, -0.355);
-        Pose parkPose = new Pose(-66.48, 32.19, -0.703);
+        Pose alignIntake1 = new Pose(-42.79277, 9.53771, 0.815);
+        Pose intake1Pose = new Pose(-22.1556, 30.31, 0.815);
+        Pose shoot1Pose = new Pose(-52.6237, 8.86314, -0.0152);
+        Pose parkPose = new Pose(-38.013, -8.127, 0.7677);
 
         follower.setStartingPose(startPose);
 
@@ -128,7 +126,7 @@ public class BlueAutoClose extends OpMode {
                 .setLinearHeadingInterpolation(intake1Pose.getHeading(), shoot1Pose.getHeading())
                 .build();
 
-        SHOOT_TO_ALIGN2 = follower.pathBuilder()
+        /*SHOOT_TO_ALIGN2 = follower.pathBuilder()
                 .addPath(new BezierLine(shoot1Pose, alignIntake2))
                 .setLinearHeadingInterpolation(shoot1Pose.getHeading(), alignIntake2.getHeading())
                 .build();
@@ -156,11 +154,11 @@ public class BlueAutoClose extends OpMode {
         INTAKE3_TO_SHOOT_FAR = follower.pathBuilder()
                 .addPath(new BezierLine(intake3Pose, shootFarPose))
                 .setLinearHeadingInterpolation(intake3Pose.getHeading(), shootFarPose.getHeading())
-                .build();
+                .build();*/
 
         SHOOT_FAR_TO_PARK = follower.pathBuilder()
-                .addPath(new BezierLine(shootFarPose, parkPose))
-                .setLinearHeadingInterpolation(shootFarPose.getHeading(), parkPose.getHeading())
+                .addPath(new BezierLine(shoot1Pose, parkPose))
+                .setLinearHeadingInterpolation(shoot1Pose.getHeading(), parkPose.getHeading())
                 .build();
     }
 
@@ -178,7 +176,7 @@ public class BlueAutoClose extends OpMode {
 
             case 0:
                 follower.setMaxPower(NORMAL_DRIVE_POWER);
-                robot.shooter.setVelocity(2500);
+                robot.setShooterRPM(robot.calculateRegression(robot.getDistance()));
                 follower.followPath(START_TO_SHOOT);
                 pathTimer.resetTimer();
                 state++;
@@ -186,15 +184,16 @@ public class BlueAutoClose extends OpMode {
 
             case 1:
                 if (!follower.isBusy()) {
-                    robot.alignWithLimelight(-1);
+                    aligning = true;
                     pathTimer.resetTimer();
                     state++;
                 }
                 break;
 
             case 2:
-                if (pathTimer.getElapsedTimeSeconds() > 0.2) shootFlick(-1);
-                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) shootFlick(-1);
+                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                    aligning = false;
                     shootFlick(0);
                     intakeCaptured = false;
                     follower.followPath(SHOOT_TO_ALIGN1);
@@ -204,15 +203,16 @@ public class BlueAutoClose extends OpMode {
 
             case 3:
                 runIntake = true;
-                follower.setMaxPower(INTAKE_DRIVE_POWER);
                 if (!follower.isBusy()) {
+                    follower.setMaxPower(INTAKE_DRIVE_POWER);
                     follower.followPath(ALIGN1_TO_INTAKE1);
+                    pathTimer.resetTimer();
                     state++;
                 }
                 break;
 
             case 4:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
                     stopIntake();
                     follower.setMaxPower(NORMAL_DRIVE_POWER);
                     follower.followPath(INTAKE1_TO_SHOOT);
@@ -222,8 +222,8 @@ public class BlueAutoClose extends OpMode {
 
             case 5:
                 if (!follower.isBusy()) {
-                    robot.shooter.setVelocity(2500);
-                    robot.alignWithLimelight(-1);
+                    robot.setShooterRPM(robot.calculateRegression(robot.getDistance()));
+                    aligning = true;
                     pathTimer.resetTimer();
                     state++;
                 }
@@ -231,15 +231,16 @@ public class BlueAutoClose extends OpMode {
 
             case 6:
                 if (pathTimer.getElapsedTimeSeconds() > 0.8) shootFlick(-1);
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.8) {
                     shootFlick(0);
+                    aligning = false;
                     intakeCaptured = false;
-                    follower.followPath(SHOOT_TO_ALIGN2);
+                    follower.followPath(SHOOT_FAR_TO_PARK);
                     state++;
                 }
                 break;
 
-            case 7:
+           /* case 7:
                 runIntake = true;
                 follower.setMaxPower(INTAKE_DRIVE_POWER);
                 if (!follower.isBusy()) {
@@ -259,7 +260,7 @@ public class BlueAutoClose extends OpMode {
 
             case 9:
                 if (!follower.isBusy()) {
-                    robot.shooter.setVelocity(2500);
+                    robot.shooter.setVelocity(2200);
                     robot.alignWithLimelight(-1);
                     pathTimer.resetTimer();
                     state++;
@@ -268,7 +269,7 @@ public class BlueAutoClose extends OpMode {
 
             case 10:
                 if (pathTimer.getElapsedTimeSeconds() > 0.8) shootFlick(-1);
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.8) {
                     shootFlick(0);
                     intakeCaptured = false;
                     follower.followPath(SHOOT_TO_ALIGN3);
@@ -292,31 +293,35 @@ public class BlueAutoClose extends OpMode {
                     follower.followPath(INTAKE3_TO_SHOOT_FAR);
                     state++;
                 }
-                break;
+                break;*/
 
-            case 13:
+            /*case 7: //13
                 if (!follower.isBusy()) {
-                    robot.shooter.setVelocity(3900);
+                    robot.shooter.setVelocity(3700);
                     robot.alignWithLimelight(-1);
                     pathTimer.resetTimer();
                     state++;
                 }
                 break;
 
-            case 14:
-                if (pathTimer.getElapsedTimeSeconds() > 0.8) shootFlick(-1);
+            case 8: //14
+                if (pathTimer.getElapsedTimeSeconds() > 1) shootFlick(-1);
                 if (pathTimer.getElapsedTimeSeconds() > 1.5) {
                     shootFlick(0);
                     follower.followPath(SHOOT_FAR_TO_PARK);
                     state++;
                 }
-                break;
+                break;*/
 
             default:
                 stopIntake();
                 robot.shooter.setVelocity(0);
                 break;
         }
+        telemetry.addData("RPM", robot.shooter.getVelocity());
+        telemetry.update();
+
+        if (aligning) align();
 
         if (runIntake) runIntakeForward();
     }
