@@ -9,21 +9,13 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Sh
 public class FullAimToLLCmd extends CommandBase {
     AimSubsystem aimSubsystem;
     SensorSubsystem sensorSubsystem;
-    //ElapsedTime elapsedTime;
-    //double time;
-    //double initTime;
     double tx;
-    double desiredPos;
-    //boolean waitTilBusy;
 
 
     public FullAimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem){
         this.aimSubsystem = aimSubsystem;
         this.sensorSubsystem = sensorSubsystem;
         addRequirements(aimSubsystem);
-        //elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        //waitTilBusy = false;
-        //elapsedTime.reset();
     }
 
 
@@ -40,23 +32,9 @@ public class FullAimToLLCmd extends CommandBase {
         }
     }
 
-    /*@Override
-    public void execute(){
 
-    }*/
-/*
-    public void end(){
-        new FullAimToLLCmd(aimSubsystem, limelightSubsystem);
-    }
-    */
     @Override
     public boolean isFinished() {
-        /*if((Math.abs(tx) <= Constants.TURRET_THRESHHOLD)){
-            return true;
-        } else {
-            return false;
-        }
-*/
         return true;
     }
 }

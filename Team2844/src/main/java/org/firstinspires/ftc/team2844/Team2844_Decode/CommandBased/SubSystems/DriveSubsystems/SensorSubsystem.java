@@ -21,7 +21,7 @@ public class SensorSubsystem extends SubsystemBase {
 
     public SensorSubsystem(GoBildaPinpointDriver pinpoint, Limelight3A limelight, int pipelineNumber){
         this.pinpoint = pinpoint;
-        pinpoint.setOffsets(0.0, 0.0, DistanceUnit.INCH);
+        pinpoint.setOffsets(Constants.X_OFFSET, Constants.Y_OFFSET, DistanceUnit.INCH);
         pinpoint.resetPosAndIMU();
         pinpoint.initialize();
 

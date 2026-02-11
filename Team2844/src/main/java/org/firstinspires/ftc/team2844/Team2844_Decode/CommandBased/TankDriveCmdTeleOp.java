@@ -318,8 +318,8 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         waitForStart();
         time.reset();
 
-        aimSubsystem.aimTurret(Constants.TURRET_OFFSET);
-        //aimSubsystem.aimTurret(0.0);
+        //aimSubsystem.aimTurret(Constants.TURRET_OFFSET);
+        aimSubsystem.aimTurret(0.0);
         sleep(250);
 
         aimSubsystem.aimHood(0.0);

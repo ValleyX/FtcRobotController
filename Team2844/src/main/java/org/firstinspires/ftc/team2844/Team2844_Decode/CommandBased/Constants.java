@@ -55,6 +55,8 @@ public class Constants {
 
     //Pinpoint
     public static final double NO_PP = -999.0;
+    public static final double X_OFFSET = 4.75;
+    public static final double Y_OFFSET = 5.5;
 
     //Control Hub Ports
         //Motor Ports
