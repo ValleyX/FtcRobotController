@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
 
 public class AimSubsystem extends SubsystemBase {
@@ -17,12 +14,15 @@ public class AimSubsystem extends SubsystemBase {
     /**The servo that controls the angle the artifact is shot at*/
     private Servo hoodAim;
     /**The servo that controls the heading of the turret.*/
-    private Servo turretAim;
+    private CRServo turretAim;
 
-    private IMU turretIMU;
-    private GoBildaPinpointDriver pinpoint;
+    private AnalogInput axonIn;
 
-    Motor encoder;
+    int turnover;
+
+    double lastLoop = 0.0;
+
+    ElapsedTime elapsedTime;
 
     /**
      * The constructor for the AimSubsystem, it sets the motors/servos equal to the object passed in,
@@ -32,43 +32,39 @@ public class AimSubsystem extends SubsystemBase {
      * @param hoodAim The servo that controls the angle the artifact is shot at
      * @param turretAim The servo that controls the heading of the turret.
      */
-    public AimSubsystem(Servo hoodAim, Servo turretAim, IMU turretIMU, GoBildaPinpointDriver pinpoint, Motor encoder){
+    public AimSubsystem(Servo hoodAim, CRServo turretAim, AnalogInput axonIn){
         this.hoodAim = hoodAim;
         this.turretAim = turretAim;
-        this.turretIMU = turretIMU;
-        this.pinpoint = pinpoint;
-        this.encoder = encoder;
-
-        pinpoint.setOffsets(0.0, 0.0, DistanceUnit.INCH);
+        this.axonIn = axonIn;
+        turnover = 0;
+        elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        elapsedTime.reset();
     }
 
     public void aimTurret(double degrees){
-        turretAim.setPosition(degrees*Constants.DEGREE_TO_SERVO);
+        setPosition(degrees*Constants.SERVO_DEGREE_TO_TURRET_DEGREE);
     }
 
     /**Adds rotation in Degrees*/
     public void moveTurret(double degrees){
-        double rotate = (turretAim.getPosition() + degrees*Constants.DEGREE_TO_SERVO);
+        double rotate = (getAxonValue() + degrees*Constants.SERVO_DEGREE_TO_TURRET_DEGREE);
         if(((Constants.MIN_TURN) <= rotate) && (rotate <= (Constants.MAX_TURN))){
-            turretAim.setPosition(rotate);
+            setPosition(rotate);
         } else if((Constants.MIN_TURN) > rotate) {
-            turretAim.setPosition(Constants.MIN_TURN);
+            setPosition(Constants.MIN_TURN);
         } else if((Constants.MAX_TURN) < rotate) {
-            turretAim.setPosition(Constants.MAX_TURN);
+            setPosition(Constants.MAX_TURN);
         }
     }
 
-    public double getTurretValue(){
-        return turretAim.getPosition();
+    public double getAxonValue(){
+        return ((axonIn.getVoltage()/axonIn.getMaxVoltage())*360) + turnover*360;
     }
 
-    public double getTurretServoDegrees(){
-        return turretAim.getPosition()/Constants.DEGREE_TO_SERVO;
+    public double getTurretDegrees(){
+        return (((axonIn.getVoltage()/axonIn.getMaxVoltage())*360)+ turnover*360)/Constants.SERVO_DEGREE_TO_TURRET_DEGREE;
     }
 
-    public double getEncoderDegrees(){
-        return (encoder.getCurrentPosition()*Constants.DEGREES_PER_TICK) + Constants.ENCODER_OFFSET;
-    }
 
     public void aimHood(double pos){
         hoodAim.setPosition(pos);
@@ -85,64 +81,23 @@ public class AimSubsystem extends SubsystemBase {
         }
     }
 
-    public double getEncoderRate(){
-        return encoder.getRate();
-    }
-
-    public boolean turretBusy(){
-        return (encoder.getRate() != 0.0);
-    }
-
-    public void resetIMU(){
-        turretIMU.resetYaw();
-    }
-
-    public double getHeadingAngles(){
-        double heading = ((turretIMU.getRobotYawPitchRollAngles().getYaw() - Constants.TURRET_OFFSET)*-1) + getRobotHeading();
-        if(heading < 0){
-            heading =+ 360;
+    public void setPosition(double degrees){
+        double power = Math.abs(getTurretDegrees() - degrees) * Constants.TURRET_GAIN;
+        if(getTurretDegrees() < degrees - Constants.TURRET_THRESHHOLD){
+            turretAim.setPower(Math.min(1.0, power));
+        } else if (getTurretDegrees() > degrees + Constants.TURRET_THRESHHOLD){
+            turretAim.setPower(Math.max(-1.0, -power));
+        } else  {
+            turretAim.setPower(0.0);
         }
-        return heading;
     }
 
-    public double getHeadingRadians(){
-        double heading = ((turretIMU.getRobotYawPitchRollAngles().getYaw() - Constants.TURRET_OFFSET)*-1) + getRobotHeading();
-        if(heading < 0){
-            heading =+ 360;
+    @Override
+    public void periodic() {
+        if(330 <= getAxonValue() && lastLoop <= 30){
+            turnover--;
+        } else if (330 <= lastLoop && getAxonValue() <= 30){
+            turnover++;
         }
-        return Math.toRadians(heading);
     }
-
-
-    //IMU stuff without Offset
-
-    public double getHeadingAnglesWithoutOffset(){
-        return turretIMU.getRobotYawPitchRollAngles().getYaw();
-    }
-
-    public double getHeadingRadiansWithoutOffset(){
-        return Math.toRadians(turretIMU.getRobotYawPitchRollAngles().getYaw());
-    }
-
-
-    public double getRobotHeading(){
-        return pinpoint.getHeading(AngleUnit.DEGREES);
-    }
-
-    public double getRobotHeadingRadians(){
-        return pinpoint.getHeading(AngleUnit.RADIANS);
-    }
-
-
-    public Pose3D getBotPose(){
-
-
-        return null;
-    }
-
-
-    public void periodic(){
-        pinpoint.update();
-    }
-
 }

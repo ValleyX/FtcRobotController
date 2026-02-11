@@ -12,12 +12,12 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodNegative;
@@ -35,17 +35,17 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Shoo
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.PinpointSubsystem;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.LimelightSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.TankDriveSubsystem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 @Disabled
 public class TankDriveCmdTeleOp extends CommandOpMode {
@@ -65,7 +65,8 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
     /* ------------------- Servo Declarations ------------------- */
     /**Aiming servo object parameter pass-ins*/
-    private Servo hoodAim, turretAim;
+    private Servo hoodAim;
+    private CRServo turretAim;
 
     /**Servo objects for passing into kicksubsystem*/
     private Servo kickerRotate;
@@ -95,9 +96,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
     /**Spindexer Subsystem*/
     private SpindexerSubsystem spindexerSubsystem;
     /**Limelight Subsystem*/
-    private LimelightSubsystem limelightSubsystem;
+    //private LimelightSubsystem limelightSubsystem;
     /**Pinpoint Subsystem*/
-    private PinpointSubsystem pinpointSubsystem;
+    private SensorSubsystem sensorSubsystem;
     /* ------------------- Command Declarations ------------------- */
 
     private DriveCmdTank driveCmdTank;
@@ -115,12 +116,16 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
     public int pipelineNum = 0;
 
     /* ------------------- Sensor Declarations ------------------- */
-    private IMU turretIMU;
-    private Motor turretServoEncoder;
+    //private IMU turretIMU;
+    //private Motor turretServoEncoder;
     private GoBildaPinpointDriver pinpoint;
     private DigitalChannel topBreak;
     private DigitalChannel intakeBB;
+    private AnalogInput axonIn;
 
+
+    /* ---------- Elapsed Time ---------- */
+    ElapsedTime time;
 
 
     @Override
@@ -163,7 +168,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         tFeed.setRunMode(Motor.RunMode.RawPower);
 
         // ----- Aim Servos ----- //
-        turretAim = hardwareMap.get(Servo.class, Constants.CS2);
+        turretAim = hardwareMap.get(CRServo.class, Constants.CS2);
         hoodAim = hardwareMap.get(Servo.class, Constants.CS0);
 
         // ----- Intake ----- //
@@ -189,35 +194,25 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         //Create the gamepad controller
         m_driveOp = new GamepadEx(gamepad1);
 
-        /* -------------- IMU -------------- */
-        turretIMU = hardwareMap.get(IMU.class, Constants.CBUS1);
-        turretIMU.initialize(
-                new IMU.Parameters(
-                        new Rev9AxisImuOrientationOnRobot(
-                                Rev9AxisImuOrientationOnRobot.LogoFacingDirection.UP,
-                                Rev9AxisImuOrientationOnRobot.I2cPortFacingDirection.BACKWARD
-                        )
-                )
-        );
-
 
         /* ---------- Pinpoint ----------*/
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, Constants.CBUS0);
-        pinpoint.resetPosAndIMU();
 
         /* -------------- Sensors -------------- */
         topBreak = hardwareMap.get(DigitalChannel.class, Constants.CDI1);
-        turretServoEncoder = new Motor(hardwareMap, Constants.EM0);
+        axonIn = hardwareMap.get(AnalogInput.class, Constants.EM0);
 
+        /* -------------- Elapsed time ---------------- */
+        time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
         /* -------------- Subsystems -------------- */
         /* 1. drive
          * 2. intake
          * 3. Kick
          * 4. Spindexer
-         * 5. Limelight
-         * 6. Shooter
-         * 7. Aim*/
+         * 5. Shooter
+         * 6. Aim
+         * 7. Sensor */
 
         //1. drive subsystem
         tankDriveSubsystem = new TankDriveSubsystem(leftMotorGroup,rightMotorGroup, pinpoint);
@@ -227,12 +222,12 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         kickSubsystem = new KickSubsystem(kickerRotate, kickerSpin, sFeed);
         //4. Spindexer subsystem
         spindexerSubsystem = new SpindexerSubsystem(this, spindexer);
-        //5. Limelight subsystem
-        limelightSubsystem = new LimelightSubsystem(limelight, pipelineNum);
-        //6. Shooter subsystem
+        //5. Shooter subsystem
         shooterSubsystem = new ShooterSubsystem(shooterPair, tFeed, topBreak);
-        //7. Aim subsystem
-        aimSubsystem = new AimSubsystem(hoodAim, turretAim, turretIMU, pinpoint, turretServoEncoder);
+        //6. Aim subsystem
+        aimSubsystem = new AimSubsystem(hoodAim, turretAim, axonIn);
+        //7. Sensor Subsystem
+        sensorSubsystem = new SensorSubsystem(pinpoint, limelight, pipelineNum);
 
 
 
@@ -245,7 +240,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         runIntakeCmd = new IntakeCmd(intakeSubsystem, spindexerSubsystem, kickSubsystem);
         stopIntakeCmd = new StopIntakeCmd(intakeSubsystem);
         uptakeCmd = new UptakeCmd(kickSubsystem);
-        aimCmd = new FullAimToLLCmd(aimSubsystem, limelightSubsystem);
+        aimCmd = new FullAimToLLCmd(aimSubsystem, sensorSubsystem);
 
 
 
@@ -321,17 +316,11 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         initialize();
         waitForStart();
+        time.reset();
 
         aimSubsystem.aimTurret(Constants.TURRET_OFFSET);
         //aimSubsystem.aimTurret(0.0);
         sleep(250);
-        while(aimSubsystem.turretBusy()){
-            sleep(100);
-        }
-        aimSubsystem.resetIMU();
-        sleep(250);
-        turretServoEncoder.resetEncoder();
-
 
         aimSubsystem.aimHood(0.0);
         spindexerSubsystem.runToSlotZero();
@@ -355,17 +344,17 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
             //turretAim.setPosition((0.2*40.0)/(48.0));
 
-            telemetry.addData("Limelight Tx: ", limelightSubsystem.getTx());
-            telemetry.addData("Turret Degrees: ", aimSubsystem.getTurretServoDegrees());
+            telemetry.addData("Limelight Tx: ", sensorSubsystem.getTx());
+            telemetry.addData("Turret Degrees: ", aimSubsystem.getTurretDegrees());
 //            telemetry.addData("Turret IMU Degrees: ", aimSubsystem.getHeadingAngles());
 //            telemetry.addData("Turret IMU Without Offset: ", aimSubsystem.getHeadingAnglesWithoutOffset());
 //            telemetry.addData("Robot IMU: ", aimSubsystem.getRobotHeading());
-            telemetry.addData("encoder degrees: ", aimSubsystem.getEncoderDegrees());
+            telemetry.addData("Raw Axon Voltage: ", axonIn.getVoltage());
+            telemetry.addData("Axon degrees: ", aimSubsystem.getAxonValue());
             telemetry.addData("Slot: ", spindexerSubsystem.getSlot());
             telemetry.addData("Spindexer Pos: ", spindexer.getPosition());
 
-            telemetry.addData("encoder ticks: ", turretServoEncoder.getCurrentPosition());
-            telemetry.addData("servo command: ", turretAim.getPosition());
+            telemetry.addData("Time: ", time.time(TimeUnit.MILLISECONDS));
 
             //telemetry();
             rightTriggerReader.readValue();
@@ -374,7 +363,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
     public void telemetry(){
         telemetry.addData("The rotating kicker value: ", kickSubsystem.getKickerRotate());
-        telemetry.addData("The Value of the Turret: ", aimSubsystem.getTurretValue());
+        telemetry.addData("The Value of the Turret: ", aimSubsystem.getAxonValue());
 
         telemetry.addData("Ball in Bay One: ", spindexerSubsystem.ballInBayOne());
         telemetry.addData("Ball in Bay Two: ", spindexerSubsystem.ballInBayTwo());

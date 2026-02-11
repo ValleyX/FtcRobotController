@@ -42,8 +42,8 @@ public class SlotCmd extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double waitTime = (Math.abs(slot-desiredSlot))*3000 + 7500;
-        if(timer.startTime() < waitTime) {
+        double waitTime = (Math.abs(slot-desiredSlot))*300 + 750;
+        if(timer.time(TimeUnit.MILLISECONDS) < waitTime) {
             return false;
         } else {
             return true;

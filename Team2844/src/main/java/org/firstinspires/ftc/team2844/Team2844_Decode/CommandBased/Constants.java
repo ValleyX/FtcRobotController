@@ -6,29 +6,23 @@ public class Constants {
 
     //turret
     //24 tooth servo head to 130 turret teeth
-    private static final double FULL_SERVO_TURN = 0.2;
-    private static final double SERVO_TEETH = 24.0;
+    private static final double SERVO_TEETH = 52.0;
     private static final double TURRET_TEETH = 130.0; //r u sure its 130?
     private static final double TURRET_GEAR_RATIO = TURRET_TEETH/SERVO_TEETH;
     private static final double DEGREES_IN_FULL_SERVO_TURN = (360.0/TURRET_GEAR_RATIO);
-    public static final double DEGREE_TO_SERVO = (FULL_SERVO_TURN/DEGREES_IN_FULL_SERVO_TURN);
+    public static final double SERVO_DEGREE_TO_TURRET_DEGREE = TURRET_GEAR_RATIO;
 //    public static final double DEGREES = 1/((5.0*24.0*360.0)/130.0);
 
     public static final double TURRET_THRESHHOLD = 1.0;
 
-    public static final double MAX_TURN = 332* DEGREE_TO_SERVO;
+    public static final double MAX_TURN = 332* SERVO_DEGREE_TO_TURRET_DEGREE;
     public static final double MIN_TURN = 0.0;
     public static final double TURN_TICK = 1;
 
     public static final double TURRET_OFFSET = 90.0;
+    public static final double TURRET_GAIN = 0.04;
 
-    private static final double ENCODER_TICKS_PER_REV = 8192;
-    private static final double SERVO_GEAR_TEETH = 48.0;
-    private static final double ENCODER_GEAR_TEETH = 40.0;
-    private static final double SERVO_TO_ENCODER_GEAR = (40.0/48.0);
-    public static final double SERVO_CMD_PER_TICK = (SERVO_TO_ENCODER_GEAR*FULL_SERVO_TURN)/ENCODER_TICKS_PER_REV;
-    public static final double DEGREES_PER_TICK = (SERVO_CMD_PER_TICK)/DEGREE_TO_SERVO;
-    public static final double ENCODER_OFFSET = TURRET_OFFSET;
+
 
 
 
@@ -58,6 +52,9 @@ public class Constants {
     //Limelight
     public static final int NO_LL = -999;
     public static final String LL = "limelight";
+
+    //Pinpoint
+    public static final double NO_PP = -999.0;
 
     //Control Hub Ports
         //Motor Ports
