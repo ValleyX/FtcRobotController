@@ -205,7 +205,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
         /* -------------- Sensors -------------- */
         topBreak = hardwareMap.get(DigitalChannel.class, Constants.CDI1);
-        axonIn = hardwareMap.get(AnalogInput.class, Constants.EM0);
+        axonIn = hardwareMap.get(AnalogInput.class, Constants.EAI0);
 
         /* -------------- Elapsed time ---------------- */
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);

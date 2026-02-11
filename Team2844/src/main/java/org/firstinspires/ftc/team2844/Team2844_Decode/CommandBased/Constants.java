@@ -65,7 +65,14 @@ public class Constants {
     public static final String CM2 = "backRight";
     public static final String CM3 = "frontRight";
 
-        //Servo Ports
+        //Analog Inputs
+    public static final String CAI0 = "";
+    public static final String CAI1 = "";
+    public static final String CAI2 = "";
+    public static final String CAI3 = "";
+
+
+    //Servo Ports
     public static final String CS0 = "hoodAim";
     public static final String CS1 = "kickerRotate";
     public static final String CS2 = "turretAim";
@@ -97,6 +104,13 @@ public class Constants {
     public static final String EM1 = "intakeMotor";
     public static final String EM2 = "shooterRight";
     public static final String EM3 = "shooterLeft";
+
+        //Analog Inputs
+    public static final String EAI0 = "axonIn";
+    public static final String EAI1 = "";
+    public static final String EAI2 = "";
+    public static final String EAI3 = "";
+
 
         //Servo Ports
     public static final String ES0 = "";
