@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.MotorExGroup;
 
 //Shooter Subsystem for the turret targeting, and the shooter motor
@@ -35,4 +36,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public void setVelocity(double velocity){
         shooterMotors.setVelocity(velocity);
     }
+
+    public double getVelocity(){return shooterMotors.getVelocity();}
+
+    public boolean inRange(double velocity){return (velocity-Constants.VELOCITY_THRESHHOLD < getVelocity()) && (getVelocity() > velocity+Constants.VELOCITY_THRESHHOLD);}
 }

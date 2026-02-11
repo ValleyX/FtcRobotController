@@ -30,6 +30,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Inta
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeSortCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartShooterCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopTransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.TransferCmd;
@@ -263,7 +264,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         );
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenHeld(new ShootCmd(shooterSubsystem))
+                .whenHeld(new SmartShooterCmd(shooterSubsystem, shooterFeedSubsystem, sensorSubsystem, aimSubsystem, kickSubsystem, spindexerSubsystem))
                         .whenReleased(new StopShootCmd(shooterSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)

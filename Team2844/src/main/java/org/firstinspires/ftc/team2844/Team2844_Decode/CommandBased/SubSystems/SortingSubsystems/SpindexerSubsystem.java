@@ -132,6 +132,10 @@ public class SpindexerSubsystem extends SubsystemBase {
         return (ballInBayOne() && ballInBayTwo() && ballInBayThree());
     }
 
+    public boolean empty(){
+        return (!ballInBayOne() && !ballInBayTwo() &&   !ballInBayThree());
+    }
+
     public int bayOneColor(){
         if(ballInBayOne()){
             int[] green = bayOneGreen();

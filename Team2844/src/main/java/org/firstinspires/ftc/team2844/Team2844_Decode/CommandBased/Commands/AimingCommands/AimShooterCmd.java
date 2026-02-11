@@ -1,4 +1,4 @@
-/*
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands;/*
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands;
 
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;

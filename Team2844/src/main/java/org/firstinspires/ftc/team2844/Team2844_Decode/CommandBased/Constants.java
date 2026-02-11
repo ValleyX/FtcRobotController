@@ -23,7 +23,7 @@ public class Constants {
     public static final double TURRET_GAIN = 0.04;
 
 
-
+    public static final double VELOCITY_THRESHHOLD = 1.0;
 
 
 

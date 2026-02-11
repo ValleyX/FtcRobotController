@@ -67,4 +67,16 @@ public class MotorExGroup{
     }
 
 
+    public double getVelocity(){
+        double velo = 0.0;
+        for(int i = 0; i < motorExList.size()-1; i++){
+            if(motorExList.get(i).getVelocity() == 0.0){
+                velo = motorExList.get(i+1).getVelocity();
+            } else {
+                velo = motorExList.get(i).getVelocity();
+            }
+        }
+
+        return velo;
+    }
 }
