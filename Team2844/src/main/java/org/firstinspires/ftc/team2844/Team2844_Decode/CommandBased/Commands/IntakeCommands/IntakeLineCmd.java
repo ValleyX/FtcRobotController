@@ -25,7 +25,7 @@ public class IntakeLineCmd extends CommandBase {
         this.kickSubsystem = kickSubsystem;
         this.spindexerSubsystem = spindexerSubsystem;
 
-        addRequirements(intakeSubsystem, shooterFeedSubsystem);
+        addRequirements(intakeSubsystem, shooterFeedSubsystem, shooterFeedSubsystem);
     }
 
     @Override
@@ -35,13 +35,25 @@ public class IntakeLineCmd extends CommandBase {
         if(!(ballInBeam && topBroken)){
             intakeSubsystem.activate(Constants.INTAKE_SPEED);
             if(!topBroken){
-                new ParallelCommandGroup(new UptakeCmd(kickSubsystem), new TransferCmd(shooterFeedSubsystem));
+//                new ParallelCommandGroup(new UptakeCmd(kickSubsystem), new TransferCmd(shooterFeedSubsystem));
+                kickSubsystem.rotateKickerDown();
+                kickSubsystem.runKickerSpin();
+                kickSubsystem.runSFeedForward();
+                shooterFeedSubsystem.runTFeedForward();
             } else {
-                new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem));
+//                new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem));
+                kickSubsystem.rotateKickerUp();
+                kickSubsystem.stopKickerSpin();
+                kickSubsystem.stopSFeed();
+                shooterFeedSubsystem.stopTFeed();
             }
 
         } else {
-            new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem), new StopIntakeCmd(intakeSubsystem));
+            //new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem), new StopIntakeCmd(intakeSubsystem));
+            kickSubsystem.rotateKickerUp();
+            kickSubsystem.stopKickerSpin();
+            kickSubsystem.stopSFeed();
+            shooterFeedSubsystem.stopTFeed();
         }
     }
 
