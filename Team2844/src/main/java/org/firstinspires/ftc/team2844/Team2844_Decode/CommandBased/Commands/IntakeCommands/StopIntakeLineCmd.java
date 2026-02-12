@@ -25,6 +25,7 @@ public class StopIntakeLineCmd extends CommandBase {
 
     @Override
     public void execute() {
+        intakeSubsystem.stop();
         kickSubsystem.rotateKickerUp();
         kickSubsystem.stopKickerSpin();
         kickSubsystem.stopSFeed();

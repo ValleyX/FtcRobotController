@@ -91,10 +91,10 @@ public class Constants {
     public static final String CBUS3 = "color2Bay1";
 
         // Digital Inputs
-    public static final String CDI0 = "";
-    public static final String CDI1 = "topBreak";
-    public static final String CDI2 = "";
-    public static final String CDI3 = "intakeBB";
+    public static final String CDI0 = "topBreak";
+    public static final String CDI1 = "";
+    public static final String CDI2 = "intakeBB";
+    public static final String CDI3 = "";
     public static final String CDI4 = "";
     public static final String CDI5 = "";
     public static final String CDI6 = "";

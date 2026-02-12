@@ -25,5 +25,5 @@ public class ShooterFeedSubsystem extends SubsystemBase {
     public void runTFeedBackward(){tFeed.set(-1.0);}
 
     /** returns true if there is a ball in the top chamber*/
-    public boolean topBroken(){return !topBB.getState();}
+    public boolean topBroken(){return topBB.getState();}
 }

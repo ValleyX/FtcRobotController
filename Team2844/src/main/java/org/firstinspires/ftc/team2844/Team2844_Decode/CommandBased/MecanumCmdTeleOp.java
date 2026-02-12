@@ -36,7 +36,7 @@ public class MecanumCmdTeleOp extends CommandOpMode {
         driveSubsystem = new DriveSubsystem(frontLeft, frontRight, backLeft, backRight);
 
         //Create a new drive command and pass in the drive subsystem and the gamepad control values
-        driveCommand = new DriveCommand(driveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX);
+        driveCommand = new DriveCommand(driveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, 0.0);
 
         //this will make the drive command always run
         register(driveSubsystem);  //good practice to register the default subsystem

@@ -19,18 +19,16 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodNegative;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodPositive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretNegative;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretPositive;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.DriveCmdArcade;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.DriveCmdTank;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.DriveCommand;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.ResetImuCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeSortCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeLineCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartShooterCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopShootCmd;
@@ -39,6 +37,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Shoo
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterFeedSubsystem;
@@ -46,14 +45,13 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.TankDriveSubsystem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 @Disabled
-public class TankDriveCmdTeleOp extends CommandOpMode {
+public class TeleOpBase extends CommandOpMode {
     /* ------------------- Motor Declarations -------------------*/
     /**Drive motor parameter pass-ins*/
     private Motor frontLeft, frontRight, backLeft, backRight;
@@ -89,7 +87,8 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
     /* ------------------- Subsystem Declarations ------------------- */
     /**Drive Subsystem*/
-    private TankDriveSubsystem tankDriveSubsystem;
+    //private TankDriveSubsystem tankDriveSubsystem;
+    private DriveSubsystem mecDriveSubsystem;
     /**Intake Subsystem*/
     private IntakeSubsystem intakeSubsystem;
     /**Aim Subsystem*/
@@ -108,8 +107,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
     private SensorSubsystem sensorSubsystem;
     /* ------------------- Command Declarations ------------------- */
 
-    private DriveCmdTank driveCmdTank;
-    private DriveCmdArcade driveCmdArcade;
+    //private DriveCmdTank driveCmdTank;
+    //private DriveCmdArcade driveCmdArcade;
+    private DriveCommand mecDriveCmd;
     StopIntakeCmd stopIntakeCmd;
     IntakeSortCmd runIntakeSortCmd;
     UptakeCmd uptakeCmd;
@@ -157,8 +157,8 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         backRight.setInverted(false);
 
         //Create motor group with Front as the leader
-        leftMotorGroup = new MotorGroup(this.frontLeft,this.backLeft);
-        rightMotorGroup = new MotorGroup(this.frontRight,this.backRight);
+        //leftMotorGroup = new MotorGroup(this.frontLeft,this.backLeft);
+        //rightMotorGroup = new MotorGroup(this.frontRight,this.backRight);
 
 //        rightMotorGroup.setInverted(true);
 
@@ -184,7 +184,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         intakeMotor = new Motor(hardwareMap, Constants.EM1);
         intakeMotor.setInverted(true);
 
-        intakeBB = hardwareMap.get(DigitalChannel.class, Constants.CDI3);
+        intakeBB = hardwareMap.get(DigitalChannel.class, Constants.CDI2);
 
         // ----- Kicker Servos ----- //
         kickerRotate = hardwareMap.get(Servo.class, Constants.CS1);
@@ -208,7 +208,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, Constants.CBUS0);
 
         /* -------------- Sensors -------------- */
-        topBreak = hardwareMap.get(DigitalChannel.class, Constants.CDI1);
+        topBreak = hardwareMap.get(DigitalChannel.class, Constants.CDI0);
         axonIn = hardwareMap.get(AnalogInput.class, Constants.CAI2);
 
         /* -------------- Elapsed time ---------------- */
@@ -225,7 +225,8 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
          * 8. Sensor */
 
         //1. drive subsystem
-        tankDriveSubsystem = new TankDriveSubsystem(leftMotorGroup,rightMotorGroup, pinpoint);
+        //tankDriveSubsystem = new TankDriveSubsystem(leftMotorGroup,rightMotorGroup);
+        mecDriveSubsystem = new DriveSubsystem(frontLeft, frontRight, backLeft, backRight);
         //2. Intake subsystem
         intakeSubsystem = new IntakeSubsystem(intakeMotor, intakeBB);
         //3. Kick subsystem
@@ -248,7 +249,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
             //Create a new drive command and pass in the drive subsystem and the gamepad control values
         //driveCmdTank = new DriveCmdTank(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightY);
             //Arcade Drive controls
-        driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightX);
+        //driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightX);
+        mecDriveCmd = new DriveCommand(mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, sensorSubsystem.getRobotHeading());
+
         runIntakeSortCmd = new IntakeSortCmd(intakeSubsystem, spindexerSubsystem, kickSubsystem);
         stopIntakeCmd = new StopIntakeCmd(intakeSubsystem);
         uptakeCmd = new UptakeCmd(kickSubsystem);
@@ -298,6 +301,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
                 .whenHeld(new MoveHoodPositive(aimSubsystem));
 
+        m_driveOp.getGamepadButton(GamepadKeys.Button.BACK)
+                .whenPressed(new ResetImuCmd(sensorSubsystem));
+
 
 
 /*
@@ -309,13 +315,13 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
         /* -------------- Driving Command Loop -------------- */
             //this will make the drive command always run
-        register(tankDriveSubsystem);  //good practice to register the default subsystem
+        register(mecDriveSubsystem);  //good practice to register the default subsystem
 
             //Set Tank Drive as default drive Command
         //tankDriveSubsystem.setDefaultCommand(driveCmdTank); //command that runs automatically whenever a subsystem is not being used by another command
 
             //Set Arcade Drive as default drive Command
-        tankDriveSubsystem.setDefaultCommand(driveCmdArcade); //command that runs automatically whenever a subsystem is not being used by another command
+        mecDriveSubsystem.setDefaultCommand(mecDriveCmd); //command that runs automatically whenever a subsystem is not being used by another command
 
 
         /* -------------- Update Telemetry -------------- */
@@ -346,9 +352,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
             //Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
             if ( rightTriggerReader.isDown() ) {
-                intakeLineCmd.schedule();
+                new IntakeLineCmd(shooterFeedSubsystem, intakeSubsystem, spindexerSubsystem, kickSubsystem).schedule();
             } else if (rightTriggerReader.wasJustReleased()) {
-                stopIntakeLineCmd.schedule();
+                new StopIntakeLineCmd(shooterFeedSubsystem, intakeSubsystem, spindexerSubsystem, kickSubsystem).schedule();
             }
 
             if(!aimCmd.isScheduled()) {
@@ -358,12 +364,13 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
             //turretAim.setPosition((0.2*40.0)/(48.0));
 
             telemetry.addData("Limelight Tx: ", sensorSubsystem.getTx());
-            telemetry.addData("Average Distance from MetaTag: ", limelight.getLatestResult().getBotposeAvgDist());
-            telemetry.addData("Limelight Bot X: ", sensorSubsystem.getBotPoseLimelight().getPosition().x);
-            telemetry.addData("Limelight Bot Y: ", sensorSubsystem.getBotPoseLimelight().getPosition().y);
+            telemetry.addData("Average Distance from MetaTag: ", sensorSubsystem.getDis());
+            telemetry.addData("Limelight Bot X: ", sensorSubsystem.getBotXLL());
+            telemetry.addData("Limelight Bot Y: ", sensorSubsystem.getBotYLL());
 
-            telemetry.addData("Pinpoint Bot X: ", sensorSubsystem.getBotPose().getX(DistanceUnit.INCH));
-            telemetry.addData("Pinpoint Bot Y: ", sensorSubsystem.getBotPose().getY(DistanceUnit.INCH));
+            telemetry.addData("Imu Degrees: ", sensorSubsystem.getRobotHeading());
+            telemetry.addData("Pinpoint Bot X: ", sensorSubsystem.getBotX());
+            telemetry.addData("Pinpoint Bot Y: ", sensorSubsystem.getBotY());
             telemetry.addData("Turret Degrees: ", aimSubsystem.getTurretDegrees());
 
             telemetry.addData("Raw Axon Voltage: ", axonIn.getVoltage());
@@ -371,7 +378,9 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
             telemetry.addData("Slot: ", spindexerSubsystem.getSlot());
             telemetry.addData("Spindexer Pos: ", spindexer.getPosition());
 
-            telemetry.addData("Time: ", time.time(TimeUnit.MILLISECONDS));
+            telemetry.addData("Top beam break is broken: ", shooterFeedSubsystem.topBroken());
+            telemetry.addData("Ball in Beam: ", intakeSubsystem.ballInBeam());
+
 
             //telemetry();
             rightTriggerReader.readValue();

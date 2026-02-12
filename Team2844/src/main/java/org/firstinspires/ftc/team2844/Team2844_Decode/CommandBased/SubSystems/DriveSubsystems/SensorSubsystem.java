@@ -43,6 +43,10 @@ public class SensorSubsystem extends SubsystemBase {
         return pinpoint.getHeading(AngleUnit.RADIANS);
     }
 
+    public void resetIMU(){
+        pinpoint.recalibrateIMU();
+    }
+
 
     public Pose2D getBotPose(){
         pinpoint.update();
@@ -113,8 +117,9 @@ public class SensorSubsystem extends SubsystemBase {
         double distance = getDis();
         if ((llResult != null && llResult.isValid()) && distance != Constants.NO_LL){
             return 0.0;
+        } else {
+            return 0.0;
         }
-        return Constants.NO_LL;
     }
 
     public double getDis(){
@@ -131,15 +136,16 @@ public class SensorSubsystem extends SubsystemBase {
         double distance = getDis();
         if ((llResult != null && llResult.isValid()) && distance != Constants.NO_LL){
             return 0.0;
+        } else {
+            return 1500.0;
         }
-        return Constants.NO_LL;
     }
 
     public void updateOrientation(){
         limelight.updateRobotOrientation(getRobotHeading());
     }
 
-    public Pose3D getBotPoseLimelight(){
+    public Pose3D getBotPoseLL(){
         if (llResult != null && llResult.isValid()) {
             Pose3D botpose_mt2 = llResult.getBotpose_MT2();
             if (botpose_mt2 != null) {
@@ -147,6 +153,22 @@ public class SensorSubsystem extends SubsystemBase {
             }
         }
         return null;
+    }
+
+    public double getBotXLL(){
+        updateResult();
+        if(llResult != null && llResult.isValid()){
+            return llResult.getBotpose().getPosition().x;
+        }
+        return Constants.NO_LL;
+    }
+
+    public double getBotYLL(){
+        updateResult();
+        if(llResult != null && llResult.isValid()){
+            return llResult.getBotpose().getPosition().y;
+        }
+        return Constants.NO_LL;
     }
 
 

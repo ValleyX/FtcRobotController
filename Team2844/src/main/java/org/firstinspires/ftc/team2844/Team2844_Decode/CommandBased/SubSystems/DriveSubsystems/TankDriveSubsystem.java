@@ -16,13 +16,11 @@ public class TankDriveSubsystem extends SubsystemBase {
 
     MotorGroup leftMotors;
     MotorGroup rightMotors;
-    GoBildaPinpointDriver pinpoint;
 
 
-    public TankDriveSubsystem(MotorGroup leftMotors, MotorGroup rightMotors, GoBildaPinpointDriver pinpoint){
+    public TankDriveSubsystem(MotorGroup leftMotors, MotorGroup rightMotors){
         this.leftMotors = leftMotors;
         this.rightMotors = rightMotors;
-        this.pinpoint = pinpoint;
 
         drive = new DifferentialDrive(leftMotors, rightMotors);
     }

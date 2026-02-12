@@ -68,21 +68,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public int getSlot(){
-        if(spindexer.getPosition() == Constants.SLOT_ARRAY[0]){
-            return 0;
-        } else if(spindexer.getPosition() == Constants.SLOT_ARRAY[1]){
-            return 1;
-        }else if(spindexer.getPosition() == Constants.SLOT_ARRAY[2]){
-            return 2;
-        }else if(spindexer.getPosition() == Constants.SLOT_ARRAY[3]) {
-            return 3;
-        }else if (spindexer.getPosition() == Constants.SLOT_ARRAY[4]) {
-            return 4;
-        } else if (spindexer.getPosition() == Constants.SLOT_ARRAY[5]) {
-            return 5;
-        } else {
-            return -999;
-        }
+        return pos;
     }
 
     public void nextSlot(){
