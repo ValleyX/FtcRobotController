@@ -23,6 +23,7 @@ public class AimSubsystem extends SubsystemBase {
     double lastLoop = 0.0;
 
     ElapsedTime elapsedTime;
+    double targetDegrees;
 
     /**
      * The constructor for the AimSubsystem, it sets the motors/servos equal to the object passed in,
@@ -81,8 +82,8 @@ public class AimSubsystem extends SubsystemBase {
         }
     }
 
-    public void setPosition(double degrees){
-        double targetDegrees = degrees;
+    public boolean setPosition(double degrees){
+        targetDegrees = degrees;
         if(!(Constants.MIN_DEGREE <= degrees && degrees <= Constants.MAX_DEGREE)) {
             if(degrees < Constants.MIN_DEGREE){
                 targetDegrees = Constants.MAX_DEGREE;
@@ -97,13 +98,16 @@ public class AimSubsystem extends SubsystemBase {
         } else {
             power = 1.0;
         }
+
         if (getTurretDegrees() < (targetDegrees - Constants.TURRET_THRESHHOLD)) {
             turretAim.setPower(Math.min(1.0, power));
         } else if (getTurretDegrees() > (targetDegrees + Constants.TURRET_THRESHHOLD)) {
             turretAim.setPower(Math.max(-1.0, -power));
         } else {
             turretAim.setPower(0.0);
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -115,5 +119,7 @@ public class AimSubsystem extends SubsystemBase {
             turnover++;
         }
         lastLoop = thisLoop;
+
+        setPosition(targetDegrees);
     }
 }

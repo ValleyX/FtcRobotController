@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimTurretCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodNegative;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodPositive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretNegative;
@@ -30,8 +30,8 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Inta
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeSortCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartShooterCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopShootCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.NeutralShooterCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartLineShooterCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopTransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.TransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
@@ -48,7 +48,6 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 @Disabled
 public class TeleOpBase extends CommandOpMode {
@@ -113,7 +112,7 @@ public class TeleOpBase extends CommandOpMode {
     StopIntakeCmd stopIntakeCmd;
     IntakeSortCmd runIntakeSortCmd;
     UptakeCmd uptakeCmd;
-    FullAimToLLCmd aimCmd;
+    AimTurretCmd neutralAimTurretCmd;
     IntakeLineCmd intakeLineCmd;
     StopIntakeLineCmd stopIntakeLineCmd;
 
@@ -226,7 +225,7 @@ public class TeleOpBase extends CommandOpMode {
 
         //1. drive subsystem
         //tankDriveSubsystem = new TankDriveSubsystem(leftMotorGroup,rightMotorGroup);
-        mecDriveSubsystem = new DriveSubsystem(frontLeft, frontRight, backLeft, backRight);
+        mecDriveSubsystem = new DriveSubsystem(backLeft, frontRight, frontLeft, backRight);
         //2. Intake subsystem
         intakeSubsystem = new IntakeSubsystem(intakeMotor, intakeBB);
         //3. Kick subsystem
@@ -255,7 +254,7 @@ public class TeleOpBase extends CommandOpMode {
         runIntakeSortCmd = new IntakeSortCmd(intakeSubsystem, spindexerSubsystem, kickSubsystem);
         stopIntakeCmd = new StopIntakeCmd(intakeSubsystem);
         uptakeCmd = new UptakeCmd(kickSubsystem);
-        aimCmd = new FullAimToLLCmd(aimSubsystem, sensorSubsystem);
+        neutralAimTurretCmd = new AimTurretCmd(aimSubsystem, 90.0);
         intakeLineCmd = new IntakeLineCmd(shooterFeedSubsystem, intakeSubsystem, spindexerSubsystem, kickSubsystem);
         stopIntakeLineCmd = new StopIntakeLineCmd(shooterFeedSubsystem, intakeSubsystem, spindexerSubsystem, kickSubsystem);
 
@@ -270,8 +269,8 @@ public class TeleOpBase extends CommandOpMode {
         );
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenHeld(new SmartShooterCmd(shooterSubsystem, shooterFeedSubsystem, sensorSubsystem, aimSubsystem, kickSubsystem, spindexerSubsystem))
-                        .whenReleased(new StopShootCmd(shooterSubsystem));
+                .whenHeld(new SmartLineShooterCmd(shooterSubsystem, shooterFeedSubsystem, sensorSubsystem, aimSubsystem, kickSubsystem, intakeSubsystem))
+                        .whenReleased(new NeutralShooterCmd(shooterSubsystem, shooterFeedSubsystem, aimSubsystem, kickSubsystem, intakeSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)
                 .whenHeld(new ParallelCommandGroup( new UptakeCmd(kickSubsystem),
@@ -337,8 +336,8 @@ public class TeleOpBase extends CommandOpMode {
         waitForStart();
         time.reset();
 
-        //aimSubsystem.aimTurret(Constants.TURRET_OFFSET);
-        aimSubsystem.aimTurret(0.0);
+        new NeutralShooterCmd(shooterSubsystem, shooterFeedSubsystem, aimSubsystem, kickSubsystem, intakeSubsystem).schedule();
+        aimSubsystem.aimTurret(Constants.TURRET_OFFSET);
         sleep(250);
 
         aimSubsystem.aimHood(0.0);
@@ -357,9 +356,9 @@ public class TeleOpBase extends CommandOpMode {
                 new StopIntakeLineCmd(shooterFeedSubsystem, intakeSubsystem, spindexerSubsystem, kickSubsystem).schedule();
             }
 
-            if(!aimCmd.isScheduled()) {
-                aimCmd.schedule();
-            }
+//            if(!neutralAimCmd.isScheduled()) {
+//                neutralAimCmd.schedule();
+//            }
 
             //turretAim.setPosition((0.2*40.0)/(48.0));
 
@@ -380,6 +379,10 @@ public class TeleOpBase extends CommandOpMode {
 
             telemetry.addData("Top beam break is broken: ", shooterFeedSubsystem.topBroken());
             telemetry.addData("Ball in Beam: ", intakeSubsystem.ballInBeam());
+
+            telemetry.addData("Ball in Bay One: ", spindexerSubsystem.ballInBayOne());
+            telemetry.addData("Ball in Bay Two: ", spindexerSubsystem.ballInBayTwo());
+            telemetry.addData("Ball in Bay Three: ", spindexerSubsystem.ballInBayThree());
 
 
             //telemetry();

@@ -88,30 +88,15 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public boolean ballInBayOne(){
-        if((color1Bay1.green() +color1Bay1.blue() >= Constants.MIN_COLOR_SUM) ||
-                (color2Bay1.green() + color2Bay1.blue() >= Constants.MIN_COLOR_SUM)){
-            return true;
-        } else {
-            return false;
-        }
+        return (color1Bay1.alpha() > Constants.MIN_ALPHA || color2Bay1.alpha() > Constants.MIN_ALPHA);
     }
 
     public boolean ballInBayTwo(){
-        if((color1Bay2.green() + color1Bay2.blue() >= Constants.MIN_COLOR_SUM) ||
-                (color2Bay2.green() + color2Bay2.blue() >= Constants.MIN_COLOR_SUM)){
-            return true;
-        } else {
-            return false;
-        }
+        return (color1Bay2.alpha() > Constants.MIN_ALPHA || color2Bay2.alpha() > Constants.MIN_ALPHA);
     }
 
     public boolean ballInBayThree(){
-        if((color1Bay3.green() + color1Bay3.blue() >= Constants.MIN_COLOR_SUM) ||
-                (color2Bay3.green() + color2Bay3.blue() >= Constants.MIN_COLOR_SUM)){
-            return true;
-        } else {
-            return false;
-        }
+        return (color1Bay3.alpha() > Constants.MIN_ALPHA || color2Bay3.alpha() > Constants.MIN_ALPHA);
     }
 
     public boolean fullSpindexer(){

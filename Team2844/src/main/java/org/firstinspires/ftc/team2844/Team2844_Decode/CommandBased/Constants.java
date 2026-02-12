@@ -27,7 +27,8 @@ public class Constants {
     public static final double GAIN_THRESH = 20.0;
 
 
-    public static final double VELOCITY_THRESHHOLD = 1.0;
+    public static final double VELOCITY_THRESHHOLD = 150;
+    public static final double MIN_VELOCITY = 1000;
 
 
 
@@ -48,6 +49,7 @@ public class Constants {
     public static final double[] SLOT_ARRAY = {SLOT_ZERO, SLOT_ONE, SLOT_TWO, SLOT_ZERO_LOOPED_ONE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE};
 
     public static final int MIN_COLOR_SUM = 900;
+    public static final int MIN_ALPHA = 100;
 
     public static final int PURPLE = 1;
     public static final int GREEN = 0;

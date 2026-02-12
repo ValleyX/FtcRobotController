@@ -10,12 +10,15 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.MotorExGroup;
 
+import java.util.function.BooleanSupplier;
+
 //Shooter Subsystem for the turret targeting, and the shooter motor
 public class ShooterSubsystem extends SubsystemBase {
 
     //Shooting Motor
     /**The group of motors that run the flywheel*/
     private MotorExGroup shooterMotors;
+    private double vel;
 
     /**
      * This is the constructor for the shooter Subsystem
@@ -26,6 +29,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param shooterMotors The Flywheel motor group that shoots the artifacts
      */
     public ShooterSubsystem(MotorExGroup shooterMotors){
+        vel = 0.0;
         this.shooterMotors = shooterMotors;
     }
 
@@ -34,10 +38,13 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setVelocity(double velocity){
+        vel = velocity;
         shooterMotors.setVelocity(velocity);
     }
 
     public double getVelocity(){return shooterMotors.getVelocity();}
 
     public boolean inRange(double velocity){return (velocity-Constants.VELOCITY_THRESHHOLD < getVelocity()) && (getVelocity() > velocity+Constants.VELOCITY_THRESHHOLD);}
+
+    public boolean inRange(){return (vel-Constants.VELOCITY_THRESHHOLD < getVelocity()) && (getVelocity() > vel+Constants.VELOCITY_THRESHHOLD);}
 }
