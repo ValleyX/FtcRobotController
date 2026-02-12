@@ -18,6 +18,7 @@ public class SensorSubsystem extends SubsystemBase {
     /**The man, the myth, the legend, the limelight3A*/
     private Limelight3A limelight;
     private LLResult llResult;
+    private int pattern;
 
     public SensorSubsystem(GoBildaPinpointDriver pinpoint, Limelight3A limelight, int pipelineNumber){
         this.pinpoint = pinpoint;
@@ -172,8 +173,16 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
 
+    public int getPattern(){
+        return pattern;
+    }
+
     public void periodic(){
         pinpoint.update();
         updateResult();
+
+//        if(llResult.getFiducialResults().get().getFiducialId()){
+//
+//        }
     }
 }

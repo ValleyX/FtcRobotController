@@ -347,7 +347,7 @@ public class TeleOpBase extends CommandOpMode {
             //Scheduler must be loop called for everything else to run
             CommandScheduler.getInstance().run();
             pinpoint.update();
-
+            rightTriggerReader.readValue();
 
             //Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
             if ( rightTriggerReader.isDown() ) {
@@ -386,7 +386,6 @@ public class TeleOpBase extends CommandOpMode {
 
 
             //telemetry();
-            rightTriggerReader.readValue();
         }
     }
 
