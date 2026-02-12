@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodNegative;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodPositive;
@@ -28,6 +29,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Driv
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.DriveCmdTank;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeSortCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartShooterCmd;
@@ -113,6 +115,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
     UptakeCmd uptakeCmd;
     FullAimToLLCmd aimCmd;
     IntakeLineCmd intakeLineCmd;
+    StopIntakeLineCmd stopIntakeLineCmd;
 
     /* ------------------- Gamepad Declaration ------------------- */
     private GamepadEx m_driveOp;
@@ -251,7 +254,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
         uptakeCmd = new UptakeCmd(kickSubsystem);
         aimCmd = new FullAimToLLCmd(aimSubsystem, sensorSubsystem);
         intakeLineCmd = new IntakeLineCmd(shooterFeedSubsystem, intakeSubsystem, spindexerSubsystem, kickSubsystem);
-
+        stopIntakeLineCmd = new StopIntakeLineCmd(shooterFeedSubsystem, intakeSubsystem, spindexerSubsystem, kickSubsystem);
 
 
 
@@ -345,9 +348,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
             if ( rightTriggerReader.isDown() ) {
                 intakeLineCmd.schedule();
             } else if (rightTriggerReader.wasJustReleased()) {
-                stopIntakeCmd.schedule();
-                new StopUptakeCmd(kickSubsystem);
-                new StopTransferCmd(shooterFeedSubsystem);
+                stopIntakeLineCmd.schedule();
             }
 
             if(!aimCmd.isScheduled()) {
@@ -357,10 +358,14 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
             //turretAim.setPosition((0.2*40.0)/(48.0));
 
             telemetry.addData("Limelight Tx: ", sensorSubsystem.getTx());
+            telemetry.addData("Average Distance from MetaTag: ", limelight.getLatestResult().getBotposeAvgDist());
+            telemetry.addData("Limelight Bot X: ", sensorSubsystem.getBotPoseLimelight().getPosition().x);
+            telemetry.addData("Limelight Bot Y: ", sensorSubsystem.getBotPoseLimelight().getPosition().y);
+
+            telemetry.addData("Pinpoint Bot X: ", sensorSubsystem.getBotPose().getX(DistanceUnit.INCH));
+            telemetry.addData("Pinpoint Bot Y: ", sensorSubsystem.getBotPose().getY(DistanceUnit.INCH));
             telemetry.addData("Turret Degrees: ", aimSubsystem.getTurretDegrees());
-//            telemetry.addData("Turret IMU Degrees: ", aimSubsystem.getHeadingAngles());
-//            telemetry.addData("Turret IMU Without Offset: ", aimSubsystem.getHeadingAnglesWithoutOffset());
-//            telemetry.addData("Robot IMU: ", aimSubsystem.getRobotHeading());
+
             telemetry.addData("Raw Axon Voltage: ", axonIn.getVoltage());
             telemetry.addData("Axon degrees: ", aimSubsystem.getAxonValue());
             telemetry.addData("Slot: ", spindexerSubsystem.getSlot());
