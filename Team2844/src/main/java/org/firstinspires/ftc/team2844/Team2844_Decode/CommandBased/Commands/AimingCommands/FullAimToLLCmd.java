@@ -29,6 +29,8 @@ public class FullAimToLLCmd extends CommandBase {
                 aimSubsystem.setPosition(pos + tx);
             }
             aimSubsystem.aimHood(sensorSubsystem.hoodLinReg());
+        } else {
+            aimSubsystem.setPosition(90.0);
         }
     }
 

@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopTransferCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.TransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
@@ -27,20 +30,18 @@ public class IntakeLineCmd extends CommandBase {
 
     @Override
     public void execute() {
-        if(!(intakeSubsystem.ballInBeam() && spindexerSubsystem.ballInBayOne() && shooterFeedSubsystem.topBroken())){
+        boolean ballInBeam = intakeSubsystem.ballInBeam();
+        boolean topBroken = shooterFeedSubsystem.topBroken();
+        if(!(ballInBeam && topBroken)){
             intakeSubsystem.activate(Constants.INTAKE_SPEED);
-            if(!shooterFeedSubsystem.topBroken()){
-                shooterFeedSubsystem.runTFeedForward();
-                new UptakeCmd(kickSubsystem);
+            if(!topBroken){
+                new ParallelCommandGroup(new UptakeCmd(kickSubsystem), new TransferCmd(shooterFeedSubsystem));
             } else {
-                shooterFeedSubsystem.stopTFeed();
-                new StopUptakeCmd(kickSubsystem);
+                new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem));
             }
 
         } else {
-            intakeSubsystem.stop();
-            shooterFeedSubsystem.stopTFeed();
-            new StopUptakeCmd(kickSubsystem);
+            new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem), new StopIntakeCmd(intakeSubsystem));
         }
     }
 

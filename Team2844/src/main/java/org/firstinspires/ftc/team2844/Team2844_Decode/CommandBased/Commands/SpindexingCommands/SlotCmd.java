@@ -15,6 +15,7 @@ public class SlotCmd extends CommandBase {
     ElapsedTime timer;
     int slot;
     int desiredSlot;
+    boolean finished = false;
 
     public SlotCmd(SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem, int desiredSlot){
         this.spindexerSubsystem = spindexerSubsystem;
@@ -32,6 +33,9 @@ public class SlotCmd extends CommandBase {
         if(slot - desiredSlot < 0){
             kickSubsystem.runKickerSpin();
             kickSubsystem.runSFeedBackward();
+        } else if(slot - desiredSlot == 0){
+            kickSubsystem.stopKickerSpin();
+            kickSubsystem.stopSFeed();
         } else {
             kickSubsystem.runKickerSpinBackwards();
             kickSubsystem.runSFeedForward();
@@ -40,14 +44,21 @@ public class SlotCmd extends CommandBase {
         spindexerSubsystem.runToSlot(desiredSlot);
     }
 
+
+    public void execute(){
+        double waitTime = (Math.abs(slot-desiredSlot))*300 + 250;
+        if(timer.time(TimeUnit.MILLISECONDS) < waitTime) {
+            finished = false;
+        } else {
+            finished = true;
+            kickSubsystem.stopSFeed();
+            kickSubsystem.stopKickerSpin();
+        }
+    }
+
     @Override
     public boolean isFinished() {
-        double waitTime = (Math.abs(slot-desiredSlot))*300 + 750;
-        if(timer.time(TimeUnit.MILLISECONDS) < waitTime) {
-            return false;
-        } else {
-            return true;
-        }
+        return finished;
     }
 
 

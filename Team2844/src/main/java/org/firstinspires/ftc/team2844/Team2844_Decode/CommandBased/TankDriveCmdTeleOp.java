@@ -206,7 +206,7 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
 
         /* -------------- Sensors -------------- */
         topBreak = hardwareMap.get(DigitalChannel.class, Constants.CDI1);
-        axonIn = hardwareMap.get(AnalogInput.class, Constants.EAI0);
+        axonIn = hardwareMap.get(AnalogInput.class, Constants.CAI2);
 
         /* -------------- Elapsed time ---------------- */
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -344,8 +344,10 @@ public class TankDriveCmdTeleOp extends CommandOpMode {
             //Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
             if ( rightTriggerReader.isDown() ) {
                 intakeLineCmd.schedule();
-            } else {
+            } else if (rightTriggerReader.wasJustReleased()) {
                 stopIntakeCmd.schedule();
+                new StopUptakeCmd(kickSubsystem);
+                new StopTransferCmd(shooterFeedSubsystem);
             }
 
             if(!aimCmd.isScheduled()) {

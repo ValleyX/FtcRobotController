@@ -82,22 +82,38 @@ public class AimSubsystem extends SubsystemBase {
     }
 
     public void setPosition(double degrees){
-        double power = Math.abs(getTurretDegrees() - degrees) * Constants.TURRET_GAIN;
-        if(getTurretDegrees() < degrees - Constants.TURRET_THRESHHOLD){
+        double targetDegrees = degrees;
+        if(!(Constants.MIN_DEGREE <= degrees && degrees <= Constants.MAX_DEGREE)) {
+            if(degrees < Constants.MIN_DEGREE){
+                targetDegrees = Constants.MAX_DEGREE;
+            } else {
+                targetDegrees = Constants.MIN_DEGREE;
+            }
+        }
+
+        double power;
+        if(Math.abs(getTurretDegrees() - targetDegrees) < Constants.GAIN_THRESH) {
+            power = Math.abs(getTurretDegrees() - targetDegrees) * Constants.TURRET_GAIN;
+        } else {
+            power = 1.0;
+        }
+        if (getTurretDegrees() < (targetDegrees - Constants.TURRET_THRESHHOLD)) {
             turretAim.setPower(Math.min(1.0, power));
-        } else if (getTurretDegrees() > degrees + Constants.TURRET_THRESHHOLD){
+        } else if (getTurretDegrees() > (targetDegrees + Constants.TURRET_THRESHHOLD)) {
             turretAim.setPower(Math.max(-1.0, -power));
-        } else  {
+        } else {
             turretAim.setPower(0.0);
         }
     }
 
     @Override
     public void periodic() {
-        if(330 <= getAxonValue() && lastLoop <= 30){
+        double thisLoop = getAxonValue();
+        if(330 <= thisLoop && lastLoop <= 30){
             turnover--;
-        } else if (330 <= lastLoop && getAxonValue() <= 30){
+        } else if (330 <= lastLoop && thisLoop <= 30){
             turnover++;
         }
+        lastLoop = thisLoop;
     }
 }

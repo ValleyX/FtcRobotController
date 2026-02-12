@@ -15,12 +15,16 @@ public class Constants {
 
     public static final double TURRET_THRESHHOLD = 1.0;
 
-    public static final double MAX_TURN = 332* SERVO_DEGREE_TO_TURRET_DEGREE;
-    public static final double MIN_TURN = 0.0;
+    public static final double MAX_DEGREE = 332;
+    public static final double MIN_DEGREE = 10.0;
+
+    public static final double MAX_TURN = MAX_DEGREE * SERVO_DEGREE_TO_TURRET_DEGREE;
+    public static final double MIN_TURN = MIN_DEGREE * SERVO_DEGREE_TO_TURRET_DEGREE;
     public static final double TURN_TICK = 1;
 
     public static final double TURRET_OFFSET = 90.0;
-    public static final double TURRET_GAIN = 0.04;
+    public static final double TURRET_GAIN = 0.009;
+    public static final double GAIN_THRESH = 20.0;
 
 
     public static final double VELOCITY_THRESHHOLD = 1.0;
@@ -68,7 +72,7 @@ public class Constants {
         //Analog Inputs
     public static final String CAI0 = "";
     public static final String CAI1 = "";
-    public static final String CAI2 = "";
+    public static final String CAI2 = "axonIn";
     public static final String CAI3 = "";
 
 
@@ -106,7 +110,7 @@ public class Constants {
     public static final String EM3 = "shooterLeft";
 
         //Analog Inputs
-    public static final String EAI0 = "axonIn";
+    public static final String EAI0 = "";
     public static final String EAI1 = "";
     public static final String EAI2 = "";
     public static final String EAI3 = "";
