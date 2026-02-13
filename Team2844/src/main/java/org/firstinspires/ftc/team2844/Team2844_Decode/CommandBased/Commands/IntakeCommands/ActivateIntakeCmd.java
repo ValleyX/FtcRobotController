@@ -2,7 +2,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Int
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.IntakeSubsystem;
 
 public class ActivateIntakeCmd extends CommandBase {

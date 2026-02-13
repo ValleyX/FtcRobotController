@@ -4,11 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.TeleOpBase;
 
-@TeleOp(name = "Zamboni Red TeleOp")
-public class RedTeleOpBase extends TeleOpBase {
+@TeleOp (name = "Zamboni Blue TeleOp")
+public class BlueTeleOp extends TeleOpBase {
     @Override
     public void initialize() {
-        super.pipelineNum = 1;
+        super.pipelineNum = 0;
         super.initialize();
     }
 }

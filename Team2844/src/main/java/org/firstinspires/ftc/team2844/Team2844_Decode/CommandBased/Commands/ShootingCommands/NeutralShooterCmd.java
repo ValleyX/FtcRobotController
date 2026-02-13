@@ -6,7 +6,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Aimi
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.HoodCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterFeedSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterSubsystem;

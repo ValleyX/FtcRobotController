@@ -2,15 +2,9 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.S
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 //import com.arcrobotics.ftclib.hardware.motors.CRServo;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.MotorExGroup;
-
-import java.util.function.BooleanSupplier;
 
 //Shooter Subsystem for the turret targeting, and the shooter motor
 public class ShooterSubsystem extends SubsystemBase {

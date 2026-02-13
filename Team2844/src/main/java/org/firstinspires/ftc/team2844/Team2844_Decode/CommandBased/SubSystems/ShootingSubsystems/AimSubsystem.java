@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 
 public class AimSubsystem extends SubsystemBase {
 
@@ -121,5 +121,9 @@ public class AimSubsystem extends SubsystemBase {
         lastLoop = thisLoop;
 
         setPosition(targetDegrees);
+    }
+
+    public double getVoltage(){
+        return axonIn.getVoltage();
     }
 }

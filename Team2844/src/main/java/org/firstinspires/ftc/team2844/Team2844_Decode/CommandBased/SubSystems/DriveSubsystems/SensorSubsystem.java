@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -9,7 +10,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
 
 public class SensorSubsystem extends SubsystemBase {
     private GoBildaPinpointDriver pinpoint;
@@ -19,6 +21,7 @@ public class SensorSubsystem extends SubsystemBase {
     private Limelight3A limelight;
     private LLResult llResult;
     private int pattern;
+    private double imuOffset;
 
     public SensorSubsystem(GoBildaPinpointDriver pinpoint, Limelight3A limelight, int pipelineNumber){
         this.pinpoint = pinpoint;
@@ -74,7 +77,9 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
 
-
+    public void setPinpointPose(Pose2D pose){
+        pinpoint.setPosition(pose);
+    }
 
 
 
@@ -172,17 +177,21 @@ public class SensorSubsystem extends SubsystemBase {
         return Constants.NO_LL;
     }
 
+    public void setPoseWithLL(){
+        updateResult();
+        if(llResult != null && llResult.isValid()){
+            setPinpointPose(new Pose2D(DistanceUnit.METER, llResult.getBotpose().getPosition().x, llResult.getBotpose().getPosition().y, AngleUnit.DEGREES, getRobotHeading()));
+        }
+    }
+
 
     public int getPattern(){
         return pattern;
     }
 
     public void periodic(){
-        pinpoint.update();
         updateResult();
-
-//        if(llResult.getFiducialResults().get().getFiducialId()){
-//
-//        }
+        setPoseWithLL();
+        pinpoint.update();
     }
 }

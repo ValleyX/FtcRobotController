@@ -3,9 +3,10 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.S
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 
 //the thing in the middle of the bot that sorts artifacts
 public class SpindexerSubsystem extends SubsystemBase {
@@ -32,19 +33,19 @@ public class SpindexerSubsystem extends SubsystemBase {
      * do so by calling:
      * new Motor(hardwaremap, "____"); for motors,
      * and hardwaremap.get(___.class, "____"); for servos
-     * @param opMode This constructor requires the opMode to be passed in to make the color Sensors
+     * @param hardwareMap This constructor requires the hardwareMap to be passed in to make the color Sensors
       * @param spindexer This is the servo that rotates the turn table (its expensive so be careful)
      */
 
-    public SpindexerSubsystem(OpMode opMode, Servo spindexer){
+    public SpindexerSubsystem(HardwareMap hardwareMap, Servo spindexer){
         this.spindexer = spindexer;
 
-        color1Bay1 = opMode.hardwareMap.get(ColorSensor.class, Constants.CBUS2);
-        color2Bay1 = opMode.hardwareMap.get(ColorSensor.class, Constants.CBUS3);
-        color1Bay2 = opMode.hardwareMap.get(ColorSensor.class, Constants.EBUS2);
-        color2Bay2 = opMode.hardwareMap.get(ColorSensor.class, Constants.EBUS3);
-        color1Bay3 = opMode.hardwareMap.get(ColorSensor.class, Constants.EBUS0);
-        color2Bay3 = opMode.hardwareMap.get(ColorSensor.class, Constants.EBUS1);
+        color1Bay1 = hardwareMap.get(ColorSensor.class, Constants.CBUS2);
+        color2Bay1 = hardwareMap.get(ColorSensor.class, Constants.CBUS3);
+        color1Bay2 = hardwareMap.get(ColorSensor.class, Constants.EBUS2);
+        color2Bay2 = hardwareMap.get(ColorSensor.class, Constants.EBUS3);
+        color1Bay3 = hardwareMap.get(ColorSensor.class, Constants.EBUS0);
+        color2Bay3 = hardwareMap.get(ColorSensor.class, Constants.EBUS1);
     }
 
     public void runToSlotZero(){
@@ -183,5 +184,9 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     public int[] bayThreeGreen(){
         return new int[]{color1Bay3.green(), color2Bay3.green()};
+    }
+
+    public double getPosition() {
+        return spindexer.getPosition();
     }
 }

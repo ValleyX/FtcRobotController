@@ -1,8 +1,6 @@
-package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased;
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper;
 
 public class Constants {
-
-    //This is me testing pushing code from my home computer
 
     //turret
     //24 tooth servo head to 130 turret teeth

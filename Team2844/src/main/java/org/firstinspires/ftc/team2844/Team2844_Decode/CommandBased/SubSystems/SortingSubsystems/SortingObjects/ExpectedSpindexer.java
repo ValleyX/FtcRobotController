@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SortingObjects;
 
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 
 public class ExpectedSpindexer {
     public Artifact[] simSpindexer = new Artifact[3];
