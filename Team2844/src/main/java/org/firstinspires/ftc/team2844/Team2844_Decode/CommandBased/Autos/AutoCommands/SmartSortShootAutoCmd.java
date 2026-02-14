@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands;
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autos.AutoCommands;
 
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
@@ -8,6 +8,9 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Aimi
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.ActivateIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopTransferCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.TransferCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.VelocityShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopSpinCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
@@ -19,12 +22,26 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
-public class SmartSortShoot extends SequentialCommandGroup {
-    public SmartSortShoot(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem){
-        double velocity = sensorSubsystem.velocityLinReg();
-        SlotCmd previousSlot = new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot() - 1);
+public class SmartSortShootAutoCmd extends SequentialCommandGroup {
+    boolean ballInOne;
+    boolean ballInTwo;
+    boolean ballInThree;
+    boolean ballInTFeed;
 
-        if(previousSlot.isFinished() && !spindexerSubsystem.ballInBayOne() && spindexerSubsystem.getSlot() != 0) {
+
+    SlotCmd previousSlot;
+
+
+    public SmartSortShootAutoCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem){
+        double velocity = sensorSubsystem.velocityLinReg();
+        previousSlot = new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot() - 1);
+        ballInOne = spindexerSubsystem.ballInBayOne();
+        ballInTwo = spindexerSubsystem.ballInBayTwo();
+        ballInThree = spindexerSubsystem.ballInBayThree();
+        ballInTFeed = shooterFeedSubsystem.topBroken();
+
+
+        if(previousSlot.isFinished() && !ballInOne && spindexerSubsystem.getSlot() != 0) {
             addCommands(
                     new ParallelCommandGroup(
                             //At the same time, aim the turret
@@ -85,4 +102,10 @@ public class SmartSortShoot extends SequentialCommandGroup {
             );
         }
     }
+
+    @Override
+    public boolean isFinished() {
+        return !(ballInOne || ballInTwo || ballInThree || ballInTFeed || !previousSlot.isScheduled());
+    }
 }
+

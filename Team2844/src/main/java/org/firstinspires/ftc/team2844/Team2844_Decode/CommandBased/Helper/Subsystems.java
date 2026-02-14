@@ -292,5 +292,7 @@ public class Subsystems {
         shooterFeedSubsystem = new ShooterFeedSubsystem(tFeed, topBreak);
         //6. Aim subsystem
         aimSubsystem = new AimSubsystem(hoodAim, turretAim, axonIn);
+        //7. Sensor Subsystem
+        sensorSubsystem = new SensorSubsystem(limelight, pipelineNum);
     }
 }

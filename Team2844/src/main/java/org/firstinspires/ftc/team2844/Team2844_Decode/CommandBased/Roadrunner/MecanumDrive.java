@@ -491,6 +491,10 @@ public final class MecanumDrive {
         return vel;
     }
 
+    public void setPose(Pose2d pose){
+        localizer.setPose(pose);
+    }
+
     private void drawPoseHistory(Canvas c) {
         double[] xPoints = new double[poseHistory.size()];
         double[] yPoints = new double[poseHistory.size()];
