@@ -1,8 +1,6 @@
-package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased;
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper;
 
 public class Constants {
-
-    //This is me testing pushing code from my home computer
 
     //turret
     //24 tooth servo head to 130 turret teeth
@@ -27,7 +25,8 @@ public class Constants {
     public static final double GAIN_THRESH = 20.0;
 
 
-    public static final double VELOCITY_THRESHHOLD = 1.0;
+    public static final double VELOCITY_THRESHHOLD = 150;
+    public static final double MIN_VELOCITY = 1000;
 
 
 
@@ -48,10 +47,18 @@ public class Constants {
     public static final double[] SLOT_ARRAY = {SLOT_ZERO, SLOT_ONE, SLOT_TWO, SLOT_ZERO_LOOPED_ONE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE};
 
     public static final int MIN_COLOR_SUM = 900;
+    public static final int MIN_ALPHA = 100;
 
     public static final int PURPLE = 1;
     public static final int GREEN = 0;
+
+    /** If all colors added are equal to this number, they are sortable with one green and two purple*/
+    public static final int SORTABLE = PURPLE + PURPLE;
     public static final int UNKNOWN_COLOR = 999;
+
+    public static final int PATTERN_PPG = 2110;
+    public static final int PATTERN_PGP = 2101;
+    public static final int PATTERN_GPP = 2011;
 
     //Limelight
     public static final int NO_LL = -999;

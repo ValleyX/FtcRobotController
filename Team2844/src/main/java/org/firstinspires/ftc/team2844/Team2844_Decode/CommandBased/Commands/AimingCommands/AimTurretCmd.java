@@ -1,25 +1,20 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands;
 
-import static org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants.TURN_TICK;
-
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 
-public class MoveTurretNegative extends CommandBase {
+public class AimTurretCmd extends CommandBase {
     AimSubsystem aimSubsystem;
+    double degrees;
 
-    public MoveTurretNegative(AimSubsystem aimSubsystem){
+    public AimTurretCmd(AimSubsystem aimSubsystem, double degrees){
         this.aimSubsystem = aimSubsystem;
-    }
-
-    @Override
-    public void initialize(){
-        aimSubsystem.moveTurret(-TURN_TICK);
+        this.degrees = degrees;
     }
 
     @Override
     public boolean isFinished() {
-        return true;
+        return aimSubsystem.setPosition(degrees);
     }
 }

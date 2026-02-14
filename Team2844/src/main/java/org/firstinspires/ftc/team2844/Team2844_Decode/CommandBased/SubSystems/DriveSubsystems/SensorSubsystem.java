@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -9,7 +10,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
 
 public class SensorSubsystem extends SubsystemBase {
     private GoBildaPinpointDriver pinpoint;
@@ -18,6 +20,8 @@ public class SensorSubsystem extends SubsystemBase {
     /**The man, the myth, the legend, the limelight3A*/
     private Limelight3A limelight;
     private LLResult llResult;
+    private int pattern;
+    private double imuOffset;
 
     public SensorSubsystem(GoBildaPinpointDriver pinpoint, Limelight3A limelight, int pipelineNumber){
         this.pinpoint = pinpoint;
@@ -32,6 +36,19 @@ public class SensorSubsystem extends SubsystemBase {
         limelight.pipelineSwitch(pipelineNumber);
         limelight.start();
         updateResult();
+
+        pattern = 0;
+    }
+
+    public SensorSubsystem(Limelight3A limelight, int pipelineNumber){
+        this.limelight = limelight;
+
+        //switches the pipeline
+        limelight.pipelineSwitch(pipelineNumber);
+        limelight.start();
+        updateResult();
+
+        pattern = 0;
     }
 
 
@@ -49,7 +66,6 @@ public class SensorSubsystem extends SubsystemBase {
 
 
     public Pose2D getBotPose(){
-        pinpoint.update();
         if(pinpoint.getPosition() != null){
             return pinpoint.getPosition();
         }
@@ -57,7 +73,6 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
     public double getBotX(){
-        pinpoint.update();
         if(pinpoint.getPosition() != null){
             return pinpoint.getPosX(DistanceUnit.INCH);
         }
@@ -65,7 +80,6 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
     public double getBotY(){
-        pinpoint.update();
         if(pinpoint.getPosition() != null){
             return pinpoint.getPosY(DistanceUnit.INCH);
         }
@@ -73,7 +87,9 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
 
-
+    public void setPinpointPose(Pose2D pose){
+        pinpoint.setPosition(pose);
+    }
 
 
 
@@ -100,12 +116,13 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
     public void updateResult(){
-        updateOrientation();
+        if(pinpoint != null) {
+            updateOrientation();
+        }
         llResult = limelight.getLatestResult();
     }
 
     public double getTx(){
-        updateResult();
         if (llResult != null && llResult.isValid()) {
             return llResult.getTx();
         }
@@ -113,7 +130,6 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
     public double hoodLinReg(){
-        updateResult();
         double distance = getDis();
         if ((llResult != null && llResult.isValid()) && distance != Constants.NO_LL){
             return 0.0;
@@ -123,7 +139,6 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
     public double getDis(){
-        updateResult();
         if (llResult != null && llResult.isValid()){
             //Convert meters to inches
             return llResult.getBotposeAvgDist()*39.37008;
@@ -132,7 +147,6 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
     public double velocityLinReg(){
-        updateResult();
         double distance = getDis();
         if ((llResult != null && llResult.isValid()) && distance != Constants.NO_LL){
             return 0.0;
@@ -156,7 +170,6 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
     public double getBotXLL(){
-        updateResult();
         if(llResult != null && llResult.isValid()){
             return llResult.getBotpose().getPosition().x;
         }
@@ -164,16 +177,42 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
     public double getBotYLL(){
-        updateResult();
         if(llResult != null && llResult.isValid()){
             return llResult.getBotpose().getPosition().y;
         }
         return Constants.NO_LL;
     }
 
+    public void setPoseWithLL(){
+        if(llResult != null && llResult.isValid()){
+            setPinpointPose(new Pose2D(DistanceUnit.METER, llResult.getBotpose().getPosition().x, llResult.getBotpose().getPosition().y, AngleUnit.DEGREES, getRobotHeading()));
+        }
+    }
+
+
+    public int getPattern(){
+        return pattern;
+    }
+
+    public void lookForPattern(){
+        if(llResult != null && llResult.isValid()){
+            int id = llResult.getFiducialResults().get(0).getFiducialId();
+
+            if(id== 21 || id == 22 || id == 23){
+                pattern = id;
+            }
+        }
+    }
 
     public void periodic(){
-        pinpoint.update();
         updateResult();
+        if(pinpoint != null) {
+            setPoseWithLL();
+            pinpoint.update();
+        }
+
+        if(getPattern() == 0){
+            lookForPattern();
+        }
     }
 }

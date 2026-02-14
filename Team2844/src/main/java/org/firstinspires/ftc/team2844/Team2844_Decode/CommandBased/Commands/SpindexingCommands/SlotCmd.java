@@ -3,6 +3,8 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Spi
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Const;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
@@ -23,7 +25,13 @@ public class SlotCmd extends CommandBase {
         addRequirements(spindexerSubsystem, kickSubsystem);
 
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        this.desiredSlot = desiredSlot;
+        if(0 <= desiredSlot && desiredSlot < Constants.SLOT_ARRAY.length) {
+            this.desiredSlot = desiredSlot;
+        } else if (0 > desiredSlot) {
+            this.desiredSlot = 0;
+        } else if(desiredSlot > Constants.SLOT_ARRAY.length){
+            this.desiredSlot = Constants.SLOT_ARRAY.length-1;
+        }
     }
 
     @Override
