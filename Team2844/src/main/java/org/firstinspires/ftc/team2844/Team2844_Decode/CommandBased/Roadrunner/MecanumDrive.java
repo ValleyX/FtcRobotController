@@ -282,6 +282,18 @@ public final class MecanumDrive {
         rightFront.setPower(wheelVels.rightFront.get(0) / maxPowerMag);
     }
 
+    public double getRobotX(){
+        return localizer.getPose().position.x;
+    }
+
+    public double getRobotY(){
+        return localizer.getPose().position.y;
+    }
+
+    public double getRobotHeading(){
+        return localizer.getPose().heading.toDouble();
+    }
+
     public final class FollowTrajectoryAction implements Action {
         public final TimeTrajectory timeTrajectory;
         private double beginTs = -1;

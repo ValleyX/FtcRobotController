@@ -231,7 +231,7 @@ public class TeleOpBase extends CommandOpMode {
         SavedVars.reset();
     }
 
-    public void telemetry(){
+    /*public void telemetry(){
         telemetry.addData("The rotating kicker value: ", subsystems.kickSubsystem.getKickerRotate());
         telemetry.addData("The Value of the Turret: ", subsystems.aimSubsystem.getAxonValue());
 
@@ -259,5 +259,5 @@ public class TeleOpBase extends CommandOpMode {
         telemetry.addData("Bay Three Blue Values: ",subsystems.spindexerSubsystem.bayThreeBlue()[0] + ", " +subsystems.spindexerSubsystem.bayThreeBlue()[1]);
         telemetry.addData("Bay Three Red Values: ",subsystems.spindexerSubsystem.bayThreeRed()[0] + ", " +  subsystems.spindexerSubsystem.bayThreeRed()[1]);
         telemetry.addData("Bay Three Green Values: ",subsystems.spindexerSubsystem.bayThreeGreen()[0] + ", "+subsystems.spindexerSubsystem.bayThreeGreen()[1]);
-    }
+    }*/
 }

@@ -51,7 +51,14 @@ public class Constants {
 
     public static final int PURPLE = 1;
     public static final int GREEN = 0;
+
+    /** If all colors added are equal to this number, they are sortable with one green and two purple*/
+    public static final int SORTABLE = PURPLE + PURPLE;
     public static final int UNKNOWN_COLOR = 999;
+
+    public static final int PATTERN_PPG = 2110;
+    public static final int PATTERN_PGP = 2101;
+    public static final int PATTERN_GPP = 2011;
 
     //Limelight
     public static final int NO_LL = -999;

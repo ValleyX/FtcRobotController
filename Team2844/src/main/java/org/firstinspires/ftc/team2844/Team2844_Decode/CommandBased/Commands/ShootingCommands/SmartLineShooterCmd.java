@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimHoodCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.ActivateIntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopSpinCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
@@ -17,23 +18,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 
 public class SmartLineShooterCmd extends ParallelCommandGroup {
 
-    /*ShooterSubsystem shooterSubsystem;
-    SensorSubsystem sensorSubsystem;
-
-    AimSubsystem aimSubsystem;
-    KickSubsystem kickSubsystem;
-    ShooterFeedSubsystem shooterFeedSubsystem;
-    SpindexerSubsystem spindexerSubsystem;*/
-
     public SmartLineShooterCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem){
-        /*this.shooterSubsystem = shooterSubsystem;
-        this.sensorSubsystem = sensorSubsystem;
-        this.aimSubsystem = aimSubsystem;
-        this.kickSubsystem = kickSubsystem;
-        this.shooterFeedSubsystem = shooterFeedSubsystem;
-        this.spindexerSubsystem = spindexerSubsystem;
-        addRequirements(shooterSubsystem);*/
-
         double velocity = sensorSubsystem.velocityLinReg();
         addCommands(
                 //At the same time, aim the turret
@@ -52,7 +37,7 @@ public class SmartLineShooterCmd extends ParallelCommandGroup {
                         ),
                         new ParallelCommandGroup(
                                 new StopTransferCmd(shooterFeedSubsystem),
-                                new StopUptakeCmd(kickSubsystem),
+                                new StopSpinCmd(kickSubsystem),
                                 new ActivateIntakeCmd(intakeSubsystem)
                         ),
                         shooterSubsystem::inRange
