@@ -217,11 +217,15 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
     public void lookForPattern(){
-        if(llResult != null && llResult.isValid()){
+        if(llResult != null && llResult.isValid() && pattern == 0){
             int id = llResult.getFiducialResults().get(0).getFiducialId();
 
-            if(id== 21 || id == 22 || id == 23){
-                pattern = id;
+            if(id== 21){
+                pattern = Constants.PATTERN_GPP;
+            } else if (id == 22){
+                pattern = Constants.PATTERN_PGP;
+            } else if (id == 23){
+                pattern = Constants.PATTERN_PPG;
             }
         }
     }

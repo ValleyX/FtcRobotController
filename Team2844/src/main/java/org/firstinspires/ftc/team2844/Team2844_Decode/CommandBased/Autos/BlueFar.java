@@ -168,5 +168,6 @@ public class BlueFar extends CommandOpMode {
         SavedVars.startingY = drive.getRobotY();
         SavedVars.startingX = drive.getRobotX();
         SavedVars.startingHeading = drive.getRobotHeading();
+        SavedVars.pattern = subsystems.sensorSubsystem.getPattern();
     }
 }

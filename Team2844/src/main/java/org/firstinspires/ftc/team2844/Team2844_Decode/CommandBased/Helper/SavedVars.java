@@ -11,6 +11,6 @@ public class SavedVars {
         startingX = 0.0;
         startingY = 0.0;
         startingHeading = 0.0;
-        pattern = Constants.PATTERN_PPG;
+        pattern = Constants.PATTERN_GPP;
     }
 }
