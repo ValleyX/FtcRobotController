@@ -4,7 +4,7 @@ public class Constants {
 
     //turret
     //24 tooth servo head to 130 turret teeth
-    private static final double SERVO_TEETH = 52.0;
+    private static final double SERVO_TEETH = 130.0;
     private static final double TURRET_TEETH = 130.0; //r u sure its 130?
     private static final double TURRET_GEAR_RATIO = TURRET_TEETH/SERVO_TEETH;
     private static final double DEGREES_IN_FULL_SERVO_TURN = (360.0/TURRET_GEAR_RATIO);
@@ -63,6 +63,12 @@ public class Constants {
     //Limelight
     public static final int NO_LL = -999;
     public static final String LL = "limelight";
+
+    public static final double BLUE_APRILTAG_X = 1.482 * 39.3701;
+    public static final double BLUE_APRILTAG_Y = 1.413 * 39.3701;
+
+    public static final double RED_APRILTAG_X = 1.482 * 39.3701;
+    public static final double RED_APRILTAG_Y = -1.413 * 39.3701;
 
     //Pinpoint
     public static final double NO_PP = -999.0;
@@ -150,7 +156,9 @@ public class Constants {
 
 
     //Intake
-    public static final double INTAKE_SPEED = 0.9;
+    public static final double INTAKE_SPEED = 1.0;
+
+    public static final double SLOW_TFEED = 0.35;
 
     /* TODO LIST
       - Get Intake Spindexer working with new beambreak (stop intaking when full)

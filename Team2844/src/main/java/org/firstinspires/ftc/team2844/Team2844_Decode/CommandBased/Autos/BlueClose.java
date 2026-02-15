@@ -32,7 +32,7 @@ public class BlueClose extends CommandOpMode {
 
     @Override
     public void initialize() {
-        subsystems = new Subsystems(hardwareMap, 3, true);
+        subsystems = new Subsystems(hardwareMap, 2, true);
         // instantiate MecanumDrive at a particular pose.
         initialPose = new Pose2d(55.0,45.0, Math.toRadians(45.0));
         drive = new MecanumDrive(hardwareMap, initialPose);
@@ -74,6 +74,9 @@ public class BlueClose extends CommandOpMode {
         if (isStopRequested()) return;
 
         Actions.runBlocking(new SequentialAction(
+                new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+                        subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
+
                 moveToShoot1.build(),
 
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,

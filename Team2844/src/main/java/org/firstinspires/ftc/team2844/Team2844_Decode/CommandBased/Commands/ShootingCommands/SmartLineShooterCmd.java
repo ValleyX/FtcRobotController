@@ -23,7 +23,6 @@ public class SmartLineShooterCmd extends ParallelCommandGroup {
         addCommands(
                 //At the same time, aim the turret
                 new FullAimToLLCmd(aimSubsystem, sensorSubsystem),
-                new AimHoodCmd(aimSubsystem, sensorSubsystem),
 
                 //Also set the velocity to the amount based on distance from apriltag
                 new VelocityShootCmd(shooterSubsystem, velocity),

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterFeedSubsystem;
@@ -14,12 +15,14 @@ public class IntakeLineCmd extends CommandBase {
     SpindexerSubsystem spindexerSubsystem;
     KickSubsystem kickSubsystem;
 
+    ElapsedTime timer;
+
     public IntakeLineCmd(ShooterFeedSubsystem shooterFeedSubsystem, IntakeSubsystem intakeSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem){
         this.intakeSubsystem = intakeSubsystem;
         this.shooterFeedSubsystem = shooterFeedSubsystem;
         this.kickSubsystem = kickSubsystem;
         this.spindexerSubsystem = spindexerSubsystem;
-
+        timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         addRequirements(intakeSubsystem, shooterFeedSubsystem, shooterFeedSubsystem);
     }
 
@@ -27,7 +30,9 @@ public class IntakeLineCmd extends CommandBase {
     public void execute() {
         boolean ballInBeam = intakeSubsystem.ballInBeam();
         boolean topBroken = shooterFeedSubsystem.topBroken();
-        if(!(ballInBeam && topBroken)){
+        boolean bayOne = spindexerSubsystem.ballInBayOne();
+
+        if(!(ballInBeam && topBroken && bayOne)){
             intakeSubsystem.activate(Constants.INTAKE_SPEED);
             if(!topBroken){
 //                new ParallelCommandGroup(new UptakeCmd(kickSubsystem), new TransferCmd(shooterFeedSubsystem));
@@ -35,13 +40,18 @@ public class IntakeLineCmd extends CommandBase {
                 kickSubsystem.runKickerSpin();
                 kickSubsystem.runSFeedForward();
                 shooterFeedSubsystem.runTFeedForward();
+                timer.reset();
             } else {
 //                new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem));
                 intakeSubsystem.stop();
                 kickSubsystem.rotateKickerUp();
                 kickSubsystem.stopKickerSpin();
                 kickSubsystem.stopSFeed();
-                shooterFeedSubsystem.stopTFeed();
+                if(timer.time() < 100) {
+                    shooterFeedSubsystem.slowFeed();
+                } else {
+                    shooterFeedSubsystem.stopTFeed();
+                }
             }
 
         } else {

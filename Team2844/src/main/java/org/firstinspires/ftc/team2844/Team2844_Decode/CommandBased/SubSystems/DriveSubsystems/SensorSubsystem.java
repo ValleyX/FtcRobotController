@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems;
 
-import com.acmerobotics.roadrunner.Pose2d;
+import static java.lang.Double.NaN;
+
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -11,7 +12,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
 
 public class SensorSubsystem extends SubsystemBase {
     private GoBildaPinpointDriver pinpoint;
@@ -41,6 +41,8 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
     public SensorSubsystem(Limelight3A limelight, int pipelineNumber){
+        pinpoint = null;
+
         this.limelight = limelight;
 
         //switches the pipeline
@@ -91,6 +93,18 @@ public class SensorSubsystem extends SubsystemBase {
         pinpoint.setPosition(pose);
     }
 
+    public double getHeadingFlipped(){
+        double heading = getRobotHeading();
+
+        if(heading >= 0.0){
+            heading = (heading - 180);
+        } else if (heading < 0.0){
+            heading = (heading + 180);
+        }
+
+        return heading;
+    }
+
 
 
 
@@ -130,7 +144,7 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
     public double hoodLinReg(){
-        double distance = getDis();
+        double distance = avgDis();
         if ((llResult != null && llResult.isValid()) && distance != Constants.NO_LL){
             return 0.0;
         } else {
@@ -147,7 +161,7 @@ public class SensorSubsystem extends SubsystemBase {
     }
 
     public double velocityLinReg(){
-        double distance = getDis();
+        double distance = avgDis();
         if ((llResult != null && llResult.isValid()) && distance != Constants.NO_LL){
             return 0.0;
         } else {
@@ -171,21 +185,21 @@ public class SensorSubsystem extends SubsystemBase {
 
     public double getBotXLL(){
         if(llResult != null && llResult.isValid()){
-            return llResult.getBotpose().getPosition().x;
+            return getBotPoseLL().getPosition().x;
         }
         return Constants.NO_LL;
     }
 
     public double getBotYLL(){
         if(llResult != null && llResult.isValid()){
-            return llResult.getBotpose().getPosition().y;
+            return getBotPoseLL().getPosition().y;
         }
         return Constants.NO_LL;
     }
 
     public void setPoseWithLL(){
         if(llResult != null && llResult.isValid()){
-            setPinpointPose(new Pose2D(DistanceUnit.METER, llResult.getBotpose().getPosition().x, llResult.getBotpose().getPosition().y, AngleUnit.DEGREES, getRobotHeading()));
+            setPinpointPose(new Pose2D(DistanceUnit.METER, getBotXLL(), getBotYLL(), AngleUnit.DEGREES, getRobotHeading()));
         }
     }
 
@@ -214,5 +228,81 @@ public class SensorSubsystem extends SubsystemBase {
         if(getPattern() == 0){
             lookForPattern();
         }
+
+        if(llResult.isValid() && llResult != null){
+            setPoseWithLL();
+        }
+    }
+
+
+    /* ---------- BOTH ---------- */
+
+    public double pinpointDistance(){
+        int pipeline = getPipeline();
+        if(pipeline == 0 || pipeline == 2) {
+            return Math.sqrt(Math.pow((Constants.BLUE_APRILTAG_X - getBotX()), 2) + Math.pow((Constants.BLUE_APRILTAG_Y - getBotY()), 2));
+        } else if (pipeline == 1 || pipeline == 3) {
+            return Math.sqrt(Math.pow((Constants.RED_APRILTAG_X - getBotX()), 2) + Math.pow((Constants.RED_APRILTAG_Y - getBotY()), 2));
+        } else {
+            return 0.0;
+        }
+    }
+
+    public double avgDis(){
+        double llDis = getDis();
+        double pinpointDis = pinpointDistance();
+
+        if(llDis != -999 && pinpoint != null){
+            return (llDis+pinpointDis)/2;
+        } else if (llDis != -999){
+            return llDis;
+        } else if (pinpoint != null){
+            return pinpointDis;
+        }
+
+        return 0.0;
+    }
+
+    public double getPinpointTurretAngle(){
+        int pipeline = getPipeline();
+        double opposite = 0.0;
+        double adjacent = 0.0;
+        double hypotenuse = pinpointDistance();
+        double angle = 0.0;
+
+        double botX = getBotX();
+        double botY = getBotY();
+        double flippedHeading = -getHeadingFlipped();
+        //double turretHeading = heading - (currentTurretAngle-90.0);
+
+        double predictedAngle = 0.0;
+
+        if(pipeline == 0 || pipeline == 2){
+            opposite = Constants.BLUE_APRILTAG_X - getBotX();
+            adjacent = Constants.BLUE_APRILTAG_Y - getBotY();
+        } else if(pipeline == 1 || pipeline == 3) {
+            opposite = Constants.RED_APRILTAG_X - getBotX();
+            adjacent = Constants.RED_APRILTAG_Y - getBotY();
+        }
+
+
+        angle = Math.toDegrees(Math.asin(opposite / hypotenuse));
+
+        if(!Double.isNaN(angle)){
+            double imuDisFromNinety;
+            if(flippedHeading >= -90.0) {
+                imuDisFromNinety = (90.0 - flippedHeading);
+            } else {
+                imuDisFromNinety = ((flippedHeading%90.0) - 90.0);
+            }
+            predictedAngle = imuDisFromNinety + angle;
+
+            if (predictedAngle < 0.0) {
+                predictedAngle += 360;
+            } else if (predictedAngle > 360) {
+                predictedAngle -= 360;
+            }
+        }
+        return predictedAngle;
     }
 }

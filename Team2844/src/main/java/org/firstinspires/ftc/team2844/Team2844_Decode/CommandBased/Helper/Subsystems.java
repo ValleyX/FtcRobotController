@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper;
 
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
@@ -11,7 +10,6 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -60,7 +58,7 @@ public class Subsystems {
      * Aiming servo object parameter pass-ins
      */
     private Servo hoodAim;
-    private CRServo turretAim;
+    private Servo axon;
 
     /**
      * Servo objects for passing into kicksubsystem
@@ -167,7 +165,7 @@ public class Subsystems {
         tFeed.setRunMode(Motor.RunMode.RawPower);
 
         // ----- Aim Servos ----- //
-        turretAim = hardwareMap.get(CRServo.class, Constants.CS2);
+        axon = hardwareMap.get(Servo.class, Constants.CS2);
         hoodAim = hardwareMap.get(Servo.class, Constants.CS0);
 
         // ----- Intake ----- //
@@ -221,7 +219,7 @@ public class Subsystems {
         //6. ShooterFeed subsystem
         shooterFeedSubsystem = new ShooterFeedSubsystem(tFeed, topBreak);
         //7. Aim subsystem
-        aimSubsystem = new AimSubsystem(hoodAim, turretAim, axonIn);
+        aimSubsystem = new AimSubsystem(hoodAim, axon, axonIn);
         //8. Sensor Subsystem
         sensorSubsystem = new SensorSubsystem(pinpoint, limelight, pipelineNum);
         sensorSubsystem.setPinpointPose(new Pose2D(DistanceUnit.INCH, SavedVars.startingX, SavedVars.startingY, AngleUnit.DEGREES, SavedVars.startingHeading - 90.0));
@@ -249,7 +247,7 @@ public class Subsystems {
         tFeed.setRunMode(Motor.RunMode.RawPower);
 
         // ----- Aim Servos ----- //
-        turretAim = hardwareMap.get(CRServo.class, Constants.CS2);
+        axon = hardwareMap.get(Servo.class, Constants.CS2);
         hoodAim = hardwareMap.get(Servo.class, Constants.CS0);
 
         // ----- Intake ----- //
@@ -291,7 +289,7 @@ public class Subsystems {
         //5. ShooterFeed subsystem
         shooterFeedSubsystem = new ShooterFeedSubsystem(tFeed, topBreak);
         //6. Aim subsystem
-        aimSubsystem = new AimSubsystem(hoodAim, turretAim, axonIn);
+        aimSubsystem = new AimSubsystem(hoodAim, axon, axonIn);
         //7. Sensor Subsystem
         sensorSubsystem = new SensorSubsystem(limelight, pipelineNum);
     }

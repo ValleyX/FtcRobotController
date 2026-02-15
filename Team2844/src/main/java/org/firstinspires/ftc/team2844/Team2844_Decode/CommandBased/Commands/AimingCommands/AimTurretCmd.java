@@ -14,7 +14,7 @@ public class AimTurretCmd extends CommandBase {
     }
 
     @Override
-    public boolean isFinished() {
-        return aimSubsystem.setPosition(degrees);
+    public void initialize() {
+        aimSubsystem.aimTurret(degrees);
     }
 }

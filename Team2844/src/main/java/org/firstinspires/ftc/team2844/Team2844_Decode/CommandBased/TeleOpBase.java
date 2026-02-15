@@ -117,7 +117,7 @@ public class TeleOpBase extends CommandOpMode {
         );
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem))
+                .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem))
                         .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)
@@ -175,8 +175,8 @@ public class TeleOpBase extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         initialize();
         waitForStart();
-        time.reset();
 
+        time.reset();
         new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem).schedule();
         subsystems.aimSubsystem.aimTurret(Constants.TURRET_OFFSET);
         sleep(250);
@@ -196,11 +196,6 @@ public class TeleOpBase extends CommandOpMode {
                 new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
             }
 
-//            if(!neutralAimCmd.isScheduled()) {
-//                neutralAimCmd.schedule();
-//            }
-
-            //turretAim.setPosition((0.2*40.0)/(48.0));
 
             telemetry.addData("Limelight Tx: ", subsystems.sensorSubsystem.getTx());
             telemetry.addData("Average Distance from MetaTag: ", subsystems.sensorSubsystem.getDis());
@@ -223,9 +218,6 @@ public class TeleOpBase extends CommandOpMode {
             telemetry.addData("Ball in Bay One: ", subsystems.spindexerSubsystem.ballInBayOne());
             telemetry.addData("Ball in Bay Two: ", subsystems.spindexerSubsystem.ballInBayTwo());
             telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
-
-
-            //telemetry();
         }
 
         SavedVars.reset();
