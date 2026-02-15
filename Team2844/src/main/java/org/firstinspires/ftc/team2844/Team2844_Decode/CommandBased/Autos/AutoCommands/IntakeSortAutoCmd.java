@@ -24,6 +24,8 @@ public class IntakeSortAutoCmd extends CommandBase {
     SlotCmd slotCmd;
 
     ElapsedTime timer;
+    double ballTimer;
+    double ballTimerOffset;
 
     public IntakeSortAutoCmd(IntakeSubsystem intakeSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem){
         this.intakeSubsystem = intakeSubsystem;
@@ -37,6 +39,7 @@ public class IntakeSortAutoCmd extends CommandBase {
     @Override
     public void initialize() {
         timer.reset();
+        ballTimerOffset = 0.0;
         slotCmd = new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot()+1);
     }
 
@@ -55,13 +58,19 @@ public class IntakeSortAutoCmd extends CommandBase {
         }
 
         if(ballInOne && (!ballInTwo || !ballInThree) && !slotCmd.isScheduled()){
-            timer.reset();
+            ballTimerOffset = timer.time(TimeUnit.MILLISECONDS);
             slotCmd.schedule();
         }
+
+        if(intakeSubsystem.ballInBeam()){
+            ballTimerOffset = timer.time(TimeUnit.MILLISECONDS);
+        }
+
+        ballTimer = timer.time(TimeUnit.MILLISECONDS) - ballTimerOffset;
     }
 
     @Override
     public boolean isFinished() {
-        return (full || timer.time(TimeUnit.MILLISECONDS) > 500);
+        return (full || (ballTimer > 500 && timer.time(TimeUnit.MILLISECONDS) > 1500));
     }
 }

@@ -13,6 +13,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autos.AutoCom
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autos.AutoCommands.SmartSortShootAutoCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.NeutralShooterCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Subsystems;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.MecanumDrive;
@@ -32,7 +33,7 @@ public class BlueClose extends CommandOpMode {
 
     @Override
     public void initialize() {
-        subsystems = new Subsystems(hardwareMap, 2, true);
+        subsystems = new Subsystems(hardwareMap, Constants.BLUE_PIPELINE_MOTIF, true);
         // instantiate MecanumDrive at a particular pose.
         initialPose = new Pose2d(55.0,45.0, Math.toRadians(45.0));
         drive = new MecanumDrive(hardwareMap, initialPose);
@@ -81,7 +82,7 @@ public class BlueClose extends CommandOpMode {
 
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                     subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                    subsystems.kickSubsystem, subsystems.intakeSubsystem)),
+                    subsystems.kickSubsystem, subsystems.intakeSubsystem, new Vector2d(drive.getRobotX(), drive.getRobotY()), drive.getRobotHeading())),
                 new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 
@@ -96,7 +97,7 @@ public class BlueClose extends CommandOpMode {
                 new CommandAction(new StopIntakeCmd(subsystems.intakeSubsystem)),
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                        subsystems.kickSubsystem, subsystems.intakeSubsystem)),
+                        subsystems.kickSubsystem, subsystems.intakeSubsystem, new Vector2d(drive.getRobotX(), drive.getRobotY()), drive.getRobotHeading())),
                 new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 
@@ -109,7 +110,7 @@ public class BlueClose extends CommandOpMode {
 
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                        subsystems.kickSubsystem, subsystems.intakeSubsystem)),
+                        subsystems.kickSubsystem, subsystems.intakeSubsystem, new Vector2d(drive.getRobotX(), drive.getRobotY()), drive.getRobotHeading())),
                 new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 

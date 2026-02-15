@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autos.AutoCommands;
 
+import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
@@ -11,11 +12,15 @@ public class FullAimToLLAutoCmd extends CommandBase {
     SensorSubsystem sensorSubsystem;
     double tx;
     boolean finished;
+    Vector2d vector;
+    double heading;
 
 
-    public FullAimToLLAutoCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem){
+    public FullAimToLLAutoCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, Vector2d vector, double heading){
         this.aimSubsystem = aimSubsystem;
         this.sensorSubsystem = sensorSubsystem;
+        this.vector = vector;
+        this.heading = heading;
         addRequirements(aimSubsystem);
     }
 
@@ -37,7 +42,7 @@ public class FullAimToLLAutoCmd extends CommandBase {
             }
             aimSubsystem.aimHood(sensorSubsystem.hoodLinReg());
         } else {
-            aimSubsystem.aimTurret(sensorSubsystem.getPinpointTurretAngle());
+            aimSubsystem.aimTurret(sensorSubsystem.getPinpointTurretAngleAuto(vector.x, vector.y, heading));
         }
 
     }

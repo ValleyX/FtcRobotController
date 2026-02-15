@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autos.AutoCommands;
 
+import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -31,8 +32,8 @@ public class SmartSortShootAutoCmd extends SequentialCommandGroup {
 
     SlotCmd previousSlot;
 
+    public SmartSortShootAutoCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem, Vector2d vector, double heading){
 
-    public SmartSortShootAutoCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem){
         double velocity = sensorSubsystem.velocityLinReg();
         previousSlot = new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot() - 1);
         ballInOne = spindexerSubsystem.ballInBayOne();
@@ -45,7 +46,7 @@ public class SmartSortShootAutoCmd extends SequentialCommandGroup {
             addCommands(
                     new ParallelCommandGroup(
                             //At the same time, aim the turret
-                            new FullAimToLLCmd(aimSubsystem, sensorSubsystem),
+                            new FullAimToLLAutoCmd(aimSubsystem, sensorSubsystem, vector, heading),
 
                             //Also set the velocity to the amount based on distance from apriltag
                             new VelocityShootCmd(shooterSubsystem, velocity),

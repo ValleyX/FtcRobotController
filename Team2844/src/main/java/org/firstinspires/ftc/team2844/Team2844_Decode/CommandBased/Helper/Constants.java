@@ -13,7 +13,7 @@ public class Constants {
 
     public static final double TURRET_THRESHHOLD = 1.0;
 
-    public static final double MAX_DEGREE = 332;
+    public static final double MAX_DEGREE = 332.0;
     public static final double MIN_DEGREE = 10.0;
 
     public static final double MAX_TURN = MAX_DEGREE * SERVO_DEGREE_TO_TURRET_DEGREE;
@@ -63,6 +63,12 @@ public class Constants {
     //Limelight
     public static final int NO_LL = -999;
     public static final String LL = "limelight";
+
+    public static final int BLUE_PIPELINE = 0;
+    public static final int RED_PIPELINE = 1;
+
+    public static final int BLUE_PIPELINE_MOTIF = 2;
+    public static final int RED_PIPELINE_MOTIF = 3;
 
     public static final double BLUE_APRILTAG_X = 1.482 * 39.3701;
     public static final double BLUE_APRILTAG_Y = 1.413 * 39.3701;
@@ -152,6 +158,9 @@ public class Constants {
     public static final String EDI5 = "";
     public static final String EDI6 = "";
     public static final String EDI7 = "";
+
+    public static final double BOT_WIDTH = 17.0;
+    public static final double BOT_LENGTH = 17.75;
 
 
 

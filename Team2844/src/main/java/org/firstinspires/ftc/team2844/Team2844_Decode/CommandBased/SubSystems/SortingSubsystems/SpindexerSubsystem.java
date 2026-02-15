@@ -279,7 +279,7 @@ public class SpindexerSubsystem extends SubsystemBase {
                 }
             }
         } else {
-            return pos;
+            return 3;
         }
     }
 

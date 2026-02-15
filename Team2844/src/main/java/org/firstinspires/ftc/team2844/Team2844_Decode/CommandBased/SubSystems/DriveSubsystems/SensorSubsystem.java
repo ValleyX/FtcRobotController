@@ -125,6 +125,10 @@ public class SensorSubsystem extends SubsystemBase {
     public int getPipeline(){
         return limelight.getStatus().getPipelineIndex();
     }
+
+    public void setPipeline(int pipeline){
+        limelight.pipelineSwitch(pipeline);
+    }
     public LLResult getLatestResult(){
         return limelight.getLatestResult();
     }
@@ -208,6 +212,10 @@ public class SensorSubsystem extends SubsystemBase {
         return pattern;
     }
 
+    public void setPattern(int pattern){
+        this.pattern = pattern;
+    }
+
     public void lookForPattern(){
         if(llResult != null && llResult.isValid()){
             int id = llResult.getFiducialResults().get(0).getFiducialId();
@@ -273,6 +281,7 @@ public class SensorSubsystem extends SubsystemBase {
         double botX = getBotX();
         double botY = getBotY();
         double flippedHeading = -getHeadingFlipped();
+        double heading = getRobotHeading();
         //double turretHeading = heading - (currentTurretAngle-90.0);
 
         double predictedAngle = 0.0;
@@ -280,29 +289,122 @@ public class SensorSubsystem extends SubsystemBase {
         if(pipeline == 0 || pipeline == 2){
             opposite = Constants.BLUE_APRILTAG_X - getBotX();
             adjacent = Constants.BLUE_APRILTAG_Y - getBotY();
+
+            angle = Math.toDegrees(Math.asin(opposite / hypotenuse));
+
+            if(!Double.isNaN(angle)){
+                double imuDisFromNinety;
+                if(flippedHeading >= -90.0) {
+                    imuDisFromNinety = (90.0 - flippedHeading);
+                } else {
+                    imuDisFromNinety = ((flippedHeading%90.0) - 90.0);
+                }
+                predictedAngle = imuDisFromNinety + angle;
+
+                if (predictedAngle < 0.0) {
+                    predictedAngle += 360;
+                } else if (predictedAngle > 360) {
+                    predictedAngle -= 360;
+                }
+            }
+
         } else if(pipeline == 1 || pipeline == 3) {
             opposite = Constants.RED_APRILTAG_X - getBotX();
             adjacent = Constants.RED_APRILTAG_Y - getBotY();
+
+            angle = Math.toDegrees(Math.asin(opposite / hypotenuse));
+
+            if(!Double.isNaN(angle)){
+                double imuDisFromNinety;
+                if(heading >= -90.0) {
+                    imuDisFromNinety = (90.0 - heading);
+                } else {
+                    imuDisFromNinety = ((heading%90.0) - 90.0);
+                }
+                predictedAngle = imuDisFromNinety + angle;
+
+                if (predictedAngle < 0.0) {
+                    predictedAngle += 360;
+                } else if (predictedAngle > 360) {
+                    predictedAngle -= 360;
+                }
+            }
         }
 
-
-        angle = Math.toDegrees(Math.asin(opposite / hypotenuse));
-
-        if(!Double.isNaN(angle)){
-            double imuDisFromNinety;
-            if(flippedHeading >= -90.0) {
-                imuDisFromNinety = (90.0 - flippedHeading);
-            } else {
-                imuDisFromNinety = ((flippedHeading%90.0) - 90.0);
-            }
-            predictedAngle = imuDisFromNinety + angle;
-
-            if (predictedAngle < 0.0) {
-                predictedAngle += 360;
-            } else if (predictedAngle > 360) {
-                predictedAngle -= 360;
-            }
-        }
         return predictedAngle;
+    }
+
+
+
+    public double getPinpointTurretAngleAuto(double botX, double botY, double heading){
+        int pipeline = getPipeline();
+        double opposite = 0.0;
+        double adjacent = 0.0;
+        double hypotenuse = pinpointDistanceAuto(botX, botY);
+        double angle = 0.0;
+
+        double flippedHeading = -flipHeading(heading);
+
+
+        double predictedAngle = 0.0;
+
+        if(pipeline == 0 || pipeline == 2){
+            opposite = Constants.BLUE_APRILTAG_X - botX;
+            adjacent = Constants.BLUE_APRILTAG_Y - botY;
+
+            angle = Math.toDegrees(Math.asin(opposite / hypotenuse));
+
+            if(!Double.isNaN(angle)){
+                predictedAngle = flippedHeading + angle;
+
+                if (predictedAngle < 0.0) {
+                    predictedAngle += 360;
+                } else if (predictedAngle > 360) {
+                    predictedAngle -= 360;
+                }
+            }
+
+        } else if(pipeline == 1 || pipeline == 3) {
+            opposite = Constants.RED_APRILTAG_X - botX;
+            adjacent = Constants.RED_APRILTAG_Y - botY;
+
+            angle = Math.toDegrees(Math.asin(opposite / hypotenuse));
+
+            if(!Double.isNaN(angle)){
+                predictedAngle = heading + angle;
+
+                if (predictedAngle < 0.0) {
+                    predictedAngle += 360;
+                } else if (predictedAngle > 360) {
+                    predictedAngle -= 360;
+                }
+            }
+        }
+
+        return predictedAngle;
+    }
+
+
+    public double pinpointDistanceAuto(double botX, double botY){
+        int pipeline = getPipeline();
+        if(pipeline == 0 || pipeline == 2) {
+            return Math.sqrt(Math.pow((Constants.BLUE_APRILTAG_X - botX), 2) + Math.pow((Constants.BLUE_APRILTAG_Y - botY), 2));
+        } else if (pipeline == 1 || pipeline == 3) {
+            return Math.sqrt(Math.pow((Constants.RED_APRILTAG_X - botX), 2) + Math.pow((Constants.RED_APRILTAG_Y - botY), 2));
+        } else {
+            return 0.0;
+        }
+    }
+
+    public double flipHeading(double currentHeading){
+        double heading = currentHeading;
+
+        if(heading >= 0.0){
+            heading = (heading - 180);
+        } else if (heading < 0.0){
+            heading = (heading + 180);
+        }
+
+        return heading;
     }
 }
