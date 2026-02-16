@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -19,7 +20,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimTurretCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodNegative;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodPositive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretNegative;
@@ -30,13 +31,17 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Inta
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeSortCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartShooterCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopShootCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.NeutralShooterCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartLineShooterCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartSortShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopTransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.TransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Subsystems;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
@@ -48,63 +53,9 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 @Disabled
 public class TeleOpBase extends CommandOpMode {
-    /* ------------------- Motor Declarations -------------------*/
-    /**Drive motor parameter pass-ins*/
-    private Motor frontLeft, frontRight, backLeft, backRight;
-    /**Drive motor group parameter pass-ins*/
-    private MotorGroup leftMotorGroup, rightMotorGroup;
-
-    /**Motors for shooter subsystem pass-ins (one the motors in the pair of shooter motors)*/
-    private MotorEx shooterLeft, shooterRight;
-    /**Motor group of the shooters, the left shooter should be inverted*/
-    private MotorExGroup shooterPair;
-
-    /**Intake Motor*/
-    private Motor intakeMotor;
-
-    /* ------------------- Servo Declarations ------------------- */
-    /**Aiming servo object parameter pass-ins*/
-    private Servo hoodAim;
-    private CRServo turretAim;
-
-    /**Servo objects for passing into kicksubsystem*/
-    private Servo kickerRotate;
-    /**CRServo objects for passing into kicksubsystem*/
-    private CRServo kickerSpin, sFeed;
-
-    /**Servo objects for passing into spindexerSubsystem*/
-    private Servo spindexer;
-
-    /***/
-    private Motor tFeed;
-
-    /* ------------------- Limelight ------------------- */
-    private Limelight3A limelight;
-
-    /* ------------------- Subsystem Declarations ------------------- */
-    /**Drive Subsystem*/
-    //private TankDriveSubsystem tankDriveSubsystem;
-    private DriveSubsystem mecDriveSubsystem;
-    /**Intake Subsystem*/
-    private IntakeSubsystem intakeSubsystem;
-    /**Aim Subsystem*/
-    private AimSubsystem aimSubsystem;
-    /**Shooter Subsystem*/
-    private ShooterSubsystem shooterSubsystem;
-    /**Shooter feed Subsystem*/
-    private ShooterFeedSubsystem shooterFeedSubsystem;
-    /**Kick Subsystem*/
-    private KickSubsystem kickSubsystem;
-    /**Spindexer Subsystem*/
-    private SpindexerSubsystem spindexerSubsystem;
-    /**Limelight Subsystem*/
-    //private LimelightSubsystem limelightSubsystem;
-    /**Pinpoint Subsystem*/
-    private SensorSubsystem sensorSubsystem;
     /* ------------------- Command Declarations ------------------- */
 
     //private DriveCmdTank driveCmdTank;
@@ -113,9 +64,11 @@ public class TeleOpBase extends CommandOpMode {
     StopIntakeCmd stopIntakeCmd;
     IntakeSortCmd runIntakeSortCmd;
     UptakeCmd uptakeCmd;
-    FullAimToLLCmd aimCmd;
+    AimTurretCmd neutralAimTurretCmd;
     IntakeLineCmd intakeLineCmd;
     StopIntakeLineCmd stopIntakeLineCmd;
+
+    boolean sortMode;
 
     /* ------------------- Gamepad Declaration ------------------- */
     private GamepadEx m_driveOp;
@@ -124,125 +77,23 @@ public class TeleOpBase extends CommandOpMode {
     /* ------------------- Variable Declarations ------------------- */
     public int pipelineNum = 0;
 
-    /* ------------------- Sensor Declarations ------------------- */
-    //private IMU turretIMU;
-    //private Motor turretServoEncoder;
-    private GoBildaPinpointDriver pinpoint;
-    private DigitalChannel topBreak;
-    private DigitalChannel intakeBB;
-    private AnalogInput axonIn;
-
-
     /* ---------- Elapsed Time ---------- */
     ElapsedTime time;
 
+    /* --------- Subsystems --------- */
+    Subsystems subsystems;
 
     @Override
     public void initialize() {
-        /* -------------- Hardware Maps -------------- */
-
-        // ----- Drive Motors ----- //
-        //Map HW motors to variables
-        frontLeft = new Motor(hardwareMap, Constants.CM0);
-        frontRight = new Motor(hardwareMap, Constants.CM3);
-        backLeft = new Motor(hardwareMap, Constants.CM1);
-        backRight = new Motor(hardwareMap, Constants.CM2);
-
-        frontLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-
-        backLeft.setInverted(false);
-        backRight.setInverted(false);
-
-        //Create motor group with Front as the leader
-        //leftMotorGroup = new MotorGroup(this.frontLeft,this.backLeft);
-        //rightMotorGroup = new MotorGroup(this.frontRight,this.backRight);
-
-//        rightMotorGroup.setInverted(true);
-
-        // ----- Shooter Motors ----- //
-        shooterLeft = new MotorEx(hardwareMap, Constants.EM3);
-        shooterRight = new MotorEx(hardwareMap, Constants.EM2);
-        shooterLeft.setInverted(true);
-
-        shooterPair = new MotorExGroup(new ArrayList<>(Arrays.asList(this.shooterLeft, this.shooterRight)));
-        shooterPair.setRunMode(Motor.RunMode.RawPower);
-        shooterPair.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-
-        // ----- Shooter Feed Motor ----- //
-        tFeed = new Motor(hardwareMap, Constants.EM0);
-        tFeed.setInverted(true);
-        tFeed.setRunMode(Motor.RunMode.RawPower);
-
-        // ----- Aim Servos ----- //
-        turretAim = hardwareMap.get(CRServo.class, Constants.CS2);
-        hoodAim = hardwareMap.get(Servo.class, Constants.CS0);
-
-        // ----- Intake ----- //
-        intakeMotor = new Motor(hardwareMap, Constants.EM1);
-        intakeMotor.setInverted(true);
-
-        intakeBB = hardwareMap.get(DigitalChannel.class, Constants.CDI2);
-
-        // ----- Kicker Servos ----- //
-        kickerRotate = hardwareMap.get(Servo.class, Constants.CS1);
-        kickerRotate.setPosition(0.0);
-        sFeed = hardwareMap.get(CRServo.class, Constants.CS4);
-        kickerSpin = hardwareMap.get(CRServo.class, Constants.CS3);
-
-
-        // ----- Spindexer Servo ----- //
-        spindexer = hardwareMap.get(Servo.class, Constants.CS5);
-
-        // ----- Limelight ----- //
-        limelight = hardwareMap.get(Limelight3A.class, Constants.LL);
+        subsystems = new Subsystems(hardwareMap, pipelineNum);
 
         /* -------------- Gamepad -------------- */
         //Create the gamepad controller
         m_driveOp = new GamepadEx(gamepad1);
 
 
-        /* ---------- Pinpoint ----------*/
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, Constants.CBUS0);
-
-        /* -------------- Sensors -------------- */
-        topBreak = hardwareMap.get(DigitalChannel.class, Constants.CDI0);
-        axonIn = hardwareMap.get(AnalogInput.class, Constants.CAI2);
-
         /* -------------- Elapsed time ---------------- */
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-
-        /* -------------- Subsystems -------------- */
-        /* 1. drive
-         * 2. intake
-         * 3. Kick
-         * 4. Spindexer
-         * 5. Shooter
-         * 6. ShooterFeed
-         * 7. Aim
-         * 8. Sensor */
-
-        //1. drive subsystem
-        //tankDriveSubsystem = new TankDriveSubsystem(leftMotorGroup,rightMotorGroup);
-        mecDriveSubsystem = new DriveSubsystem(frontLeft, frontRight, backLeft, backRight);
-        //2. Intake subsystem
-        intakeSubsystem = new IntakeSubsystem(intakeMotor, intakeBB);
-        //3. Kick subsystem
-        kickSubsystem = new KickSubsystem(kickerRotate, kickerSpin, sFeed);
-        //4. Spindexer subsystem
-        spindexerSubsystem = new SpindexerSubsystem(this, spindexer);
-        //5. Shooter subsystem
-        shooterSubsystem = new ShooterSubsystem(shooterPair);
-        //6. ShooterFeed subsystem
-        shooterFeedSubsystem = new ShooterFeedSubsystem(tFeed, topBreak);
-        //7. Aim subsystem
-        aimSubsystem = new AimSubsystem(hoodAim, turretAim, axonIn);
-        //8. Sensor Subsystem
-        sensorSubsystem = new SensorSubsystem(pinpoint, limelight, pipelineNum);
-
-
 
         /* -------------- COMMANDS -------------- */
 
@@ -250,16 +101,16 @@ public class TeleOpBase extends CommandOpMode {
         //driveCmdTank = new DriveCmdTank(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightY);
             //Arcade Drive controls
         //driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightX);
-        mecDriveCmd = new DriveCommand(mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, sensorSubsystem.getRobotHeading());
+        mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, subsystems.sensorSubsystem.getRobotHeading());
 
-        runIntakeSortCmd = new IntakeSortCmd(intakeSubsystem, spindexerSubsystem, kickSubsystem);
-        stopIntakeCmd = new StopIntakeCmd(intakeSubsystem);
-        uptakeCmd = new UptakeCmd(kickSubsystem);
-        aimCmd = new FullAimToLLCmd(aimSubsystem, sensorSubsystem);
-        intakeLineCmd = new IntakeLineCmd(shooterFeedSubsystem, intakeSubsystem, spindexerSubsystem, kickSubsystem);
-        stopIntakeLineCmd = new StopIntakeLineCmd(shooterFeedSubsystem, intakeSubsystem, spindexerSubsystem, kickSubsystem);
+        runIntakeSortCmd = new IntakeSortCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
+        stopIntakeCmd = new StopIntakeCmd(subsystems.intakeSubsystem);
+        uptakeCmd = new UptakeCmd(subsystems.kickSubsystem);
+        neutralAimTurretCmd = new AimTurretCmd(subsystems.aimSubsystem, 90.0);
+        intakeLineCmd = new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
+        stopIntakeLineCmd = new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
 
-
+        sortMode = false;
 
 
 
@@ -269,59 +120,49 @@ public class TeleOpBase extends CommandOpMode {
                 m_driveOp, GamepadKeys.Trigger.RIGHT_TRIGGER
         );
 
-        m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenHeld(new SmartShooterCmd(shooterSubsystem, shooterFeedSubsystem, sensorSubsystem, aimSubsystem, kickSubsystem, spindexerSubsystem))
-                        .whenReleased(new StopShootCmd(shooterSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)
-                .whenHeld(new ParallelCommandGroup( new UptakeCmd(kickSubsystem),
-                        new TransferCmd(shooterFeedSubsystem)))
-                .whenReleased( new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem),
-                        new StopTransferCmd(shooterFeedSubsystem)));
+                .whenHeld(new ParallelCommandGroup( new UptakeCmd(subsystems.kickSubsystem),
+                        new TransferCmd(subsystems.shooterFeedSubsystem)))
+                .whenReleased( new ParallelCommandGroup(new StopUptakeCmd(subsystems.kickSubsystem),
+                        new StopTransferCmd(subsystems.shooterFeedSubsystem)));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(new SlotCmd(spindexerSubsystem, kickSubsystem, 0));
+                .whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 0));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(new SlotCmd(spindexerSubsystem, kickSubsystem, 1));
+                .whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 1));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new SlotCmd(spindexerSubsystem, kickSubsystem, 2));
+                .whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 2));
 
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenHeld(new MoveTurretNegative(aimSubsystem));
+                .whenHeld(new MoveTurretNegative(subsystems.aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                .whenHeld(new MoveTurretPositive(aimSubsystem));
+                .whenHeld(new MoveTurretPositive(subsystems.aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-                .whenHeld(new MoveHoodNegative(aimSubsystem));
+                .whenHeld(new MoveHoodNegative(subsystems.aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenHeld(new MoveHoodPositive(aimSubsystem));
+                .whenHeld(new MoveHoodPositive(subsystems.aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.BACK)
-                .whenPressed(new ResetImuCmd(sensorSubsystem));
+                .whenPressed(new ResetImuCmd(subsystems.sensorSubsystem));
 
-
-
-/*
-        m_driveOp.getGamepadButton(GamepadKeys.Button.B)
-                .whenHeld(new InstantCommand(intakeSubsystem::reverse, intakeSubsystem))
-                .whenReleased(new InstantCommand(intakeSubsystem::stop, intakeSubsystem));
-*/
 
 
         /* -------------- Driving Command Loop -------------- */
             //this will make the drive command always run
-        register(mecDriveSubsystem);  //good practice to register the default subsystem
+        register(subsystems.mecDriveSubsystem);  //good practice to register the default subsystem
 
             //Set Tank Drive as default drive Command
         //tankDriveSubsystem.setDefaultCommand(driveCmdTank); //command that runs automatically whenever a subsystem is not being used by another command
 
             //Set Arcade Drive as default drive Command
-        mecDriveSubsystem.setDefaultCommand(mecDriveCmd); //command that runs automatically whenever a subsystem is not being used by another command
+        subsystems.mecDriveSubsystem.setDefaultCommand(mecDriveCmd); //command that runs automatically whenever a subsystem is not being used by another command
 
 
         /* -------------- Update Telemetry -------------- */
@@ -335,85 +176,101 @@ public class TeleOpBase extends CommandOpMode {
         CommandScheduler.getInstance().reset();
         initialize();
         waitForStart();
-        time.reset();
 
-        //aimSubsystem.aimTurret(Constants.TURRET_OFFSET);
-        aimSubsystem.aimTurret(0.0);
+        time.reset();
+        new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem).schedule();
+        subsystems.aimSubsystem.aimTurret(Constants.TURRET_OFFSET);
         sleep(250);
 
-        aimSubsystem.aimHood(0.0);
-        spindexerSubsystem.runToSlotZero();
+        subsystems.aimSubsystem.aimHood(0.0);
+        subsystems.spindexerSubsystem.runToSlotZero();
 
         while (opModeIsActive()){
             //Scheduler must be loop called for everything else to run
             CommandScheduler.getInstance().run();
-            pinpoint.update();
+            rightTriggerReader.readValue();
 
+            if(m_driveOp.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) && subsystems.spindexerSubsystem.empty()){
+                sortMode = !sortMode;
+            }
 
             //Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
-            if ( rightTriggerReader.isDown() ) {
-                new IntakeLineCmd(shooterFeedSubsystem, intakeSubsystem, spindexerSubsystem, kickSubsystem).schedule();
-            } else if (rightTriggerReader.wasJustReleased()) {
-                new StopIntakeLineCmd(shooterFeedSubsystem, intakeSubsystem, spindexerSubsystem, kickSubsystem).schedule();
+            if ( rightTriggerReader.isDown() && !sortMode) {
+                new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
+            } else if (rightTriggerReader.wasJustReleased() && !sortMode) {
+                new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
+            } else if (rightTriggerReader.isDown() && sortMode){
+                new IntakeSortCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
+            } else if (rightTriggerReader.wasJustReleased() && sortMode){
+                new StopIntakeCmd(subsystems.intakeSubsystem);
             }
 
-            if(!aimCmd.isScheduled()) {
-                aimCmd.schedule();
+            if(sortMode){
+                m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                        .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem))
+                        .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
+            } else {
+                m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                        .whileHeld(new SmartSortShootCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem))
+                        .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
             }
 
-            //turretAim.setPosition((0.2*40.0)/(48.0));
-
-            telemetry.addData("Limelight Tx: ", sensorSubsystem.getTx());
-            telemetry.addData("Average Distance from MetaTag: ", sensorSubsystem.getDis());
-            telemetry.addData("Limelight Bot X: ", sensorSubsystem.getBotXLL());
-            telemetry.addData("Limelight Bot Y: ", sensorSubsystem.getBotYLL());
-
-            telemetry.addData("Imu Degrees: ", sensorSubsystem.getRobotHeading());
-            telemetry.addData("Pinpoint Bot X: ", sensorSubsystem.getBotX());
-            telemetry.addData("Pinpoint Bot Y: ", sensorSubsystem.getBotY());
-            telemetry.addData("Turret Degrees: ", aimSubsystem.getTurretDegrees());
-
-            telemetry.addData("Raw Axon Voltage: ", axonIn.getVoltage());
-            telemetry.addData("Axon degrees: ", aimSubsystem.getAxonValue());
-            telemetry.addData("Slot: ", spindexerSubsystem.getSlot());
-            telemetry.addData("Spindexer Pos: ", spindexer.getPosition());
-
-            telemetry.addData("Top beam break is broken: ", shooterFeedSubsystem.topBroken());
-            telemetry.addData("Ball in Beam: ", intakeSubsystem.ballInBeam());
 
 
-            //telemetry();
-            rightTriggerReader.readValue();
+
+            telemetry.addData("Limelight Tx: ", subsystems.sensorSubsystem.getTx());
+            telemetry.addData("Average Distance from MetaTag: ", subsystems.sensorSubsystem.getDis());
+            telemetry.addData("Limelight Bot X: ", subsystems.sensorSubsystem.getBotXLL());
+            telemetry.addData("Limelight Bot Y: ", subsystems.sensorSubsystem.getBotYLL());
+
+            telemetry.addData("Imu Degrees: ", subsystems.sensorSubsystem.getRobotHeading());
+            telemetry.addData("Pinpoint Bot X: ", subsystems.sensorSubsystem.getBotX());
+            telemetry.addData("Pinpoint Bot Y: ", subsystems.sensorSubsystem.getBotY());
+            telemetry.addData("Turret Degrees: ", subsystems.aimSubsystem.getTurretDegrees());
+
+            telemetry.addData("Raw Axon Voltage: ", subsystems.aimSubsystem.getVoltage());
+            telemetry.addData("Axon degrees: ", subsystems.aimSubsystem.getAxonValue());
+            telemetry.addData("Slot: ", subsystems.spindexerSubsystem.getSlot());
+            telemetry.addData("Spindexer Pos: ", subsystems.spindexerSubsystem.getPosition());
+
+            telemetry.addData("Top beam break is broken: ", subsystems.shooterFeedSubsystem.topBroken());
+            telemetry.addData("Ball in Beam: ", subsystems.intakeSubsystem.ballInBeam());
+
+            telemetry.addData("Ball in Bay One: ", subsystems.spindexerSubsystem.ballInBayOne());
+            telemetry.addData("Ball in Bay Two: ", subsystems.spindexerSubsystem.ballInBayTwo());
+            telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
         }
+
+        SavedVars.reset();
     }
 
-    public void telemetry(){
-        telemetry.addData("The rotating kicker value: ", kickSubsystem.getKickerRotate());
-        telemetry.addData("The Value of the Turret: ", aimSubsystem.getAxonValue());
+    /*public void telemetry(){
+        telemetry.addData("The rotating kicker value: ", subsystems.kickSubsystem.getKickerRotate());
+        telemetry.addData("The Value of the Turret: ", subsystems.aimSubsystem.getAxonValue());
 
-        telemetry.addData("Ball in Bay One: ", spindexerSubsystem.ballInBayOne());
-        telemetry.addData("Ball in Bay Two: ", spindexerSubsystem.ballInBayTwo());
-        telemetry.addData("Ball in Bay Three: ", spindexerSubsystem.ballInBayThree());
+        telemetry.addData("Ball in Bay One: ", subsystems.spindexerSubsystem.ballInBayOne());
+        telemetry.addData("Ball in Bay Two: ", subsystems.spindexerSubsystem.ballInBayTwo());
 
-        telemetry.addData("Color in Bay One: ", spindexerSubsystem.bayOneColor());
-        telemetry.addData("Color in Bay Two: ", spindexerSubsystem.bayTwoColor());
-        telemetry.addData("Color in Bay Three: ", spindexerSubsystem.bayThreeColor());
+        telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
+        telemetry.addData("Color in Bay One: ",  subsystems.spindexerSubsystem.bayOneColor());
+        telemetry.addData("Color in Bay Two: ",  subsystems.spindexerSubsystem.bayTwoColor());
+        telemetry.addData("Color in Bay Three: ",subsystems.spindexerSubsystem.bayThreeColor());
 
-        telemetry.addData("Bay Number", spindexerSubsystem.getSlot());
+        telemetry.addData("Bay Number",          subsystems.spindexerSubsystem.getSlot());
 
         //Bay One
-        telemetry.addData("Bay One Blue Values: ", spindexerSubsystem.bayOneBlue()[0] + ", " +spindexerSubsystem.bayOneBlue()[1]);
-        telemetry.addData("Bay One Red Values: ", spindexerSubsystem.bayOneRed()[0] + ", " +spindexerSubsystem.bayOneRed()[1]);
-        telemetry.addData("Bay One Green Values: ", spindexerSubsystem.bayOneGreen()[0] + ", " +spindexerSubsystem.bayOneGreen()[1]);
+        telemetry.addData("Bay One Blue Values: ", subsystems.spindexerSubsystem.bayOneBlue()[0] + ", " +subsystems.spindexerSubsystem.bayOneBlue()[1]);
+        telemetry.addData("Bay One Red Values: ",  subsystems.spindexerSubsystem.bayOneRed()[0] + ", " + subsystems.spindexerSubsystem.bayOneRed()[1]);
+        telemetry.addData("Bay One Green Values: ",subsystems.spindexerSubsystem.bayOneGreen()[0] + ", "+subsystems.spindexerSubsystem.bayOneGreen()[1]);
 
         //Bay Two
-        telemetry.addData("Bay Two Blue Values: ", spindexerSubsystem.bayTwoBlue()[0] + ", " +spindexerSubsystem.bayTwoBlue()[1]);
-        telemetry.addData("Bay Two Red Values: ", spindexerSubsystem.bayTwoRed()[0] + ", " +spindexerSubsystem.bayTwoRed()[1]);
-        telemetry.addData("Bay Two Green Values: ", spindexerSubsystem.bayTwoGreen()[0] + ", " +spindexerSubsystem.bayTwoGreen()[1]);
+        telemetry.addData("Bay Two Blue Values: ", subsystems.spindexerSubsystem.bayTwoBlue()[0] + ", " +subsystems.spindexerSubsystem.bayTwoBlue()[1]);
+        telemetry.addData("Bay Two Red Values: ",  subsystems.spindexerSubsystem.bayTwoRed()[0] + ", " + subsystems.spindexerSubsystem.bayTwoRed()[1]);
+        telemetry.addData("Bay Two Green Values: ",subsystems.spindexerSubsystem.bayTwoGreen()[0] + ", "+subsystems.spindexerSubsystem.bayTwoGreen()[1]);
 
         //Bay Three
-        telemetry.addData("Bay Three Blue Values: ", spindexerSubsystem.bayThreeBlue()[0] + ", " +spindexerSubsystem.bayThreeBlue()[1]);
-        telemetry.addData("Bay Three Red Values: ", spindexerSubsystem.bayThreeRed()[0] + ", " +spindexerSubsystem.bayThreeRed()[1]);
-        telemetry.addData("Bay Three Green Values: ", spindexerSubsystem.bayThreeGreen()[0] + ", " +spindexerSubsystem.bayThreeGreen()[1]);
-    }
+        telemetry.addData("Bay Three Blue Values: ",subsystems.spindexerSubsystem.bayThreeBlue()[0] + ", " +subsystems.spindexerSubsystem.bayThreeBlue()[1]);
+        telemetry.addData("Bay Three Red Values: ",subsystems.spindexerSubsystem.bayThreeRed()[0] + ", " +  subsystems.spindexerSubsystem.bayThreeRed()[1]);
+        telemetry.addData("Bay Three Green Values: ",subsystems.spindexerSubsystem.bayThreeGreen()[0] + ", "+subsystems.spindexerSubsystem.bayThreeGreen()[1]);
+    }*/
 }

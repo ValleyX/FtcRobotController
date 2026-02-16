@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands;
 
-import static org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants.TURN_TICK;
+import static org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants.TURN_TICK;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 

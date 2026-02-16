@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 
 public class AimSubsystem extends SubsystemBase {
 
@@ -14,7 +14,7 @@ public class AimSubsystem extends SubsystemBase {
     /**The servo that controls the angle the artifact is shot at*/
     private Servo hoodAim;
     /**The servo that controls the heading of the turret.*/
-    private CRServo turretAim;
+    private Servo axon;
 
     private AnalogInput axonIn;
 
@@ -30,11 +30,11 @@ public class AimSubsystem extends SubsystemBase {
      * new Motor(hardwaremap, "____"); for motors,
      * and hardwaremap.get(___.class, "____"); for servos
      * @param hoodAim The servo that controls the angle the artifact is shot at
-     * @param turretAim The servo that controls the heading of the turret.
+     * @param axon The servo that controls the heading of the turret.
      */
-    public AimSubsystem(Servo hoodAim, CRServo turretAim, AnalogInput axonIn){
+    public AimSubsystem(Servo hoodAim, Servo axon, AnalogInput axonIn){
         this.hoodAim = hoodAim;
-        this.turretAim = turretAim;
+        this.axon = axon;
         this.axonIn = axonIn;
         turnover = 0;
         elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -42,27 +42,35 @@ public class AimSubsystem extends SubsystemBase {
     }
 
     public void aimTurret(double degrees){
-        setPosition(degrees*Constants.SERVO_DEGREE_TO_TURRET_DEGREE);
+        if(degrees > Constants.MAX_DEGREE) {
+            setPosition(Constants.MAX_DEGREE / 360);
+        } else if (degrees < Constants.MIN_DEGREE){
+            setPosition(Constants.MIN_DEGREE / 360);
+        } else {
+            setPosition(degrees / 360);
+        }
     }
 
     /**Adds rotation in Degrees*/
     public void moveTurret(double degrees){
         double rotate = (getAxonValue() + degrees*Constants.SERVO_DEGREE_TO_TURRET_DEGREE);
         if(((Constants.MIN_TURN) <= rotate) && (rotate <= (Constants.MAX_TURN))){
-            setPosition(rotate);
+            aimTurret(rotate);
         } else if((Constants.MIN_TURN) > rotate) {
-            setPosition(Constants.MIN_TURN);
+            aimTurret(Constants.MIN_TURN);
         } else if((Constants.MAX_TURN) < rotate) {
-            setPosition(Constants.MAX_TURN);
+            aimTurret(Constants.MAX_TURN);
         }
     }
 
     public double getAxonValue(){
-        return ((axonIn.getVoltage()/axonIn.getMaxVoltage())*360) + turnover*360;
+        return ((axonIn.getVoltage()/axonIn.getMaxVoltage())*360);// + turnover*360;
     }
 
     public double getTurretDegrees(){
-        return (((axonIn.getVoltage()/axonIn.getMaxVoltage())*360)+ turnover*360)/Constants.SERVO_DEGREE_TO_TURRET_DEGREE;
+        return (((axonIn.getVoltage()/axonIn.getMaxVoltage())*360) )
+                //+ turnover*360)
+                /Constants.SERVO_DEGREE_TO_TURRET_DEGREE;
     }
 
 
@@ -81,8 +89,8 @@ public class AimSubsystem extends SubsystemBase {
         }
     }
 
-    public void setPosition(double degrees){
-        double targetDegrees = degrees;
+    /*public boolean setPosition(double degrees){
+        targetDegrees = degrees;
         if(!(Constants.MIN_DEGREE <= degrees && degrees <= Constants.MAX_DEGREE)) {
             if(degrees < Constants.MIN_DEGREE){
                 targetDegrees = Constants.MAX_DEGREE;
@@ -97,23 +105,28 @@ public class AimSubsystem extends SubsystemBase {
         } else {
             power = 1.0;
         }
+
         if (getTurretDegrees() < (targetDegrees - Constants.TURRET_THRESHHOLD)) {
             turretAim.setPower(Math.min(1.0, power));
         } else if (getTurretDegrees() > (targetDegrees + Constants.TURRET_THRESHHOLD)) {
             turretAim.setPower(Math.max(-1.0, -power));
         } else {
             turretAim.setPower(0.0);
+            return true;
         }
+        return false;
+    }*/
+
+    public void setPosition(double axonCmd){
+        axon.setPosition(axonCmd);
     }
 
     @Override
     public void periodic() {
-        double thisLoop = getAxonValue();
-        if(330 <= thisLoop && lastLoop <= 30){
-            turnover--;
-        } else if (330 <= lastLoop && thisLoop <= 30){
-            turnover++;
-        }
-        lastLoop = thisLoop;
+
+    }
+
+    public double getVoltage(){
+        return axonIn.getVoltage();
     }
 }

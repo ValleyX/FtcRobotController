@@ -1,12 +1,10 @@
-package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased;
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper;
 
 public class Constants {
 
-    //This is me testing pushing code from my home computer
-
     //turret
     //24 tooth servo head to 130 turret teeth
-    private static final double SERVO_TEETH = 52.0;
+    private static final double SERVO_TEETH = 130.0;
     private static final double TURRET_TEETH = 130.0; //r u sure its 130?
     private static final double TURRET_GEAR_RATIO = TURRET_TEETH/SERVO_TEETH;
     private static final double DEGREES_IN_FULL_SERVO_TURN = (360.0/TURRET_GEAR_RATIO);
@@ -15,7 +13,7 @@ public class Constants {
 
     public static final double TURRET_THRESHHOLD = 1.0;
 
-    public static final double MAX_DEGREE = 332;
+    public static final double MAX_DEGREE = 332.0;
     public static final double MIN_DEGREE = 10.0;
 
     public static final double MAX_TURN = MAX_DEGREE * SERVO_DEGREE_TO_TURRET_DEGREE;
@@ -27,7 +25,8 @@ public class Constants {
     public static final double GAIN_THRESH = 20.0;
 
 
-    public static final double VELOCITY_THRESHHOLD = 1.0;
+    public static final double VELOCITY_THRESHHOLD = 150;
+    public static final double MIN_VELOCITY = 1000;
 
 
 
@@ -48,14 +47,34 @@ public class Constants {
     public static final double[] SLOT_ARRAY = {SLOT_ZERO, SLOT_ONE, SLOT_TWO, SLOT_ZERO_LOOPED_ONE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE};
 
     public static final int MIN_COLOR_SUM = 900;
+    public static final int MIN_ALPHA = 100;
 
     public static final int PURPLE = 1;
     public static final int GREEN = 0;
+
+    /** If all colors added are equal to this number, they are sortable with one green and two purple*/
+    public static final int SORTABLE = PURPLE + PURPLE;
     public static final int UNKNOWN_COLOR = 999;
+
+    public static final int PATTERN_PPG = 2110;
+    public static final int PATTERN_PGP = 2101;
+    public static final int PATTERN_GPP = 2011;
 
     //Limelight
     public static final int NO_LL = -999;
     public static final String LL = "limelight";
+
+    public static final int BLUE_PIPELINE = 0;
+    public static final int RED_PIPELINE = 1;
+
+    public static final int BLUE_PIPELINE_MOTIF = 2;
+    public static final int RED_PIPELINE_MOTIF = 3;
+
+    public static final double BLUE_APRILTAG_X = 1.482 * 39.3701;
+    public static final double BLUE_APRILTAG_Y = 1.413 * 39.3701;
+
+    public static final double RED_APRILTAG_X = 1.482 * 39.3701;
+    public static final double RED_APRILTAG_Y = -1.413 * 39.3701;
 
     //Pinpoint
     public static final double NO_PP = -999.0;
@@ -140,10 +159,15 @@ public class Constants {
     public static final String EDI6 = "";
     public static final String EDI7 = "";
 
+    public static final double BOT_WIDTH = 17.0;
+    public static final double BOT_LENGTH = 17.75;
+
 
 
     //Intake
-    public static final double INTAKE_SPEED = 0.9;
+    public static final double INTAKE_SPEED = 1.0;
+
+    public static final double SLOW_TFEED = 0.35;
 
     /* TODO LIST
       - Get Intake Spindexer working with new beambreak (stop intaking when full)
