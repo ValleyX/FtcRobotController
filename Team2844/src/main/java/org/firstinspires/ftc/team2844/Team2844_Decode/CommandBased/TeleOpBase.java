@@ -101,7 +101,7 @@ public class TeleOpBase extends CommandOpMode {
         //driveCmdTank = new DriveCmdTank(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightY);
             //Arcade Drive controls
         //driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightX);
-        mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, subsystems.sensorSubsystem.getRobotHeading());
+        mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, subsystems.mecDriveSubsystem.getRobotHeading());
 
         runIntakeSortCmd = new IntakeSortCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
         stopIntakeCmd = new StopIntakeCmd(subsystems.intakeSubsystem);
@@ -121,7 +121,7 @@ public class TeleOpBase extends CommandOpMode {
         );
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem))
+                .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem))
                 .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)
@@ -153,7 +153,7 @@ public class TeleOpBase extends CommandOpMode {
                 .whenHeld(new MoveHoodPositive(subsystems.aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.BACK)
-                .whenPressed(new ResetImuCmd(subsystems.sensorSubsystem));
+                .whenPressed(new ResetImuCmd(subsystems.mecDriveSubsystem));
 
 
 
@@ -223,7 +223,7 @@ public class TeleOpBase extends CommandOpMode {
                 new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
             }
 
-
+            subsystems.sensorSubsystem.updateOrientation(subsystems.mecDriveSubsystem.getRobotHeading());
 
 
             telemetry.addData("Limelight Tx: ", subsystems.sensorSubsystem.getTx());
@@ -231,9 +231,9 @@ public class TeleOpBase extends CommandOpMode {
             telemetry.addData("Limelight Bot X: ", subsystems.sensorSubsystem.getBotXLL());
             telemetry.addData("Limelight Bot Y: ", subsystems.sensorSubsystem.getBotYLL());
 
-            telemetry.addData("Imu Degrees: ", subsystems.sensorSubsystem.getRobotHeading());
-            telemetry.addData("Pinpoint Bot X: ", subsystems.sensorSubsystem.getBotX());
-            telemetry.addData("Pinpoint Bot Y: ", subsystems.sensorSubsystem.getBotY());
+            telemetry.addData("Imu Degrees: ", subsystems.mecDriveSubsystem.getRobotHeading());
+            telemetry.addData("Pinpoint Bot X: ", subsystems.mecDriveSubsystem.getBotX());
+            telemetry.addData("Pinpoint Bot Y: ", subsystems.mecDriveSubsystem.getBotY());
             telemetry.addData("Turret Degrees: ", subsystems.aimSubsystem.getTurretDegrees());
 
             telemetry.addData("Raw Axon Voltage: ", subsystems.aimSubsystem.getVoltage());

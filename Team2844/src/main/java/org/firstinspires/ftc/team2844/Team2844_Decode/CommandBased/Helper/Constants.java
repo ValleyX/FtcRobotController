@@ -86,10 +86,10 @@ public class Constants {
 
     //Control Hub Ports
         //Motor Ports
-    public static final String CM0 = "frontLeft";
-    public static final String CM1 = "backLeft";
-    public static final String CM2 = "backRight";
-    public static final String CM3 = "frontRight";
+    public static final String CM0 = "leftFront";
+    public static final String CM1 = "leftBack";
+    public static final String CM2 = "rightBack";
+    public static final String CM3 = "rightFront";
 
         //Analog Inputs
     public static final String CAI0 = "";
@@ -107,7 +107,7 @@ public class Constants {
     public static final String CS5 = "spindexer";
 
         //I2C Busses
-    public static final String CBUS0 = "pinpointIMU";
+    public static final String CBUS0 = "pinpoint";
     public static final String CBUS1 = "turretIMU";
     public static final String CBUS2 = "color1Bay1";
     public static final String CBUS3 = "color2Bay1";
@@ -164,6 +164,7 @@ public class Constants {
 
     public static final double BOT_WIDTH = 17.0;
     public static final double BOT_LENGTH = 17.75;
+    public static final double STRAFE_CORRECTION = 1.5;
 
 
 

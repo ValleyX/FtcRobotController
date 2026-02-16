@@ -3,25 +3,25 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Aim
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 
 public class AimHoodCmd extends CommandBase {
     AimSubsystem aimSubsystem;
+    DriveSubsystem driveSubsystem;
     SensorSubsystem sensorSubsystem;
 
-    public AimHoodCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem){
+    public AimHoodCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem){
         this.aimSubsystem = aimSubsystem;
+        this.driveSubsystem = driveSubsystem;
         this.sensorSubsystem = sensorSubsystem;
-        addRequirements(aimSubsystem, sensorSubsystem);
+        addRequirements(aimSubsystem);
     }
 
     @Override
     public void execute(){
-        double tx = sensorSubsystem.getTx();
-        if(tx != Constants.NO_LL){
-            aimSubsystem.aimHood(sensorSubsystem.hoodLinReg());
-        }
+        aimSubsystem.aimHood(driveSubsystem.hoodLinReg(sensorSubsystem.getPipeline()));
     }
 
     @Override

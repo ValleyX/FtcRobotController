@@ -4,21 +4,24 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 
 public class FullAimToLLAutoCmd extends CommandBase {
     AimSubsystem aimSubsystem;
     SensorSubsystem sensorSubsystem;
+    DriveSubsystem driveSubsystem;
     double tx;
     boolean finished;
     Vector2d vector;
     double heading;
 
 
-    public FullAimToLLAutoCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, Vector2d vector, double heading){
+    public FullAimToLLAutoCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem, Vector2d vector, double heading){
         this.aimSubsystem = aimSubsystem;
         this.sensorSubsystem = sensorSubsystem;
+        this.driveSubsystem = driveSubsystem;
         this.vector = vector;
         this.heading = heading;
         addRequirements(aimSubsystem);
@@ -40,9 +43,9 @@ public class FullAimToLLAutoCmd extends CommandBase {
             } else {
                 finished = true;
             }
-            aimSubsystem.aimHood(sensorSubsystem.hoodLinReg());
+            aimSubsystem.aimHood(driveSubsystem.hoodLinReg(sensorSubsystem.getPipeline()));
         } else {
-            aimSubsystem.aimTurret(sensorSubsystem.getPinpointTurretAngleAuto(vector.x, vector.y, heading));
+            aimSubsystem.aimTurret(driveSubsystem.getPinpointTurretAngleAuto(vector.x, vector.y, heading, sensorSubsystem.getPipeline()));
         }
 
     }

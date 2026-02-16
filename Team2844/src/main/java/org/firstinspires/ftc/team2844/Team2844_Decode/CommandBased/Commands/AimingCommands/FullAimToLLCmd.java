@@ -3,16 +3,18 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Aim
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 
 public class FullAimToLLCmd extends CommandBase {
     AimSubsystem aimSubsystem;
     SensorSubsystem sensorSubsystem;
+    DriveSubsystem driveSubsystem;
     double tx;
 
 
-    public FullAimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem){
+    public FullAimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem){
         this.aimSubsystem = aimSubsystem;
         this.sensorSubsystem = sensorSubsystem;
         addRequirements(aimSubsystem);
@@ -34,9 +36,9 @@ public class FullAimToLLCmd extends CommandBase {
                     aimSubsystem.aimTurret(pos - Math.min(8.0, tx));
                 }
             }
-            aimSubsystem.aimHood(sensorSubsystem.hoodLinReg());
+            aimSubsystem.aimHood(driveSubsystem.hoodLinReg(sensorSubsystem.getPipeline()));
         } else {
-            aimSubsystem.aimTurret(sensorSubsystem.getPinpointTurretAngle());
+            aimSubsystem.aimTurret(driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()));
         }
     }
 

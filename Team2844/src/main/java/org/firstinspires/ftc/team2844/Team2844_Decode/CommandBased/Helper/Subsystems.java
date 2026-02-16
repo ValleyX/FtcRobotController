@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
@@ -121,7 +122,7 @@ public class Subsystems {
     /* ------------------- Sensor Declarations ------------------- */
     //private IMU turretIMU;
     //private Motor turretServoEncoder;
-    private GoBildaPinpointDriver pinpoint;
+    //private GoBildaPinpointDriver pinpoint;
     private DigitalChannel topBreak;
     private DigitalChannel intakeBB;
     private AnalogInput axonIn;
@@ -189,7 +190,7 @@ public class Subsystems {
 
 
         /* ---------- Pinpoint ----------*/
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, Constants.CBUS0);
+        //pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, Constants.CBUS0);
 
         /* -------------- Sensors -------------- */
         topBreak = hardwareMap.get(DigitalChannel.class, Constants.CDI0);
@@ -207,7 +208,7 @@ public class Subsystems {
 
         //1. drive subsystem
         //tankDriveSubsystem = new TankDriveSubsystem(leftMotorGroup,rightMotorGroup);
-        mecDriveSubsystem = new DriveSubsystem(backLeft, frontRight, frontLeft, backRight);
+        mecDriveSubsystem = new DriveSubsystem(hardwareMap);
         //2. Intake subsystem
         intakeSubsystem = new IntakeSubsystem(intakeMotor, intakeBB);
         //3. Kick subsystem
@@ -221,8 +222,8 @@ public class Subsystems {
         //7. Aim subsystem
         aimSubsystem = new AimSubsystem(hoodAim, axon, axonIn);
         //8. Sensor Subsystem
-        sensorSubsystem = new SensorSubsystem(pinpoint, limelight, pipelineNum);
-        sensorSubsystem.setPinpointPose(new Pose2D(DistanceUnit.INCH, SavedVars.startingX, SavedVars.startingY, AngleUnit.DEGREES, SavedVars.startingHeading - 90.0));
+        sensorSubsystem = new SensorSubsystem(limelight, pipelineNum);
+        mecDriveSubsystem.setPinpointPose(new Pose2d(SavedVars.startingX, SavedVars.startingY, SavedVars.startingHeading - 90.0));
     }
 
 

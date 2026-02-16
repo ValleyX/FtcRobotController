@@ -11,6 +11,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Inta
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopSpinCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterFeedSubsystem;
@@ -20,15 +21,15 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
 public class SmartSortShootCmd extends SequentialCommandGroup {
-    public SmartSortShootCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem){
-        double velocity = sensorSubsystem.velocityLinReg();
+    public SmartSortShootCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem, DriveSubsystem driveSubsystem){
+        double velocity = driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
         SlotCmd previousSlot = new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot() - 1);
 
         if(!previousSlot.isScheduled() && !spindexerSubsystem.ballInBayOne() && spindexerSubsystem.getSlot() != 0) {
             addCommands(
                     new ParallelCommandGroup(
                             //At the same time, aim the turret
-                            new FullAimToLLCmd(aimSubsystem, sensorSubsystem),
+                            new FullAimToLLCmd(aimSubsystem, sensorSubsystem, driveSubsystem),
 
                             //Also set the velocity to the amount based on distance from apriltag
                             new VelocityShootCmd(shooterSubsystem, velocity),
@@ -55,7 +56,7 @@ public class SmartSortShootCmd extends SequentialCommandGroup {
             addCommands(
                     new ParallelCommandGroup(
                             //At the same time, aim the turret
-                            new FullAimToLLCmd(aimSubsystem, sensorSubsystem),
+                            new FullAimToLLCmd(aimSubsystem, sensorSubsystem, driveSubsystem),
 
                             //Also set the velocity to the amount based on distance from apriltag
                             new VelocityShootCmd(shooterSubsystem, velocity),

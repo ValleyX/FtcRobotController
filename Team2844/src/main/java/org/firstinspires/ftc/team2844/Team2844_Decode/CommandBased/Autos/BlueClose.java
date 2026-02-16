@@ -82,7 +82,7 @@ public class BlueClose extends CommandOpMode {
 
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                     subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                    subsystems.kickSubsystem, subsystems.intakeSubsystem, new Vector2d(drive.getRobotX(), drive.getRobotY()), drive.getRobotHeading())),
+                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, new Vector2d(drive.getRobotX(), drive.getRobotY()), drive.getRobotHeading())),
                 new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 
@@ -97,7 +97,7 @@ public class BlueClose extends CommandOpMode {
                 new CommandAction(new StopIntakeCmd(subsystems.intakeSubsystem)),
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                        subsystems.kickSubsystem, subsystems.intakeSubsystem, new Vector2d(drive.getRobotX(), drive.getRobotY()), drive.getRobotHeading())),
+                        subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, new Vector2d(drive.getRobotX(), drive.getRobotY()), drive.getRobotHeading())),
                 new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 
@@ -110,7 +110,7 @@ public class BlueClose extends CommandOpMode {
 
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                        subsystems.kickSubsystem, subsystems.intakeSubsystem, new Vector2d(drive.getRobotX(), drive.getRobotY()), drive.getRobotHeading())),
+                        subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, new Vector2d(drive.getRobotX(), drive.getRobotY()), drive.getRobotHeading())),
                 new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 
