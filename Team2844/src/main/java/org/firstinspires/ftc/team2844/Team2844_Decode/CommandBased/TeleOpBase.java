@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -32,6 +33,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Inta
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.NeutralShooterCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartLineShooterCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartSortShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopTransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.TransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
@@ -65,6 +67,8 @@ public class TeleOpBase extends CommandOpMode {
     AimTurretCmd neutralAimTurretCmd;
     IntakeLineCmd intakeLineCmd;
     StopIntakeLineCmd stopIntakeLineCmd;
+
+    boolean sortMode;
 
     /* ------------------- Gamepad Declaration ------------------- */
     private GamepadEx m_driveOp;
@@ -106,7 +110,7 @@ public class TeleOpBase extends CommandOpMode {
         intakeLineCmd = new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
         stopIntakeLineCmd = new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
 
-
+        sortMode = false;
 
 
 
@@ -116,9 +120,6 @@ public class TeleOpBase extends CommandOpMode {
                 m_driveOp, GamepadKeys.Trigger.RIGHT_TRIGGER
         );
 
-        m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem))
-                        .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)
                 .whenHeld(new ParallelCommandGroup( new UptakeCmd(subsystems.kickSubsystem),
@@ -189,12 +190,32 @@ public class TeleOpBase extends CommandOpMode {
             CommandScheduler.getInstance().run();
             rightTriggerReader.readValue();
 
-            //Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
-            if ( rightTriggerReader.isDown() ) {
-                new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
-            } else if (rightTriggerReader.wasJustReleased()) {
-                new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
+            if(m_driveOp.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) && subsystems.spindexerSubsystem.empty()){
+                sortMode = !sortMode;
             }
+
+            //Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
+            if ( rightTriggerReader.isDown() && !sortMode) {
+                new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
+            } else if (rightTriggerReader.wasJustReleased() && !sortMode) {
+                new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
+            } else if (rightTriggerReader.isDown() && sortMode){
+                new IntakeSortCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
+            } else if (rightTriggerReader.wasJustReleased() && sortMode){
+                new StopIntakeCmd(subsystems.intakeSubsystem);
+            }
+
+            if(sortMode){
+                m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                        .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem))
+                        .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
+            } else {
+                m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                        .whileHeld(new SmartSortShootCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem))
+                        .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
+            }
+
+
 
 
             telemetry.addData("Limelight Tx: ", subsystems.sensorSubsystem.getTx());
