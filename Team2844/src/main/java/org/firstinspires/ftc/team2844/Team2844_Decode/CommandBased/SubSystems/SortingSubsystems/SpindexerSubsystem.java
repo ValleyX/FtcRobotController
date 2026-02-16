@@ -85,6 +85,15 @@ public class SpindexerSubsystem extends SubsystemBase {
         spindexer.setPosition(Constants.SLOT_ARRAY[desiredSlot]);
     }
 
+    public void runToShootSlot(int desiredSlot){
+        pos = desiredSlot;
+        if(desiredSlot != 0) {
+            spindexer.setPosition(Constants.SLOT_ARRAY[desiredSlot]);
+        } else {
+            spindexer.setPosition(Constants.SLOT_ARRAY[desiredSlot] - 0.005);
+        }
+    }
+
     public int getSlot(){
         return pos;
     }
@@ -112,6 +121,17 @@ public class SpindexerSubsystem extends SubsystemBase {
     public boolean ballInBayThree(){
         return bay3;
     }
+
+    public double bayOneAlpha(){
+        return (color1Bay1.alpha() + color2Bay1.alpha())/2.0;
+    }
+    public double bayTwoAlpha(){
+        return (color1Bay2.alpha() + color2Bay2.alpha())/2.0;
+    }
+    public double bayThreeAlpha(){
+        return (color1Bay3.alpha() + color2Bay3.alpha())/2.0;
+    }
+
 
     public boolean fullSpindexer(){
         return (ballInBayOne() && ballInBayTwo() && ballInBayThree());

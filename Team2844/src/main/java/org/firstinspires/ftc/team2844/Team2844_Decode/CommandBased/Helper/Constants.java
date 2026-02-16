@@ -24,8 +24,11 @@ public class Constants {
     public static final double TURRET_GAIN = 0.009;
     public static final double GAIN_THRESH = 20.0;
 
+    public static final double MIN_VOLTAGE = 0.22;
+    public static final double MAX_VOLTAGE = 3.06;
 
-    public static final double VELOCITY_THRESHHOLD = 150;
+
+    public static final double VELOCITY_THRESHHOLD = 250;
     public static final double MIN_VELOCITY = 1000;
 
 
@@ -47,7 +50,7 @@ public class Constants {
     public static final double[] SLOT_ARRAY = {SLOT_ZERO, SLOT_ONE, SLOT_TWO, SLOT_ZERO_LOOPED_ONE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE};
 
     public static final int MIN_COLOR_SUM = 900;
-    public static final int MIN_ALPHA = 100;
+    public static final int MIN_ALPHA = 200;
 
     public static final int PURPLE = 1;
     public static final int GREEN = 0;
@@ -167,7 +170,7 @@ public class Constants {
     //Intake
     public static final double INTAKE_SPEED = 1.0;
 
-    public static final double SLOW_TFEED = 0.35;
+    public static final double SLOW_TFEED = 0.1;
 
     /* TODO LIST
       - Get Intake Spindexer working with new beambreak (stop intaking when full)

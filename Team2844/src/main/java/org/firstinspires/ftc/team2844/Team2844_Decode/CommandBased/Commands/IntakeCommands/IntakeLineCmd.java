@@ -43,7 +43,6 @@ public class IntakeLineCmd extends CommandBase {
                 timer.reset();
             } else {
 //                new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem));
-                intakeSubsystem.stop();
                 kickSubsystem.rotateKickerUp();
                 kickSubsystem.stopKickerSpin();
                 kickSubsystem.stopSFeed();

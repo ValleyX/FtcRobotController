@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimTurretCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.HoodCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.NeutralAim;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
@@ -21,8 +22,7 @@ public class NeutralShooterCmd extends ParallelCommandGroup {
                 new StopUptakeCmd(kickSubsystem),
                 new StopTransferCmd(shooterFeedSubsystem),
                 new StopIntakeCmd(intakeSubsystem),
-                new AimTurretCmd(aimSubsystem, 90.0),
-                new HoodCmd(aimSubsystem, 0.0)
+                new NeutralAim(aimSubsystem)
         );
     }
 }

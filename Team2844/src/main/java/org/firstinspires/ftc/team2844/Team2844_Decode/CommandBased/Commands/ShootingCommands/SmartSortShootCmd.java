@@ -20,11 +20,11 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
 public class SmartSortShootCmd extends SequentialCommandGroup {
-    public SmartSortShootCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem){
+    public SmartSortShootCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem){
         double velocity = sensorSubsystem.velocityLinReg();
         SlotCmd previousSlot = new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot() - 1);
 
-        if(previousSlot.isFinished() && !spindexerSubsystem.ballInBayOne() && spindexerSubsystem.getSlot() != 0) {
+        if(!previousSlot.isScheduled() && !spindexerSubsystem.ballInBayOne() && spindexerSubsystem.getSlot() != 0) {
             addCommands(
                     new ParallelCommandGroup(
                             //At the same time, aim the turret
@@ -41,13 +41,11 @@ public class SmartSortShootCmd extends SequentialCommandGroup {
                     new ConditionalCommand(
                             new ParallelCommandGroup(
                                     new TransferCmd(shooterFeedSubsystem),
-                                    new UptakeCmd(kickSubsystem),
-                                    new ActivateIntakeCmd(intakeSubsystem)
+                                    new UptakeCmd(kickSubsystem)
                             ),
                             new ParallelCommandGroup(
                                     new StopTransferCmd(shooterFeedSubsystem),
-                                    new StopSpinCmd(kickSubsystem),
-                                    new StopIntakeCmd(intakeSubsystem)
+                                    new StopSpinCmd(kickSubsystem)
                             ),
                             shooterSubsystem::inRange
                     ),
@@ -58,7 +56,6 @@ public class SmartSortShootCmd extends SequentialCommandGroup {
                     new ParallelCommandGroup(
                             //At the same time, aim the turret
                             new FullAimToLLCmd(aimSubsystem, sensorSubsystem),
-                            new AimHoodCmd(aimSubsystem, sensorSubsystem),
 
                             //Also set the velocity to the amount based on distance from apriltag
                             new VelocityShootCmd(shooterSubsystem, velocity),
@@ -71,13 +68,11 @@ public class SmartSortShootCmd extends SequentialCommandGroup {
                     new ConditionalCommand(
                             new ParallelCommandGroup(
                                     new TransferCmd(shooterFeedSubsystem),
-                                    new UptakeCmd(kickSubsystem),
-                                    new ActivateIntakeCmd(intakeSubsystem)
+                                    new UptakeCmd(kickSubsystem)
                             ),
                             new ParallelCommandGroup(
                                     new StopTransferCmd(shooterFeedSubsystem),
-                                    new StopSpinCmd(kickSubsystem),
-                                    new StopIntakeCmd(intakeSubsystem)
+                                    new StopSpinCmd(kickSubsystem)
                             ),
                             shooterSubsystem::inRange
                     )

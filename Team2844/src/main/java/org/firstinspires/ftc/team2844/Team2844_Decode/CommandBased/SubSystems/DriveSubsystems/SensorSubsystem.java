@@ -139,7 +139,8 @@ public class SensorSubsystem extends SubsystemBase {
         }
         llResult = limelight.getLatestResult();
     }
-
+//this returns the offset  of the crossharis to the center of the target
+    //thi sis typically -27 to 27 deg
     public double getTx(){
         if (llResult != null && llResult.isValid()) {
             return llResult.getTx();
@@ -233,7 +234,6 @@ public class SensorSubsystem extends SubsystemBase {
     public void periodic(){
         updateResult();
         if(pinpoint != null) {
-            setPoseWithLL();
             pinpoint.update();
         }
 
@@ -241,8 +241,8 @@ public class SensorSubsystem extends SubsystemBase {
             lookForPattern();
         }
 
-        if(llResult.isValid() && llResult != null){
-            setPoseWithLL();
+        if(llResult.isValid() && llResult != null && pinpoint != null){
+            //setPoseWithLL();
         }
     }
 

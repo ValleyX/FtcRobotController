@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.MotorExGroup;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.MotorExPair;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
@@ -46,7 +46,7 @@ public class Subsystems {
     /**
      * Motor group of the shooters, the left shooter should be inverted
      */
-    private MotorExGroup shooterPair;
+    private MotorExPair shooterPair;
 
     /**
      * Intake Motor
@@ -155,7 +155,7 @@ public class Subsystems {
         shooterRight = new MotorEx(hardwareMap, Constants.EM2);
         shooterLeft.setInverted(true);
 
-        shooterPair = new MotorExGroup(new ArrayList<>(Arrays.asList(this.shooterLeft, this.shooterRight)));
+        shooterPair = new MotorExPair(this.shooterLeft, this.shooterRight);
         shooterPair.setRunMode(Motor.RunMode.RawPower);
         shooterPair.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
@@ -237,7 +237,7 @@ public class Subsystems {
         shooterRight = new MotorEx(hardwareMap, Constants.EM2);
         shooterLeft.setInverted(true);
 
-        shooterPair = new MotorExGroup(new ArrayList<>(Arrays.asList(this.shooterLeft, this.shooterRight)));
+        shooterPair = new MotorExPair(this.shooterLeft, this.shooterRight);
         shooterPair.setRunMode(Motor.RunMode.RawPower);
         shooterPair.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 

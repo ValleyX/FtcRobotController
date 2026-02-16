@@ -19,9 +19,17 @@ public class AimToLLCmd extends CommandBase {
     @Override
     public void execute(){
         double tx = sensorSubsystem.getTx();
-        if(tx != Constants.NO_LL && (Math.abs(tx) < Constants.TURRET_THRESHHOLD)){
-            aimSubsystem.moveTurret(sensorSubsystem.getTx());
-        }
+        //if(tx != Constants.NO_LL && (Math.abs(tx) < Constants.TURRET_THRESHHOLD)){
+//        if(tx != Constants.NO_LL && (Math.abs(tx) < Constants.MAX_DEGREE)){
+//            aimSubsystem.moveTurret(sensorSubsystem.getTx());
+//        }
+//        else {
+//            aimSubsystem.moveTurret(0);
+//        }
+
+        //JAE
+        //aimSubsystem.setPosLL(sensorSubsystem.getTx());
+
     }
 
     @Override

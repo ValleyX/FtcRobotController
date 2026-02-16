@@ -120,6 +120,9 @@ public class TeleOpBase extends CommandOpMode {
                 m_driveOp, GamepadKeys.Trigger.RIGHT_TRIGGER
         );
 
+        m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem))
+                .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)
                 .whenHeld(new ParallelCommandGroup( new UptakeCmd(subsystems.kickSubsystem),
@@ -179,7 +182,6 @@ public class TeleOpBase extends CommandOpMode {
 
         time.reset();
         new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem).schedule();
-        subsystems.aimSubsystem.aimTurret(Constants.TURRET_OFFSET);
         sleep(250);
 
         subsystems.aimSubsystem.aimHood(0.0);
@@ -195,7 +197,7 @@ public class TeleOpBase extends CommandOpMode {
             }
 
             //Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
-            if ( rightTriggerReader.isDown() && !sortMode) {
+            /*if ( rightTriggerReader.isDown() && !sortMode) {
                 new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
             } else if (rightTriggerReader.wasJustReleased() && !sortMode) {
                 new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
@@ -205,14 +207,20 @@ public class TeleOpBase extends CommandOpMode {
                 new StopIntakeCmd(subsystems.intakeSubsystem);
             }
 
-            if(sortMode){
+            if(!sortMode){
                 m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                         .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem))
                         .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
             } else {
                 m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                        .whileHeld(new SmartSortShootCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem))
+                        .whileHeld(new SmartSortShootCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem))
                         .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
+            }*/
+
+            if ( rightTriggerReader.isDown()) {
+                new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
+            } else if (rightTriggerReader.wasJustReleased()) {
+                new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
             }
 
 
@@ -239,6 +247,9 @@ public class TeleOpBase extends CommandOpMode {
             telemetry.addData("Ball in Bay One: ", subsystems.spindexerSubsystem.ballInBayOne());
             telemetry.addData("Ball in Bay Two: ", subsystems.spindexerSubsystem.ballInBayTwo());
             telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
+            telemetry.addData("Bay one alpha", subsystems.spindexerSubsystem.bayOneAlpha());
+            telemetry.addData("Bay two alpha", subsystems.spindexerSubsystem.bayTwoAlpha());
+            telemetry.addData("Bay Three alpha", subsystems.spindexerSubsystem.bayThreeAlpha());
         }
 
         SavedVars.reset();
