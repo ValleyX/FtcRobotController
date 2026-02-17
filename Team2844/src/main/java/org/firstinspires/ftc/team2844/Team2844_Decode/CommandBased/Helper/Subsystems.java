@@ -223,7 +223,6 @@ public class Subsystems {
         aimSubsystem = new AimSubsystem(hoodAim, axon, axonIn);
         //8. Sensor Subsystem
         sensorSubsystem = new SensorSubsystem(limelight, pipelineNum);
-        mecDriveSubsystem.setPinpointPose(new Pose2d(SavedVars.startingX, SavedVars.startingY, SavedVars.startingHeading - 90.0));
     }
 
 

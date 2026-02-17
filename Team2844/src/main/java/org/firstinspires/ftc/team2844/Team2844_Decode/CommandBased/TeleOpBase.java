@@ -101,7 +101,7 @@ public class TeleOpBase extends CommandOpMode {
         //driveCmdTank = new DriveCmdTank(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightY);
             //Arcade Drive controls
         //driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightX);
-        mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, subsystems.mecDriveSubsystem.getRobotHeading());
+        mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX);
 
         runIntakeSortCmd = new IntakeSortCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
         stopIntakeCmd = new StopIntakeCmd(subsystems.intakeSubsystem);
@@ -247,13 +247,17 @@ public class TeleOpBase extends CommandOpMode {
             telemetry.addData("Ball in Bay One: ", subsystems.spindexerSubsystem.ballInBayOne());
             telemetry.addData("Ball in Bay Two: ", subsystems.spindexerSubsystem.ballInBayTwo());
             telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
-            telemetry.addData("Bay one alpha", subsystems.spindexerSubsystem.bayOneAlpha());
-            telemetry.addData("Bay two alpha", subsystems.spindexerSubsystem.bayTwoAlpha());
-            telemetry.addData("Bay Three alpha", subsystems.spindexerSubsystem.bayThreeAlpha());
-        }
+//            telemetry.addData("Bay one alpha", subsystems.spindexerSubsystem.bayOneAlpha());
+//            telemetry.addData("Bay two alpha", subsystems.spindexerSubsystem.bayTwoAlpha());
+//            telemetry.addData("Bay Three alpha", subsystems.spindexerSubsystem.bayThreeAlpha());
 
-        SavedVars.reset();
+            if(isStopRequested()){
+                SavedVars.reset();
+            }
+        }
     }
+
+
 
     /*public void telemetry(){
         telemetry.addData("The rotating kicker value: ", subsystems.kickSubsystem.getKickerRotate());

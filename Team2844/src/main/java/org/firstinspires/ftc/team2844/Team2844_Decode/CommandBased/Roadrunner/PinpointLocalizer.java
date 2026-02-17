@@ -11,7 +11,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
-import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.Localizer;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.Localizer;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.*;
+
 
 import java.util.Objects;
 
@@ -19,8 +22,8 @@ import java.util.Objects;
 @Disabled
 public final class PinpointLocalizer implements Localizer {
     public static class Params {
-        public double parYTicks = 0.0; // y position of the parallel encoder (in tick units)
-        public double perpXTicks = 0.0; // x position of the perpendicular encoder (in tick units)
+        public double parYTicks = Constants.Y_OFFSET; // y position of the parallel encoder (in tick units)
+        public double perpXTicks = Constants.X_OFFSET; // x position of the perpendicular encoder (in tick units)
     }
 
     public static Params PARAMS = new Params();

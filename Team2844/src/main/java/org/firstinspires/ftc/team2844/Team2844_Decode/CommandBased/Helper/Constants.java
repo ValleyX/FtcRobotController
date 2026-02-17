@@ -164,7 +164,7 @@ public class Constants {
 
     public static final double BOT_WIDTH = 17.0;
     public static final double BOT_LENGTH = 17.75;
-    public static final double STRAFE_CORRECTION = 1.5;
+    public static final double STRAFE_CORRECTION = 1.0;
 
 
 

@@ -20,11 +20,12 @@ public class DriveSubsystem extends SubsystemBase {
     private MecanumDrive drive;
 
     public DriveSubsystem(HardwareMap hardwareMap){
-        drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, SavedVars.startingHeading));
+        drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, SavedVars.startingHeading + 2.0));
     }
 
-    public void drive(double strafeSpeed, double forwardSpeed, double turnSpeed, double heading) {
-        double botHeading = heading;
+    public void drive(double strafeSpeed, double forwardSpeed, double turnSpeed) {
+        drive.updatePoseEstimate();
+        double botHeading = getRobotHeadingRadians();
         //botHeading = 0;
 
         //code for field centric (Idk how it works, pretty sure it's magic or makes triangles or something)
@@ -42,15 +43,14 @@ public class DriveSubsystem extends SubsystemBase {
         drive.leftBack.setPower(backLeftPower);
         drive.rightBack.setPower(backRightPower);
 
-
     }
 
     public double getRobotHeading(){
-        return drive.getRobotHeading();
+        return -Math.toDegrees(drive.getRobotHeading());
     }
 
     public double getRobotHeadingRadians(){
-        return Math.toRadians(drive.getRobotHeading());
+        return (-drive.getRobotHeading());
     }
 
     public void resetIMU(){

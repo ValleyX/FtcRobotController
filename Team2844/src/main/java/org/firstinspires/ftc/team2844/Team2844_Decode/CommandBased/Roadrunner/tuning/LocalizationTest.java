@@ -9,9 +9,8 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.Drawing;
-import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.MecanumDrive;
-import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.TankDrive;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.*;
+
 
 @Disabled
 public class LocalizationTest extends LinearOpMode {

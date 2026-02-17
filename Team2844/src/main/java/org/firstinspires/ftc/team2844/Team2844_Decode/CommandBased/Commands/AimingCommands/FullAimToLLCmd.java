@@ -17,6 +17,7 @@ public class FullAimToLLCmd extends CommandBase {
     public FullAimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem){
         this.aimSubsystem = aimSubsystem;
         this.sensorSubsystem = sensorSubsystem;
+        this.driveSubsystem = driveSubsystem;
         addRequirements(aimSubsystem);
     }
 
