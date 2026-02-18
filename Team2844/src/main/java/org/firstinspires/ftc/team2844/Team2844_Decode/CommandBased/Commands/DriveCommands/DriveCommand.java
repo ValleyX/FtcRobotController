@@ -9,14 +9,14 @@ import java.util.function.DoubleSupplier;
 public class DriveCommand extends CommandBase {
 
     private DriveSubsystem driveSubsystem;
-    private DoubleSupplier strafe, forward, turn;
-    private double heading;
+    private DoubleSupplier strafe, forward, turn, heading;
 
-    public DriveCommand(DriveSubsystem driveSubsystem, DoubleSupplier strafe, DoubleSupplier forward, DoubleSupplier turn) {
+    public DriveCommand(DriveSubsystem driveSubsystem, DoubleSupplier strafe, DoubleSupplier forward, DoubleSupplier turn, DoubleSupplier heading) {
         this.driveSubsystem = driveSubsystem;
         this.strafe = strafe;
         this.forward = forward;
         this.turn = turn;
+        this.heading = heading;
 
         //this will prevent the drive subsystem from being used by another command
         addRequirements(driveSubsystem);
@@ -47,6 +47,6 @@ public class DriveCommand extends CommandBase {
      */
     @Override
     public void execute() {
-        driveSubsystem.drive(strafe.getAsDouble(), -forward.getAsDouble(), -turn.getAsDouble());
+        driveSubsystem.drive(strafe.getAsDouble(), -forward.getAsDouble(), -turn.getAsDouble(), heading);
     }
 }

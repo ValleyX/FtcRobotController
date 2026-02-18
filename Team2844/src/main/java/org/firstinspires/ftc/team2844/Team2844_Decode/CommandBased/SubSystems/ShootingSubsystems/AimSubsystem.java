@@ -345,7 +345,7 @@ public class AimSubsystem extends SubsystemBase {
     }
 
     public double getTurretDegrees() {
-        return (((axonIn.getVoltage() / axonIn.getMaxVoltage()) * 360.0));
+        return getAxonValue();
                 //+ turnover*360)
                 // Constants.SERVO_DEGREE_TO_TURRET_DEGREE;
     }

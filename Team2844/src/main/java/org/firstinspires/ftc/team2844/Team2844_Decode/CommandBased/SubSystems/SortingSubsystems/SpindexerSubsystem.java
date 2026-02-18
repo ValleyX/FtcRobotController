@@ -84,9 +84,9 @@ public class SpindexerSubsystem extends SubsystemBase {
         if(0 <= desiredSlot && desiredSlot < Constants.SLOT_ARRAY.length) {
             pos = desiredSlot;
             spindexer.setPosition(Constants.SLOT_ARRAY[desiredSlot]);
-        } else if (desiredSlot > Constants.SLOT_ARRAY.length){
-            pos = Constants.SLOT_ARRAY.length;
-            spindexer.setPosition(Constants.SLOT_ARRAY[Constants.SLOT_ARRAY.length]);
+        } else if (desiredSlot >= Constants.SLOT_ARRAY.length){
+            pos = Constants.SLOT_ARRAY.length-1;
+            spindexer.setPosition(Constants.SLOT_ARRAY[Constants.SLOT_ARRAY.length-1]);
         } else {
             pos = 0;
             spindexer.setPosition(Constants.SLOT_ARRAY[0]);
@@ -94,11 +94,15 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public void runToShootSlot(int desiredSlot){
-        pos = desiredSlot;
-        if(desiredSlot != 0) {
-            spindexer.setPosition(Constants.SLOT_ARRAY[desiredSlot]);
-        } else {
+        if(0 <= desiredSlot && desiredSlot < Constants.SLOT_ARRAY.length) {
+            pos = desiredSlot;
             spindexer.setPosition(Constants.SLOT_ARRAY[desiredSlot] - 0.005);
+        } else if (desiredSlot >= Constants.SLOT_ARRAY.length){
+            pos = Constants.SLOT_ARRAY.length-1;
+            spindexer.setPosition(Constants.SLOT_ARRAY[Constants.SLOT_ARRAY.length-1] - 0.005);
+        } else {
+            pos = 0;
+            spindexer.setPosition(Constants.SLOT_ARRAY[0]);
         }
     }
 

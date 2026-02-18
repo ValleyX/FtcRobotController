@@ -208,7 +208,7 @@ public class Subsystems {
 
 //AUTO CONSTRUCTOR (DOESN'T USE MECDRIVE SO ROADRUNNER CAN USE MECANUM EXAMPLE)
 
-    public Subsystems(HardwareMap hardwareMap, int pipelineNum, boolean auto) {
+    public Subsystems(HardwareMap hardwareMap, int pipelineNum, Pose2d pose) {
         /* -------------- Hardware Maps -------------- */
 
         // ----- Shooter Motors ----- //
@@ -262,7 +262,7 @@ public class Subsystems {
          * 6. Aim */
 
 
-        mecDriveSubsystem = new DriveSubsystem(hardwareMap);
+        mecDriveSubsystem = new DriveSubsystem(hardwareMap, pose);
         //1. Intake subsystem
         intakeSubsystem = new IntakeSubsystem(intakeMotor, intakeBB);
         //2. Kick subsystem

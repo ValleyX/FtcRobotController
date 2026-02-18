@@ -21,6 +21,8 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Sh
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
 
+import java.util.function.DoubleSupplier;
+
 public class SmartLineShooterAutoCmd extends ParallelCommandGroup {
 
     boolean empty;
@@ -28,7 +30,7 @@ public class SmartLineShooterAutoCmd extends ParallelCommandGroup {
     public SmartLineShooterAutoCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem, DriveSubsystem driveSubsystem){
 
         empty = shooterFeedSubsystem.topBroken() && intakeSubsystem.ballInBeam();
-        double velocity = driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
+        DoubleSupplier velocity = () -> driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
         addCommands(
                 //At the same time, aim the turret
                 new FullAimToLLCmd(aimSubsystem, sensorSubsystem, driveSubsystem),

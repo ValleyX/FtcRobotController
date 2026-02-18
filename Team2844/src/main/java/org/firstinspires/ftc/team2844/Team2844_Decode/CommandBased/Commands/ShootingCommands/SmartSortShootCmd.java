@@ -20,9 +20,11 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
+import java.util.function.DoubleSupplier;
+
 public class SmartSortShootCmd extends SequentialCommandGroup {
     public SmartSortShootCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem, DriveSubsystem driveSubsystem){
-        double velocity = driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
+        DoubleSupplier velocity = () -> driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
         SlotCmd previousSlot = new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot() - 1);
 
         if(!previousSlot.isScheduled() && !spindexerSubsystem.ballInBayOne() && spindexerSubsystem.getSlot() != 0) {

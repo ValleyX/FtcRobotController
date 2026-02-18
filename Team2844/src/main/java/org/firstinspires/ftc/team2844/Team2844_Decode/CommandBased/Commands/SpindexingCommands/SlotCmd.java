@@ -29,7 +29,7 @@ public class SlotCmd extends CommandBase {
             this.desiredSlot = desiredSlot;
         } else if (0 > desiredSlot) {
             this.desiredSlot = 0;
-        } else if(desiredSlot > Constants.SLOT_ARRAY.length){
+        } else if(desiredSlot >= Constants.SLOT_ARRAY.length){
             this.desiredSlot = Constants.SLOT_ARRAY.length-1;
         }
     }

@@ -101,7 +101,7 @@ public class TeleOpBase extends CommandOpMode {
         //driveCmdTank = new DriveCmdTank(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightY);
             //Arcade Drive controls
         //driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightX);
-        mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX);
+        mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, subsystems.mecDriveSubsystem::getRobotHeadingRadians);
 
         runIntakeSortCmd = new IntakeSortCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
         stopIntakeCmd = new StopIntakeCmd(subsystems.intakeSubsystem);
@@ -247,6 +247,11 @@ public class TeleOpBase extends CommandOpMode {
             telemetry.addData("Ball in Bay One: ", subsystems.spindexerSubsystem.ballInBayOne());
             telemetry.addData("Ball in Bay Two: ", subsystems.spindexerSubsystem.ballInBayTwo());
             telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
+
+            telemetry.addData("Velocity", subsystems.shooterSubsystem.getVelocity());
+            telemetry.addData("In range: ", subsystems.shooterSubsystem.inRange());
+            telemetry.addData("Empty: ", subsystems.spindexerSubsystem.empty());
+            telemetry.addData("Full: ", subsystems.spindexerSubsystem.fullSpindexer());
             //telemetry.addData("Bay one alpha", subsystems.spindexerSubsystem.bayOneAlpha());
             //telemetry.addData("Bay two alpha", subsystems.spindexerSubsystem.bayTwoAlpha());
             //telemetry.addData("Bay Three alpha", subsystems.spindexerSubsystem.bayThreeAlpha());

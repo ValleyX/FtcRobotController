@@ -13,6 +13,9 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Consta
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.MecanumDrive;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 //import org.firstinspires.ftc.team2844.Team2844_Decode.RoadrunnerStuff.RoadrunnerQuickstart.MecanumDrive;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -24,9 +27,13 @@ public class DriveSubsystem extends SubsystemBase {
         //drive = new MecanumDrive(hardwareMap, new Pose2d(0.0, 0.0, 0.0));
     }
 
-    public void drive(double strafeSpeed, double forwardSpeed, double turnSpeed) {
+    public DriveSubsystem(HardwareMap hardwareMap, Pose2d pose){
+        drive = new MecanumDrive(hardwareMap, pose);
+    }
+
+    public void drive(double strafeSpeed, double forwardSpeed, double turnSpeed, DoubleSupplier heading) {
         drive.updatePoseEstimate();
-        double botHeading = getRobotHeadingRadians();
+        double botHeading = heading.getAsDouble();
         //botHeading = 0;
 
         //code for field centric (Idk how it works, pretty sure it's magic or makes triangles or something)
@@ -239,7 +246,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public double hoodLinReg(int pipeline){
         double distance = pinpointDistance(pipeline);
-        return distance;
+        return 0.0;
     }
 
 

@@ -55,6 +55,6 @@ public class FullAimToLLAutoCmd extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return finished;
+        return true;
     }
 }

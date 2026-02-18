@@ -18,7 +18,7 @@ public class NeutralShooterCmd extends ParallelCommandGroup {
 
     public NeutralShooterCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, AimSubsystem aimSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem){
         addCommands(
-                new VelocityShootCmd(shooterSubsystem, Constants.MIN_VELOCITY),
+                new VelocityShootCmd(shooterSubsystem, () -> Constants.MIN_VELOCITY),
                 new StopUptakeCmd(kickSubsystem),
                 new StopTransferCmd(shooterFeedSubsystem),
                 new StopIntakeCmd(intakeSubsystem),
