@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autos.AutoCo
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.RepeatCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.google.blocks.ftcrobotcontroller.runtime.BlocksOpMode;
 
@@ -26,155 +27,62 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
 public class SmartSortShootAutoCmd extends SequentialCommandGroup {
-    boolean ballInOne;
-    boolean ballInTwo;
-    boolean ballInThree;
-    boolean ballInTFeed;
-    boolean looped;
-    boolean feedBusy;
-    ShooterSubsystem shooterSubsystem;
-    ShooterFeedSubsystem shooterFeedSubsystem;
-    SensorSubsystem sensorSubsystem;
-    AimSubsystem aimSubsystem;
     SpindexerSubsystem spindexerSubsystem;
     KickSubsystem kickSubsystem;
-    IntakeSubsystem intakeSubsystem;
-    DriveSubsystem driveSubsystem;
-    Vector2d vector;
-    double heading;
-
+    ShooterFeedSubsystem shooterFeedSubsystem;
 
 
     public SmartSortShootAutoCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem, DriveSubsystem driveSubsystem, Vector2d vector, double heading) {
-        this.shooterSubsystem = shooterSubsystem;
-        this.shooterFeedSubsystem = shooterFeedSubsystem;
-        this.sensorSubsystem = sensorSubsystem;
-        this.aimSubsystem = aimSubsystem;
+        double velocity = driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
+
         this.spindexerSubsystem = spindexerSubsystem;
         this.kickSubsystem = kickSubsystem;
-        this.intakeSubsystem = intakeSubsystem;
-        this.driveSubsystem = driveSubsystem;
-        this.vector = vector;
-        this.heading = heading;
-    }
-
-    @Override
-    public void execute() {
-        double velocity = driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
-        ballInOne = spindexerSubsystem.ballInBayOne();
-        ballInTwo = spindexerSubsystem.ballInBayTwo();
-        ballInThree = spindexerSubsystem.ballInBayThree();
-        ballInTFeed = shooterFeedSubsystem.topBroken();
-        boolean sorted = spindexerSubsystem.getSortPos() == spindexerSubsystem.getSlot();
-        feedBusy = kickSubsystem.feedBusy();
+        this.shooterFeedSubsystem = shooterFeedSubsystem;
 
 
+        addCommands(
+                new ParallelCommandGroup(
+                        //At the same time, aim the turret
+                        new FullAimToLLCmd(aimSubsystem, sensorSubsystem, driveSubsystem),
 
-        if (!looped && !sorted) {
-            if (spindexerSubsystem.getSlot() == 0) {
-                addCommands(
-                        new ParallelCommandGroup(
-                                //At the same time, aim the turret
-                                new FullAimToLLCmd(aimSubsystem, sensorSubsystem, driveSubsystem),
+                        //Also set the velocity to the amount based on distance from apriltag
+                        new VelocityShootCmd(shooterSubsystem, velocity)
+                ),
 
-                                //Also set the velocity to the amount based on distance from apriltag
-                                new VelocityShootCmd(shooterSubsystem, velocity),
+                new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSortPos()),
 
-                                //go to the slot that sorts it
-                                new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSortPos())
-                        ),
-
-                        //if your at velocity, uptake and shoot, otherwise, don't
-                        new ConditionalCommand(
-                                new ParallelCommandGroup(
-                                        new TransferCmd(shooterFeedSubsystem),
-                                        new UptakeCmd(kickSubsystem),
-                                        new ActivateIntakeCmd(intakeSubsystem)
+                //if your at velocity, uptake and shoot, otherwise, don't
+                new RepeatCommand(
+                        new SequentialCommandGroup(
+                                new ConditionalCommand(
+                                        new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot()),
+                                        new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot() - 1),
+                                        () -> spindexerSubsystem.ballInBayOne() || kickSubsystem.feedBusy()
                                 ),
-                                new ParallelCommandGroup(
-                                        new StopTransferCmd(shooterFeedSubsystem),
-                                        new StopSpinCmd(kickSubsystem),
-                                        new StopIntakeCmd(intakeSubsystem)
-                                ),
-                                shooterSubsystem::inRange
+
+                                new ConditionalCommand(
+                                        new ParallelCommandGroup(
+                                                new TransferCmd(shooterFeedSubsystem),
+                                                new UptakeCmd(kickSubsystem),
+                                                new ActivateIntakeCmd(intakeSubsystem)
+                                        ),
+                                        new ParallelCommandGroup(
+                                                new StopTransferCmd(shooterFeedSubsystem),
+                                                new StopSpinCmd(kickSubsystem),
+                                                new StopIntakeCmd(intakeSubsystem)
+                                        ),
+                                        () -> shooterSubsystem.inRange(velocity)
+                                )
                         )
-                );
-                looped = true;
-            }
-        } else {
-            if (!feedBusy && !ballInOne && spindexerSubsystem.getSlot() != 0) {
-                addCommands(
-                        new ParallelCommandGroup(
-                                //At the same time, aim the turret
-                                new FullAimToLLAutoCmd(aimSubsystem, sensorSubsystem, driveSubsystem, vector, heading),
-
-                                //Also set the velocity to the amount based on distance from apriltag
-                                new VelocityShootCmd(shooterSubsystem, velocity),
-
-                                new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot())
-                        ),
-
-                        //if your at velocity, uptake and shoot, otherwise, don't
-                        new ConditionalCommand(
-                                new ParallelCommandGroup(
-                                        new TransferCmd(shooterFeedSubsystem),
-                                        new UptakeCmd(kickSubsystem),
-                                        new ActivateIntakeCmd(intakeSubsystem)
-                                ),
-                                new ParallelCommandGroup(
-                                        new StopTransferCmd(shooterFeedSubsystem),
-                                        new StopSpinCmd(kickSubsystem),
-                                        new StopIntakeCmd(intakeSubsystem)
-                                ),
-                                shooterSubsystem::inRange
-                        ),
-                        new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot() - 1)
-                );
-            } else {
-                addCommands(
-                        new ParallelCommandGroup(
-                                //At the same time, aim the turret
-                                new FullAimToLLCmd(aimSubsystem, sensorSubsystem, driveSubsystem),
-
-                                //Also set the velocity to the amount based on distance from apriltag
-                                new VelocityShootCmd(shooterSubsystem, velocity),
-
-                                //go to the slot that sorts it
-                                new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot())
-                        ),
-
-                        //if your at velocity, uptake and shoot, otherwise, don't
-                        new ConditionalCommand(
-                                new ParallelCommandGroup(
-                                        new TransferCmd(shooterFeedSubsystem),
-                                        new UptakeCmd(kickSubsystem),
-                                        new ActivateIntakeCmd(intakeSubsystem)
-                                ),
-                                new ParallelCommandGroup(
-                                        new StopTransferCmd(shooterFeedSubsystem),
-                                        new StopSpinCmd(kickSubsystem),
-                                        new StopIntakeCmd(intakeSubsystem)
-                                ),
-                                shooterSubsystem::inRange
-                        )
-                );
-            }
-        }
+                ).interruptOn(() -> spindexerSubsystem.empty() && !kickSubsystem.feedBusy() && !shooterFeedSubsystem.topBroken())
+        );
     }
 
-    @Override
-    public void initialize() {
-        looped = false;
-    }
 
     @Override
     public boolean isFinished() {
-        return !(ballInOne || ballInTwo || ballInThree || ballInTFeed || !feedBusy);
+        return !(spindexerSubsystem.empty() || shooterFeedSubsystem.topBroken() || !kickSubsystem.feedBusy());
     }
 
-    @Override
-    public void end(boolean interrupted) {
-        looped = false;
-    }
 }
 

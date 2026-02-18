@@ -39,13 +39,15 @@ public class FullAimToLLAutoCmd extends CommandBase {
         if(tx != Constants.NO_LL){
             if(!(Math.abs(tx) < Constants.TURRET_THRESHHOLD)) {
                 double pos = aimSubsystem.getTurretDegrees();
-                aimSubsystem.aimTurret(pos + tx);
+                //aimSubsystem.aimTurret(pos + tx);
+                aimSubsystem.aimTurret(90.0);
             } else {
                 finished = true;
             }
             aimSubsystem.aimHood(driveSubsystem.hoodLinReg(sensorSubsystem.getPipeline()));
         } else {
             //aimSubsystem.aimTurret(driveSubsystem.getPinpointTurretAngleAuto(vector.x, vector.y, heading, sensorSubsystem.getPipeline()));
+            aimSubsystem.aimTurret(90.0);
         }
 
     }
