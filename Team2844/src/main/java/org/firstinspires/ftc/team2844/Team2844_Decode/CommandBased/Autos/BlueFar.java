@@ -51,7 +51,6 @@ public class BlueFar extends CommandOpMode {
 
         moveToShoot2 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(-36.0, 48.0, Math.toRadians(0.0)))
                 .setReversed(true)
-                .setTangent(Math.toRadians(90.0))
                 .splineToLinearHeading(new Pose2d(-60.0, 15.0, Math.toRadians(45.0)), Math.toRadians(90.0));
 
 

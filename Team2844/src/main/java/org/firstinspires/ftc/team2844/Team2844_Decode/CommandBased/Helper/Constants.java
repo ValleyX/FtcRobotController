@@ -28,7 +28,7 @@ public class Constants {
     public static final double MAX_VOLTAGE = 3.06;
 
 
-    public static final double VELOCITY_THRESHHOLD = 250;
+    public static final double VELOCITY_THRESHHOLD = 350;
     public static final double MIN_VELOCITY = 1000;
 
 

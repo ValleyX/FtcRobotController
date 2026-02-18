@@ -44,7 +44,7 @@ public class SmartSortShootAutoCmd extends SequentialCommandGroup {
         ballInTFeed = shooterFeedSubsystem.topBroken();
         boolean sorted = spindexerSubsystem.getSortPos() == spindexerSubsystem.getSlot();
         if(sorted && spindexerSubsystem.getSlot() != 0) {
-            previousSlot = new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot() - 1);
+            previousSlot = new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot());
         } else {
             previousSlot = new SlotCmd(spindexerSubsystem, kickSubsystem, 0);
         }

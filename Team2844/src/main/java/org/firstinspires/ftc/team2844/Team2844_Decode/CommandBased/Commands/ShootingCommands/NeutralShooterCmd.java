@@ -25,4 +25,9 @@ public class NeutralShooterCmd extends ParallelCommandGroup {
                 new NeutralAim(aimSubsystem)
         );
     }
+
+    @Override
+    public boolean isFinished() {
+        return true;
+    }
 }
