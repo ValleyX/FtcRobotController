@@ -31,26 +31,46 @@ public class SmartSortShootAutoCmd extends SequentialCommandGroup {
     boolean ballInThree;
     boolean ballInTFeed;
     boolean looped;
+    boolean feedBusy;
+    ShooterSubsystem shooterSubsystem;
+    ShooterFeedSubsystem shooterFeedSubsystem;
+    SensorSubsystem sensorSubsystem;
+    AimSubsystem aimSubsystem;
+    SpindexerSubsystem spindexerSubsystem;
+    KickSubsystem kickSubsystem;
+    IntakeSubsystem intakeSubsystem;
+    DriveSubsystem driveSubsystem;
+    Vector2d vector;
+    double heading;
 
 
-    SlotCmd previousSlot;
 
     public SmartSortShootAutoCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem, DriveSubsystem driveSubsystem, Vector2d vector, double heading) {
+        this.shooterSubsystem = shooterSubsystem;
+        this.shooterFeedSubsystem = shooterFeedSubsystem;
+        this.sensorSubsystem = sensorSubsystem;
+        this.aimSubsystem = aimSubsystem;
+        this.spindexerSubsystem = spindexerSubsystem;
+        this.kickSubsystem = kickSubsystem;
+        this.intakeSubsystem = intakeSubsystem;
+        this.driveSubsystem = driveSubsystem;
+        this.vector = vector;
+        this.heading = heading;
+    }
 
+    @Override
+    public void execute() {
         double velocity = driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
         ballInOne = spindexerSubsystem.ballInBayOne();
         ballInTwo = spindexerSubsystem.ballInBayTwo();
         ballInThree = spindexerSubsystem.ballInBayThree();
         ballInTFeed = shooterFeedSubsystem.topBroken();
         boolean sorted = spindexerSubsystem.getSortPos() == spindexerSubsystem.getSlot();
-        if(sorted && spindexerSubsystem.getSlot() != 0) {
-            previousSlot = new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot());
-        } else {
-            previousSlot = new SlotCmd(spindexerSubsystem, kickSubsystem, 0);
-        }
+        feedBusy = kickSubsystem.feedBusy();
 
 
-        if (!sorted && !looped) {
+
+        if (!looped && !sorted) {
             if (spindexerSubsystem.getSlot() == 0) {
                 addCommands(
                         new ParallelCommandGroup(
@@ -79,9 +99,10 @@ public class SmartSortShootAutoCmd extends SequentialCommandGroup {
                                 shooterSubsystem::inRange
                         )
                 );
+                looped = true;
             }
         } else {
-            if (previousSlot.isFinished() && !ballInOne && spindexerSubsystem.getSlot() != 0) {
+            if (!feedBusy && !ballInOne && spindexerSubsystem.getSlot() != 0) {
                 addCommands(
                         new ParallelCommandGroup(
                                 //At the same time, aim the turret
@@ -90,7 +111,6 @@ public class SmartSortShootAutoCmd extends SequentialCommandGroup {
                                 //Also set the velocity to the amount based on distance from apriltag
                                 new VelocityShootCmd(shooterSubsystem, velocity),
 
-                                //go to the slot that sorts it
                                 new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot())
                         ),
 
@@ -108,7 +128,7 @@ public class SmartSortShootAutoCmd extends SequentialCommandGroup {
                                 ),
                                 shooterSubsystem::inRange
                         ),
-                        previousSlot
+                        new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot() - 1)
                 );
             } else {
                 addCommands(
@@ -149,7 +169,7 @@ public class SmartSortShootAutoCmd extends SequentialCommandGroup {
 
     @Override
     public boolean isFinished() {
-        return !(ballInOne || ballInTwo || ballInThree || ballInTFeed || !previousSlot.isScheduled());
+        return !(ballInOne || ballInTwo || ballInThree || ballInTFeed || !feedBusy);
     }
 
     @Override

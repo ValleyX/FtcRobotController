@@ -66,4 +66,8 @@ public class KickSubsystem extends SubsystemBase {
     public double getKickerRotate(){
         return kickerRotate.getPosition();
     }
+
+    public boolean feedBusy(){
+        return (sFeed.getPower() != 0.0) || (kickerSpin.getPower() != 0.0);
+    }
 }
