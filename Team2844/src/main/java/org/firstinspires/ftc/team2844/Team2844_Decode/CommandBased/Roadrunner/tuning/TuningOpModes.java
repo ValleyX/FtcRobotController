@@ -33,7 +33,6 @@ import com.acmerobotics.roadrunner.ftc.PinpointIMU;
 import com.acmerobotics.roadrunner.ftc.PinpointView;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
@@ -41,18 +40,12 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.MecanumDrive;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.OTOSLocalizer;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.PinpointLocalizer;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.TankDrive;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.ThreeDeadWheelLocalizer;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.TwoDeadWheelLocalizer;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-@Disabled
+
 public final class TuningOpModes {
     // TODO: change this to TankDrive.class if you're using tank
     public static final Class<?> DRIVE_CLASS = MecanumDrive.class;
@@ -72,11 +65,6 @@ public final class TuningOpModes {
 
     private static PinpointView makePinpointView(PinpointLocalizer pl) {
         return new PinpointView() {
-            @Override
-            public float getHeadingVelocity() { //added by Carter to fix error (we shouldn't be useing pinpointview)
-                return 0;
-            }
-
             GoBildaPinpointDriver.EncoderDirection parDirection = pl.initialParDirection;
             GoBildaPinpointDriver.EncoderDirection perpDirection = pl.initialPerpDirection;
 
@@ -95,6 +83,11 @@ public final class TuningOpModes {
                 return pl.driver.getEncoderY();
             }
 
+
+            @Override
+            public float getHeadingVelocity() {
+                return (float) pl.driver.getHeadingVelocity(UnnormalizedAngleUnit.RADIANS);
+            }
 
             public float getHeadingVelocity(UnnormalizedAngleUnit unit) {
                 return (float) pl.driver.getHeadingVelocity(unit);
@@ -187,7 +180,7 @@ public final class TuningOpModes {
                 }
 
                 return new DriveView(
-                    DriveType.MECANUM,
+                        DriveType.MECANUM,
                         MecanumDrive.PARAMS.inPerTick,
                         MecanumDrive.PARAMS.maxWheelVel,
                         MecanumDrive.PARAMS.minProfileAccel,

@@ -17,10 +17,11 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Roadrunner.Me
 
 public class DriveSubsystem extends SubsystemBase {
 
-    private MecanumDrive drive;
+    public MecanumDrive drive;
 
     public DriveSubsystem(HardwareMap hardwareMap){
-        drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, SavedVars.startingHeading + 2.0));
+        drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, SavedVars.startingHeading));
+        //drive = new MecanumDrive(hardwareMap, new Pose2d(0.0, 0.0, 0.0));
     }
 
     public void drive(double strafeSpeed, double forwardSpeed, double turnSpeed) {
@@ -46,11 +47,11 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public double getRobotHeading(){
-        return -Math.toDegrees(drive.getRobotHeading());
+        return Math.toDegrees(drive.localizer.getPose().heading.toDouble());
     }
 
     public double getRobotHeadingRadians(){
-        return (-drive.getRobotHeading());
+        return (drive.localizer.getPose().heading.toDouble());
     }
 
     public void resetIMU(){
@@ -66,11 +67,11 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public double getBotX(){
-        return drive.getRobotX();
+        return drive.localizer.getPose().position.x;
     }
 
     public double getBotY(){
-        return drive.getRobotY();
+        return drive.localizer.getPose().position.y;
     }
 
 

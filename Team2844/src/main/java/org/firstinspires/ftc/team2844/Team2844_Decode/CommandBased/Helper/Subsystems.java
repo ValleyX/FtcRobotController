@@ -130,27 +130,6 @@ public class Subsystems {
     public Subsystems(HardwareMap hardwareMap, int pipelineNum) {
         /* -------------- Hardware Maps -------------- */
 
-        // ----- Drive Motors ----- //
-        //Map HW motors to variables
-        frontLeft = new Motor(hardwareMap, Constants.CM0);
-        frontRight = new Motor(hardwareMap, Constants.CM3);
-        backLeft = new Motor(hardwareMap, Constants.CM1);
-        backRight = new Motor(hardwareMap, Constants.CM2);
-
-        frontLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-
-        backLeft.setInverted(false);
-        backRight.setInverted(false);
-
-        //Create motor group with Front as the leader
-        //leftMotorGroup = new MotorGroup(this.frontLeft,this.backLeft);
-        //rightMotorGroup = new MotorGroup(this.frontRight,this.backRight);
-
-//        rightMotorGroup.setInverted(true);
-
         // ----- Shooter Motors ----- //
         shooterLeft = new MotorEx(hardwareMap, Constants.EM3);
         shooterRight = new MotorEx(hardwareMap, Constants.EM2);
@@ -270,6 +249,10 @@ public class Subsystems {
         topBreak = hardwareMap.get(DigitalChannel.class, Constants.CDI0);
         axonIn = hardwareMap.get(AnalogInput.class, Constants.CAI2);
 
+
+        // ----- Limelight ----- //
+        limelight = hardwareMap.get(Limelight3A.class, Constants.LL);
+
         /* -------------- Subsystems -------------- */
         /* 1. intake
          * 2. Kick
@@ -278,6 +261,8 @@ public class Subsystems {
          * 5. ShooterFeed
          * 6. Aim */
 
+
+        mecDriveSubsystem = new DriveSubsystem(hardwareMap);
         //1. Intake subsystem
         intakeSubsystem = new IntakeSubsystem(intakeMotor, intakeBB);
         //2. Kick subsystem

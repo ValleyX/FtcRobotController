@@ -247,9 +247,9 @@ public class TeleOpBase extends CommandOpMode {
             telemetry.addData("Ball in Bay One: ", subsystems.spindexerSubsystem.ballInBayOne());
             telemetry.addData("Ball in Bay Two: ", subsystems.spindexerSubsystem.ballInBayTwo());
             telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
-//            telemetry.addData("Bay one alpha", subsystems.spindexerSubsystem.bayOneAlpha());
-//            telemetry.addData("Bay two alpha", subsystems.spindexerSubsystem.bayTwoAlpha());
-//            telemetry.addData("Bay Three alpha", subsystems.spindexerSubsystem.bayThreeAlpha());
+            //telemetry.addData("Bay one alpha", subsystems.spindexerSubsystem.bayOneAlpha());
+            //telemetry.addData("Bay two alpha", subsystems.spindexerSubsystem.bayTwoAlpha());
+            //telemetry.addData("Bay Three alpha", subsystems.spindexerSubsystem.bayThreeAlpha());
 
             if(isStopRequested()){
                 SavedVars.reset();

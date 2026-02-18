@@ -45,7 +45,7 @@ public class FullAimToLLAutoCmd extends CommandBase {
             }
             aimSubsystem.aimHood(driveSubsystem.hoodLinReg(sensorSubsystem.getPipeline()));
         } else {
-            aimSubsystem.aimTurret(driveSubsystem.getPinpointTurretAngleAuto(vector.x, vector.y, heading, sensorSubsystem.getPipeline()));
+            //aimSubsystem.aimTurret(driveSubsystem.getPinpointTurretAngleAuto(vector.x, vector.y, heading, sensorSubsystem.getPipeline()));
         }
 
     }

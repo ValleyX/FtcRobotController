@@ -50,7 +50,7 @@ public class Constants {
     public static final double[] SLOT_ARRAY = {SLOT_ZERO, SLOT_ONE, SLOT_TWO, SLOT_ZERO_LOOPED_ONE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE};
 
     public static final int MIN_COLOR_SUM = 900;
-    public static final int MIN_ALPHA = 200;
+    public static final int MIN_ALPHA = 300;
 
     public static final int PURPLE = 1;
     public static final int GREEN = 0;
@@ -81,8 +81,6 @@ public class Constants {
 
     //Pinpoint
     public static final double NO_PP = -999.0;
-    public static final double X_OFFSET = 4.75;
-    public static final double Y_OFFSET = 5.5;
 
     //Control Hub Ports
         //Motor Ports
@@ -107,8 +105,8 @@ public class Constants {
     public static final String CS5 = "spindexer";
 
         //I2C Busses
-    public static final String CBUS0 = "pinpoint";
-    public static final String CBUS1 = "turretIMU";
+    public static final String CBUS0 = "imu";
+    public static final String CBUS1 = "pinpoint";
     public static final String CBUS2 = "color1Bay1";
     public static final String CBUS3 = "color2Bay1";
 
@@ -164,7 +162,7 @@ public class Constants {
 
     public static final double BOT_WIDTH = 17.0;
     public static final double BOT_LENGTH = 17.75;
-    public static final double STRAFE_CORRECTION = 1.0;
+    public static final double STRAFE_CORRECTION = 1.35;
 
 
 

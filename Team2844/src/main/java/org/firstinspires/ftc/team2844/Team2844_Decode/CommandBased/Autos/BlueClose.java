@@ -82,7 +82,7 @@ public class BlueClose extends CommandOpMode {
 
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                     subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, new Vector2d(drive.getRobotX(), drive.getRobotY()), drive.getRobotHeading())),
+                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, new Vector2d(subsystems.mecDriveSubsystem.getBotX(), subsystems.mecDriveSubsystem.getBotY()), subsystems.mecDriveSubsystem.getRobotHeading())),
                 new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 
@@ -97,7 +97,7 @@ public class BlueClose extends CommandOpMode {
                 new CommandAction(new StopIntakeCmd(subsystems.intakeSubsystem)),
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                        subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, new Vector2d(drive.getRobotX(), drive.getRobotY()), drive.getRobotHeading())),
+                        subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, new Vector2d(subsystems.mecDriveSubsystem.getBotX(), subsystems.mecDriveSubsystem.getBotY()), subsystems.mecDriveSubsystem.getRobotHeading())),
                 new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 
@@ -110,7 +110,7 @@ public class BlueClose extends CommandOpMode {
 
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                        subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, new Vector2d(drive.getRobotX(), drive.getRobotY()), drive.getRobotHeading())),
+                        subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, new Vector2d(subsystems.mecDriveSubsystem.getBotX(), subsystems.mecDriveSubsystem.getBotY()), subsystems.mecDriveSubsystem.getRobotHeading())),
                 new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 
@@ -119,8 +119,8 @@ public class BlueClose extends CommandOpMode {
 
 
 
-        SavedVars.startingY = drive.getRobotY();
-        SavedVars.startingX = drive.getRobotX();
-        SavedVars.startingHeading = drive.getRobotHeading();
+        SavedVars.startingY = subsystems.mecDriveSubsystem.getBotY();
+        SavedVars.startingX = subsystems.mecDriveSubsystem.getBotX();
+        SavedVars.startingHeading = subsystems.mecDriveSubsystem.getRobotHeading();
     }
 }
