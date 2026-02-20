@@ -64,6 +64,9 @@ public class BlueFarAuto extends LinearOpMode {
 
     private void shoot(ShooterHardware shooterHardware, LimelightHardware limelightHardware){
         //int count = 0;
+        //move ghetto arm away from ball to shoot
+        shooterHardware.stopBallRelease();//jae
+
         while (shooterHardware.oneBall() && opModeIsActive()) {
             double shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
             if(limelightHardware.getTx() != -999){
@@ -87,5 +90,8 @@ public class BlueFarAuto extends LinearOpMode {
         shooterHardware.setShootVelocity(0.0);
         shooterHardware.aimHood(0.0);
         shooterHardware.stopFeed();
+
+        //move ghetto arm back on top of ball to shoot
+        shooterHardware.stopBallHold();//jae
     }
 }

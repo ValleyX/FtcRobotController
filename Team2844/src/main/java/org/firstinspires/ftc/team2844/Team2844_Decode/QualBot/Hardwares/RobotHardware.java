@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -43,6 +44,7 @@ public class RobotHardware {
     public final double SLOW_THRESH = 15;
     public final double PGAIN = 0.04;
 
+    public VoltageSensor batteryVoltSensor; //JAE
 
 
     public RobotHardware(LinearOpMode opMode) {
@@ -61,6 +63,10 @@ public class RobotHardware {
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        //add by jae
+        batteryVoltSensor = opMode_.hardwareMap.voltageSensor.iterator().next();
+
 
         //IMU
         imu = opMode_.hardwareMap.get(IMU.class, "imu");
