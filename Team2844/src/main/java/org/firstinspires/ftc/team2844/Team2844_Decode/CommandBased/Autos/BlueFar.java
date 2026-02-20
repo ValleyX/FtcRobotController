@@ -7,21 +7,16 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.arcrobotics.ftclib.command.CommandBase;
-import com.arcrobotics.ftclib.command.CommandOpMode;
-import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autos.AutoCommands.CommandAction;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autos.AutoCommands.CommandGroupAction;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autos.AutoCommands.IntakeSortAutoCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autos.AutoCommands.SmartLineShooterAutoCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autos.AutoCommands.SmartSortShootAutoCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autos.AutoCommands.SavePosCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.NeutralShooterCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Subsystems;
@@ -45,15 +40,15 @@ public class BlueFar extends LinearOpMode {
     Action shootLoop;
     Action intake;
     Action neutralShoot;
+    Action save;
 
     public void initialize() {
-        initialPose = new Pose2d(-72 + (Constants.BOT_LENGTH/2.0),Constants.BOT_WIDTH/2.0, Math.toRadians(0.0));
+        initialPose = new Pose2d(-72 + (Constants.BOT_LENGTH / 2.0), Constants.BOT_WIDTH / 2.0, Math.toRadians(0.0));
         subsystems = new Subsystems(hardwareMap, Constants.BLUE_PIPELINE_MOTIF, initialPose);
         // instantiate MecanumDrive at a particular pose.
 
 
-
-        pickup1 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(-72 + (Constants.BOT_LENGTH/2.0), Constants.BOT_WIDTH/2.0, Math.toRadians(0.0)))
+        pickup1 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(-72 + (Constants.BOT_LENGTH / 2.0), Constants.BOT_WIDTH / 2.0, Math.toRadians(0.0)))
                 .setTangent(Math.toRadians(90.0))
                 .splineToLinearHeading(new Pose2d(-36.0, 48.0, Math.toRadians(0.0)), Math.toRadians(0.0));
 
@@ -66,11 +61,11 @@ public class BlueFar extends LinearOpMode {
         pickup2 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(-60.0, 15.0, Math.toRadians(45.0)))
                 .setReversed(false)
                 .setTangent(Math.toRadians(90.0))
-                .splineToLinearHeading(new Pose2d(-72 + (Constants.BOT_WIDTH/2.0), 72 - (Constants.BOT_LENGTH/2.0), Math.toRadians(90.0)), Math.toRadians(0.0));
+                .splineToLinearHeading(new Pose2d(-72 + (Constants.BOT_WIDTH / 2.0), 72 - (Constants.BOT_LENGTH / 2.0), Math.toRadians(90.0)), Math.toRadians(0.0));
 
-        moveToShoot3 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(-72 + (Constants.BOT_WIDTH/2.0), 72 - (Constants.BOT_LENGTH/2.0), Math.toRadians(90.0)))
+        moveToShoot3 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(-72 + (Constants.BOT_WIDTH / 2.0), 72 - (Constants.BOT_LENGTH / 2.0), Math.toRadians(90.0)))
                 .setReversed(true)
-                .splineToConstantHeading(new Vector2d(-72 + (Constants.BOT_WIDTH/2.0), 20.0), Math.toRadians(90.0));
+                .splineToConstantHeading(new Vector2d(-72 + (Constants.BOT_WIDTH / 2.0), 20.0), Math.toRadians(90.0));
 
         shootLoop = new CommandGroupAction(new SmartLineShooterAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                 subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
@@ -81,20 +76,22 @@ public class BlueFar extends LinearOpMode {
 
         neutralShoot = new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                 subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
+
+        save = new CommandAction(new SavePosCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem));
     }
 
 
     @Override
-    public void runOpMode(){
+    public void runOpMode() {
         initialize();
-        while(!isStopRequested() && opModeInInit()){
+        while (!isStopRequested() && opModeInInit()) {
             List<LLResultTypes.FiducialResult> fiducials = subsystems.sensorSubsystem.getLatestResult().getFiducialResults();
-            for (int i = 0; i < fiducials.size(); i++){
-                if(fiducials.get(i).getFiducialId() == 21){
+            for (int i = 0; i < fiducials.size(); i++) {
+                if (fiducials.get(i).getFiducialId() == 21) {
                     subsystems.sensorSubsystem.setPattern(Constants.PATTERN_GPP);
-                } else if (fiducials.get(i).getFiducialId() == 22){
+                } else if (fiducials.get(i).getFiducialId() == 22) {
                     subsystems.sensorSubsystem.setPattern(Constants.PATTERN_PGP);
-                } else if (fiducials.get(i).getFiducialId() == 23){
+                } else if (fiducials.get(i).getFiducialId() == 23) {
                     subsystems.sensorSubsystem.setPattern(Constants.PATTERN_PPG);
                 }
             }
@@ -107,68 +104,71 @@ public class BlueFar extends LinearOpMode {
         if (isStopRequested()) return;
         subsystems.sensorSubsystem.setPipeline(Constants.BLUE_PIPELINE);
 
-        Actions.runBlocking(new SequentialAction(
-                /*new CommandAction(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 0)),*/
-
-                shootLoop,
-                neutralShoot,
-
+        Actions.runBlocking(
                 new ParallelAction(
-                        intake,
-                        pickup1.build()
-                ),
+                        new SequentialAction(
+                                /*new CommandAction(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 0)),*/
 
-                moveToShoot2.build(),
+                                shootLoop,
+                                neutralShoot,
 
-                shootLoop,
-                neutralShoot,
+                                new ParallelAction(
+                                        intake,
+                                        pickup1.build()
+                                ),
 
-                new ParallelAction(
-                        intake,
-                        pickup2.build()
-                ),
+                                moveToShoot2.build(),
 
-                moveToShoot3.build(),
+                                shootLoop,
+                                neutralShoot,
 
-                shootLoop,
-                neutralShoot,
+                                new ParallelAction(
+                                        intake,
+                                        pickup2.build()
+                                ),
 
-                new ParallelAction(
-                        intake,
-                        pickup2.build()
-                ),
+                                moveToShoot3.build(),
 
-                moveToShoot3.build(),
+                                shootLoop,
+                                neutralShoot,
 
-                shootLoop,
-                neutralShoot,
+                                new ParallelAction(
+                                        intake,
+                                        pickup2.build()
+                                ),
 
-                new ParallelAction(
-                        intake,
-                        pickup2.build()
-                ),
+                                moveToShoot3.build(),
 
-                moveToShoot3.build(),
+                                shootLoop,
+                                neutralShoot,
 
-                shootLoop,
-                neutralShoot,
+                                new ParallelAction(
+                                        intake,
+                                        pickup2.build()
+                                ),
 
-                new ParallelAction(
-                        intake,
-                        pickup2.build()
-                ),
+                                moveToShoot3.build(),
 
-                moveToShoot3.build(),
+                                shootLoop,
+                                neutralShoot,
 
-                shootLoop,
-                neutralShoot,
+                                new ParallelAction(
+                                        intake,
+                                        pickup2.build()
+                                ),
 
-                new ParallelAction(
-                        intake,
-                        pickup2.build()
-                )
-        ));
+                                moveToShoot3.build(),
 
+                                shootLoop,
+                                neutralShoot,
+
+                                new ParallelAction(
+                                        intake,
+                                        pickup2.build()
+                                )
+                        ),
+                        save
+                ));
 
 
         SavedVars.startingY = subsystems.mecDriveSubsystem.getBotY();
