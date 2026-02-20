@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.TurnConstraints;
@@ -15,6 +16,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Autos.Actions.IntakeAction;
+import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Autos.Actions.ShootAction;
+import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Autos.Actions.StopIntakeAction;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.ShooterHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.MecanumDrive;
@@ -92,45 +96,41 @@ public class BlueCloseAuto extends LinearOpMode {
 
         TrajectoryActionBuilder backUpToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-12, 45), Math.PI/2))
                 .lineToY(35, lastSpeed)
-                .strafeToLinearHeading(new Vector2d(36, 20), (Math.PI/3.5), lastSpeed, new ProfileAccelConstraint(-35, 35));
+                .strafeToLinearHeading(new Vector2d(24, 24), (Math.toRadians(45)), lastSpeed, new ProfileAccelConstraint(-35, 35));
 
         TrajectoryActionBuilder backUp2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-12, 45), Math.PI/2))
-                .lineToY(40, baseSpeed, backUpAccelConstraint)
+                .lineToY(43, baseSpeed, backUpAccelConstraint)
                 .turn(Math.toRadians(-15), shakeConstraints)
                 .turn(Math.toRadians(30), shakeConstraints);
 
-        TrajectoryActionBuilder moveToShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-12, 45), (Math.PI/2)+Math.toRadians(15)))
-                .splineToSplineHeading(new Pose2d(36, 20, (Math.PI/3.5)), 0, lastSpeed, new ProfileAccelConstraint(-25, 25));
+        TrajectoryActionBuilder moveToShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-12, 43), (Math.PI/2)))
+                .splineToSplineHeading(new Pose2d(24, 24, Math.toRadians(45)), 0, lastSpeed, new ProfileAccelConstraint(-25, 25));
+
+        TrajectoryActionBuilder moveOut = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, 24), Math.toRadians(55)))
+                .setTangent(Math.toRadians(180.0))
+                .splineToLinearHeading(new Pose2d(0, 48, Math.toRadians(-90.0)), Math.toRadians(180.0));
 
 
         //start of moving
-        shooterHardware.setShootPower(0.2);
-        Actions.runBlocking(moveToShoot1.build());
-
-        shoot(shooterHardware, limelightHardware);
-
-        shooterHardware.closeServo();
-        if(highVoltage){
-            shooterHardware.intake(.9);
-            shooterHardware.setShootPower(-0.35);
-        } else {
-            shooterHardware.intake(1);
-            shooterHardware.setShootPower(-.25);
-        }
-        Actions.runBlocking(pickupBalls1.build());
+        shooterHardware.setShootVelocity(20.0);
+        Actions.runBlocking(new SequentialAction(
+                moveToShoot1.build(),
+                new ShootAction(shooterHardware, limelightHardware, this),
+                new IntakeAction(shooterHardware),
+                pickupBalls1.build()
+        ));
 
 
         if(shooterHardware.threeBall()){
             shooterHardware.intake(0);
-            shooterHardware.setShootPower(0.2);
+            shooterHardware.setShootVelocity(20.0);
             Actions.runBlocking(backUpToShoot1.build());
         } else {
             skip = true;
-            Actions.runBlocking(backUp1.build());
-            shooterHardware.stopFeed();
-            highVoltage = hardwareMap.voltageSensor.get("Control Hub").getVoltage() > 13.0;
-            shooterHardware.setShootPower(0.2);
-            Actions.runBlocking(moveToShoot2.build());
+            Actions.runBlocking(new SequentialAction(
+                    backUp1.build(),
+                    moveToShoot2.build()
+            ));
         }
 
         shooterHardware.stopFeed();
@@ -141,42 +141,39 @@ public class BlueCloseAuto extends LinearOpMode {
             Actions.runBlocking(rotateShoot2.build());
         }
 
-        shoot(shooterHardware, limelightHardware);
+        Actions.runBlocking(new SequentialAction(
+                new ShootAction(shooterHardware, limelightHardware, this),
+                new IntakeAction(shooterHardware),
+                pickupBalls2.build()
+        ));
 
-        shooterHardware.closeServo();
-        if(highVoltage){
-            shooterHardware.intake(.8);
-            shooterHardware.setShootPower(-0.35);
-        } else {
-            shooterHardware.intake(1);
-            shooterHardware.setShootPower(-.25);
-        }
-
-        Actions.runBlocking(pickupBalls2.build());
 
         if(shooterHardware.threeBall() || skip){
-            shooterHardware.setShootPower(0.2);
-            Actions.runBlocking(backUpToShoot2.build());
-            shooterHardware.intake(0);
+            shooterHardware.setShootVelocity(20.0);
+            Actions.runBlocking(new SequentialAction(
+                    backUpToShoot2.build(),
+                    new StopIntakeAction(shooterHardware)
+            ));
         } else {
-            Actions.runBlocking(backUp2.build());
-
-            shooterHardware.stopFeed();
-            highVoltage = hardwareMap.voltageSensor.get("Control Hub").getVoltage() > 13.0;
-            shooterHardware.setShootPower(0.2);
-
-            Actions.runBlocking(moveToShoot3.build());
+            Actions.runBlocking(new SequentialAction(
+                    backUp2.build(),
+                    moveToShoot3.build()
+            ));
         }
 
         shooterHardware.stopFeed();
-        shooterHardware.setShootPower(0.2);
+        shooterHardware.setShootVelocity(20.0);
 
         if(limelightHardware.getTx() != -999){
-            TrajectoryActionBuilder rotateShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(36, 20), (Math.PI/3.5)))
+            TrajectoryActionBuilder rotateShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, 24), Math.toRadians(55)))
                     .turn(Math.toRadians(-limelightHardware.getTx()));
             Actions.runBlocking(rotateShoot3.build());
         }
-        shoot(shooterHardware, limelightHardware);
+
+        Actions.runBlocking( new SequentialAction(
+                new ShootAction(shooterHardware, limelightHardware, this)//,
+                //moveOut.build()
+        ));
 
     }
 
@@ -203,7 +200,7 @@ public class BlueCloseAuto extends LinearOpMode {
         shooterHardware.setShootPower(shooterHardware.getShootPowerLINREG(shooterVelocity));
         shooterHardware.feed();
         sleep(BUFFER_TIME);
-        shooterHardware.setShootVelocity(0.0);
+        shooterHardware.setShootVelocity(20.0);
         shooterHardware.aimHood(0.0);
         shooterHardware.stopFeed();
 

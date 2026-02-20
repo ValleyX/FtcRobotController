@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Autos;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Autos.Actions.ShootAction;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.ShooterHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.MecanumDrive;
@@ -44,6 +46,7 @@ public class BlueFarAutoThreeBall extends LinearOpMode {
                 .turnTo(Math.toRadians(-90.0));
 
 
+        shooterHardware.setShootVelocity(20.0);
         //start of moving
         Actions.runBlocking(moveToShoot1.build());
 
@@ -54,9 +57,10 @@ public class BlueFarAutoThreeBall extends LinearOpMode {
             Actions.runBlocking(rotateShoot1.build());
         }
 
-        shoot(shooterHardware, limelightHardware);
-
-        Actions.runBlocking(moveOut.build());
+        Actions.runBlocking( new SequentialAction(
+                new ShootAction(shooterHardware, limelightHardware, this),
+                moveOut.build()
+        ));
 
     }
 
@@ -85,7 +89,7 @@ public class BlueFarAutoThreeBall extends LinearOpMode {
         }
         shooterHardware.feed();
         sleep(BUFFER_TIME);
-        shooterHardware.setShootVelocity(0.0);
+        shooterHardware.setShootVelocity(20.0);
         shooterHardware.aimHood(0.0);
         shooterHardware.stopFeed();
 
