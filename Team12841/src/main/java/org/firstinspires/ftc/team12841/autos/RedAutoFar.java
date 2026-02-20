@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.team12841.autos;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -16,15 +18,17 @@ public class RedAutoFar extends OpMode {
     private Follower follower;
     private RobotHardware robot;
     private Timer pathTimer;
+    private Timer pauseTimer;
 
     private int state = 0;
 
-    // ---------------- DRIVE SPEEDS ----------------
-    private static final double NORMAL_DRIVE_POWER = 0.8;
-    private static final double INTAKE_DRIVE_POWER = 0.45;
+    private static final double NORMAL_DRIVE_POWER = 0.7;
+    private static final double INTAKE_DRIVE_POWER = 0.8;
+    private static final double WIGGLE_PAUSE = 1;
 
     // ---------------- PATHS ----------------
     private PathChain START_TO_SHOOT;
+
     private PathChain SHOOT_TO_ALIGN1;
     private PathChain ALIGN1_TO_INTAKE1;
     private PathChain INTAKE1_TO_SHOOT;
@@ -33,18 +37,13 @@ public class RedAutoFar extends OpMode {
     private PathChain ALIGN2_TO_INTAKE2;
     private PathChain INTAKE2_TO_SHOOT;
 
-    private PathChain SHOOT_TO_ALIGN3;
-    private PathChain ALIGN3_TO_INTAKE3;
-    private PathChain INTAKE3_TO_SHOOT_FAR;
+    private PathChain SHOOT_TO_PARK;
 
-    private PathChain SHOOT_FAR_TO_PARK;
-
-    // ---------------- INTAKE STATE ----------------
     private boolean runIntake = false;
     private boolean intakeCaptured = false;
-
     private boolean aligning = false;
-    // ---------------- FLICK CONTROL ----------------
+
+    // ---------------- CONTROL ----------------
 
     private void shootFlick(double power) {
         if (!runIntake) {
@@ -57,29 +56,22 @@ public class RedAutoFar extends OpMode {
         robot.flick.setPower(power);
     }
 
-    // ---------------- INTAKE LOGIC ----------------
+    private void align() {
+        robot.alignWithLimelight(-1);
+    }
 
     private void runIntakeForward() {
-        boolean beamNotBroken = robot.isBroken(); // ACTIVE LOW SENSOR
-        boolean beamBroken = !beamNotBroken;
-
+        boolean beamBroken = !robot.isBroken();
         robot.intake.setPower(1);
 
         if (!intakeCaptured) {
             if (!beamBroken) {
-                intakeFlick(-1); // pull note in
+                intakeFlick(-1);
             } else {
                 intakeCaptured = true;
-                intakeFlick(0);  // latch stop
+                intakeFlick(0);
             }
-        } else {
-            intakeFlick(0);
         }
-    }
-
-    private void align()
-    {
-        robot.alignWithLimelight(-1);
     }
 
     private void stopIntake() {
@@ -88,22 +80,31 @@ public class RedAutoFar extends OpMode {
         intakeFlick(0);
     }
 
-    // ---------------- INIT ----------------
+    private void wiggleLeft() {
+        follower.turn(Math.toRadians(10), true);
+    }
 
     @Override
     public void init() {
         robot = new RobotHardware(this);
         follower = robot.getFollower();
         pathTimer = new Timer();
+        pauseTimer = new Timer();
+
         robot.limelight.pipelineSwitch(2);
 
         Pose startPose = new Pose(0, 0, 0);
-        Pose shootPreloadPose = new Pose(1, 0.2376, 0.3391);
+        Pose shootPreloadPose = new Pose(9.6771, 3.4543, -0.3651);
 
-        Pose alignIntake1 = new Pose(2, 10.5327, 1.6138);
-        Pose intake1Pose = new Pose(32.8957, 47.8226, 1.5692);
-        Pose shoot1Pose = new Pose(99, 9.1076, 0.3531);
-        Pose parkPose = new Pose(30.04086, -7.5512, -1.5033);
+        Pose alignIntake1 = new Pose(31.0451, -5.3002, -1.6138);
+        Pose intake1Pose = new Pose(35.7305, -44.3417, -1.6798);
+        Pose shoot1Pose = new Pose(9, -2.5734, -0.3018);
+
+        Pose alignIntake2 = new Pose(35, -45, -Math.PI);
+        Pose intake2Pose = new Pose(9, -45, -Math.PI);
+        Pose shoot2Pose = new Pose(15, -12, -0.3651);
+
+        Pose parkPose = new Pose(30.2975, -15, -1.6033);
 
         follower.setStartingPose(startPose);
 
@@ -127,7 +128,7 @@ public class RedAutoFar extends OpMode {
                 .setLinearHeadingInterpolation(intake1Pose.getHeading(), shoot1Pose.getHeading())
                 .build();
 
-        /*SHOOT_TO_ALIGN2 = follower.pathBuilder()
+        SHOOT_TO_ALIGN2 = follower.pathBuilder()
                 .addPath(new BezierLine(shoot1Pose, alignIntake2))
                 .setLinearHeadingInterpolation(shoot1Pose.getHeading(), alignIntake2.getHeading())
                 .build();
@@ -142,24 +143,9 @@ public class RedAutoFar extends OpMode {
                 .setLinearHeadingInterpolation(intake2Pose.getHeading(), shoot2Pose.getHeading())
                 .build();
 
-        SHOOT_TO_ALIGN3 = follower.pathBuilder()
-                .addPath(new BezierLine(shoot2Pose, alignIntake3))
-                .setLinearHeadingInterpolation(shoot2Pose.getHeading(), alignIntake3.getHeading())
-                .build();
-
-        ALIGN3_TO_INTAKE3 = follower.pathBuilder()
-                .addPath(new BezierLine(alignIntake3, intake3Pose))
-                .setLinearHeadingInterpolation(alignIntake3.getHeading(), intake3Pose.getHeading())
-                .build();
-
-        INTAKE3_TO_SHOOT_FAR = follower.pathBuilder()
-                .addPath(new BezierLine(intake3Pose, shootFarPose))
-                .setLinearHeadingInterpolation(intake3Pose.getHeading(), shootFarPose.getHeading())
-                .build();*/
-
-        SHOOT_FAR_TO_PARK = follower.pathBuilder()
-                .addPath(new BezierLine(shoot1Pose, parkPose))
-                .setLinearHeadingInterpolation(shoot1Pose.getHeading(), parkPose.getHeading())
+        SHOOT_TO_PARK = follower.pathBuilder()
+                .addPath(new BezierLine(shoot2Pose, parkPose))
+                .setLinearHeadingInterpolation(shoot2Pose.getHeading(), parkPose.getHeading())
                 .build();
     }
 
@@ -177,9 +163,8 @@ public class RedAutoFar extends OpMode {
 
             case 0:
                 follower.setMaxPower(NORMAL_DRIVE_POWER);
-                robot.setShooterRPM(robot.calculateRegression(robot.getDistance()));
+                robot.setShooterRPM(robot.calculateRegression());
                 follower.followPath(START_TO_SHOOT);
-                pathTimer.resetTimer();
                 state++;
                 break;
 
@@ -192,12 +177,16 @@ public class RedAutoFar extends OpMode {
                 break;
 
             case 2:
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) shootFlick(-1);
-                if (pathTimer.getElapsedTimeSeconds() > 3) {
-                    aligning = false;
+                if (pathTimer.getElapsedTimeSeconds() > 2.5)
+                {
+                    stopIntake();
+                    shootFlick(-1);
+                }
+                if (pathTimer.getElapsedTimeSeconds() > 4) {
                     shootFlick(0);
-                    intakeCaptured = false;
+                    aligning = false;
                     follower.followPath(SHOOT_TO_ALIGN1);
+                    intakeCaptured = false;
                     state++;
                 }
                 break;
@@ -214,116 +203,98 @@ public class RedAutoFar extends OpMode {
 
             case 4:
                 if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
-                    stopIntake();
+                    wiggleLeft();
+                    pauseTimer.resetTimer();
+                    state++;
+                }
+                break;
+
+            case 5:
+                if (pauseTimer.getElapsedTimeSeconds() > WIGGLE_PAUSE) {
                     follower.setMaxPower(NORMAL_DRIVE_POWER);
                     follower.followPath(INTAKE1_TO_SHOOT);
                     state++;
                 }
                 break;
 
-            case 5:
+            case 6:
                 if (!follower.isBusy()) {
-                    robot.setShooterRPM(robot.calculateRegression(robot.getDistance()));
                     aligning = true;
                     pathTimer.resetTimer();
                     state++;
                 }
                 break;
 
-            case 6:
-                if (pathTimer.getElapsedTimeSeconds() > 0.8) shootFlick(-1);
-                if (pathTimer.getElapsedTimeSeconds() > 1.8) {
+            case 7:
+                if (pathTimer.getElapsedTimeSeconds() > 2)
+                {
+                    stopIntake();
+                    shootFlick(-1);
+                }
+                if (pathTimer.getElapsedTimeSeconds() > 4) {
                     shootFlick(0);
                     aligning = false;
+                    follower.followPath(SHOOT_TO_ALIGN2);
                     intakeCaptured = false;
-                    follower.followPath(SHOOT_FAR_TO_PARK);
-                    state++;
-                }
-                break;
-
-           /* case 7:
-                runIntake = true;
-                follower.setMaxPower(INTAKE_DRIVE_POWER);
-                if (!follower.isBusy()) {
-                    follower.followPath(ALIGN2_TO_INTAKE2);
                     state++;
                 }
                 break;
 
             case 8:
+                runIntake = true;
                 if (!follower.isBusy()) {
-                    stopIntake();
-                    follower.setMaxPower(NORMAL_DRIVE_POWER);
-                    follower.followPath(INTAKE2_TO_SHOOT);
+                    follower.setMaxPower(INTAKE_DRIVE_POWER);
+                    follower.followPath(ALIGN2_TO_INTAKE2);
+                    pathTimer.resetTimer();
                     state++;
                 }
                 break;
 
             case 9:
-                if (!follower.isBusy()) {
-                    robot.shooter.setVelocity(2200);
-                    robot.alignWithLimelight(-1);
-                    pathTimer.resetTimer();
+                if (!follower.isBusy() || pathTimer.getElapsedTimeSeconds() > 1.5) {
+                    pauseTimer.resetTimer();
                     state++;
                 }
                 break;
 
             case 10:
-                if (pathTimer.getElapsedTimeSeconds() > 0.8) shootFlick(-1);
-                if (pathTimer.getElapsedTimeSeconds() > 1.8) {
-                    shootFlick(0);
-                    intakeCaptured = false;
-                    follower.followPath(SHOOT_TO_ALIGN3);
+                    follower.setMaxPower(NORMAL_DRIVE_POWER);
+                    follower.followPath(INTAKE2_TO_SHOOT);
                     state++;
-                }
                 break;
 
             case 11:
-                runIntake = true;
-                follower.setMaxPower(INTAKE_DRIVE_POWER);
                 if (!follower.isBusy()) {
-                    follower.followPath(ALIGN3_TO_INTAKE3);
-                    state++;
-                }
-                break;
-
-            case 12:
-                if (!follower.isBusy()) {
-                    stopIntake();
-                    follower.setMaxPower(NORMAL_DRIVE_POWER);
-                    follower.followPath(INTAKE3_TO_SHOOT_FAR);
-                    state++;
-                }
-                break;*/
-
-            /*case 7: //13
-                if (!follower.isBusy()) {
-                    robot.shooter.setVelocity(3700);
-                    robot.alignWithLimelight(-1);
+                    aligning = true;
                     pathTimer.resetTimer();
                     state++;
                 }
                 break;
 
-            case 8: //14
-                if (pathTimer.getElapsedTimeSeconds() > 1) shootFlick(-1);
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+            case 12:
+                if (pathTimer.getElapsedTimeSeconds() > 2)
+                {
+                    stopIntake();
+                    shootFlick(-1);
+                }
+                if (pathTimer.getElapsedTimeSeconds() > 4) {
                     shootFlick(0);
-                    follower.followPath(SHOOT_FAR_TO_PARK);
+                    aligning = false;
+                    follower.followPath(SHOOT_TO_PARK);
                     state++;
                 }
-                break;*/
+                break;
 
             default:
                 stopIntake();
                 robot.shooter.setVelocity(0);
                 break;
         }
-        telemetry.addData("RPM", robot.shooter.getVelocity());
-        telemetry.update();
 
         if (aligning) align();
-
         if (runIntake) runIntakeForward();
+
+        telemetry.addData("State", state);
+        telemetry.update();
     }
 }

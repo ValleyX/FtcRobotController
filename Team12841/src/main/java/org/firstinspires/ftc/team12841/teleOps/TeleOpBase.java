@@ -1,15 +1,16 @@
 package org.firstinspires.ftc.team12841.teleOps;
 
-import com.bylazar.panels.Panels;
 import com.pedropathing.follower.Follower;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.team12841.RobotHardware;
 import org.firstinspires.ftc.team12841.configs.PanelsConfig;
 
-@TeleOp(name = "TeleOpMain", group = "MAIN")
-public class TeleOpTanner extends OpMode {
+@Disabled
+@TeleOp(name = "BASE")
+public class TeleOpBase extends OpMode {
 
     /* ===================== HARDWARE ===================== */
 
@@ -43,6 +44,7 @@ public class TeleOpTanner extends OpMode {
 
     public boolean babyMode = false;
 
+    public int pipeline = 0;
 
     /* ===================== INIT ===================== */
 
@@ -54,7 +56,7 @@ public class TeleOpTanner extends OpMode {
         telemetry.addLine("Init OK — warming localization");
         telemetry.update();
 
-        robot.limelight.pipelineSwitch(0);
+        robot.limelight.pipelineSwitch(pipeline);
     }
 
     /* ===================== INIT LOOP ===================== */
@@ -114,6 +116,7 @@ public class TeleOpTanner extends OpMode {
         /* ---------- LIMELIGHT ALIGN ---------- */
 
         if (gamepad1.left_trigger > 0.2) {
+            follower.setTeleOpDrive(0, 0, 0, false); // freeze Pedro
             robot.alignWithLimelight(-1);
         } else if (babyMode) {
             follower.setTeleOpDrive((forward * PanelsConfig.BABY), (strafe * PanelsConfig.BABY), (rotate * PanelsConfig.BABY), false);
@@ -150,24 +153,22 @@ public class TeleOpTanner extends OpMode {
 
         /* ---------- SHOOTER TOGGLE ---------- */
 
-        //boolean a = gamepad1.a;
-        //if (a && !aLast) shooterEnabled = !shooterEnabled;
-        //aLast = a;
+        //if (gamepad1.aWasPressed()) shooterEnabled = !shooterEnabled;
 
         targetRPM = updateRPM();
         if (shooterEnabled) robot.setShooterRPM(targetRPM);
         else robot.stopShooter();
 
-        dpadUpLast   = gamepad1.dpad_up;
+        /*dpadUpLast   = gamepad1.dpad_up;
         dpadDownLast = gamepad1.dpad_down;
 
-        //if (gamepad1.dpadUpWasPressed())
-        //    targetRPM = targetRPM + 100;
+        if (gamepad1.dpadUpWasPressed())
+            targetRPM = targetRPM + 50;
 
-        //if (gamepad1.dpadDownWasPressed())
-        //{
-        //    targetRPM = targetRPM - 100;
-        //}
+        if (gamepad1.dpadDownWasPressed())
+        {
+            targetRPM = targetRPM - 50;
+        }*/
 
 
         /* ---------- SHOOTER STUFF ---------- */
@@ -190,13 +191,17 @@ public class TeleOpTanner extends OpMode {
         telemetry.addData("Actual RPM", actualRPM);
         telemetry.addData("LL Dis", robot.getDistance());
         telemetry.addData("Beam Broken?", robot.isBroken());
+        telemetry.addData("TagX", robot.lastSeenTagFieldX);
+        telemetry.addData("TagY", robot.lastSeenTagFieldY);
         telemetry.update();
+
+        robot.updateAndCacheAprilTag();
     }
 
 
     /* ===================== UTILS ===================== */
 
     private double updateRPM() {
-        return robot.calculateRegression(robot.getDistance());
+        return robot.calculateRegression();
     }
 }

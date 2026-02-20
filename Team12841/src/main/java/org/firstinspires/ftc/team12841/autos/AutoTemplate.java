@@ -1,3 +1,4 @@
+/*
 package org.firstinspires.ftc.team12841.autos;
 
 import com.pedropathing.follower.Follower;
@@ -15,22 +16,30 @@ import org.firstinspires.ftc.team12841.pedroPathing.Constants;
 @Autonomous(name = "Auto Template", group = "Autos")
 public class AutoTemplate extends OpMode {
 
-    /* ===================== CORE ===================== */
+    */
+/* ===================== CORE ===================== *//*
+
 
     private RobotHardware robot;
     private Follower follower;
 
-    /* ===================== TIMERS ===================== */
+    */
+/* ===================== TIMERS ===================== *//*
+
 
     private Timer pathTimer;
     private Timer alignTimer;
     private Timer opmodeTimer;
 
-    /* ===================== STATE ===================== */
+    */
+/* ===================== STATE ===================== *//*
+
 
     private int pathState = 0;
 
-    /* ===================== FIELD POSES ===================== */
+    */
+/* ===================== FIELD POSES ===================== *//*
+
 
     private static final Pose START_POSE =
             new Pose(0, 0, Math.toRadians(180));
@@ -41,16 +50,22 @@ public class AutoTemplate extends OpMode {
     private static final Pose END_POSE =
             new Pose(0, 0, Math.toRadians(0));
 
-    /* ===================== PATHS ===================== */
+    */
+/* ===================== PATHS ===================== *//*
+
 
     private PathChain scorePreload;
     private PathChain endAuto;
 
-    /* ===================== LIMELIGHT CONSTANTS ===================== */
+    */
+/* ===================== LIMELIGHT CONSTANTS ===================== *//*
+
 
     private static final double LL_MAX_ALIGN_TIME = 1.5; // seconds
 
-    /* ===================== INIT ===================== */
+    */
+/* ===================== INIT ===================== *//*
+
 
     @Override
     public void init() {
@@ -72,7 +87,9 @@ public class AutoTemplate extends OpMode {
         telemetry.update();
     }
 
-    /* ===================== BUILD PATHS ===================== */
+    */
+/* ===================== BUILD PATHS ===================== *//*
+
 
     private void buildPaths() {
 
@@ -93,7 +110,9 @@ public class AutoTemplate extends OpMode {
                 .build();
     }
 
-    /* ===================== START ===================== */
+    */
+/* ===================== START ===================== *//*
+
 
     @Override
     public void start() {
@@ -101,7 +120,9 @@ public class AutoTemplate extends OpMode {
         setPathState(0);
     }
 
-    /* ===================== LOOP ===================== */
+    */
+/* ===================== LOOP ===================== *//*
+
 
     @Override
     public void loop() {
@@ -118,24 +139,30 @@ public class AutoTemplate extends OpMode {
         telemetry.update();
     }
 
-    /* ===================== FSM ===================== */
+    */
+/* ===================== FSM ===================== *//*
+
 
     private void autonomousUpdate() {
 
         switch (pathState) {
 
-            /* -----------------------------
+            */
+/* -----------------------------
              * 0 – Drive to score preload
-             * ----------------------------- */
+             * ----------------------------- *//*
+
             case 0:
                 follower.followPath(scorePreload);
                 // LINREG LOGIC
                 setPathState(1);
                 break;
 
-            /* -----------------------------
+            */
+/* -----------------------------
              * 1 – Wait for path completion
-             * ----------------------------- */
+             * ----------------------------- *//*
+
             case 1:
                 if (!follower.isBusy()) {
                     alignTimer.resetTimer();
@@ -143,9 +170,11 @@ public class AutoTemplate extends OpMode {
                 }
                 break;
 
-            /* -----------------------------
+            */
+/* -----------------------------
              * 2 – Limelight align (using RH)
-             * ----------------------------- */
+             * ----------------------------- *//*
+
             case 2:
                 robot.updateLLHeading();
 
@@ -165,9 +194,11 @@ public class AutoTemplate extends OpMode {
                 }
                 break;
 
-            /* -----------------------------
+            */
+/* -----------------------------
              * 3 – Shoot preload
-             * ----------------------------- */
+             * ----------------------------- *//*
+
             case 3:
                 if (pathTimer.getElapsedTimeSeconds() > 0.5) {
                     fire();
@@ -176,9 +207,11 @@ public class AutoTemplate extends OpMode {
                 }
                 break;
 
-            /* -----------------------------
+            */
+/* -----------------------------
              * 4 – Reset shooter, go park
-             * ----------------------------- */
+             * ----------------------------- *//*
+
             case 4:
                 if (pathTimer.getElapsedTimeSeconds() > 0.8) {
                     resetFlick();
@@ -188,23 +221,29 @@ public class AutoTemplate extends OpMode {
                 }
                 break;
 
-            /* -----------------------------
+            */
+/* -----------------------------
              * 5 – End
-             * ----------------------------- */
+             * ----------------------------- *//*
+
             case 5:
                 // done
                 break;
         }
     }
 
-    /* ===================== HELPERS ===================== */
+    */
+/* ===================== HELPERS ===================== *//*
+
 
     private void setPathState(int state) {
         pathState = state;
         pathTimer.resetTimer();
     }
 
-    /* ===================== MECHANISM PLACEHOLDERS ===================== */
+    */
+/* ===================== MECHANISM PLACEHOLDERS ===================== *//*
+
 
     private void fire() {
     }
@@ -212,3 +251,4 @@ public class AutoTemplate extends OpMode {
     private void resetFlick() {
     }
 }
+*/

@@ -244,7 +244,7 @@ public class RegressionOld extends OpMode {
     /* ===================== UTILS ===================== */
 
     private double updateRPM() {
-        return robot.calculateRegression(robot.getDistance());
+        return robot.calculateRegression();
     }
 
     private void resetServo() {
