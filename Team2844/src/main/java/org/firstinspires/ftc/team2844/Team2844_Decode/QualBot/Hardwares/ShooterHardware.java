@@ -239,7 +239,7 @@ public class ShooterHardware {
 
     public void stopBallRelease() {
         //this will stop the ball
-        ballStop.setPosition(.25);
+        ballStop.setPosition(.35);
     }
 
 

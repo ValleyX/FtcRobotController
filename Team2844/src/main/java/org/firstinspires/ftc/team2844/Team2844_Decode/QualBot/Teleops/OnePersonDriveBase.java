@@ -97,6 +97,7 @@ public class OnePersonDriveBase extends LinearOpMode {
         }
 
         startTime = 0.0;
+        shooterHardware.stopBallHold();
         waitForStart();
         startTime = getRuntime();
 
@@ -211,7 +212,10 @@ public class OnePersonDriveBase extends LinearOpMode {
                 //shooterHardware.stopShooter();
                 //keep shooter at "idle" speed
                 shooterHardware.setShootVelocity(20); //jae
+                shooterHardware.stopFeed();
             }
+
+
 
             //buttons
             if(gamepad1.right_stick_button){

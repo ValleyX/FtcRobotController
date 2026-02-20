@@ -11,9 +11,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.ShooterHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.MecanumDrive;
+import org.opencv.core.Mat;
 
-@Autonomous(name = "Blue far Goal")
-public class BlueFarAuto extends LinearOpMode {
+@Autonomous(name = "Blue far Goal 6 Ball")
+public class BlueFarAuto_6_Ball extends LinearOpMode {
 
     long BUFFER_TIME = 1200;
     Pose2d estimate;
@@ -22,7 +23,7 @@ public class BlueFarAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d initialPos = new Pose2d(-63.25,8.75,0.0);
+        Pose2d initialPos = new Pose2d(-63.5,17,0.0);
         ShooterHardware shooterHardware = new ShooterHardware(this);
         LimelightHardware limelightHardware = new LimelightHardware(this);
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, initialPos);
@@ -39,15 +40,24 @@ public class BlueFarAuto extends LinearOpMode {
                 .lineToX(-60)
                 .turnTo(Math.toRadians(25));
 
-        TrajectoryActionBuilder moveOut = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 8.75), Math.toRadians(25)))
-                .strafeTo(new Vector2d(-60, 34))
-                .turnTo(Math.toRadians(-90));
+        TrajectoryActionBuilder moveToPickup1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 17), Math.toRadians(25)))
+                .setTangent(Math.toRadians(90.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(-63.5,72-9), Math.toRadians(90.0)), Math.toRadians(90.0));
+
+        TrajectoryActionBuilder moveToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-63.5,72-9), Math.toRadians(90.0)))
+                .setReversed(true)
+                .strafeToLinearHeading(new Vector2d(-60, 12), Math.toRadians(25.0));
+
+
+        TrajectoryActionBuilder moveOut = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 12), Math.toRadians(25.0)))
+                .strafeToLinearHeading(new Vector2d(-60, 36), Math.toRadians(0.0));
 
 
 
 
         //start of moving
         Actions.runBlocking(moveToShoot1.build());
+
         if(limelightHardware.getTx() != -999){
             TrajectoryActionBuilder rotateShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 8.75), Math.toRadians(25)))
                     .turn(Math.toRadians(-limelightHardware.getTx()));
@@ -56,10 +66,26 @@ public class BlueFarAuto extends LinearOpMode {
 
         shoot(shooterHardware, limelightHardware);
 
+        shooterHardware.intake(1.0);
+        Actions.runBlocking(moveToPickup1.build());
+
+        if(shooterHardware.threeBall()){
+            shooterHardware.intake(0.0);
+            Actions.runBlocking(moveToShoot2.build());
+        } else {
+            Actions.runBlocking(moveToShoot2.build());
+        }
+
+        if(limelightHardware.getTx() != -999){
+            TrajectoryActionBuilder rotateShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 12), Math.toRadians(25)))
+                    .turn(Math.toRadians(-limelightHardware.getTx()));
+            Actions.runBlocking(rotateShoot1.build());
+        }
+
+        shooterHardware.intake(0.0);
+        shoot(shooterHardware, limelightHardware);
+
         Actions.runBlocking(moveOut.build());
-
-
-
     }
 
     private void shoot(ShooterHardware shooterHardware, LimelightHardware limelightHardware){
