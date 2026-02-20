@@ -145,7 +145,7 @@ public class DriveSubsystem extends SubsystemBase {
             turretAngle += 360.0;
         }
 
-        return Math.max(Math.min(300, (360.0-turretAngle)-tempHeading), 10);
+        return Math.max(Math.min(300, turretAngle), 10);
         //return 90.0;
     }
 
