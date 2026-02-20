@@ -92,8 +92,8 @@ public class PIDTuning extends LinearOpMode {
 
         //If we end auto facing the back of the field (away from audience) then comment out this line
         robotHardware.resetImu();
-
-        limelightHardware.innit(1);
+        //blue is 0, red is 1
+        limelightHardware.innit(0);
 
         if(limelightHardware.getPipeline() == 1){
             red = true;
@@ -400,6 +400,7 @@ public class PIDTuning extends LinearOpMode {
             telemetry.addData("Target Velocity: ", shooterVelocity);
             telemetry.addData("IMU (Degrees)", robotHardware.robotHeadingAngles());
             telemetry.addData("Limelight Tx", limelightHardware.getTx());
+            //telemetry.addData("Limelight dist", limelightHardware.getTx());
             telemetry.addData("Distance from tag", limelightHardware.getBotDis());
 
             telemetry.update();

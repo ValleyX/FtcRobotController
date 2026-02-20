@@ -184,6 +184,10 @@ public class BlueCloseAuto extends LinearOpMode {
         //int count = 0;
         double shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
 
+        //move ghetto arm away from ball to shoot
+        shooterHardware.stopBallRelease();//jae
+
+
         while (shooterHardware.oneBall() && opModeIsActive()) {
             shooterHardware.setShootVelocity(shooterVelocity);
             shooterHardware.aimHood(shooterHardware.getHoodAim(limelightHardware.getBotDis()));
@@ -202,5 +206,8 @@ public class BlueCloseAuto extends LinearOpMode {
         shooterHardware.setShootVelocity(0.0);
         shooterHardware.aimHood(0.0);
         shooterHardware.stopFeed();
+
+        //move ghetto arm back on top of ball to shoot
+        shooterHardware.stopBallHold();//jae
     }
 }

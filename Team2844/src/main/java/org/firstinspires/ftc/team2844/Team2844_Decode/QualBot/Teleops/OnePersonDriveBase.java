@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
@@ -73,7 +74,8 @@ public class OnePersonDriveBase extends LinearOpMode {
     double lastBlink = 0.0;
     boolean color = false;
 
-
+//jae
+    double batteryVoltage;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -136,7 +138,9 @@ public class OnePersonDriveBase extends LinearOpMode {
             if(gamepad1.left_trigger > 0.1 && !full) {
                 shooterHardware.intake(gamepad1.left_trigger);
                 intaking = true;
-                shooterHardware.setShootPower(-0.15);//jae
+
+                //run shooter backward to stop ball from going all the way through intake
+                //shooterHardware.setShootPower(-0.2);//jae
             } else if(gamepad1.right_trigger > 0.1) {
                 shooterHardware.intake(-gamepad1.right_trigger);
                 intaking = true;
@@ -168,6 +172,9 @@ public class OnePersonDriveBase extends LinearOpMode {
                 shooterHardware.aimHood(hoodPos);
                 shooterHardware.setShootVelocity(shooterVelocity);
 
+                //move ghetto arm away from ball to shoot
+                shooterHardware.stopBallRelease();//jae
+
                 if(timeBool) {
                     time = getRuntime();
                     timeBool = false;
@@ -188,6 +195,8 @@ public class OnePersonDriveBase extends LinearOpMode {
                 shooterAlign = false;
                 firstTime = true;
                 timeBool = true;
+                //move ghetto arm back on top of ball to shoot
+                shooterHardware.stopBallHold();//jae
             }
 
 //            if(gamepad1.left_bumper){
@@ -199,7 +208,9 @@ public class OnePersonDriveBase extends LinearOpMode {
 //            }
 
             if(stopAutoShoot && stopManShoot && !intaking){
-                shooterHardware.stopShooter();
+                //shooterHardware.stopShooter();
+                //keep shooter at "idle" speed
+                shooterHardware.setShootVelocity(20); //jae
             }
 
             //buttons
@@ -245,6 +256,14 @@ public class OnePersonDriveBase extends LinearOpMode {
                 dDown = false;
             }
 
+
+            if (gamepad2.aWasPressed()) {
+                shooterHardware.stopBallRelease();
+            }
+
+            if (gamepad2.bWasPressed()) {
+                shooterHardware.stopBallHold();
+            }
 //            if(gamepad1.dpad_up){
 //                if(!dPadUp){
 //                    //shooterVelocity += 1;
@@ -324,6 +343,7 @@ public class OnePersonDriveBase extends LinearOpMode {
             } else {
                 robotHardware.setGobildaLight(0.611);
             }
+            batteryVoltage = robotHardware.batteryVoltSensor.getVoltage();
 
             telemetry.addData("(at least) One Ball: ", shooterHardware.oneBall());
             telemetry.addData("(at least) Two Balls: ", shooterHardware.twoBall());
@@ -343,10 +363,11 @@ public class OnePersonDriveBase extends LinearOpMode {
             telemetry.addData("Shooter D:", shooterHardware.shooterCoefficients.d);
             telemetry.addData("Shooter F:", shooterHardware.shooterCoefficients.f);
 
-            telemetry.addData("Front Left", frontLeftPower);
+         /*   telemetry.addData("Front Left", frontLeftPower);
             telemetry.addData("Back Left", backLeftPower);
             telemetry.addData("Front Right:", frontRightPower);
-            telemetry.addData("Back Right", backRightPower);
+            telemetry.addData("Back Right", backRightPower);*/
+            telemetry.addData("Batt Volt: ", "%.1f",batteryVoltage);
             telemetry.update();
         }
     }

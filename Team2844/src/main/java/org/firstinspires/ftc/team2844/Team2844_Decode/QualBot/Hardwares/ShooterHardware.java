@@ -24,6 +24,9 @@ public class ShooterHardware {
      */
     private Servo blockSer;
     private Servo hoodSer;
+
+    private Servo ballStop;
+
     //Constants
     private final double OUT_POS = 0.2;
     private final double IN_POS = 0.0;
@@ -81,7 +84,8 @@ public class ShooterHardware {
 
         hoodSer = opMode_.hardwareMap.get(Servo.class, "hoodSer");
 
-
+        //JAE
+        ballStop = opMode_.hardwareMap.get(Servo.class, "ballstop");
 
 
 
@@ -174,7 +178,9 @@ public class ShooterHardware {
 
     public double getShootSpeed(double distance) {
         if (distance != -999) {
-            shooterVel = ((0.1730847*distance)+ 24.34517);
+          //  y = 0.1329324*x + 29.47163 //jae 2-19-26
+            shooterVel = ((0.1329324*distance) +  29.47163);
+           // shooterVel = ((0.1730847*distance)+ 24.34517);
             // shooterVel = ((0.1445058824*distance) + 25.99294118);
             //shooterVel = ((0.1824324324*distance) + 21.88378378);
             return shooterVel;
@@ -225,6 +231,18 @@ public class ShooterHardware {
         blockSer.setPosition(OUT_POS);
         servoClosed = true;
     }
+
+    public void stopBallHold() {
+        //this will stop the ball
+        ballStop.setPosition(1);
+    }
+
+    public void stopBallRelease() {
+        //this will stop the ball
+        ballStop.setPosition(.25);
+    }
+
+
 
     public void testServo(double pos){
         blockSer.setPosition(pos);

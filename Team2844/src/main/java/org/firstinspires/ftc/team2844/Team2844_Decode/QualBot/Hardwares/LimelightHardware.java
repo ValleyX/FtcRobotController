@@ -74,10 +74,11 @@ public class LimelightHardware {
         return -999;
     }
 
-    public double getBotDis(){
+        public double getBotDis(){
         updateResult();
         if (llResult != null && llResult.isValid()) {
-            return 68.86747*Math.pow(llResult.getTa(), -0.5169279); //using the equation we got from the graph we insert the ta as the x and return distance as y
+            return llResult.getBotposeAvgDist() * 39.37; //convert from meters to inches
+            //return 68.86747*Math.pow(llResult.getTa(), -0.5169279); //using the equation we got from the graph we insert the ta as the x and return distance as y
         }
         return -999;
     }
