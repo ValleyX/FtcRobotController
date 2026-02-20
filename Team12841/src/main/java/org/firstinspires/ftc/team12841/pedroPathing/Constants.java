@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(13.2)
+            .mass(13.4)
             .forwardZeroPowerAcceleration(-32.20906457774129)
             .lateralZeroPowerAcceleration(-39.73511957623294)
 
@@ -41,8 +41,8 @@ public class Constants {
             .forwardTicksToInches(0.00197913724762) // 0.0019727156766619694, 0.001966752403543089, 0.00199794366264916
             .strafeTicksToInches(0.001195489955537)
             .turnTicksToInches(0.014324695549060188)
-            .leftPodY(3.5) // 2 3/8in
-            .rightPodY(-2.3) // 2 5/16
+            .leftPodY(3.5)
+            .rightPodY(-2.3)
             .strafePodX(-5.75)
             .leftEncoder_HardwareMapName("lfMotor")
             .rightEncoder_HardwareMapName("rbMotor")

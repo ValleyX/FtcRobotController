@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.team12841.teleOps;
 
 import com.pedropathing.follower.Follower;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.team12841.RobotHardware;
 
+@Disabled
 @TeleOp(name = "MotorTester", group = "MAIN")
 public class MotorTester extends OpMode {
 

@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.team12841.RobotHardware;
 
+@Disabled
 @TeleOp(name = "TUNE SHOOTER")
 public class ShooterTuner extends LinearOpMode
 {
@@ -73,7 +74,7 @@ public class ShooterTuner extends LinearOpMode
             //telemetry.addLine("Init Complete");
 
             //set velocity
-            shooterHardware.shooter.setVelocity(shooterHardware.calculateRegression(shooterHardware.getDistance()));
+            shooterHardware.shooter.setVelocity(shooterHardware.calculateRegression());
 
             double curVelocity = (shooterHardware.shooter.getVelocity() * 60.0) / RobotHardware.SHOOTER_TICKS_PER_REV;
             double error = curTargetVelocity - curVelocity;

@@ -1,24 +1,27 @@
 package org.firstinspires.ftc.team12841;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
+// Pedro Pathing
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.follower.Follower;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.team12841.pedroPathing.Constants;
+
+// Limelight
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+
+// IMU
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.IMU;
+
+// Motors and OpModes
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+// My Files
 import org.firstinspires.ftc.team12841.configs.PanelsConfig;
-import org.firstinspires.ftc.team12841.pedroPathing.Constants;
 
 public class RobotHardware {
 
@@ -29,6 +32,8 @@ public class RobotHardware {
     public static final double SHOOTER_TICKS_PER_REV = 28.0;
     public static double rpm = 2400;
 
+    private static final long TAG_MEMORY_TIMEOUT_MS = 5000;
+
     /* ===================== MOTORS ===================== */
 
     public DcMotorEx lf, lb, rf, rb;
@@ -37,7 +42,6 @@ public class RobotHardware {
     public DcMotorEx flick;
 
     public DcMotorEx leftOdo, rightOdo, strafeOdo;
-
 
     /* ===================== SENSORS ===================== */
 
@@ -55,6 +59,12 @@ public class RobotHardware {
     private double lfDrive, lbDrive, rfDrive, rbDrive;
     private double lfAlign, lbAlign, rfAlign, rbAlign;
 
+    /* ===================== LIMELIGHT MEMORY ===================== */
+
+    public Double lastSeenTagFieldX = null;
+    public Double lastSeenTagFieldY = null;
+    private long lastSeenTagTimeMs = 0;
+
     /* ===================== CONSTRUCTOR ===================== */
 
     public RobotHardware(OpMode opMode) {
@@ -65,7 +75,6 @@ public class RobotHardware {
         initIMU();
         initLimelight();
         initPedro();
-        follower = Constants.createFollower(opMode.hardwareMap);
 
         limelight.pipelineSwitch(0);
     }
@@ -94,7 +103,6 @@ public class RobotHardware {
     }
 
     private void configureMotors() {
-
         lf.setDirection(DcMotor.Direction.FORWARD);
         lb.setDirection(DcMotor.Direction.FORWARD);
         intake.setDirection(DcMotor.Direction.REVERSE);
@@ -106,16 +114,12 @@ public class RobotHardware {
         }
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter.setVelocityPIDFCoefficients(
-                400,  // kP
-                0.0,     // kI
-                0.0,     // kD
-                0.4        // kF
-        );
+        shooter.setVelocityPIDFCoefficients(375, 0, 0, 0.8);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         flick.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flick.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -147,22 +151,8 @@ public class RobotHardware {
 
     private void initPedro() {
         follower = Constants.createFollower(opMode.hardwareMap);
-
-        // RE-ASSERT shooter mode AFTER Pedro
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
-
-    /* ===================== SHOOTER (RPM) ===================== */
-
-    public void setShooterRPM(double rpm) {
-        shooter.setVelocity((rpm * SHOOTER_TICKS_PER_REV) / 60.0);
-    }
-
-    public void stopShooter() {
-        shooter.setVelocity(0);
-    }
-
 
     /* ===================== DRIVE ===================== */
 
@@ -191,7 +181,7 @@ public class RobotHardware {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
-    /* ===================== LIMELIGHT (BACKWARDS) ===================== */
+    /* ===================== LIMELIGHT ===================== */
 
     private void updateLL() {
         if (limelight != null) {
@@ -199,7 +189,6 @@ public class RobotHardware {
         }
     }
 
-    /** tx must be inverted because camera faces backwards */
     public double getTx() {
         updateLL();
         return (llResult != null && llResult.isValid())
@@ -214,46 +203,94 @@ public class RobotHardware {
                 : -999;
     }
 
-    /** Robot heading sent to LL must be offset by 180° */
-    public void updateLLHeading() {
-        if (limelight != null) {
-            limelight.updateRobotOrientation(headingDeg());
-        }
+    /* ===================== TAG MEMORY ===================== */
+
+    public void updateAndCacheAprilTag() {
+        updateLL();
+
+        if (llResult == null || !llResult.isValid()) return;
+
+        Pose pose = follower.getPose();
+
+        double distance = getDistance();
+        if (distance == -999) return;
+
+        double txRad = Math.toRadians(-llResult.getTx());
+        double headingRad = Math.toRadians(pose.getHeading());
+        double globalAngle = headingRad + txRad;
+
+        lastSeenTagFieldX = pose.getX() + distance * Math.sin(globalAngle);
+        lastSeenTagFieldY = pose.getY() + distance * Math.cos(globalAngle);
     }
 
-    /* ===================== TURNING ===================== */
-
-    public void turnToFree(double targetDeg, double speed) {
-        double error = targetDeg - headingDeg();
-        double power = clamp(error * PanelsConfig.LLPGAIN) * speed;
-        addAlign(-power, -power, power, power);
-    }
-
-    public void alignWithLimelight(double speed) {
-        double tx = getTx();
-
-        if (tx == -999) {
-            addAlign(0, 0, 0, 0);
+    private void rotateToCachedTag(double speed) {
+        if (lastSeenTagFieldX == null || lastSeenTagFieldY == null) {
+            // no target stored
             return;
         }
 
-        double power = -(clamp(tx * PanelsConfig.LLPGAIN) * speed)                                     ;
+        Pose pose = follower.getPose();
 
-        addAlign(-power, -power, power, power);
+        double dx = lastSeenTagFieldX - pose.getX();
+        double dy = lastSeenTagFieldY - pose.getY();
+
+        // compute desired heading to tag (radians)
+        double targetHeading = Math.atan2(dy, dx);
+
+        // compute heading error normalized
+        double currentHeading = pose.getHeading();
+        double error = Math.atan2(Math.sin(targetHeading - currentHeading),
+                Math.cos(targetHeading - currentHeading));
+
+        // proportional turn command
+        double rotPower = clamp(error * PanelsConfig.LLPGAIN) * speed;
+
+        // tell Pedro to apply heading control
+        follower.setTeleOpDrive(0, 0, -clamp(rotPower * 50), false);
     }
 
-    public double calculateRegression(double distance) {
-        if(distance == -999)
-            return rpm;
+
+    /* ===================== TURNING ===================== */
+
+    public void alignWithLimelight(double speed) {
+        updateAndCacheAprilTag();
+
+        double tx = getTx();
+
+        if (tx != -999) {
+            double power = -(clamp(tx * PanelsConfig.LLPGAIN) * speed);
+            addAlign(-power, -power, power, power);
+        } else {
+            rotateToCachedTag(speed);
+        }
+        return;
+    }
+
+    /* ===================== SHOOTER ===================== */
+
+    public void setShooterRPM(double rpm) {
+        shooter.setVelocity((rpm * SHOOTER_TICKS_PER_REV) / 60.0);
+    }
+
+    public void stopShooter() {
+        shooter.setVelocity(0);
+    }
+
+    public double calculateRegression() {
+        double distance = getDistance();
+        if (distance == -999) return rpm;
+
         double A = PanelsConfig.REGRESSION_A;
         double B = PanelsConfig.REGRESSION_B;
         double C = PanelsConfig.REGRESSION_C;
-        rpm = (A * (distance * distance)) + (B * distance) + C;
+        double D = PanelsConfig.REGRESSION_D;
+        double F = PanelsConfig.REGRESSION_F;
+
+        rpm = (A * (Math.pow(distance, 4))) + (B * (Math.pow(distance, 3))) + (C * (Math.pow(distance, 2))) + (D * distance) + F;
         return rpm;
     }
 
-    public boolean isBroken()
-    {
+    public boolean isBroken() {
         return beambreak.getState();
     }
 
