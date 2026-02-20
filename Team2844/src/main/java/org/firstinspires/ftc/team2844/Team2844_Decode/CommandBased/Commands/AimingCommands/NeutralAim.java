@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Aim
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 
 public class NeutralAim extends CommandBase {
@@ -14,7 +15,7 @@ public class NeutralAim extends CommandBase {
 
     @Override
     public void initialize() {
-        aimSubsystem.aimTurret(90.0);
+        aimSubsystem.aimTurret(Constants.NEUTRAL_TURRET);
         aimSubsystem.aimHood(0.0);
     }
 }

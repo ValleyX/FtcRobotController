@@ -33,7 +33,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void drive(double strafeSpeed, double forwardSpeed, double turnSpeed, DoubleSupplier heading) {
         drive.updatePoseEstimate();
-        double botHeading = heading.getAsDouble();
+        double botHeading = -heading.getAsDouble();
         //botHeading = 0;
 
         //code for field centric (Idk how it works, pretty sure it's magic or makes triangles or something)
@@ -113,62 +113,40 @@ public class DriveSubsystem extends SubsystemBase {
     public double getPinpointTurretAngle(int pipeline){
         double opposite = 0.0;
         double adjacent = 0.0;
-        double angle = 0.0;
-
         double botX = getBotX();
         double botY = getBotY();
-        double flippedHeading = -getHeadingFlipped();
-        double heading = getRobotHeading();
-        //double turretHeading = heading - (currentTurretAngle-90.0);
+        double angle = 0.0;
+        double tempHeading = getRobotHeading();
 
-        double predictedAngle = 0.0;
+        double limelightX = 0.0;
+        double limelightY = 0.0;
 
-        if(pipeline == 0 || pipeline == 2){
-            opposite = Constants.BLUE_APRILTAG_X - getBotX();
-            adjacent = Constants.BLUE_APRILTAG_Y - getBotY();
 
-            angle = Math.toDegrees(Math.atan2(adjacent, opposite));
-
-            if(!Double.isNaN(angle)){
-                double imuDisFromNinety;
-                if(flippedHeading >= -90.0) {
-                    imuDisFromNinety = (90.0 - flippedHeading);
-                } else {
-                    imuDisFromNinety = ((flippedHeading%90.0) - 90.0);
-                }
-                predictedAngle = imuDisFromNinety + angle;
-
-                if (predictedAngle < 0.0) {
-                    predictedAngle += 360;
-                } else if (predictedAngle > 360) {
-                    predictedAngle -= 360;
-                }
-            }
-
-        } else if(pipeline == 1 || pipeline == 3) {
-            opposite = Constants.RED_APRILTAG_X - getBotX();
-            adjacent = Constants.RED_APRILTAG_Y - getBotY();
-
-            angle = Math.toDegrees(Math.atan2(adjacent, opposite));
-
-            if(!Double.isNaN(angle)){
-                double imuDisFromNinety;
-                if(heading >= -90.0) {
-                    imuDisFromNinety = (90.0 - heading);
-                } else {
-                    imuDisFromNinety = ((heading%90.0) - 90.0);
-                }
-                predictedAngle = imuDisFromNinety + angle;
-
-                if (predictedAngle < 0.0) {
-                    predictedAngle += 360;
-                } else if (predictedAngle > 360) {
-                    predictedAngle -= 360;
-                }
-            }
+        if(pipeline == Constants.BLUE_PIPELINE || pipeline == Constants.BLUE_PIPELINE_MOTIF){
+            limelightX = Constants.BLUE_APRILTAG_X;
+            limelightY = Constants.BLUE_APRILTAG_Y;
+            tempHeading = tempHeading;
+        } else if(pipeline == Constants.RED_PIPELINE || pipeline == Constants.RED_PIPELINE_MOTIF){
+            limelightX = Constants.RED_APRILTAG_X;
+            limelightY = Constants.RED_APRILTAG_Y;
+            tempHeading = -tempHeading;
         }
 
-        return predictedAngle;
+        opposite = limelightX - botX;
+        adjacent = limelightY - botY;
+
+        angle = Math.toDegrees(Math.atan2(adjacent, opposite));
+
+        double turretAngle = (360.0-angle)-tempHeading;
+
+        if(turretAngle > 360.0){
+            turretAngle -= 360.0;
+        } else if (turretAngle < 0.0){
+            turretAngle += 360.0;
+        }
+
+        return Math.max(Math.min(300, (360.0-turretAngle)-tempHeading), 10);
+        //return 90.0;
     }
 
 
@@ -176,48 +154,30 @@ public class DriveSubsystem extends SubsystemBase {
     public double getPinpointTurretAngleAuto(double botX, double botY, double heading, int pipeline){
         double opposite = 0.0;
         double adjacent = 0.0;
-        double hypotenuse = pinpointDistanceAuto(botX, botY, pipeline);
         double angle = 0.0;
+        double tempHeading = heading;
 
-        double flippedHeading = -flipHeading(heading);
+        double limelightX = 0.0;
+        double limelightY = 0.0;
 
 
-        double predictedAngle = 0.0;
-
-        if(pipeline == 0 || pipeline == 2){
-            opposite = Constants.BLUE_APRILTAG_X - botX;
-            adjacent = Constants.BLUE_APRILTAG_Y - botY;
-
-            angle = Math.toDegrees(Math.asin(opposite / hypotenuse));
-
-            if(!Double.isNaN(angle)){
-                predictedAngle = flippedHeading + angle;
-
-                if (predictedAngle < 0.0) {
-                    predictedAngle += 360;
-                } else if (predictedAngle > 360) {
-                    predictedAngle -= 360;
-                }
-            }
-
-        } else if(pipeline == 1 || pipeline == 3) {
-            opposite = Constants.RED_APRILTAG_X - botX;
-            adjacent = Constants.RED_APRILTAG_Y - botY;
-
-            angle = Math.toDegrees(Math.asin(opposite / hypotenuse));
-
-            if(!Double.isNaN(angle)){
-                predictedAngle = heading + angle;
-
-                if (predictedAngle < 0.0) {
-                    predictedAngle += 360;
-                } else if (predictedAngle > 360) {
-                    predictedAngle -= 360;
-                }
-            }
+        if(pipeline == Constants.BLUE_PIPELINE || pipeline == Constants.BLUE_PIPELINE_MOTIF){
+            limelightX = Constants.BLUE_APRILTAG_X;
+            limelightY = Constants.BLUE_APRILTAG_Y;
+            tempHeading = heading;
+        } else if(pipeline == Constants.RED_PIPELINE || pipeline == Constants.RED_PIPELINE_MOTIF){
+            limelightX = Constants.RED_APRILTAG_X;
+            limelightY = Constants.RED_APRILTAG_Y;
+            tempHeading = -heading;
         }
 
-        return predictedAngle;
+        opposite = limelightX - botX;
+        adjacent = limelightY - botY;
+
+        angle = Math.toDegrees(Math.atan2(adjacent, opposite));
+
+        return Math.max(Math.min(330, (360.0-angle)-tempHeading), 10);
+        //return 90.0;
     }
 
 

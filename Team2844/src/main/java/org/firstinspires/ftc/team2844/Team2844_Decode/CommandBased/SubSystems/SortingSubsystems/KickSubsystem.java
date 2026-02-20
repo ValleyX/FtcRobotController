@@ -56,11 +56,25 @@ public class KickSubsystem extends SubsystemBase {
     }
 
     public void rotateKickerDown(){
-        kickerRotate.setPosition(Constants.MAX_KICKDOWN);
+        kickToPos(Constants.KICKDOWN);
+    }
+    public void rotateKickerDownExtra(){
+        kickToPos(Constants.KICKDOWN_EXTRA);
+    }
+
+    public void rotateKickerDownIntake(){
+        kickToPos(Constants.KICKDOWN_INTAKE);
     }
 
     public void rotateKickerUp(){
-        kickerRotate.setPosition(0.0);
+        kickToPos(Constants.KICKUP);
+    }
+
+    public void kickToPos(double pos){
+        double temp = kickerSpin.getPower();
+        stopKickerSpin();
+        kickerRotate.setPosition(pos);
+        kickerSpin.setPower(temp);
     }
 
     public double getKickerRotate(){

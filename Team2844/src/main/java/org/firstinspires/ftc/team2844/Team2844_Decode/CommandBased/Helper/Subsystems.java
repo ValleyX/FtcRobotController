@@ -156,7 +156,6 @@ public class Subsystems {
 
         // ----- Kicker Servos ----- //
         kickerRotate = hardwareMap.get(Servo.class, Constants.CS1);
-        kickerRotate.setPosition(0.0);
         sFeed = hardwareMap.get(CRServo.class, Constants.CS4);
         kickerSpin = hardwareMap.get(CRServo.class, Constants.CS3);
 
@@ -237,7 +236,6 @@ public class Subsystems {
 
         // ----- Kicker Servos ----- //
         kickerRotate = hardwareMap.get(Servo.class, Constants.CS1);
-        kickerRotate.setPosition(0.0);
         sFeed = hardwareMap.get(CRServo.class, Constants.CS4);
         kickerSpin = hardwareMap.get(CRServo.class, Constants.CS3);
 

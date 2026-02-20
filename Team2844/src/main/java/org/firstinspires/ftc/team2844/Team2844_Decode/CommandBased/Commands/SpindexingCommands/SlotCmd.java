@@ -39,6 +39,7 @@ public class SlotCmd extends CommandBase {
         slot = spindexerSubsystem.getSlot();
         timer.reset();
         if(slot - desiredSlot < 0){
+            kickSubsystem.rotateKickerUp();
             kickSubsystem.runKickerSpin();
             kickSubsystem.runSFeedBackward();
         } else if(slot - desiredSlot == 0){

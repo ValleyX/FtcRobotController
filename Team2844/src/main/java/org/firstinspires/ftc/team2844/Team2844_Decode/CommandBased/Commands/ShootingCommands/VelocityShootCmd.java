@@ -17,15 +17,14 @@ public class VelocityShootCmd extends CommandBase {
         addRequirements(shooterSubsystem);
     }
 
-
-
-
-    public void execute(){
-        shooterSubsystem.setVelocity(velocity.getAsDouble());
+    @Override
+    public void initialize() {
+        shooterSubsystem.setVelocity(velocity.getAsDouble());;
     }
 
     @Override
     public boolean isFinished() {
-        return shooterSubsystem.inRange(velocity.getAsDouble());
+        //return shooterSubsystem.inRange(velocity, () -> shooterSubsystem.getVelocity()).getAsBoolean();
+        return true;
     }
 }

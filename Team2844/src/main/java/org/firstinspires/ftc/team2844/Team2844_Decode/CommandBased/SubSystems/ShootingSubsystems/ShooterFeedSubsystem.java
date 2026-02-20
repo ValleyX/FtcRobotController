@@ -32,4 +32,5 @@ public class ShooterFeedSubsystem extends SubsystemBase {
 
     /** returns true if there is a ball in the top chamber*/
     public boolean topBroken(){return topBB.getState();}
+    public boolean tFeedBusy(){return tFeed.getRate() != 0.0;}
 }

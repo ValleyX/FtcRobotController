@@ -23,6 +23,7 @@ public class Constants {
     public static final double TURRET_OFFSET = 90.0;
     public static final double TURRET_GAIN = 0.009;
     public static final double GAIN_THRESH = 20.0;
+    public static final double NEUTRAL_TURRET = 180.0;
 
     public static final double MIN_VOLTAGE = 0.22;
     public static final double MAX_VOLTAGE = 3.06;
@@ -35,7 +36,10 @@ public class Constants {
 
 
     //Uptake
-    public static final double MAX_KICKDOWN = 0.3;
+    public static final double KICKDOWN = 0.7;
+    public static final double KICKDOWN_EXTRA = 0.7;
+    public static final double KICKDOWN_INTAKE = 0.6;
+    public static final double KICKUP = 0.7;
 
 
     //spindexer
@@ -50,7 +54,7 @@ public class Constants {
     public static final double[] SLOT_ARRAY = {SLOT_ZERO, SLOT_ONE, SLOT_TWO, SLOT_ZERO_LOOPED_ONE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE};
 
     public static final int MIN_COLOR_SUM = 900;
-    public static final int MIN_ALPHA = 300;
+    public static final int MIN_ALPHA = 450;
 
     public static final int PURPLE = 1;
     public static final int GREEN = 0;

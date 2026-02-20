@@ -324,6 +324,7 @@ public class AimSubsystem extends SubsystemBase {
         } else {
             setPosition(degrees / 360.0);
         }
+        //setPosition(degrees/360.0);
     }
 
     /**

@@ -15,13 +15,10 @@ public class UptakeCmd extends CommandBase {
     @Override
     public void initialize() {
         kickSubsystem.rotateKickerDown();
-    }
-
-    @Override
-    public void execute() {
         kickSubsystem.runKickerSpin();
         kickSubsystem.runSFeedForward();
     }
+
 
     @Override
     public boolean isFinished() {

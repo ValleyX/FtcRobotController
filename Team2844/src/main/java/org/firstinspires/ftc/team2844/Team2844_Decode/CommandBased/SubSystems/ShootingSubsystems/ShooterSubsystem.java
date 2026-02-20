@@ -6,6 +6,9 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.MotorExPair;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
 //Shooter Subsystem for the turret targeting, and the shooter motor
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -39,6 +42,12 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getVelocity(){return shooterMotors.getVelocity();}
 
     public boolean inRange(double velocity){return (velocity-Constants.VELOCITY_THRESHHOLD < getVelocity()) && (getVelocity() < velocity+Constants.VELOCITY_THRESHHOLD);}
+
+    public BooleanSupplier inRange(DoubleSupplier velocity, DoubleSupplier currentVelocity){
+        return () -> (velocity.getAsDouble()-Constants.VELOCITY_THRESHHOLD < currentVelocity.getAsDouble()) &&
+                (currentVelocity.getAsDouble() < velocity.getAsDouble()+Constants.VELOCITY_THRESHHOLD);
+        //return () -> true;
+    }
 
     public boolean inRange(){return (vel-Constants.VELOCITY_THRESHHOLD < getVelocity()) && (getVelocity() < vel+Constants.VELOCITY_THRESHHOLD);}
 }

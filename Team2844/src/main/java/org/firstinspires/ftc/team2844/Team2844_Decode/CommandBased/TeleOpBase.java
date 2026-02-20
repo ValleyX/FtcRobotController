@@ -235,6 +235,7 @@ public class TeleOpBase extends CommandOpMode {
             telemetry.addData("Pinpoint Bot X: ", subsystems.mecDriveSubsystem.getBotX());
             telemetry.addData("Pinpoint Bot Y: ", subsystems.mecDriveSubsystem.getBotY());
             telemetry.addData("Turret Degrees: ", subsystems.aimSubsystem.getTurretDegrees());
+            telemetry.addData("Turn to with PP", subsystems.mecDriveSubsystem.getPinpointTurretAngle(pipelineNum));
 
             telemetry.addData("Raw Axon Voltage: ", subsystems.aimSubsystem.getVoltage());
             telemetry.addData("Axon degrees: ", subsystems.aimSubsystem.getAxonValue());
@@ -249,7 +250,7 @@ public class TeleOpBase extends CommandOpMode {
             telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
 
             telemetry.addData("Velocity", subsystems.shooterSubsystem.getVelocity());
-            telemetry.addData("In range: ", subsystems.shooterSubsystem.inRange());
+            telemetry.addData("In range testing bool supplier: ", subsystems.shooterSubsystem.inRange(() ->1000, () ->1000).getAsBoolean());
             telemetry.addData("Empty: ", subsystems.spindexerSubsystem.empty());
             telemetry.addData("Full: ", subsystems.spindexerSubsystem.fullSpindexer());
             //telemetry.addData("Bay one alpha", subsystems.spindexerSubsystem.bayOneAlpha());

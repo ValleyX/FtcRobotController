@@ -15,4 +15,9 @@ public class StopSpinCmd extends CommandBase {
         kickSubsystem.stopSFeed();
         kickSubsystem.stopKickerSpin();
     }
+
+    @Override
+    public boolean isFinished() {
+        return true;
+    }
 }

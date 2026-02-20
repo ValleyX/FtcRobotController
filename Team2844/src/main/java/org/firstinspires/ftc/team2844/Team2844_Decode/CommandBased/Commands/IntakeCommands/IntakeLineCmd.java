@@ -36,7 +36,11 @@ public class IntakeLineCmd extends CommandBase {
             intakeSubsystem.activate(Constants.INTAKE_SPEED);
             if(!topBroken){
 //                new ParallelCommandGroup(new UptakeCmd(kickSubsystem), new TransferCmd(shooterFeedSubsystem));
-                kickSubsystem.rotateKickerDown();
+                if(bayOne) {
+                    kickSubsystem.rotateKickerDown();
+                } else {
+                    kickSubsystem.rotateKickerDownIntake();
+                }
                 kickSubsystem.runKickerSpin();
                 kickSubsystem.runSFeedForward();
                 shooterFeedSubsystem.runTFeedForward();

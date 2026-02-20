@@ -5,9 +5,17 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.function.DoubleSupplier;
+
 public class TelemetryCmd extends CommandBase {
     public TelemetryCmd(Telemetry telemetry, String caption, Object data){
         telemetry.addData(caption, data);
+        telemetry.update();
+    }
+
+    public TelemetryCmd(Telemetry telemetry, String caption, DoubleSupplier data){
+        telemetry.addData(caption, data.getAsDouble());
+        telemetry.update();
     }
 
     @Override

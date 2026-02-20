@@ -16,4 +16,9 @@ public class ActivateIntakeCmd extends CommandBase {
     public void initialize() {
         intakeSubsystem.activate(Constants.INTAKE_SPEED);
     }
+
+    @Override
+    public boolean isFinished() {
+        return true;
+    }
 }

@@ -13,7 +13,7 @@ public class TransferCmd extends CommandBase {
     }
 
     @Override
-    public void execute() {
+    public void initialize() {
         shooterFeedSubsystem.runTFeedForward();
     }
 
