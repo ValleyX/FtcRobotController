@@ -50,8 +50,8 @@ public class ShooterHardware {
      * Shooter Conversions
      */
     public final double ENCODER_TICS = 28;
-    public double velThresh = 10;
-    public final double VEL_BOTTOM_THRESH = 1.5;
+    public double velThresh = 5;
+    public final double VEL_BOTTOM_THRESH = 1.0;
 
     public double shooterVel = 30;
     public double hoodAim = 0.0;

@@ -10,7 +10,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuicksta
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.TwoDeadWheelLocalizer;
 
-/*
+
 @Disabled
 public final class ManualFeedbackTuner extends LinearOpMode {
     public static double DISTANCE = 64;
@@ -64,4 +64,3 @@ public final class ManualFeedbackTuner extends LinearOpMode {
         }
     }
 }
-*/

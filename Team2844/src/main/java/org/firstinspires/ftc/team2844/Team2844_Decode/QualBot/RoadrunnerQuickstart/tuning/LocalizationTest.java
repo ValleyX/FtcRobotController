@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.Drawing;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.MecanumDrive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.TankDrive;
-/*
+
 @Disabled
 public class LocalizationTest extends LinearOpMode {
     @Override
@@ -78,4 +78,4 @@ public class LocalizationTest extends LinearOpMode {
         }
     }
 }
-*/
+

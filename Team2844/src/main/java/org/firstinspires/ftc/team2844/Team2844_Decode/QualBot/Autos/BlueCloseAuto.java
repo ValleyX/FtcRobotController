@@ -43,7 +43,7 @@ public class BlueCloseAuto extends LinearOpMode {
         mecanumDrive.updatePoseEstimate();
         estimate = mecanumDrive.localizer.getPose();
         boolean skip = false;
-        Servo gobildaLight = hardwareMap.get(Servo.class, "gobildaLight");
+        Servo gobildaLight = hardwareMap.get(Servo.class, "timerLight");
         gobildaLight.setPosition(0.611);
 
         boolean highVoltage = hardwareMap.voltageSensor.get("Control Hub").getVoltage() > 13.0;
@@ -171,8 +171,8 @@ public class BlueCloseAuto extends LinearOpMode {
         }
 
         Actions.runBlocking( new SequentialAction(
-                new ShootAction(shooterHardware, limelightHardware, this)//,
-                //moveOut.build()
+                new ShootAction(shooterHardware, limelightHardware, this),
+                moveOut.build()
         ));
 
     }

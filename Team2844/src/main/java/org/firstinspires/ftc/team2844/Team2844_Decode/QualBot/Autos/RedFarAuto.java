@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.ShooterH
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.MecanumDrive;
 
 @Autonomous(name = "Red Far Goal")
+@Disabled
 public class RedFarAuto extends LinearOpMode {
 
     long BUFFER_TIME = 1200;
@@ -30,7 +32,7 @@ public class RedFarAuto extends LinearOpMode {
         mecanumDrive.updatePoseEstimate();
         estimate = mecanumDrive.localizer.getPose();
 
-        Servo gobildaLight = hardwareMap.get(Servo.class, "gobildaLight");
+        Servo gobildaLight = hardwareMap.get(Servo.class, "timerLight");
         gobildaLight.setPosition(0.611);
 
         waitForStart();

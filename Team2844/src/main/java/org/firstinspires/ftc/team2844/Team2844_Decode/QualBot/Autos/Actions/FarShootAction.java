@@ -9,17 +9,16 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.QualConstants;
-import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.RobotHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.ShooterHardware;
 
 
-public class ShootAction implements Action {
+public class FarShootAction implements Action {
 
     ShooterHardware shooterHardware;
     LimelightHardware limelightHardware;
     LinearOpMode opMode;
 
-    public ShootAction(ShooterHardware shooterHardware, LimelightHardware limelightHardware, LinearOpMode opMode) {
+    public FarShootAction(ShooterHardware shooterHardware, LimelightHardware limelightHardware, LinearOpMode opMode) {
         this.shooterHardware = shooterHardware;
         this.limelightHardware = limelightHardware;
         this.opMode = opMode;
@@ -32,15 +31,14 @@ public class ShootAction implements Action {
         shooterHardware.stopBallRelease();//jae
         shooterHardware.intake(0.0);
 
-
         if (shooterHardware.oneBall() && opMode.opModeIsActive()) {
             double shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
             if(limelightHardware.getTx() != -999){
                 shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
                 shooterHardware.aimHood(shooterHardware.getHoodAim(limelightHardware.getBotDis()));
             } else {
-                shooterVelocity = shooterHardware.getShootSpeed(36.0);
-                shooterHardware.aimHood(shooterHardware.getHoodAim(36.0));
+                shooterVelocity = shooterHardware.getShootSpeed(128.0);
+                shooterHardware.aimHood(shooterHardware.getHoodAim(128.0));
             }
             shooterHardware.setShootVelocity(shooterVelocity);
             if(shooterHardware.withinVel(shooterVelocity)) {
@@ -54,7 +52,7 @@ public class ShootAction implements Action {
         } else {
             shooterHardware.feed();
             opMode.sleep(QualConstants.BUFFER_TIME);
-            shooterHardware.setShootVelocity(20.0);
+            shooterHardware.setShootVelocity(100.0);
             shooterHardware.aimHood(0.0);
             shooterHardware.stopFeed();
             //move ghetto arm back on top of ball to shoot

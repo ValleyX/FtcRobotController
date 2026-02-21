@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.MecanumDrive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.TankDrive;
-/*
+
 @Disabled
 public final class SplineTest extends LinearOpMode {
     @Override
@@ -39,4 +39,3 @@ public final class SplineTest extends LinearOpMode {
         }
     }
 }
-*/

@@ -24,7 +24,8 @@ public class RobotHardware {
     //sensor and IMU
     public IMU imu;
 
-    public Servo gobildaLight;
+    public Servo timerLight;
+    public Servo fullLight;
 
 
     //motor speed adding
@@ -78,8 +79,11 @@ public class RobotHardware {
                         )
                 )
         );
-        gobildaLight = opMode_.hardwareMap.get(Servo.class, "gobildaLight");
-        gobildaLight.setPosition(0.611);
+        timerLight = opMode_.hardwareMap.get(Servo.class, "timerLight");
+        timerLight.setPosition(0.611);
+
+        fullLight = opMode_.hardwareMap.get(Servo.class, "fullLight");
+        fullLight.setPosition(0.611);
     }
 
     public void powerMotors(double leftFront, double leftBack, double rightBack, double rightFront){
@@ -242,7 +246,12 @@ public class RobotHardware {
     //light Stuff
 
     /**Sets the color of the Gobilda light with values like a servo*/
-    public void setGobildaLight(double color){
-        gobildaLight.setPosition(color);
+    public void setTimerLight(double color){
+        timerLight.setPosition(color);
+    }
+
+    /**Sets the color of the Gobilda light with values like a servo*/
+    public void setFullLight(double color){
+        fullLight.setPosition(color);
     }
 }

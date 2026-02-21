@@ -11,16 +11,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Autos.Actions.FarShootAction;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Autos.Actions.IntakeAction;
-import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Autos.Actions.ShootAction;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Autos.Actions.StopIntakeAction;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.QualConstants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.ShooterHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.MecanumDrive;
-import org.opencv.core.Mat;
 
-@Autonomous(name = "Blue far Goal 9 Ball")
-public class BlueFarAuto_6_Ball extends LinearOpMode {
+@Autonomous(name = "Red far Goal 6 Ball")
+public class BlueFarAutoSixBall extends LinearOpMode {
 
 
     Pose2d estimate;
@@ -33,7 +31,7 @@ public class BlueFarAuto_6_Ball extends LinearOpMode {
         ShooterHardware shooterHardware = new ShooterHardware(this);
         LimelightHardware limelightHardware = new LimelightHardware(this);
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, initialPos);
-        limelightHardware.innit(0);
+        limelightHardware.innit(1);
         mecanumDrive.updatePoseEstimate();
         estimate = mecanumDrive.localizer.getPose();
         Servo gobildaLight = hardwareMap.get(Servo.class, "timerLight");
@@ -49,25 +47,28 @@ public class BlueFarAuto_6_Ball extends LinearOpMode {
 
 
         //6 balls
-        TrajectoryActionBuilder moveToPickup1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 17), Math.toRadians(25)))
-                .setTangent(Math.toRadians(45.0))
-                .splineToLinearHeading(new Pose2d(new Vector2d(-41,24), Math.toRadians(90.0)), Math.toRadians(130.0));
+        /*
+        TrajectoryActionBuilder moveToPickup1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, -17), Math.toRadians(-25)))
+                .setTangent(Math.toRadians(-45.0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(-41,-24), Math.toRadians(-90.0)), Math.toRadians(-130.0));
 
-        TrajectoryActionBuilder grab1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-41, 24), Math.toRadians(90.0)))
-                .lineToY(72-9);
+        TrajectoryActionBuilder grab1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-41, -24), Math.toRadians(-90.0)))
+                .lineToY(-72+9);
 
-        TrajectoryActionBuilder moveToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-41,72-9), Math.toRadians(125.0)))
+        TrajectoryActionBuilder moveToShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-41,-72+9), Math.toRadians(-125.0)))
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(new Vector2d(-60, 12), Math.toRadians(25.0)), Math.toRadians(0.0));
+                .splineToLinearHeading(new Pose2d(new Vector2d(-60, -12), Math.toRadians(-25.0)), Math.toRadians(0.0));
+
+         */
 
 
 
         // 9 balls
-        TrajectoryActionBuilder moveToPickup2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 12), Math.toRadians(25.0)))
+        TrajectoryActionBuilder moveToPickup2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 17), Math.toRadians(25.0)))
                 .setTangent(45.0)
-                .splineToLinearHeading(new Pose2d(new Vector2d(-45, 48), Math.toRadians(130.0)), Math.toRadians(90.0));
+                .splineToLinearHeading(new Pose2d(new Vector2d(-55, 48), Math.toRadians(130.0)), Math.toRadians(90.0));
 
-        TrajectoryActionBuilder grab2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-45, 48), Math.toRadians(130.0)))
+        TrajectoryActionBuilder grab2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-55, 48), Math.toRadians(130.0)))
                 .setTangent(45)
                 .splineToConstantHeading(new Vector2d(-72, 72), Math.toRadians(0.0));
 
@@ -88,11 +89,11 @@ public class BlueFarAuto_6_Ball extends LinearOpMode {
 
         if(limelightHardware.getTx() != -999){
             TrajectoryActionBuilder rotateShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 17), Math.toRadians(25)))
-                    .turn(Math.toRadians(-limelightHardware.getTx()+ 2.0));
+                    .turn(Math.toRadians(-limelightHardware.getTx()));
             Actions.runBlocking(rotateShoot1.build());
         }
 
-        Actions.runBlocking(new SequentialAction(
+        /*Actions.runBlocking(new SequentialAction(
                 new FarShootAction(shooterHardware, limelightHardware, this),
                 new IntakeAction(shooterHardware),
                 moveToPickup1.build(),
@@ -101,10 +102,10 @@ public class BlueFarAuto_6_Ball extends LinearOpMode {
         ));
 
         if(limelightHardware.getTx() != -999){
-            TrajectoryActionBuilder rotateShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 12), Math.toRadians(25)))
-                    .turn(Math.toRadians(-limelightHardware.getTx() + 2.0));
-            Actions.runBlocking(rotateShoot2.build());
-        }
+            TrajectoryActionBuilder rotateShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, -12), Math.toRadians(-25)))
+                    .turn(Math.toRadians(-limelightHardware.getTx()));
+            Actions.runBlocking(rotateShoot1.build());
+        }*/
 
         Actions.runBlocking( new SequentialAction(
                 new StopIntakeAction(shooterHardware),
@@ -116,9 +117,9 @@ public class BlueFarAuto_6_Ball extends LinearOpMode {
         ));
 
         if(limelightHardware.getTx() != -999){
-            TrajectoryActionBuilder rotateShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 12), Math.toRadians(25)))
-                    .turn(Math.toRadians(-limelightHardware.getTx() + 2.0));
-            Actions.runBlocking(rotateShoot3.build());
+            TrajectoryActionBuilder rotateShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 12), Math.toRadians(25)))
+                    .turn(Math.toRadians(-limelightHardware.getTx()));
+            Actions.runBlocking(rotateShoot1.build());
         }
 
         Actions.runBlocking(new SequentialAction(

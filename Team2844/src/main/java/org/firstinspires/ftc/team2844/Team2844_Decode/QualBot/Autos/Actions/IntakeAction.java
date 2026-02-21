@@ -18,6 +18,7 @@ public class IntakeAction implements Action {
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
         shooterHardware.closeServo();
+        shooterHardware.stopBallHold();
         if(shooterHardware.threeBall()) {
             shooterHardware.intake(0.0);
         } else {

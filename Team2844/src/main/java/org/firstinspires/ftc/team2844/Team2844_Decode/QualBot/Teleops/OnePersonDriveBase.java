@@ -4,8 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.RobotHardware;
@@ -97,8 +95,8 @@ public class OnePersonDriveBase extends LinearOpMode {
         }
 
         startTime = 0.0;
-        shooterHardware.stopBallHold();
         waitForStart();
+        shooterHardware.stopBallHold();
         startTime = getRuntime();
 
 
@@ -134,6 +132,12 @@ public class OnePersonDriveBase extends LinearOpMode {
             robotHardware.addDrivePower(frontLeftPower, backLeftPower, backRightPower, frontRightPower);
 
             full = shooterHardware.threeBall();
+
+            if(full){
+                robotHardware.setFullLight(1.0);
+            } else {
+                robotHardware.setFullLight(0.0);
+            }
 
             //run intake if left trigger is pulled\
             if(gamepad1.left_trigger > 0.1 && !full) {
@@ -329,23 +333,23 @@ public class OnePersonDriveBase extends LinearOpMode {
             }
 
             if(getRuntime()-startTime <= 60){
-                robotHardware.setGobildaLight(0.5);
+                robotHardware.setTimerLight(0.5);
             } else if( getRuntime()-startTime <= 100){
-                robotHardware.setGobildaLight(0.333);
+                robotHardware.setTimerLight(0.333);
             } else if(getRuntime()-startTime <= 120) {
                 double time = getRuntime();
                 if(time >= lastBlink+BLINK_TIME){
                     lastBlink = time;
                     if(color){
-                        robotHardware.setGobildaLight(0.0);
+                        robotHardware.setTimerLight(0.0);
                         color = false;
                     } else {
-                        robotHardware.setGobildaLight(0.28);
+                        robotHardware.setTimerLight(0.28);
                         color = true;
                     }
                 }
             } else {
-                robotHardware.setGobildaLight(0.611);
+                robotHardware.setTimerLight(0.611);
             }
             batteryVoltage = robotHardware.batteryVoltSensor.getVoltage();
 
