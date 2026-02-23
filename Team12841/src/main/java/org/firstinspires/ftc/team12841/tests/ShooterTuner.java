@@ -1,10 +1,9 @@
-package org.firstinspires.ftc.team12841.teleOps;
+package org.firstinspires.ftc.team12841.tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.team12841.RobotHardware;
@@ -17,8 +16,9 @@ public class ShooterTuner extends LinearOpMode
     //public DcMotorEx shooterMotor;
     RobotHardware shooterHardware;
 
-    public double highVelocity = 4500;
-    public double lowVelocity = 3000;
+    public double highVelocity = 3500;
+    public double lowVelocity = 2400;
+    public double stop = 0;
 
     double curTargetVelocity = highVelocity;
     double F = 0;
@@ -42,7 +42,12 @@ public class ShooterTuner extends LinearOpMode
             if (gamepad1.yWasPressed()) {
                 if (curTargetVelocity == highVelocity) {
                     curTargetVelocity = lowVelocity;
-                } else { curTargetVelocity = highVelocity; }
+                } else if(curTargetVelocity == lowVelocity)
+                {
+                    curTargetVelocity = stop;
+                } else {
+                    curTargetVelocity = highVelocity;
+                }
             }
 
             // allow to toggle through how big of step to make in P and F adjust
@@ -74,7 +79,7 @@ public class ShooterTuner extends LinearOpMode
             //telemetry.addLine("Init Complete");
 
             //set velocity
-            shooterHardware.shooter.setVelocity(shooterHardware.calculateRegression());
+            shooterHardware.setShooterRPM(curTargetVelocity);
 
             double curVelocity = (shooterHardware.shooter.getVelocity() * 60.0) / RobotHardware.SHOOTER_TICKS_PER_REV;
             double error = curTargetVelocity - curVelocity;

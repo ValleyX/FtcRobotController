@@ -25,4 +25,6 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
+    implementation project(':valleyLib-core')
+    implementation project(':valleyLib-ftc')
 }
