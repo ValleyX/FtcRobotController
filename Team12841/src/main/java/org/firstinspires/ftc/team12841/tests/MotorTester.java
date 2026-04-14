@@ -1,6 +1,5 @@
-package org.firstinspires.ftc.team12841.teleOps;
+package org.firstinspires.ftc.team12841.tests;
 
-import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;

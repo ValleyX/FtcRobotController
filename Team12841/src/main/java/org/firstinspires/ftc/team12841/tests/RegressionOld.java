@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team12841.teleOps;
+package org.firstinspires.ftc.team12841.tests;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Timer;
@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.team12841.RobotHardware;
-import org.firstinspires.ftc.team12841.configs.PanelsConfig;
 
 @Disabled
 @TeleOp(name = "Regression OLD", group = "TEST")

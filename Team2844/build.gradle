@@ -43,4 +43,8 @@ dependencies {
     implementation 'org.ftclib.ftclib:vision:2.1.0' // vision
     implementation 'org.ftclib.ftclib:core:2.1.1' // core
     //*end JAE Add
+
+    // ValleyLib
+    implementation project(':valleyLib-core')
+    implementation project(':valleyLib-ftc')
 }

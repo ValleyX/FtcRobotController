@@ -1,3 +1,5 @@
 include ':FtcRobotController'
 include ':Team2844'
 include ':Team12841'
+include ':valleyLib-core'
+include ':valleyLib-ftc'
