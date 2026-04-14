@@ -179,7 +179,7 @@ public class ShooterHardware {
     public double getShootSpeed(double distance) {
         if (distance != -999) {
           //  y = 0.1329324*x + 29.47163 //jae 2-19-26
-            shooterVel = ((0.1329324*distance) +  29.47163);
+            shooterVel = ((0.1329324*distance) +  27.47163);
            // shooterVel = ((0.1730847*distance)+ 24.34517);
             // shooterVel = ((0.1445058824*distance) + 25.99294118);
             //shooterVel = ((0.1824324324*distance) + 21.88378378);

@@ -120,6 +120,7 @@ public class RedFarAutoNineBall extends LinearOpMode {
         }
 
         Actions.runBlocking(new SequentialAction(
+                new StopIntakeAction(shooterHardware),
                 new FarShootAction(shooterHardware, limelightHardware, this),
                 moveOut.build()
         ));

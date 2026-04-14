@@ -49,7 +49,9 @@ public class RedFarAutoThreeBall extends LinearOpMode {
 
         shooterHardware.setShootVelocity(100.0);
         //start of moving
+        shooterHardware.stopFeed();
         Actions.runBlocking(moveToShoot1.build());
+
 
 
         if(limelightHardware.getTx() != -999){

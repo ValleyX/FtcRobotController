@@ -108,7 +108,7 @@ public class BlueCloseAuto extends LinearOpMode {
 
         TrajectoryActionBuilder moveOut = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, 24), Math.toRadians(55)))
                 .setTangent(Math.toRadians(180.0))
-                .splineToLinearHeading(new Pose2d(0, 48, Math.toRadians(-90.0)), Math.toRadians(180.0));
+                .splineToLinearHeading(new Pose2d(0, 48, Math.toRadians(90.0)), Math.toRadians(180.0));
 
 
         //start of moving
@@ -137,11 +137,12 @@ public class BlueCloseAuto extends LinearOpMode {
 
         if(limelightHardware.getTx() != -999){
             TrajectoryActionBuilder rotateShoot2 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, 24), Math.PI/3.5))
-                    .turn(Math.toRadians(-limelightHardware.getTx()+6));
+                    .turn(Math.toRadians(-limelightHardware.getTx()+2));
             Actions.runBlocking(rotateShoot2.build());
         }
 
         Actions.runBlocking(new SequentialAction(
+                new StopIntakeAction(shooterHardware),
                 new ShootAction(shooterHardware, limelightHardware, this),
                 new IntakeAction(shooterHardware),
                 pickupBalls2.build()
@@ -151,12 +152,13 @@ public class BlueCloseAuto extends LinearOpMode {
         if(shooterHardware.threeBall() || skip){
             shooterHardware.setShootVelocity(20.0);
             Actions.runBlocking(new SequentialAction(
-                    backUpToShoot2.build(),
-                    new StopIntakeAction(shooterHardware)
+                    new StopIntakeAction(shooterHardware),
+                    backUpToShoot2.build()
             ));
         } else {
             Actions.runBlocking(new SequentialAction(
                     backUp2.build(),
+                    new StopIntakeAction(shooterHardware),
                     moveToShoot3.build()
             ));
         }
@@ -166,11 +168,14 @@ public class BlueCloseAuto extends LinearOpMode {
 
         if(limelightHardware.getTx() != -999){
             TrajectoryActionBuilder rotateShoot3 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, 24), Math.toRadians(55)))
-                    .turn(Math.toRadians(-limelightHardware.getTx()));
+                    .turn(Math.toRadians(-limelightHardware.getTx()+2.0));
             Actions.runBlocking(rotateShoot3.build());
         }
 
+        shooterHardware.stopFeed();
+
         Actions.runBlocking( new SequentialAction(
+                new StopIntakeAction(shooterHardware),
                 new ShootAction(shooterHardware, limelightHardware, this),
                 moveOut.build()
         ));

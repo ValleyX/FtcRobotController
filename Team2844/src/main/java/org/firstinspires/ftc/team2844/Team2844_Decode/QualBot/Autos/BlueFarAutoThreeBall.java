@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Autos.Actions.ShootAction;
+import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Autos.Actions.StopIntakeAction;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.ShooterHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.RoadrunnerQuickstart.MecanumDrive;
@@ -50,6 +51,8 @@ public class BlueFarAutoThreeBall extends LinearOpMode {
         //start of moving
         Actions.runBlocking(moveToShoot1.build());
 
+        shooterHardware.stopFeed();
+
 
         if(limelightHardware.getTx() != -999){
             TrajectoryActionBuilder rotateShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, 8.75), Math.toRadians(25)))
@@ -58,6 +61,7 @@ public class BlueFarAutoThreeBall extends LinearOpMode {
         }
 
         Actions.runBlocking( new SequentialAction(
+                new StopIntakeAction(shooterHardware),
                 new ShootAction(shooterHardware, limelightHardware, this),
                 moveOut.build()
         ));

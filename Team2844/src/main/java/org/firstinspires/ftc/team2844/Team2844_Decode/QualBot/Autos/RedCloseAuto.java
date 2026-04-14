@@ -39,7 +39,7 @@ public class RedCloseAuto extends LinearOpMode {
         ShooterHardware shooterHardware = new ShooterHardware(this);
         LimelightHardware limelightHardware = new LimelightHardware(this);
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, initialPos);
-        limelightHardware.innit(0);
+        limelightHardware.innit(1);
         mecanumDrive.updatePoseEstimate();
         estimate = mecanumDrive.localizer.getPose();
         boolean skip = false;
@@ -108,7 +108,7 @@ public class RedCloseAuto extends LinearOpMode {
 
         TrajectoryActionBuilder moveOut = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(24, -24), -Math.toRadians(55)))
                 .setTangent(Math.toRadians(180.0))
-                .splineToLinearHeading(new Pose2d(0, -48, Math.toRadians(90.0)), -Math.toRadians(180.0));
+                .splineToLinearHeading(new Pose2d(0, -48, Math.toRadians(-90.0)), -Math.toRadians(180.0));
 
 
         //start of moving
@@ -142,6 +142,7 @@ public class RedCloseAuto extends LinearOpMode {
         }
 
         Actions.runBlocking(new SequentialAction(
+                new StopIntakeAction(shooterHardware),
                 new ShootAction(shooterHardware, limelightHardware, this),
                 new IntakeAction(shooterHardware),
                 pickupBalls2.build()
@@ -171,6 +172,7 @@ public class RedCloseAuto extends LinearOpMode {
         }
 
         Actions.runBlocking( new SequentialAction(
+                new StopIntakeAction(shooterHardware),
                 new ShootAction(shooterHardware, limelightHardware, this),
                 moveOut.build()
         ));

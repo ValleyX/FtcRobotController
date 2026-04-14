@@ -17,8 +17,7 @@ public class StopIntakeAction implements Action {
 
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-        shooterHardware.intake(0.0);
-        shooterHardware.closeServo();
+        shooterHardware.stopFeed();
         return false;
     }
 }

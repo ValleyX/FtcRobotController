@@ -6,10 +6,13 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.LimelightHardware;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.QualConstants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Hardwares.ShooterHardware;
+
+import java.util.concurrent.TimeUnit;
 
 
 public class FarShootAction implements Action {
@@ -17,11 +20,16 @@ public class FarShootAction implements Action {
     ShooterHardware shooterHardware;
     LimelightHardware limelightHardware;
     LinearOpMode opMode;
+    boolean init;
+    ElapsedTime time;
 
     public FarShootAction(ShooterHardware shooterHardware, LimelightHardware limelightHardware, LinearOpMode opMode) {
         this.shooterHardware = shooterHardware;
         this.limelightHardware = limelightHardware;
         this.opMode = opMode;
+        time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        time.reset();
+        init = true;
     }
 
     @Override
@@ -29,7 +37,10 @@ public class FarShootAction implements Action {
         //int count = 0;
         //move ghetto arm away from ball to shoot
         shooterHardware.stopBallRelease();//jae
-        shooterHardware.intake(0.0);
+//        if(init) {
+//            shooterHardware.intake(0.0);
+//            init = false;
+//        }
 
         if (shooterHardware.oneBall() && opMode.opModeIsActive()) {
             double shooterVelocity = shooterHardware.getShootSpeed(limelightHardware.getBotDis());
@@ -42,6 +53,7 @@ public class FarShootAction implements Action {
             }
             shooterHardware.setShootVelocity(shooterVelocity);
             if(shooterHardware.withinVel(shooterVelocity)) {
+                time.reset();
                 shooterHardware.feed();
             } else if(shooterHardware.belowVel(shooterVelocity)) {
                 shooterHardware.stopFeed();

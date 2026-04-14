@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.QualBot.Autos;
 
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -85,11 +86,13 @@ public class RedFarAutoSixBall extends LinearOpMode {
 
         shooterHardware.setShootVelocity(100.0);
         //start of moving
+        shooterHardware.stopFeed();
         Actions.runBlocking(moveToShoot1.build());
+
 
         if(limelightHardware.getTx() != -999){
             TrajectoryActionBuilder rotateShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, -17), Math.toRadians(-25)))
-                    .turn(Math.toRadians(-limelightHardware.getTx()));
+                    .turn(Math.toRadians(-limelightHardware.getTx()+2.0));
             Actions.runBlocking(rotateShoot1.build());
         }
 
@@ -107,22 +110,32 @@ public class RedFarAutoSixBall extends LinearOpMode {
             Actions.runBlocking(rotateShoot1.build());
         }*/
 
+        shooterHardware.setShootVelocity(80.0);
         Actions.runBlocking( new SequentialAction(
                 new StopIntakeAction(shooterHardware),
                 new FarShootAction(shooterHardware, limelightHardware, this),
                 new IntakeAction(shooterHardware),
                 moveToPickup2.build(),
                 grab2.build(),
-                moveToShoot3.build()
+                new ParallelAction(
+                        moveToShoot3.build(),
+                        new IntakeAction(shooterHardware)
+                )
         ));
+
+        shooterHardware.stopFeed();
+
 
         if(limelightHardware.getTx() != -999){
             TrajectoryActionBuilder rotateShoot1 = mecanumDrive.actionBuilder(new Pose2d(new Vector2d(-60, -12), Math.toRadians(-25)))
-                    .turn(Math.toRadians(-limelightHardware.getTx()));
+                    .turn(Math.toRadians(-limelightHardware.getTx()+2.0));
             Actions.runBlocking(rotateShoot1.build());
         }
 
+        shooterHardware.stopFeed();
+
         Actions.runBlocking(new SequentialAction(
+                new StopIntakeAction(shooterHardware),
                 new FarShootAction(shooterHardware, limelightHardware, this),
                 moveOut.build()
         ));

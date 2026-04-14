@@ -20,7 +20,7 @@ public class IntakeAction implements Action {
         shooterHardware.closeServo();
         shooterHardware.stopBallHold();
         if(shooterHardware.threeBall()) {
-            shooterHardware.intake(0.0);
+            shooterHardware.stopFeed();
         } else {
             shooterHardware.intake(QualConstants.INTAKE_SPEED);
         }

@@ -18,11 +18,13 @@ public class ShootAction implements Action {
     ShooterHardware shooterHardware;
     LimelightHardware limelightHardware;
     LinearOpMode opMode;
+    boolean init;
 
     public ShootAction(ShooterHardware shooterHardware, LimelightHardware limelightHardware, LinearOpMode opMode) {
         this.shooterHardware = shooterHardware;
         this.limelightHardware = limelightHardware;
         this.opMode = opMode;
+        init = true;
     }
 
     @Override
@@ -30,7 +32,10 @@ public class ShootAction implements Action {
         //int count = 0;
         //move ghetto arm away from ball to shoot
         shooterHardware.stopBallRelease();//jae
-        shooterHardware.intake(0.0);
+//        if(init) {
+//            shooterHardware.intake(0.0);
+//            init = false;
+//        }
 
 
         if (shooterHardware.oneBall() && opMode.opModeIsActive()) {
