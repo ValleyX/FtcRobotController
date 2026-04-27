@@ -15,9 +15,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(13.4)
-            .forwardZeroPowerAcceleration(-32.20906457774129)
-            .lateralZeroPowerAcceleration(-39.73511957623294)
+            .mass(13.4) // Weigh Robot in KG
+            .forwardZeroPowerAcceleration(-32.20906457774129) // Tuning OpMode
+            .lateralZeroPowerAcceleration(-39.73511957623294) // Tuning OpMode
 
             .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0, 0))
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.025, 0, 0.00001, 0.6, 0.01))
@@ -33,17 +33,17 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .xVelocity(125.14010)
-            .yVelocity(50.3566989);
+            .xVelocity(125.14010) // Tuning OpMode
+            .yVelocity(50.3566989); // Tuning OpMode
 
 
-    public static ThreeWheelIMUConstants localizerConstants = new ThreeWheelIMUConstants()
-            .forwardTicksToInches(0.00197913724762) // 0.0019727156766619694, 0.001966752403543089, 0.00199794366264916
-            .strafeTicksToInches(0.001195489955537)
-            .turnTicksToInches(0.014324695549060188)
-            .leftPodY(3.5)
-            .rightPodY(-2.3)
-            .strafePodX(-5.75)
+    public static ThreeWheelIMUConstants localizerConstants = new ThreeWheelIMUConstants() // This changes based on whether you use 2 odometry wheels or 3, see docs
+            .forwardTicksToInches(0.00197913724762) // Tuning OpMode (take average of 5ish runs)
+            .strafeTicksToInches(0.001195489955537) // Tuning OpMode (take average of 5ish runs)
+            .turnTicksToInches(0.014324695549060188) // Tuning OpMode (take average of 5ish runs)
+            .leftPodY(3.5) // From center in inches, chart on docs
+            .rightPodY(-2.3) // From center in inches, chart on docs
+            .strafePodX(-5.75) // From center in inches, chart on docs
             .leftEncoder_HardwareMapName("lfMotor")
             .rightEncoder_HardwareMapName("rbMotor")
             .strafeEncoder_HardwareMapName("lbMotor")
