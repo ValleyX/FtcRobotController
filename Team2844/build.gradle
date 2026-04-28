@@ -27,8 +27,8 @@ android {
 repositories {
     maven {
         url = 'https://maven.brott.dev/'
-        url = "https://mymaven.bylazar.com/releases" // Added by TC
-        url = "https://jitpack.io"
+//        url = "https://mymaven.bylazar.com/releases" // Added by TC
+//        url = "https://jitpack.io"
         // mavenCentral() // JAE Add
     }
 }
@@ -40,7 +40,8 @@ dependencies {
     implementation "com.acmerobotics.roadrunner:ftc:0.1.23"
     implementation "com.acmerobotics.roadrunner:core:1.0.1"
     implementation "com.acmerobotics.roadrunner:actions:1.0.1"
-    implementation "com.acmerobotics.dashboard:dashboard:0.4.17"
+    implementation "com.acmerobotics.dashboard:dashboard:0.5.1"
+    //implementation "com.acmerobotics.dashboard:dashboard:0.4.17"
     // End CW Add
 
     // TC Add
@@ -57,6 +58,6 @@ dependencies {
     //*end JAE Add
 
     // ValleyLib
-    implementation 'com.github.ValleyX:ValleyLib:core:1.0.0'
-    implementation 'com.github.ValleyX:ValleyLib:ftc:1.0.0'
+    //implementation 'com.github.ValleyX:ValleyLib:core:1.0.0'
+    //implementation 'com.github.ValleyX:ValleyLib:ftc:1.0.0'
 }
