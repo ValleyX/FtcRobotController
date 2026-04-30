@@ -32,14 +32,17 @@ public class IntakeLineCmd extends CommandBase {
         boolean topBroken = shooterFeedSubsystem.topBroken();
         boolean bayOne = spindexerSubsystem.ballInBayOne();
 
+
+
         if(!(ballInBeam && topBroken && bayOne)){
-            intakeSubsystem.activate(Constants.INTAKE_SPEED);
+
             if(!topBroken){
 //                new ParallelCommandGroup(new UptakeCmd(kickSubsystem), new TransferCmd(shooterFeedSubsystem));
                 if(bayOne) {
                     kickSubsystem.rotateKickerDown();
                 } else {
                     kickSubsystem.rotateKickerDownIntake();
+                    intakeSubsystem.activate(Constants.INTAKE_SPEED);
                 }
                 kickSubsystem.runKickerSpin();
                 kickSubsystem.runSFeedForward();
@@ -47,6 +50,9 @@ public class IntakeLineCmd extends CommandBase {
                 timer.reset();
             } else {
 //                new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem));
+                if(!bayOne){
+                    intakeSubsystem.activate(Constants.INTAKE_SPEED);
+                }
                 kickSubsystem.rotateKickerUp();
                 kickSubsystem.stopKickerSpin();
                 kickSubsystem.stopSFeed();

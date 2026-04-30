@@ -17,12 +17,13 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Sh
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
 import java.util.function.DoubleSupplier;
 
 public class SmartLineShooterCmd extends ParallelCommandGroup {
 
-    public SmartLineShooterCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem, DriveSubsystem driveSubsystem){
+    public SmartLineShooterCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem, DriveSubsystem driveSubsystem, SpindexerSubsystem spindexerSubsystem){
         DoubleSupplier velocity = () -> driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
         addCommands(
                 //At the same time, aim the turret
@@ -35,7 +36,7 @@ public class SmartLineShooterCmd extends ParallelCommandGroup {
                 new ConditionalCommand(
                         new ParallelCommandGroup(
                                 new TransferCmd(shooterFeedSubsystem),
-                                new UptakeCmd(kickSubsystem),
+                                new UptakeCmd(kickSubsystem, spindexerSubsystem),
                                 new ActivateIntakeCmd(intakeSubsystem)
                         ),
                         new ParallelCommandGroup(

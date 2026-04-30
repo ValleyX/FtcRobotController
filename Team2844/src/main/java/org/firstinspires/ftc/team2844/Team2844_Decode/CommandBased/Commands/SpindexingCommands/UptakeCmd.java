@@ -3,12 +3,15 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Spi
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
 public class UptakeCmd extends CommandBase {
     KickSubsystem kickSubsystem;
+    SpindexerSubsystem spindexerSubsystem;
 
-    public UptakeCmd(KickSubsystem kickSubsystem){
+    public UptakeCmd(KickSubsystem kickSubsystem, SpindexerSubsystem spindexerSubsystem){
         this.kickSubsystem = kickSubsystem;
+        this.spindexerSubsystem = spindexerSubsystem;
         addRequirements(kickSubsystem);
     }
 
@@ -17,6 +20,7 @@ public class UptakeCmd extends CommandBase {
         kickSubsystem.rotateKickerDown();
         kickSubsystem.runKickerSpin();
         kickSubsystem.runSFeedForward();
+        spindexerSubsystem.runToShootSlot(spindexerSubsystem.getSlot());
     }
 
 

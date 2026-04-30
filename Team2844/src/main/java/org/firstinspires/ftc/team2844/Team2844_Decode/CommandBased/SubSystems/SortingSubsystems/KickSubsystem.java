@@ -55,9 +55,8 @@ public class KickSubsystem extends SubsystemBase {
         kickerSpin.setPower(0.0);
     }
 
-    public void rotateKickerDown(){
-        kickToPos(Constants.KICKDOWN);
-    }
+    public void rotateKickerDown(){kickToPos(Constants.KICKDOWN);}
+
     public void rotateKickerDownExtra(){
         kickToPos(Constants.KICKDOWN_EXTRA);
     }

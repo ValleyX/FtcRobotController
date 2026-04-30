@@ -94,7 +94,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public void runToShootSlot(int desiredSlot){
-        if(0 <= desiredSlot && desiredSlot < Constants.SLOT_ARRAY.length) {
+        if(0 < desiredSlot && desiredSlot < Constants.SLOT_ARRAY.length) {
             pos = desiredSlot;
             spindexer.setPosition(Constants.SLOT_ARRAY[desiredSlot] - 0.005);
         } else if (desiredSlot >= Constants.SLOT_ARRAY.length){

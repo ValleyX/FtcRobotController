@@ -44,7 +44,7 @@ public class SmartSortShootCmd extends SequentialCommandGroup {
                     new ConditionalCommand(
                             new ParallelCommandGroup(
                                     new TransferCmd(shooterFeedSubsystem),
-                                    new UptakeCmd(kickSubsystem)
+                                    new UptakeCmd(kickSubsystem, spindexerSubsystem)
                             ),
                             new ParallelCommandGroup(
                                     new StopTransferCmd(shooterFeedSubsystem),
@@ -71,7 +71,7 @@ public class SmartSortShootCmd extends SequentialCommandGroup {
                     new ConditionalCommand(
                             new ParallelCommandGroup(
                                     new TransferCmd(shooterFeedSubsystem),
-                                    new UptakeCmd(kickSubsystem)
+                                    new UptakeCmd(kickSubsystem, spindexerSubsystem)
                             ),
                             new ParallelCommandGroup(
                                     new StopTransferCmd(shooterFeedSubsystem),

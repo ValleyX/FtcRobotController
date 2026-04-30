@@ -45,9 +45,9 @@ dependencies {
     // End CW Add
 
     // TC Add
-    implementation 'com.pedropathing:ftc:2.1.1'
-    implementation 'com.pedropathing:telemetry:1.0.1'
-    implementation 'com.bylazar:fullpanels:1.0.12'
+    //implementation 'com.pedropathing:ftc:2.1.1'
+    //implementation 'com.pedropathing:telemetry:1.0.1'
+    //implementation 'com.bylazar:fullpanels:1.0.12'
     // End TC Add
 
 

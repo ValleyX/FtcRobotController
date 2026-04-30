@@ -83,7 +83,7 @@ public class TeleOpBase extends CommandOpMode {
 
         runIntakeSortCmd = new IntakeSortCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
         stopIntakeCmd = new StopIntakeCmd(subsystems.intakeSubsystem);
-        uptakeCmd = new UptakeCmd(subsystems.kickSubsystem);
+        uptakeCmd = new UptakeCmd(subsystems.kickSubsystem, subsystems.spindexerSubsystem);
         neutralAimTurretCmd = new AimTurretCmd(subsystems.aimSubsystem, 90.0);
         intakeLineCmd = new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
         stopIntakeLineCmd = new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
@@ -99,11 +99,11 @@ public class TeleOpBase extends CommandOpMode {
         );
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem))
+                .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, subsystems.spindexerSubsystem))
                 .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)
-                .whenHeld(new ParallelCommandGroup( new UptakeCmd(subsystems.kickSubsystem),
+                .whenHeld(new ParallelCommandGroup( new UptakeCmd(subsystems.kickSubsystem, subsystems.spindexerSubsystem),
                         new TransferCmd(subsystems.shooterFeedSubsystem)))
                 .whenReleased( new ParallelCommandGroup(new StopUptakeCmd(subsystems.kickSubsystem),
                         new StopTransferCmd(subsystems.shooterFeedSubsystem)));
@@ -272,4 +272,10 @@ public class TeleOpBase extends CommandOpMode {
         telemetry.addData("Bay Three Red Values: ",subsystems.spindexerSubsystem.bayThreeRed()[0] + ", " +  subsystems.spindexerSubsystem.bayThreeRed()[1]);
         telemetry.addData("Bay Three Green Values: ",subsystems.spindexerSubsystem.bayThreeGreen()[0] + ", "+subsystems.spindexerSubsystem.bayThreeGreen()[1]);
     }*/
+
+    //make do this stuff
+    //intake off when ball in bay one
+    //kick never goes all the way up
+    //ziptie spindexer
+    //keep kick down until beam is broken and extra with timeout
 }

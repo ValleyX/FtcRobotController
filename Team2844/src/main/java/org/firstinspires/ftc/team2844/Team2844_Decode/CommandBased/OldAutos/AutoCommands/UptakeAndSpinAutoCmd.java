@@ -24,7 +24,7 @@ public class UptakeAndSpinAutoCmd extends ConditionalCommand {
         super(
                 new ParallelCommandGroup(
                         new TransferCmd(shooterFeedSubsystem),
-                        new UptakeCmd(kickSubsystem),
+                        new UptakeCmd(kickSubsystem, spindexerSubsystem),
                         new ActivateIntakeCmd(intakeSubsystem),
 
                         new ConditionalCommand(
