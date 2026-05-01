@@ -39,16 +39,16 @@ public class Constants {
 
 
     //Uptake
-    public static double KICKDOWN = 0.15;
-    public static double KICKDOWN_EXTRA = 0.25;
+    public static double KICKDOWN = 0.3;
+    public static double KICKDOWN_EXTRA = 0.35;
     public static double KICKDOWN_INTAKE = 0;
     public static double KICKUP = 0;
 
 
     //spindexer
-    public static double SLOT_ZERO = 0.0;
-    public static double SLOT_ONE = 1.0/3.0; //0.2/3
-    public static double SLOT_TWO = 2*(1.0/3.0); //2*(0.2/3)
+    public static double SLOT_ZERO = 0.055;
+    public static double SLOT_ONE = 0.45; //0.2/3
+    public static double SLOT_TWO = 0.835; //2*(0.2/3)
 
     public static double SLOT_ZERO_LOOPED_ONE = 0.2;
     public static double SLOT_ONE_LOOPED_ONE = 4*(0.2/3);
