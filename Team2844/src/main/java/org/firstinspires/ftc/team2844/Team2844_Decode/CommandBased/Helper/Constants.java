@@ -50,9 +50,9 @@ public class Constants {
     public static double SLOT_ONE = 0.45; //0.2/3
     public static double SLOT_TWO = 0.835; //2*(0.2/3)
 
-    public static double SLOT_ZERO_LOOPED_ONE = 0.2;
-    public static double SLOT_ONE_LOOPED_ONE = 4*(0.2/3);
-    public static double SLOT_TWO_LOOPED_ONE = 5*(0.2/3);
+    public static double SLOT_ZERO_LOOPED_ONE = 0.055;//0.2;
+    public static double SLOT_ONE_LOOPED_ONE = 0.45;//4*(0.2/3);
+    public static double SLOT_TWO_LOOPED_ONE = 0.835;//5*(0.2/3);
 
     public static double[] SLOT_ARRAY = {SLOT_ZERO, SLOT_ONE, SLOT_TWO, SLOT_ZERO_LOOPED_ONE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE};
 

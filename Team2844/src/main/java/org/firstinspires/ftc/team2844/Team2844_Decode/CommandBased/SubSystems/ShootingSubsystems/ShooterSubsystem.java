@@ -9,7 +9,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.MotorExPair;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-//Shooter Subsystem for the turret targeting, and the shooter motor
+/**Shooter Subsystem for the shooter motors*/
 public class ShooterSubsystem extends SubsystemBase {
 
     //Shooting Motor

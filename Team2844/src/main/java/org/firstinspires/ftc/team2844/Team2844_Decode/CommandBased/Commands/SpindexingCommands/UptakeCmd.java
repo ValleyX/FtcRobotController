@@ -20,6 +20,7 @@ public class UptakeCmd extends CommandBase {
         kickSubsystem.rotateKickerDown();
         kickSubsystem.runKickerSpin();
         kickSubsystem.runSFeedForward();
+        // Extra kick logic? Yea that would probably go in here. or maybe in the shoot logic itself
         spindexerSubsystem.runToShootSlot(spindexerSubsystem.getSlot());
     }
 

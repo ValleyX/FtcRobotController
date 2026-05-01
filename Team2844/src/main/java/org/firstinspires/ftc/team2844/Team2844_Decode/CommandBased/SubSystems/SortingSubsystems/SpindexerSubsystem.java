@@ -315,6 +315,10 @@ public class SpindexerSubsystem extends SubsystemBase {
         }
     }
 
+    public boolean bayOneReady(){
+        return !bay1 && !empty();
+    }
+
 
 
     @Override

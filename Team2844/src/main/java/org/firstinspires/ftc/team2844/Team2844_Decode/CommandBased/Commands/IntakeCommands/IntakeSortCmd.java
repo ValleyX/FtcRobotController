@@ -12,7 +12,6 @@ public class IntakeSortCmd extends CommandBase {
     private IntakeSubsystem intakeSubsystem;
     private SpindexerSubsystem spindexerSubsystem;
     private KickSubsystem kickSubsystem;
-    private boolean passed;
     SlotCmd slotCmd;
 
 
@@ -20,8 +19,7 @@ public class IntakeSortCmd extends CommandBase {
         this.intakeSubsystem = intakeSubsystem;
         this.spindexerSubsystem = spindexerSubsystem;
         this.kickSubsystem = kickSubsystem;
-        addRequirements(intakeSubsystem);
-        passed = true;
+        addRequirements(intakeSubsystem, spindexerSubsystem, kickSubsystem);
     }
 
     @Override
@@ -31,7 +29,7 @@ public class IntakeSortCmd extends CommandBase {
 
     @Override
     public void execute(){
-        if(!spindexerSubsystem.fullSpindexer()) {
+        if(!spindexerSubsystem.fullSpindexer() && !spindexerSubsystem.ballInBayOne()) {
             intakeSubsystem.activate(Constants.INTAKE_SPEED);
         } else {
             intakeSubsystem.stop();

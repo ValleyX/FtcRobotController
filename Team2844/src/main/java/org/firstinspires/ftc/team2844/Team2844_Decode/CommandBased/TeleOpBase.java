@@ -26,6 +26,8 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Shoo
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartLineShooterCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopTransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.TransferCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.NextSlotCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.PreviousSlotCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
@@ -109,13 +111,13 @@ public class TeleOpBase extends CommandOpMode {
                         new StopTransferCmd(subsystems.shooterFeedSubsystem)));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 0));
+                .whenPressed(new PreviousSlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 1));
+                .whenPressed(new NextSlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem));
 
-        m_driveOp.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 2));
+//        m_driveOp.getGamepadButton(GamepadKeys.Button.Y)
+//                .whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 2));
 
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
@@ -196,7 +198,7 @@ public class TeleOpBase extends CommandOpMode {
             }*/
 
             if ( rightTriggerReader.isDown()) {
-                new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
+                new IntakeSortCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
             } else if (rightTriggerReader.wasJustReleased()) {
                 new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
             }
@@ -275,7 +277,5 @@ public class TeleOpBase extends CommandOpMode {
 
     //make do this stuff
     //intake off when ball in bay one
-    //kick never goes all the way up
-    //ziptie spindexer
     //keep kick down until beam is broken and extra with timeout
 }

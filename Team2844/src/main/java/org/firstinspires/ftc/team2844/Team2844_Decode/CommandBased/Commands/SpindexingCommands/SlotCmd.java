@@ -25,6 +25,7 @@ public class SlotCmd extends CommandBase {
         addRequirements(spindexerSubsystem, kickSubsystem);
 
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
         if(0 <= desiredSlot && desiredSlot < Constants.SLOT_ARRAY.length) {
             this.desiredSlot = desiredSlot;
         } else if (0 > desiredSlot) {
