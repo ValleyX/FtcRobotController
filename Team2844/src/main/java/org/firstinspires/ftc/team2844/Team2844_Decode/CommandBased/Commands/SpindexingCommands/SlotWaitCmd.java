@@ -3,26 +3,22 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Spi
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
 import java.util.concurrent.TimeUnit;
 
-public class SlotCmd extends CommandBase {
+public class SlotWaitCmd extends CommandBase {
 
     SpindexerSubsystem spindexerSubsystem;
-    KickSubsystem kickSubsystem;
     ElapsedTime timer;
     int slot;
     int desiredSlot;
     boolean finished = false;
 
-    public SlotCmd(SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem, int desiredSlot){
+    public SlotWaitCmd(SpindexerSubsystem spindexerSubsystem, int desiredSlot){
         this.spindexerSubsystem = spindexerSubsystem;
-        this.kickSubsystem = kickSubsystem;
-        addRequirements(spindexerSubsystem, kickSubsystem);
+        addRequirements(spindexerSubsystem);
 
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
@@ -37,26 +33,8 @@ public class SlotCmd extends CommandBase {
 
     @Override
     public void initialize() {
-        if (desiredSlot < 0) {
-            desiredSlot = 0;
-        } else if(Constants.SLOT_ARRAY.length <= desiredSlot){
-            desiredSlot = Constants.SLOT_ARRAY.length-1;
-        }
-
         slot = spindexerSubsystem.getSlot();
         timer.reset();
-        if(slot - desiredSlot < 0){
-            kickSubsystem.rotateKickerUp();
-            kickSubsystem.runKickerSpin();
-            kickSubsystem.runSFeedBackward();
-        } else if(slot - desiredSlot == 0){
-            kickSubsystem.stopKickerSpin();
-            kickSubsystem.stopSFeed();
-        } else {
-            kickSubsystem.runKickerSpinBackwards();
-            kickSubsystem.runSFeedForward();
-        }
-
         spindexerSubsystem.runToSlot(desiredSlot);
     }
 
@@ -67,20 +45,11 @@ public class SlotCmd extends CommandBase {
             finished = false;
         } else {
             finished = true;
-            kickSubsystem.stopSFeed();
-            kickSubsystem.stopKickerSpin();
         }
     }
 
     @Override
     public boolean isFinished() {
         return finished;
-    }
-
-
-    @Override
-    public void end(boolean interrupted) {
-        kickSubsystem.stopKickerSpin();
-        kickSubsystem.stopSFeed();
     }
 }

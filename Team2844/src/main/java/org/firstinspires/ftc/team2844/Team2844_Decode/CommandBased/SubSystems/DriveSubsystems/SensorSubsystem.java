@@ -97,14 +97,38 @@ public class SensorSubsystem extends SubsystemBase {
 
     public double getBotXLL(){
         if(llResult != null && llResult.isValid()){
-            return getBotPoseLL().getPosition().x;
+            return getBotPoseLL().getPosition().x*Constants.METER_TO_INCH;
         }
         return Constants.NO_LL;
     }
 
     public double getBotYLL(){
         if(llResult != null && llResult.isValid()){
-            return getBotPoseLL().getPosition().y;
+            return getBotPoseLL().getPosition().y*Constants.METER_TO_INCH;
+        }
+        return Constants.NO_LL;
+    }
+
+    public Pose3D getBotPoseLLMT2(){
+        if (llResult != null && llResult.isValid()) {
+            Pose3D botpose = llResult.getBotpose_MT2();
+            if (botpose != null) {
+                return botpose;
+            }
+        }
+        return null;
+    }
+
+    public double getBotXLLMT2(){
+        if(llResult != null && llResult.isValid()){
+            return getBotPoseLLMT2().getPosition().x*Constants.METER_TO_INCH;
+        }
+        return Constants.NO_LL;
+    }
+
+    public double getBotYLLMT2(){
+        if(llResult != null && llResult.isValid()){
+            return getBotPoseLLMT2().getPosition().y*Constants.METER_TO_INCH;
         }
         return Constants.NO_LL;
     }

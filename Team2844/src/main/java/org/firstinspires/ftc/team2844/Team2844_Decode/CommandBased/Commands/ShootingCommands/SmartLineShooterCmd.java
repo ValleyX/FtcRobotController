@@ -36,7 +36,7 @@ public class SmartLineShooterCmd extends ParallelCommandGroup {
                 new ConditionalCommand(
                         new ParallelCommandGroup(
                                 new TransferCmd(shooterFeedSubsystem),
-                                new UptakeCmd(kickSubsystem, spindexerSubsystem),
+                                new UptakeCmd(kickSubsystem),
                                 new ActivateIntakeCmd(intakeSubsystem)
                         ),
                         new ParallelCommandGroup(

@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 
 public class FallingEdgeTrigger {
     private Supplier<Boolean> booleanSupplier;
-    private boolean previousState = true;
+    private boolean previousState = false;
 
     public FallingEdgeTrigger(Supplier<Boolean> booleanSupplier){
         this.booleanSupplier = booleanSupplier;

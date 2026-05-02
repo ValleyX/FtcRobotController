@@ -5,11 +5,11 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 
-public class NeutralAim extends CommandBase {
+public class NeutralAimCmd extends CommandBase {
 
     AimSubsystem aimSubsystem;
 
-    public NeutralAim (AimSubsystem aimSubsystem){
+    public NeutralAimCmd(AimSubsystem aimSubsystem){
         this.aimSubsystem = aimSubsystem;
     }
 

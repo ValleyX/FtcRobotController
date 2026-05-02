@@ -9,9 +9,14 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Aimi
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.ActivateIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.MoveArtifactShootCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.PreviousSlotCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotWaitCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopSpinCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeExtraCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeLessCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
@@ -26,8 +31,7 @@ import java.util.function.DoubleSupplier;
 public class SmartSortShootCmd extends SequentialCommandGroup {
     public SmartSortShootCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem, DriveSubsystem driveSubsystem){
         DoubleSupplier velocity = () -> driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
-        InstantCommand previousSlot = new InstantCommand(() ->spindexerSubsystem.runToSlot(spindexerSubsystem.getSlot()-1), spindexerSubsystem);
-        InstantCommand currentSlot = new InstantCommand(() ->spindexerSubsystem.runToSlot(spindexerSubsystem.getSlot()), spindexerSubsystem);
+        //InstantCommand currentSlot = new InstantCommand(() ->spindexerSubsystem.runToSlot(spindexerSubsystem.getSlot()), spindexerSubsystem);
 
 
             addCommands(
@@ -38,24 +42,28 @@ public class SmartSortShootCmd extends SequentialCommandGroup {
                             //Also set the velocity to the amount based on distance from apriltag
                             new VelocityShootCmd(shooterSubsystem, velocity),
 
-                            //if your at velocity, uptake and shoot, otherwise, don't
-                    new ConditionalCommand(
-                            new ParallelCommandGroup(
-                                    new TransferCmd(shooterFeedSubsystem),
-                                    new UptakeCmd(kickSubsystem, spindexerSubsystem)
-                            ),
-                            new ParallelCommandGroup(
-                                    new StopTransferCmd(shooterFeedSubsystem),
-                                    new StopSpinCmd(kickSubsystem)
-                            ),
-                            shooterSubsystem::inRange
-                    ),
-                            new ConditionalCommand(
-                                    previousSlot,
-                                    currentSlot,
-                                    spindexerSubsystem::bayOneReady
-                            )
 
+                            //if your at velocity, uptake and shoot, otherwise, don't
+                            new ConditionalCommand(
+                                    new ParallelCommandGroup(
+                                            new ConditionalCommand(
+                                                    new ConditionalCommand(
+                                                            new SequentialCommandGroup(new UptakeLessCmd(kickSubsystem), new MoveArtifactShootCmd(spindexerSubsystem).withTimeout(2000)),
+                                                            new ConditionalCommand(
+                                                                    new UptakeExtraCmd(kickSubsystem),
+                                                                    new UptakeCmd(kickSubsystem),
+                                                                    spindexerSubsystem::empty
+                                                            ),
+                                                            spindexerSubsystem::bayOneReady
+                                                    ),
+                                                    new InstantCommand(),
+                                                    shooterFeedSubsystem::topBroken
+                                            ),
+                                            new TransferCmd(shooterFeedSubsystem)
+                                    ),
+                                    new ParallelCommandGroup(new StopTransferCmd(shooterFeedSubsystem), new UptakeCmd(kickSubsystem)),
+                                    shooterSubsystem::inRange
+                            )
                             //go to the slot that sorts it
                             //new SlotCmd(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSortPos())
                     )

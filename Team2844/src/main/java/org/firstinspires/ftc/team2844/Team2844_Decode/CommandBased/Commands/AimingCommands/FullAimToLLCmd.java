@@ -38,6 +38,7 @@ public class FullAimToLLCmd extends CommandBase {
                 }
             }
             aimSubsystem.aimHood(driveSubsystem.hoodLinReg(sensorSubsystem.getPipeline()));
+            //driveSubsystem.setPinpointPose();
         } else {
             aimSubsystem.aimTurret(driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()));
             //aimSubsystem.aimTurret(Constants.NEUTRAL_TURRET);

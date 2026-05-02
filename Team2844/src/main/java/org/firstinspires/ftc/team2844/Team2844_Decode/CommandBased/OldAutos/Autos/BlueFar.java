@@ -17,7 +17,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.OldAutos.Auto
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.OldAutos.AutoCommands.SmartLineShooterAutoCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.OldAutos.AutoCommands.SavePosCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeLineCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.NeutralShooterCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ResetCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Subsystems;
@@ -76,8 +76,8 @@ public class BlueFar extends LinearOpMode {
 
         intake = new CommandAction(new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem));
 
-        neutralShoot = new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
-                subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
+        neutralShoot = new CommandAction(new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+                subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
 
         save = new CommandAction(new SavePosCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem));
     }

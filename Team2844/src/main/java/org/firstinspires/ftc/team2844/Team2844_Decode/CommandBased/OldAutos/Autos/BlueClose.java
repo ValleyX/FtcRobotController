@@ -13,7 +13,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.OldAutos.Auto
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.OldAutos.AutoCommands.IntakeSortAutoCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.OldAutos.AutoCommands.SmartSortShootAutoCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.NeutralShooterCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ResetCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Subsystems;
@@ -77,16 +77,16 @@ public class BlueClose extends CommandOpMode {
         if (isStopRequested()) return;
 
         Actions.runBlocking(new SequentialAction(
-                new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
-                        subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
+                new CommandAction(new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+                        subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 
                 moveToShoot1.build(),
 
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                     subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
                     subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, new Vector2d(subsystems.mecDriveSubsystem.getBotX(), subsystems.mecDriveSubsystem.getBotY()), subsystems.mecDriveSubsystem.getRobotHeading(), telemetry)),
-                new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
-                        subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
+                new CommandAction(new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+                        subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 
 
                 new ParallelAction(
@@ -100,8 +100,8 @@ public class BlueClose extends CommandOpMode {
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
                         subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, new Vector2d(subsystems.mecDriveSubsystem.getBotX(), subsystems.mecDriveSubsystem.getBotY()), subsystems.mecDriveSubsystem.getRobotHeading(), telemetry)),
-                new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
-                        subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
+                new CommandAction(new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+                        subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 
                 new ParallelAction(
                         new CommandAction(new IntakeSortAutoCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem)),
@@ -113,8 +113,8 @@ public class BlueClose extends CommandOpMode {
                 new CommandAction(new SmartSortShootAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
                         subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, new Vector2d(subsystems.mecDriveSubsystem.getBotX(), subsystems.mecDriveSubsystem.getBotY()), subsystems.mecDriveSubsystem.getRobotHeading(), telemetry)),
-                new CommandAction(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
-                        subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
+                new CommandAction(new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+                        subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem)),
 
                 leave.build()
         ));

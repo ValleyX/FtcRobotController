@@ -1,21 +1,16 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands;
 
-import com.arcrobotics.ftclib.command.CommandBase;
-
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
-public class PreviousSlotCmd extends SlotCmd {
-
-    public PreviousSlotCmd(SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem){
-        super(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getSlot()-1);
+public class LastFullSlotCmd extends SlotCmd{
+    public LastFullSlotCmd(SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem) {
+        super(spindexerSubsystem, kickSubsystem, spindexerSubsystem.getLastFull());
     }
 
     @Override
     public void initialize() {
-        if(spindexerSubsystem.getSlot()-1>=0){
-            desiredSlot = spindexerSubsystem.getSlot()-1;
-        }
+        desiredSlot = spindexerSubsystem.getLastFull();
         super.initialize();
     }
 
@@ -26,11 +21,6 @@ public class PreviousSlotCmd extends SlotCmd {
 
     @Override
     public boolean isFinished() {
-        return super.isFinished();
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        super.end(interrupted);
+        return spindexerSubsystem.ballInBayOne() && finished;
     }
 }

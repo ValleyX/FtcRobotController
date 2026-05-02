@@ -16,7 +16,7 @@ public class Constants {
 
     public static final double TURRET_THRESHHOLD = 1.0;
 
-    public static final double MAX_DEGREE = 332.0;
+    public static final double MAX_DEGREE = 280.0;
     public static final double MIN_DEGREE = 10.0;
 
     public static final double MAX_TURN = MAX_DEGREE * SERVO_DEGREE_TO_TURRET_DEGREE;
@@ -27,6 +27,8 @@ public class Constants {
     public static final double TURRET_GAIN = 0.009;
     public static final double GAIN_THRESH = 20.0;
     public static final double NEUTRAL_TURRET = 180.0;
+    /**How many degrees off of the Neutral position the turret will go to track the target when not shooting */
+    public static double MAX_NEUTRAL = 40.0;
 
     public static final double MIN_VOLTAGE = 0.22;
     public static final double MAX_VOLTAGE = 3.06;
@@ -41,8 +43,9 @@ public class Constants {
     //Uptake
     public static double KICKDOWN = 0.3;
     public static double KICKDOWN_EXTRA = 0.35;
-    public static double KICKDOWN_INTAKE = 0;
-    public static double KICKUP = 0;
+    public static double KICKDOWN_LESS = 0.27;
+    public static double KICKDOWN_INTAKE = 0.1;
+    public static double KICKUP = 0.1;
 
 
     //spindexer
@@ -54,7 +57,7 @@ public class Constants {
     public static double SLOT_ONE_LOOPED_ONE = 0.45;//4*(0.2/3);
     public static double SLOT_TWO_LOOPED_ONE = 0.835;//5*(0.2/3);
 
-    public static double[] SLOT_ARRAY = {SLOT_ZERO, SLOT_ONE, SLOT_TWO, SLOT_ZERO_LOOPED_ONE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE};
+    public static double[] SLOT_ARRAY = {SLOT_ZERO, SLOT_ONE, SLOT_TWO};//, SLOT_ZERO_LOOPED_ONE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE};
 
     public static final int MIN_COLOR_SUM = 900;
     public static final int MIN_ALPHA = 450;
@@ -85,6 +88,9 @@ public class Constants {
 
     public static final double RED_APRILTAG_X = 1.482 * 39.3701;
     public static final double RED_APRILTAG_Y = -1.413 * 39.3701;
+
+    //Good numbers to have
+    public static final double METER_TO_INCH = 39.3701;
 
     //Pinpoint
     public static final double NO_PP = -999.0;
