@@ -147,7 +147,7 @@ public class TeleOpBase extends CommandOpMode {
 
         //Default Commands
         register(subsystems.aimSubsystem);
-        subsystems.aimSubsystem.setDefaultCommand(new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, pipelineNum));
+        subsystems.aimSubsystem.setDefaultCommand(new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, pipelineNum));
 
         /* -------------- Driving Command Loop -------------- */
             //this will make the drive command always run
@@ -224,9 +224,13 @@ public class TeleOpBase extends CommandOpMode {
                 new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
             }
 
-            subsystems.sensorSubsystem.updateOrientation(subsystems.mecDriveSubsystem.getRobotHeading() + (subsystems.aimSubsystem.getTurretDegrees()-180));
+            double cameraHeading = subsystems.mecDriveSubsystem.getRobotAudienceHeading(pipelineNum) + (subsystems.aimSubsystem.getTurretDegrees()-180);
+            while(cameraHeading > 180) cameraHeading -= 360;
+            while (cameraHeading <= -180) cameraHeading += 360;
+            subsystems.sensorSubsystem.updateOrientation(cameraHeading);
 
 
+            telemetry.addData("Camera Heading", cameraHeading);
             telemetry.addData("Limelight Tx: ", subsystems.sensorSubsystem.getTx());
             telemetry.addData("Average Distance from MetaTag: ", subsystems.sensorSubsystem.getDis());
             telemetry.addData("Limelight Bot X: ", subsystems.sensorSubsystem.getBotXLL());

@@ -29,6 +29,6 @@ public class ResetCmd extends ParallelCommandGroup {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return false;
     }
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
@@ -38,6 +39,12 @@ public class FullAimToLLCmd extends CommandBase {
                 }
             }
             aimSubsystem.aimHood(driveSubsystem.hoodLinReg(sensorSubsystem.getPipeline()));
+
+            //if you are close to the apriltag, reset your position. It is more accurate when it is close.
+            //this makes the values freak out. probably cause the limelight is updating the pinpoint's pose but then the pinpoint is updating the limelight's orientation at the same time
+            //if(sensorSubsystem.getDis() < 50.0){
+                //driveSubsystem.setPinpointPose(new Pose2d(sensorSubsystem.getBotXLLMT2(), sensorSubsystem.getBotYLLMT2(), driveSubsystem.getRobotHeading()));
+            //}
             //driveSubsystem.setPinpointPose();
         } else {
             aimSubsystem.aimTurret(driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()));

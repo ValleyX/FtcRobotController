@@ -10,11 +10,13 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Sh
 public class DefaultAimCmd extends CommandBase {
     AimSubsystem aimSubsystem;
     DriveSubsystem driveSubsystem;
+    SensorSubsystem sensorSubsystem;
     int pipeline;
 
-    public DefaultAimCmd(AimSubsystem aimSubsystem, DriveSubsystem driveSubsystem, int pipeline){
+    public DefaultAimCmd(AimSubsystem aimSubsystem, DriveSubsystem driveSubsystem, SensorSubsystem sensorSubsystem, int pipeline){
         this.aimSubsystem = aimSubsystem;
         this.driveSubsystem = driveSubsystem;
+        this.sensorSubsystem = sensorSubsystem;
         this.pipeline = pipeline;
         addRequirements(aimSubsystem);
     }
@@ -22,7 +24,19 @@ public class DefaultAimCmd extends CommandBase {
     @Override
     public void execute() {
         double targetAngle = driveSubsystem.getPinpointTurretAngle(pipeline);
-        if(Math.abs(targetAngle-Constants.NEUTRAL_TURRET) < Constants.MAX_NEUTRAL){
+        double tx = sensorSubsystem.getTx();
+        if(tx != Constants.NO_LL){
+            if(!(Math.abs(tx) < Constants.TURRET_THRESHHOLD) && (Math.abs(tx) < Constants.MAX_NEUTRAL)) {
+                double pos = aimSubsystem.getAxonValue();
+
+                //aimSubsystem.aimTurret(pos - tx);
+                if(tx < 0.0){
+                    aimSubsystem.aimTurret(pos + Math.min(8.0, Math.abs(tx)));
+                } else if (tx > 0.0){
+                    aimSubsystem.aimTurret(pos - Math.min(8.0, tx));
+                }
+            }
+        } else if(Math.abs(targetAngle-Constants.NEUTRAL_TURRET) < Constants.MAX_NEUTRAL){
             aimSubsystem.aimTurret(targetAngle);
         }
     }

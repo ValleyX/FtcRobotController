@@ -52,6 +52,20 @@ public class DriveSubsystem extends SubsystemBase {
         return Math.toDegrees(drive.localizer.getPose().heading.toDouble());
     }
 
+    /**Gives the heading as if the robot was set pointing towards the audience(the limelight requires this)*/
+    public double getRobotAudienceHeading(int pipeline){
+        double heading = getRobotHeading();
+        if(pipeline == Constants.BLUE_PIPELINE){
+            heading += 90;
+        } else if (pipeline == Constants.RED_PIPELINE){
+            heading -= 90;
+        }
+
+        while(heading > 180) heading -= 360;
+        while (heading <= -180) heading += 360;
+        return heading;
+    }
+
     public double getRobotHeadingRadians(){
         return (drive.localizer.getPose().heading.toDouble());
     }
@@ -218,9 +232,10 @@ public class DriveSubsystem extends SubsystemBase {
         }
     }
 
-    /* this is a option for the subsystem
+    // this is a option for the subsystem
     @Override
     public void periodic() {
-    // This method will be called once per scheduler run
-    }*/
+     //This method will be called once per scheduler run
+        drive.updatePoseEstimate();
+    }
 }
