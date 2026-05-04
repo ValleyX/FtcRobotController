@@ -1,12 +1,3 @@
-repositories {
-    // Gradle Base Stuff
-    mavenCentral()
-    google() // Needed for androidx
-    // Pedro Pathing
-    maven { url = 'https://maven.pedropathing.com' } //added by Tanner
-    maven { url = "https://mymaven.bylazar.com/releases" } //added by Tanner
-}
-
 dependencies {
     // Gradle Base Stuff
     implementation 'org.firstinspires.ftc:Inspection:11.1.0'
@@ -20,8 +11,11 @@ dependencies {
     implementation 'org.firstinspires.ftc:Vision:11.1.0'
     implementation 'androidx.appcompat:appcompat:1.7.1'
     // Pedro Pathing
-    implementation 'com.pedropathing:ftc:2.0.5' //added by Tanner
+    implementation 'com.pedropathing:ftc:2.1.1' //added by Tanner
     implementation 'com.pedropathing:telemetry:1.0.0' //added by Tanner
     implementation 'com.bylazar:fullpanels:1.0.12' //added by Tanner
+
+    // ValleyLib
+    implementation 'com.github.ValleyX:valleyLib:1.0.6'
 }
 

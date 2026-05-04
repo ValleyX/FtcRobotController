@@ -245,8 +245,8 @@ public class TeleOpBase extends CommandOpMode {
             telemetry.addData("Turret Degrees: ", subsystems.aimSubsystem.getTurretDegrees());
             telemetry.addData("Turn to with PP", subsystems.mecDriveSubsystem.getPinpointTurretAngle(pipelineNum));
 
-            telemetry.addData("Raw Axon Voltage: ", subsystems.aimSubsystem.getVoltage());
-            telemetry.addData("Axon degrees: ", subsystems.aimSubsystem.getAxonValue());
+            //telemetry.addData("Raw Axon Voltage: ", subsystems.aimSubsystem.getVoltage());
+            //telemetry.addData("Axon degrees: ", subsystems.aimSubsystem.getAxonValue());
             telemetry.addData("Slot: ", subsystems.spindexerSubsystem.getSlot());
             telemetry.addData("Spindexer Pos: ", subsystems.spindexerSubsystem.getPosition());
 
