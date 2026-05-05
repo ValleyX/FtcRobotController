@@ -24,6 +24,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Inta
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ResetCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartLineShooterCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartSortShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopTransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.TransferCmd;
@@ -106,9 +107,12 @@ public class TeleOpBase extends CommandOpMode {
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(new LastFullSlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem))
-                .whileHeld(new SmartSortShootCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
-                        subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                        subsystems.kickSubsystem, subsystems.mecDriveSubsystem))
+                //.whileHeld(new SmartSortShootCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+                //        subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
+                //        subsystems.kickSubsystem, subsystems.mecDriveSubsystem))
+                .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+                        subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem,
+                        subsystems.mecDriveSubsystem, subsystems.spindexerSubsystem))
                 .whenReleased(new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem,
                         subsystems.intakeSubsystem));
@@ -184,9 +188,9 @@ public class TeleOpBase extends CommandOpMode {
             CommandScheduler.getInstance().run();
             rightTriggerReader.readValue();
 
-            if(m_driveOp.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) && subsystems.spindexerSubsystem.empty()){
-                sortMode = !sortMode;
-            }
+//            if(m_driveOp.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) && subsystems.spindexerSubsystem.empty()){
+//                sortMode = !sortMode;
+//            }
 
             // Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
             /*if ( rightTriggerReader.isDown() && !sortMode) {
@@ -215,7 +219,7 @@ public class TeleOpBase extends CommandOpMode {
             IntakeLineCmd intakeLineCmd = new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
             SlotCmd slotCmd = new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 0);
 
-            if ( rightTriggerReader.isDown() && !intakeSortCmd.isScheduled()) {
+            if ( rightTriggerReader.isDown() && !intakeLineCmd.isScheduled()) {
 
                 //if(rightTriggerReader.wasJustPressed() && subsystems.spindexerSubsystem.empty())
                     //new SequentialCommandGroup(slotCmd, intakeSortCmd).schedule(true);
