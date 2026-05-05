@@ -41,8 +41,8 @@ public class Constants {
 
 
     //Uptake
-    public static double KICKDOWN = 0.3;
-    public static double KICKDOWN_EXTRA = 0.35;
+    public static double KICKDOWN = 0.27;
+    public static double KICKDOWN_EXTRA = 0.3;
     public static double KICKDOWN_LESS = 0.27;
     public static double KICKDOWN_INTAKE = 0.1;
     public static double KICKUP = 0.1;
@@ -185,6 +185,9 @@ public class Constants {
     public static final double SLOW_TFEED = 0.1;
 
     /* TODO LIST
+      - No spinny - Basil
+      - Get intake ONLY working, NO SPINNY
+
       - Get Intake Spindexer working with new beambreak (stop intaking when full)
       - get the spindexer to spin the feeds while spinning
 

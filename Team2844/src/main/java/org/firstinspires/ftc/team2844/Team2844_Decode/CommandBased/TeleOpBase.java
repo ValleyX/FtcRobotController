@@ -188,7 +188,7 @@ public class TeleOpBase extends CommandOpMode {
                 sortMode = !sortMode;
             }
 
-            //Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
+            // Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
             /*if ( rightTriggerReader.isDown() && !sortMode) {
                 new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
             } else if (rightTriggerReader.wasJustReleased() && !sortMode) {
@@ -209,7 +209,10 @@ public class TeleOpBase extends CommandOpMode {
                         .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
             }*/
 
+            // BASIL SAYS BRING THIS BACK!! ^^
+
             IntakeSortCmd intakeSortCmd = new IntakeSortCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
+            IntakeLineCmd intakeLineCmd = new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
             SlotCmd slotCmd = new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 0);
 
             if ( rightTriggerReader.isDown() && !intakeSortCmd.isScheduled()) {
@@ -217,10 +220,14 @@ public class TeleOpBase extends CommandOpMode {
                 //if(rightTriggerReader.wasJustPressed() && subsystems.spindexerSubsystem.empty())
                     //new SequentialCommandGroup(slotCmd, intakeSortCmd).schedule(true);
                 //else
-                intakeSortCmd.schedule(true);
+
+                intakeLineCmd.schedule(true);
+
+                //intakeSortCmd.schedule(true);
 
             } else if (rightTriggerReader.wasJustReleased()) {
-                intakeSortCmd.interruptOn(() ->true);
+                intakeLineCmd.interruptOn(() ->true);
+                //intakeSortCmd.interruptOn(() ->true);
                 new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
             }
 

@@ -15,7 +15,7 @@ public class UptakeCmd extends CommandBase {
 
     @Override
     public void initialize() {
-        kickSubsystem.rotateKickerDown();
+        kickSubsystem.rotateKickerDownExtra(); // Changed from rotateKickerDown
         kickSubsystem.runKickerSpin();
         kickSubsystem.runSFeedForward();
         // Extra kick logic? Yea that would probably go in here. or maybe in the shoot logic itself
