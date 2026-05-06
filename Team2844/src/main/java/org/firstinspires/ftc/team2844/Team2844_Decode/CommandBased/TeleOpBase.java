@@ -219,7 +219,7 @@ public class TeleOpBase extends CommandOpMode {
             IntakeLineCmd intakeLineCmd = new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
             SlotCmd slotCmd = new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 0);
 
-            if ( rightTriggerReader.isDown() && !intakeLineCmd.isScheduled()) {
+            if ( rightTriggerReader.wasJustPressed() && !intakeLineCmd.isScheduled()) {
 
                 //if(rightTriggerReader.wasJustPressed() && subsystems.spindexerSubsystem.empty())
                     //new SequentialCommandGroup(slotCmd, intakeSortCmd).schedule(true);
@@ -273,6 +273,8 @@ public class TeleOpBase extends CommandOpMode {
             //telemetry.addData("In range testing bool supplier: ", subsystems.shooterSubsystem.inRange(() ->1000, () ->1000).getAsBoolean());
             telemetry.addData("Empty: ", subsystems.spindexerSubsystem.empty());
             telemetry.addData("Full: ", subsystems.spindexerSubsystem.fullSpindexer());
+
+            telemetry.addData("Kicker Rotate", subsystems.kickSubsystem.getKickerRotate());
             //telemetry.addData("Bay one alpha", subsystems.spindexerSubsystem.bayOneAlpha());
             //telemetry.addData("Bay two alpha", subsystems.spindexerSubsystem.bayTwoAlpha());
             //telemetry.addData("Bay Three alpha", subsystems.spindexerSubsystem.bayThreeAlpha());

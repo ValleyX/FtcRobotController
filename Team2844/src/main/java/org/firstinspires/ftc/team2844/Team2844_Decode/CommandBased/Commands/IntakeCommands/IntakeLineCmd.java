@@ -50,7 +50,17 @@ public class IntakeLineCmd extends CommandBase {
             if(!topBroken){
 //                new ParallelCommandGroup(new UptakeCmd(kickSubsystem), new TransferCmd(shooterFeedSubsystem));
                 if(bayOne) {
+                    if(ballInBeam){
+                        intakeSubsystem.stop();
+                    }
                     kickSubsystem.rotateKickerDown();
+                } else {
+                    if(hasBeenBayOne){
+                        kickSubsystem.rotateKickerDownExtra();
+                    } else {
+                        intakeSubsystem.activate(Constants.INTAKE_SPEED);
+                        kickSubsystem.rotateKickerDownIntake();
+                    }
                 }
 
                 kickSubsystem.runKickerSpin();
@@ -60,24 +70,26 @@ public class IntakeLineCmd extends CommandBase {
             } else {
 //                new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem));
                 if(!bayOne){
-                    intakeSubsystem.activate(Constants.INTAKE_SPEED);
-                } else {
                     if(shooterFeedSubsystem.tFeedBusy()){
                         intakeSubsystem.stop();
                         kickSubsystem.rotateKickerDownExtra();
+                        kickSubsystem.runKickerSpin();
+                        kickSubsystem.runSFeedForward();
                     } else {
-                        kickSubsystem.rotateKickerUp();
+                        kickSubsystem.rotateKickerDownIntake();
                         kickSubsystem.stopKickerSpin();
                         kickSubsystem.stopSFeed();
                         intakeSubsystem.activate(Constants.INTAKE_SPEED);
                     }
+                } else {
+                    intakeSubsystem.activate(Constants.INTAKE_SPEED);
                 }
                 //kickSubsystem.rotateKickerUp();
                 //kickSubsystem.stopKickerSpin();
                 //kickSubsystem.stopSFeed();
 
 
-                if(timer.time() < 100) {
+                if(timer.time() < 50) {
                     shooterFeedSubsystem.slowFeed();
                 } else {
                     shooterFeedSubsystem.stopTFeed();

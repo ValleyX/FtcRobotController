@@ -42,7 +42,7 @@ public class Constants {
 
     //Uptake
     public static double KICKDOWN = 0.27;
-    public static double KICKDOWN_EXTRA = 0.3;
+    public static double KICKDOWN_EXTRA = 0.33;
     public static double KICKDOWN_LESS = 0.27;
     public static double KICKDOWN_INTAKE = 0.25;
     public static double KICKUP = 0.1;
@@ -50,8 +50,8 @@ public class Constants {
 
     //spindexer
     public static double SLOT_ZERO = 0.055;
-    public static double SLOT_ONE = 0.45; //0.2/3
-    public static double SLOT_TWO = 0.835; //2*(0.2/3)
+    public static double SLOT_ONE = 0.055; //0.2/3 //axon 0.45
+    public static double SLOT_TWO = 0.055; //2*(0.2/3) //axon 0.835
 
     public static double SLOT_ZERO_LOOPED_ONE = 0.055;//0.2;
     public static double SLOT_ONE_LOOPED_ONE = 0.45;//4*(0.2/3);
@@ -183,6 +183,7 @@ public class Constants {
     public static final double INTAKE_SPEED = 1.0;
 
     public static final double SLOW_TFEED = 0.1;
+    public static final double TFEED_SPEED = 0.5;
 
     /* TODO LIST
       - No spinny - Basil
