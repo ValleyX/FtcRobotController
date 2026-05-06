@@ -1,17 +1,13 @@
-package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.OldAutos.AutoCommands;
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands;
 
+import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.ActivateIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopTransferCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.TransferCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.VelocityShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
@@ -25,22 +21,11 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 
 import java.util.function.DoubleSupplier;
 
-public class SmartLineShooterAutoCmd extends SequentialCommandGroup {
-
-    SpindexerSubsystem spindexerSubsystem;
-    ShooterFeedSubsystem shooterFeedSubsystem;
-    IntakeSubsystem intakeSubsystem;
-    public SmartLineShooterAutoCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem,
-                                   SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem,
-                                   KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem, DriveSubsystem driveSubsystem,
-                                   Telemetry telemetry){
-        this.spindexerSubsystem = spindexerSubsystem;
-        this.shooterFeedSubsystem = shooterFeedSubsystem;
-        this.intakeSubsystem = intakeSubsystem;
-
-        DoubleSupplier velocity = () -> driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
-        //ElapsedTime time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-
+public class LineShooterRegCmd extends SequentialCommandGroup {
+    public LineShooterRegCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem,
+                             SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, KickSubsystem kickSubsystem,
+                             IntakeSubsystem intakeSubsystem, DriveSubsystem driveSubsystem,
+                             SpindexerSubsystem spindexerSubsystem, DoubleSupplier velocity){
         addCommands(
                 new ParallelCommandGroup(
                         //At the same time, aim the turret
@@ -78,6 +63,7 @@ public class SmartLineShooterAutoCmd extends SequentialCommandGroup {
 
     @Override
     public boolean isFinished() {
-        return (spindexerSubsystem.empty() && shooterFeedSubsystem.topBroken() && intakeSubsystem.ballInBeam());
+        return true;
     }
+
 }
