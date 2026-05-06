@@ -44,7 +44,7 @@ public class Constants {
     public static double KICKDOWN = 0.27;
     public static double KICKDOWN_EXTRA = 0.3;
     public static double KICKDOWN_LESS = 0.27;
-    public static double KICKDOWN_INTAKE = 0.2;
+    public static double KICKDOWN_INTAKE = 0.25;
     public static double KICKUP = 0.1;
 
 
