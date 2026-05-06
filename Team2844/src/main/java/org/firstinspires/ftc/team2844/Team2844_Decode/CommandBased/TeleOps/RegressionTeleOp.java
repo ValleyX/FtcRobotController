@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.TeleOps;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -23,6 +24,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Inta
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeSortCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.LineShooterRegCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ResetCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartLineShooterCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartSortShootCmd;
@@ -37,6 +39,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Spin
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Subsystems;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Supplier;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
 @Disabled
@@ -61,6 +64,7 @@ public class RegressionTeleOp extends CommandOpMode {
 
     /* ------------------- Variable Declarations ------------------- */
     public int pipelineNum = 0;
+    public Supplier velocity = new Supplier(1000);
 
     /* ---------- Elapsed Time ---------- */
     ElapsedTime time;
@@ -106,13 +110,13 @@ public class RegressionTeleOp extends CommandOpMode {
         );
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(new LastFullSlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem))
+                //.whenPressed(new LastFullSlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem))
                 //.whileHeld(new SmartSortShootCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                 //        subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
                 //        subsystems.kickSubsystem, subsystems.mecDriveSubsystem))
-                .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+                .whileHeld(new LineShooterRegCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem,
-                        subsystems.mecDriveSubsystem, subsystems.spindexerSubsystem))
+                        subsystems.mecDriveSubsystem, subsystems.spindexerSubsystem, velocity))
                 .whenReleased(new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem,
                         subsystems.intakeSubsystem));
@@ -124,10 +128,10 @@ public class RegressionTeleOp extends CommandOpMode {
                         new StopTransferCmd(subsystems.shooterFeedSubsystem)));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.X)
-                .whenHeld(new PreviousSlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem));
+                .whenPressed(new InstantCommand(() ->velocity.addToNum(100)));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.B)
-                .whenHeld(new NextSlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem));
+                .whenPressed(new InstantCommand(() ->velocity.subtractNum(100)));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 0));
@@ -258,15 +262,15 @@ public class RegressionTeleOp extends CommandOpMode {
 
             //telemetry.addData("Raw Axon Voltage: ", subsystems.aimSubsystem.getVoltage());
             //telemetry.addData("Axon degrees: ", subsystems.aimSubsystem.getAxonValue());
-            telemetry.addData("Slot: ", subsystems.spindexerSubsystem.getSlot());
-            telemetry.addData("Spindexer Pos: ", subsystems.spindexerSubsystem.getPosition());
+            //telemetry.addData("Slot: ", subsystems.spindexerSubsystem.getSlot());
+            //telemetry.addData("Spindexer Pos: ", subsystems.spindexerSubsystem.getPosition());
 
-            telemetry.addData("Top beam break is broken: ", subsystems.shooterFeedSubsystem.topBroken());
-            telemetry.addData("Ball in Bottom Beam: ", subsystems.intakeSubsystem.ballInBeam());
+            //telemetry.addData("Top beam break is broken: ", subsystems.shooterFeedSubsystem.topBroken());
+            //telemetry.addData("Ball in Bottom Beam: ", subsystems.intakeSubsystem.ballInBeam());
 
             telemetry.addData("Ball in Bay One: ", subsystems.spindexerSubsystem.ballInBayOne());
-            telemetry.addData("Ball in Bay Two: ", subsystems.spindexerSubsystem.ballInBayTwo());
-            telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
+            //telemetry.addData("Ball in Bay Two: ", subsystems.spindexerSubsystem.ballInBayTwo());
+            //telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
 
             telemetry.addData("Velocity: ", subsystems.shooterSubsystem.getVelocity());
             telemetry.addData("In range: ", subsystems.shooterSubsystem.inRange());
