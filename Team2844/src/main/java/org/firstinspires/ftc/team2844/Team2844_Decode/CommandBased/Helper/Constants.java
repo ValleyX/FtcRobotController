@@ -16,7 +16,7 @@ public class Constants {
 
     public static final double TURRET_THRESHHOLD = 1.0;
 
-    public static final double MAX_DEGREE = 280.0;
+    public static final double MAX_DEGREE = 265.0;
     public static final double MIN_DEGREE = 10.0;
 
     public static final double MAX_TURN = MAX_DEGREE * SERVO_DEGREE_TO_TURRET_DEGREE;

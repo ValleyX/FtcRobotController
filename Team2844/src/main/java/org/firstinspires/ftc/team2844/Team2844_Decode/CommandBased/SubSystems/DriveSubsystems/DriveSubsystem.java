@@ -56,9 +56,9 @@ public class DriveSubsystem extends SubsystemBase {
     public double getRobotAudienceHeading(int pipeline){
         double heading = getRobotHeading();
         if(pipeline == Constants.BLUE_PIPELINE){
-            heading += 90;
-        } else if (pipeline == Constants.RED_PIPELINE){
             heading -= 90;
+        } else if (pipeline == Constants.RED_PIPELINE){
+            heading += 90;
         }
 
         while(heading > 180) heading -= 360;

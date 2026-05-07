@@ -13,6 +13,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.OldAutos.Road
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.OldAutos.Roadrunner.MecanumDrive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.OldAutos.Roadrunner.TankDrive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.OldAutos.Roadrunner.*;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.TeleOps.GoBildaPinpointDriver;
 
 
 @Disabled
@@ -41,6 +42,8 @@ public class LocalizationTest extends LinearOpMode {
                 telemetry.addData("x", pose.position.x);
                 telemetry.addData("y", pose.position.y);
                 telemetry.addData("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+                telemetry.addData("Ang Vel: ", drive.localizer.update().angVel);
+                telemetry.addData("Linear Vel: ", drive.localizer.update().linearVel);
                 telemetry.update();
 
                 TelemetryPacket packet = new TelemetryPacket();
