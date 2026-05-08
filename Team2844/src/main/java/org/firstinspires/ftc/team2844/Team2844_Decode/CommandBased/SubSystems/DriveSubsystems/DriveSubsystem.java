@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.OldAutos.Roadrunner.MecanumDrive;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.Roadrunner.MecanumDrive;
 
 import java.util.function.DoubleSupplier;
 
@@ -36,10 +36,10 @@ public class DriveSubsystem extends SubsystemBase {
         double rotX = strafeSpeed * Math.cos(-botHeading) - forwardSpeed * Math.sin(-botHeading);
         double rotY = strafeSpeed * Math.sin(-botHeading) + forwardSpeed * Math.cos(-botHeading);
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turnSpeed), 1);
-        double frontLeftPower = (rotY + (rotX * Constants.STRAFE_CORRECTION) + turnSpeed) / denominator;
-        double backLeftPower = (rotY - rotX + turnSpeed) / denominator;
-        double frontRightPower = (rotY - (rotX * Constants.STRAFE_CORRECTION) - turnSpeed) / denominator;
-        double backRightPower = (rotY + rotX - turnSpeed) / denominator;
+        double frontLeftPower = (rotY - (rotX * Constants.STRAFE_CORRECTION) + turnSpeed) / denominator;
+        double backLeftPower = (rotY + rotX + turnSpeed) / denominator;
+        double frontRightPower = (rotY + (rotX * Constants.STRAFE_CORRECTION) - turnSpeed) / denominator;
+        double backRightPower = (rotY - rotX - turnSpeed) / denominator;
 
         drive.leftFront.setPower(frontLeftPower);
         drive.rightFront.setPower(frontRightPower);
@@ -125,7 +125,7 @@ public class DriveSubsystem extends SubsystemBase {
         double botX = getBotX();
         double botY = getBotY();
         double angle = 0.0;
-        double tempHeading = getRobotHeading();
+        double tempHeading = getHeadingFlipped();
 
         double limelightX = 0.0;
         double limelightY = 0.0;
