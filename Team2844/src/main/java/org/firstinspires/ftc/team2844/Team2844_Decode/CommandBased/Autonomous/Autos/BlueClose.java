@@ -1,15 +1,22 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.Autos;
 
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.RaceAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.CommandGroupAction;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.SmartLineShooterAutoCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.TimeoutCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.CommandAction;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.SavedVarsCmd;
@@ -27,6 +34,7 @@ import java.util.function.Supplier;
 public class BlueClose extends CommandOpMode {
     Subsystems subsystems;
     Pose2d initialPose;
+    OpMode opMode;
 
 //Trajectories and actions
     TrajectoryActionBuilder moveToShoot1;
@@ -43,36 +51,37 @@ public class BlueClose extends CommandOpMode {
 
     @Override
     public void initialize() {
-        initialPose = new Pose2d(55.0,45.0, Math.toRadians(45.0));
+        opMode = this.opMode;
+        initialPose = new Pose2d(-55.0,-45.0, Math.toRadians(-135.0));
         subsystems = new Subsystems(hardwareMap, Constants.BLUE_PIPELINE_MOTIF, initialPose);
         // instantiate MecanumDrive at a particular pose.
 
 
         moveToShoot1 = subsystems.mecDriveSubsystem.drive.actionBuilder(initialPose)
-                .strafeToConstantHeading(new Vector2d(36.0, 36.0));
+                .strafeToConstantHeading(new Vector2d(-36.0, -36.0));
 
 
-        pickup1 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(36.0, 36.0, Math.toRadians(45.0)))
+        pickup1 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(-36.0, -36.0, Math.toRadians(-135.0)))
                 .setTangent(Math.toRadians(90.0))
-                .splineToLinearHeading(new Pose2d(12.0, 48.0, Math.toRadians(180.0)), Math.toRadians(0.0));
+                .splineToLinearHeading(new Pose2d(-48.0, -12.0, Math.toRadians(0.0)), Math.toRadians(0.0));
 
 
-        moveToShoot2 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(12.0, 48.0, Math.toRadians(180.0)))
+        moveToShoot2 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(-48.0, -12.0, Math.toRadians(0.0)))
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(36.0, 36.0, Math.toRadians(45.0)), Math.toRadians(180.0));
+                .splineToLinearHeading(new Pose2d(-36.0, -36.0, Math.toRadians(-135.0)), Math.toRadians(0.0));
 
 
-        pickup2 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(36.0, 36.0, Math.toRadians(45.0)))
+        pickup2 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(-36.0, -36.0, Math.toRadians(-135.0)))
                 .setTangent(Math.toRadians(90.0))
-                .splineToLinearHeading(new Pose2d(48.0, -12.0, Math.toRadians(180.0)), Math.toRadians(0.0));
+                .splineToLinearHeading(new Pose2d(12.0, -48.0, Math.toRadians(0.0)), Math.toRadians(0.0));
 
-        moveToShoot3 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(48.0, -12.0, Math.toRadians(180)))
+        moveToShoot3 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(12.0, -48.0, Math.toRadians(0)))
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(36.0, -36.0, Math.toRadians(45)), Math.toRadians(180.0));
+                .splineToLinearHeading(new Pose2d(36.0, -36.0, Math.toRadians(-135)), Math.toRadians(180.0));
 
-        leave = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(36.0, -36.0, Math.toRadians(45.0)))
+        leave = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(36.0, -36.0, Math.toRadians(-135.0)))
                 .setTangent(Math.toRadians(135.0))
-                .splineToLinearHeading(new Pose2d(0.0, 42.0, Math.toRadians(90.0)), Math.toRadians(0.0));
+                .splineToLinearHeading(new Pose2d(-42.0, 0.0, Math.toRadians(-90.0)), Math.toRadians(0.0));
 
         reset = new CommandAction(new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                 subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem).withTimeout(10));
@@ -95,9 +104,9 @@ public class BlueClose extends CommandOpMode {
                                 reset,
                                 moveToShoot1.build(),
 
-                                new CommandAction(new SmartLineShooterAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+                                new RaceAction(new CommandAction(new SmartLineShooterAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                                     subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, telemetry).withTimeout(8000)),
+                                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, telemetry)), new CommandAction(new TimeoutCmd(8000))),
                                 reset,
 
 
@@ -109,9 +118,9 @@ public class BlueClose extends CommandOpMode {
                                 moveToShoot2.build(),
 
                                 new CommandAction(new StopIntakeCmd(subsystems.intakeSubsystem)),
-                                new CommandAction(new SmartLineShooterAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+                                new RaceAction(new CommandAction(new SmartLineShooterAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                                         subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                                        subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, telemetry).withTimeout(8000)),
+                                        subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, telemetry)), new CommandAction(new TimeoutCmd(8000))),
                                 reset,
 
                                 new ParallelAction(
@@ -121,9 +130,9 @@ public class BlueClose extends CommandOpMode {
 
                                 moveToShoot3.build(),
 
-                                new CommandAction(new SmartLineShooterAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+                                new RaceAction(new CommandAction(new SmartLineShooterAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                                         subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                                        subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, telemetry).withTimeout(8000)),
+                                        subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, telemetry)), new CommandAction(new TimeoutCmd(8000))),
                                 reset,
 
                                 leave.build()

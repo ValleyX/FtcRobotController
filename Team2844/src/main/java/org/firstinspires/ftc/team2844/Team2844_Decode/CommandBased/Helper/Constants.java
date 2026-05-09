@@ -83,8 +83,8 @@ public class Constants {
     public static final int BLUE_PIPELINE_MOTIF = 2;
     public static final int RED_PIPELINE_MOTIF = 3;
 
-    public static final double BLUE_APRILTAG_X = 1.482 * 39.3701;
-    public static final double BLUE_APRILTAG_Y = 1.413 * 39.3701;
+    public static final double BLUE_APRILTAG_X = -1.482 * 39.3701;
+    public static final double BLUE_APRILTAG_Y = -1.413 * 39.3701;
 
     public static final double RED_APRILTAG_X = 1.482 * 39.3701;
     public static final double RED_APRILTAG_Y = -1.413 * 39.3701;
@@ -183,14 +183,11 @@ public class Constants {
     public static final double INTAKE_SPEED = 1.0;
 
     public static final double SLOW_TFEED = 0.1;
-    public static final double TFEED_SPEED = 0.5;
+    public static final double TFEED_SPEED = 0.8;
 
     /* TODO LIST
       - No spinny - Basil
-      - Get intake ONLY working, NO SPINNY
 
-      - Get Intake Spindexer working with new beambreak (stop intaking when full)
-      - get the spindexer to spin the feeds while spinning
 
       - Get Shooter Velocity Working
          * get the linreg for shooter
@@ -201,15 +198,11 @@ public class Constants {
       - get Metatags with the limelight
         * update pinpoint pose with metatag pos
 
-      After rebuild of turret
-      - get axon to track degrees of turret
-      - change auto-alin to continuous
-
-      After Mecanum
-      - Change drive cmd
-      - get roadrunner working
-
       - Auto!!!
+       - get command to action wrapper working with command groups
+       - get commands working in auto
+       - get the correct coords
+       - use limelight and pinpoint in auto
 
      */
 }

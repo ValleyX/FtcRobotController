@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimTurretCmd;
@@ -42,7 +43,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Subsys
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Supplier;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
-@Disabled
+@TeleOp(name = "Regression TeleOp")
 public class RegressionTeleOp extends CommandOpMode {
     /* ------------------- Command Declarations ------------------- */
 
@@ -273,6 +274,7 @@ public class RegressionTeleOp extends CommandOpMode {
             //telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
 
             telemetry.addData("Velocity: ", subsystems.shooterSubsystem.getVelocity());
+            telemetry.addData("Target Velocity: ", velocity.getAsDouble());
             telemetry.addData("In range: ", subsystems.shooterSubsystem.inRange());
             //telemetry.addData("In range testing bool supplier: ", subsystems.shooterSubsystem.inRange(() ->1000, () ->1000).getAsBoolean());
             telemetry.addData("Empty: ", subsystems.spindexerSubsystem.empty());

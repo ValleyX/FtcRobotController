@@ -24,7 +24,9 @@ public class CommandAction implements Action {
             initialized = true;
         }
 
-        command.execute();
+        if (!CommandScheduler.getInstance().isScheduled(command)) {
+            command.execute();
+        }
 
         if (command.isFinished()) {
             command.end(false);
