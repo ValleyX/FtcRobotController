@@ -151,7 +151,7 @@ public class RegressionTeleOp extends CommandOpMode {
                 .whenHeld(new MoveHoodPositive(subsystems.aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.BACK)
-                .whenPressed(new ResetPoseCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem.getPipeline()));
+                .whenPressed(new ResetPoseCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, subsystems.sensorSubsystem.getPipeline()));
 
 
         //Default Commands
@@ -240,7 +240,7 @@ public class RegressionTeleOp extends CommandOpMode {
                 new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
             }
 
-            double cameraHeading = subsystems.mecDriveSubsystem.getRobotAudienceHeading(pipelineNum) + (subsystems.aimSubsystem.getTurretDegrees()-180);
+            double cameraHeading = subsystems.mecDriveSubsystem.getRobotHeading() + (subsystems.aimSubsystem.getTurretDegrees()-180);
             while(cameraHeading > 180) cameraHeading -= 360;
             while (cameraHeading <= -180) cameraHeading += 360;
             subsystems.sensorSubsystem.updateOrientation(cameraHeading);
