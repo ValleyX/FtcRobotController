@@ -1,15 +1,16 @@
 package org.firstinspires.ftc.team12841.teleOps;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@Disabled
-public class TeleOpPractice extends TeleOpBase
-{
+@TeleOp(name = "Practice")
+public class TeleOpPractice extends TeleOpBase {
 
     @Override
-    public void init()
-    {
+    public void runOpMode() throws InterruptedException {
+        // Set the pipeline before the base class initializes hardware
         super.pipeline = 0;
-        super.init();
+
+        // Run the main TeleOp loop
+        super.runOpMode();
     }
 }

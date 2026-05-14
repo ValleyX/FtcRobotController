@@ -182,7 +182,7 @@ public class Constants {
     //Intake
     public static final double INTAKE_SPEED = 1.0;
 
-    public static final double SLOW_TFEED = 0.1;
+    public static final double SLOW_TFEED = 0.005;
     public static final double TFEED_SPEED = 0.8;
 
     /* TODO LIST

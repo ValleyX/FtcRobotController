@@ -3,15 +3,15 @@ package org.firstinspires.ftc.team12841.teleOps;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.team12841.RobotHardware;
 import org.firstinspires.ftc.team12841.configs.PanelsConfig;
 
 @Disabled
-@TeleOp(name = "BASE")
-public class TeleOpBase extends OpMode {
+@TeleOp(name = "TeleOp Base")
+public class TeleOpBase extends LinearOpMode {
 
     /* ===================== HARDWARE ===================== */
     private RobotHardware robot;
@@ -20,212 +20,242 @@ public class TeleOpBase extends OpMode {
     /* ===================== PEDRO ===================== */
     private boolean poseReady = false;
 
-    /* ===================== CONSTANTS ===================== */
-    private static final double MAX_RPM = 6000.0;
-    private static final double RPM_STEP = 50.0;
-
-    // Limelight rotation tuning
-    private static final double LL_KP = 0.04;
-    private static final double LL_MAX_ROT = 0.8;
-
     /* ===================== STATE ===================== */
-    private double targetRPM = 2800.0;
-    private boolean shooterEnabled = true;
+    private double targetRPM = 1500.0;
+    private double rpmOffset = 0.0;
 
     public boolean babyMode = false;
     public int pipeline = 0;
 
+    // Toggles for manual adjustment and inputs
+    private boolean dUp = false;
+    private boolean dDown = false;
+    private boolean lastStart = false;
+    private boolean lastRightStick = false;
+
+    // Timers
     private Timer timer;
     private Timer flash;
     boolean flashActive = false;
+    private boolean lastBumper = false;
+    private Timer shootTimer = new Timer();
 
-    /* ===================== INIT ===================== */
     @Override
-    public void init() {
+    public void runOpMode() throws InterruptedException {
+
+        /* ===================== INIT ===================== */
         robot = new RobotHardware(this);
         follower = robot.getFollower();
 
         telemetry.addLine("Init OK — warming localization");
         telemetry.update();
 
-        robot.limelight.pipelineSwitch(pipeline);
+        robot.innit(pipeline);
+
         timer = new Timer();
         flash = new Timer();
-    }
 
-    /* ===================== INIT LOOP ===================== */
-    @Override
-    public void init_loop() {
-        if (follower != null) {
-            follower.update();
+        /* ===================== INIT LOOP ===================== */
+        while (opModeInInit()) {
+            if (follower != null) {
+                follower.update();
+            }
+
+            if (follower != null && follower.getPose() != null) {
+                poseReady = true;
+                telemetry.addLine("POSE READY");
+            } else {
+                telemetry.addLine("Warming localization...");
+            }
+
+            telemetry.update();
         }
 
-        if (follower != null && follower.getPose() != null) {
-            poseReady = true;
-            telemetry.addLine("POSE READY");
-        } else {
-            telemetry.addLine("Warming localization...");
-        }
+        waitForStart();
 
-        telemetry.update();
-    }
+        if (isStopRequested()) return;
 
-    /* ===================== START ===================== */
-    @Override
-    public void start() {
+        /* ===================== START ===================== */
         if (follower != null) {
             follower.startTeleopDrive(true);
             follower.update();
             timer.resetTimer();
         }
-    }
+        robot.stopBallHold();
 
-    /* ===================== LOOP ===================== */
-    @Override
-    public void loop() {
+        /* ===================== MAIN LOOP ===================== */
+        while (opModeIsActive()) {
 
-        /* ---------- SAFETY ---------- */
-        if (follower == null || !poseReady || follower.getPose() == null) {
-            telemetry.addLine("Drive unavailable");
-            telemetry.update();
-            return;
-        }
+            /* ---------- SAFETY ---------- */
+            if (follower == null || !poseReady || follower.getPose() == null) {
+                telemetry.addLine("Drive unavailable");
+                telemetry.update();
+                continue;
+            }
 
-        follower.update();
+            follower.update();
 
-        /* ---------- DRIVE INPUTS ---------- */
-        double rotate = -gamepad1.right_stick_x;
-        double strafe = -gamepad1.left_stick_x;
-        double forward = -gamepad1.left_stick_y;
+            /* ---------- DRIVE INPUTS ---------- */
+            double rotate = -gamepad1.right_stick_x;
+            double strafe = -gamepad1.left_stick_x;
+            double forward = -gamepad1.left_stick_y;
 
-        if (gamepad1.startWasPressed()) {
-            babyMode = !babyMode;
-        }
+            boolean currentStart = gamepad1.start;
+            boolean currentRightStick = gamepad1.right_stick_button;
 
-        /* ---------- LIMELIGHT ALIGN ---------- */
-        if (gamepad1.left_trigger > 0.2) {
-            follower.setTeleOpDrive(0, 0, 0, false); // freeze Pedro
-            robot.alignWithLimelight(-1);
-        } else if (babyMode) {
-            follower.setTeleOpDrive(
-                    forward * PanelsConfig.BABY,
-                    strafe * PanelsConfig.BABY,
-                    rotate * PanelsConfig.BABY,
-                    false
-            );
-        } else {
-            follower.setTeleOpDrive(forward, strafe, rotate, false);
-        }
+            if ((currentStart && !lastStart) || (currentRightStick && !lastRightStick)) {
+                babyMode = !babyMode;
+            }
+            lastStart = currentStart;
+            lastRightStick = currentRightStick;
 
-        /* ---------- INTAKE ---------- */
-        if (gamepad1.right_trigger > 0.2 && !robot.isBroken()) {
-            robot.intake.setPower(1);
-            robot.flick.setPower(-1);
-        } else if (gamepad1.right_trigger > 0.2 && robot.isBroken()) {
-            robot.intake.setPower(1);
-        } else if (gamepad1.b) {
-            robot.intake.setPower(-1);
-        } else if (gamepad1.x) {
-            robot.flick.setPower(-1);
-        } else if (gamepad1.y) {
-            robot.flick.setPower(1);
-        } else {
-            robot.intake.setPower(0);
-            robot.flick.setPower(0);
-        }
+            /* ---------- LIMELIGHT ALIGN (RIGHT BUMPER) ---------- */
+            if (gamepad1.right_bumper) {
+                robot.alignWithLimelight(-1);
+            } else if (babyMode) {
+                follower.setTeleOpDrive(
+                        forward * PanelsConfig.BABY,
+                        strafe * PanelsConfig.BABY,
+                        rotate * PanelsConfig.BABY,
+                        false
+                );
+            } else {
+                follower.setTeleOpDrive(forward, strafe, rotate, false);
+            }
 
-        if (gamepad1.guide) {
-            robot.resetHeading();
-        }
+            if (gamepad1.guide) {
+                robot.resetImu();
+            }
 
-        /* ---------- SHOOTER ---------- */
-        targetRPM = updateRPM();
+            /* ---------- INTAKE & EXTAKE ---------- */
+            boolean isFull = robot.threeBall();
+            robot.setFullLight(isFull ? 1.0 : 0.0);
 
-        if (shooterEnabled) {
+            boolean intaking = false;
+
+            if (gamepad1.right_trigger > 0.2) {
+                // Intake
+                robot.intake(1.0);
+                intaking = true;
+            } else if (gamepad1.left_trigger > 0.2) {
+                // Extake
+                robot.extake(1.0);
+                robot.closeServo(); // Assuming this is needed for extake based on original code
+                intaking = true;
+            } else {
+                if (!gamepad1.right_bumper) {
+                    robot.intake(0);
+                }
+            }
+
+            /* ---------- CONTINUOUS SHOOTER & HOOD ---------- */
+            // Manual RPM Offset
+            if (gamepad1.dpad_up) {
+                if (!dUp) { targetRPM += 100; dUp = true; }
+            } else { dUp = false; }
+
+            if (gamepad1.dpad_down) {
+                if (!dDown) { targetRPM -= 100; dDown = true; }
+            } else { dDown = false; }
+
+            // Constantly update Hood and RPM based on distance
+            if(robot.getTx() != -999)
+            {
+                //targetRPM = robot.calculateRegression();
+            }
+            robot.aimHood(robot.getHoodAim(robot.getBotDis()));
             robot.setShooterRPM(targetRPM);
-        } else {
-            robot.stopShooter();
-        }
+            //robot.shooterMotor.setPower(1);
 
-        /*if(gamepad1.dpadUpWasPressed())
-        {
-            targetRPM += 50;
-        } else if(gamepad1.dpadDownWasPressed()) {
-            targetRPM -= 50;
-        }*/
+            /* ---------- SHOOTING LOGIC (RIGHT BUMPER) ---------- */
+            if (gamepad1.right_bumper) {
+                // 1. On the very first press, reset the timer
+                if (!lastBumper) {
+                    shootTimer.resetTimer();
+                    robot.stopBallRelease(); // Open the blocker immediately
+                }
 
-        /* ---------- FLICK ---------- */
-        if (gamepad1.x) {
-            robot.flick.setPower(-1);
-        } else if (gamepad1.y) {
-            robot.flick.setPower(1);
-        } else {
-            robot.flick.setPower(0);
-        }
-
-        /* ---------- TELEMETRY ---------- */
-        double actualRPM =
-                (robot.shooter.getVelocity() * 60.0)
-                        / RobotHardware.SHOOTER_TICKS_PER_REV;
-
-        double t = timer.getElapsedTimeSeconds();
-
-        if (t >= 100) {
-            // RED FLASHING (100s → end)
-            if (!flashActive) {
-                flash.resetTimer();
-                flashActive = true;
-            }
-
-            double ft = flash.getElapsedTimeSeconds();
-
-            if (ft < 0.333) {
-                robot.setGoBildaLight(0.27); // Red ON
-            } else if (ft < 0.667) {
-                robot.setGoBildaLight(0.0); // OFF
-            } else if (ft < 1.0) {
-                robot.setGoBildaLight(0.27); // Red ON
+                // 2. Wait for 300ms, then check velocity to feed
+                if (shootTimer.getElapsedTimeSeconds() > 0.3) {
+                    robot.feed();
+                }
             } else {
-                flash.resetTimer(); // loop flash
+                // Reset state when bumper is released
+                robot.stopBallHold();
+                if (!intaking) {
+                    robot.stopFeed();
+                }
             }
+            lastBumper = gamepad1.right_bumper; // Track state for the next frame
 
-        } else if (t >= 80) {
-            robot.setGoBildaLight(0.33); // Orange
-            flashActive = false;
+            /* ---------- LIGHT TIMERS ---------- */
+            double t = timer.getElapsedTimeSeconds();
 
-        } else if (t >= 60) {
-            // Yellow flash (60–80)
-            if (!flashActive) {
-                flash.resetTimer();
-                flashActive = true;
-            }
+            if (t >= 100) {
+                if (!flashActive) {
+                    flash.resetTimer();
+                    flashActive = true;
+                }
+                double ft = flash.getElapsedTimeSeconds();
+                if (ft < 0.333) {
+                    robot.setTimerLight(0.27);
+                } else if (ft < 0.667) {
+                    robot.setTimerLight(0.0);
+                } else if (ft < 1.0) {
+                    robot.setTimerLight(0.27);
+                } else {
+                    flash.resetTimer();
+                }
 
-            double ft = flash.getElapsedTimeSeconds();
+            } else if (t >= 80) {
+                robot.setTimerLight(0.33);
+                flashActive = false;
 
-            if (ft < 0.333) {
-                robot.setGoBildaLight(0.39);
-            } else if (ft < 0.667) {
-                robot.setGoBildaLight(0.0);
-            } else if (ft < 1.0) {
-                robot.setGoBildaLight(0.39);
+            } else if (t >= 60) {
+                if (!flashActive) {
+                    flash.resetTimer();
+                    flashActive = true;
+                }
+                double ft = flash.getElapsedTimeSeconds();
+                if (ft < 0.333) {
+                    robot.setTimerLight(0.39);
+                } else if (ft < 0.667) {
+                    robot.setTimerLight(0.0);
+                } else if (ft < 1.0) {
+                    robot.setTimerLight(0.39);
+                } else {
+                    flash.resetTimer();
+                }
             } else {
-                flash.resetTimer();
+                robot.setTimerLight(0.5);
+                flashActive = false;
             }
 
-        } else {
-            robot.setGoBildaLight(0.5); // Green
-            flashActive = false;
+            /* ---------- TELEMETRY ---------- */
+            double actualRPM = (robot.shooterMotor.getVelocity() * 60.0) / robot.ENCODER_TICS;
+
+            telemetry.addData("--- DRIVE STATE ---", "");
+            telemetry.addData("BabyMode", babyMode);
+            telemetry.addData("IMU (Degrees)", robot.robotHeadingAngles());
+
+            telemetry.addData("--- SHOOTER ---", "");
+            telemetry.addData("Target RPM (incl. offset)", targetRPM);
+            telemetry.addData("Actual RPM", actualRPM);
+            telemetry.addData("Motor Power", robot.shooterMotor.getPower());
+            telemetry.addData("Servo Closed?", robot.servoClosed());
+
+            telemetry.addData("--- INTAKE ---", "");
+            telemetry.addData("Three Balls (Full)", isFull);
+            telemetry.addData("At least One Ball", robot.oneBall());
+            telemetry.addData("At least Two Balls", robot.twoBall());
+
+            telemetry.addData("--- VISION ---", "");
+            telemetry.addData("LL Distance", robot.getBotDis());
+            telemetry.addData("LL Tx", robot.getTx());
+
+            telemetry.addData("--- HARDWARE ---", "");
+            telemetry.addData("Batt Volt", "%.1f", robot.batteryVoltSensor.getVoltage());
+            telemetry.update();
         }
-
-        telemetry.addData("Target RPM", targetRPM);
-        telemetry.addData("Actual RPM", actualRPM);
-        telemetry.addData("LL Dis", robot.getDistance());
-        telemetry.addData("Beam Broken?", robot.isBroken());
-        telemetry.update();
-    }
-
-    /* ===================== UTILS ===================== */
-    private double updateRPM() {
-        return robot.calculateRegression();
     }
 }

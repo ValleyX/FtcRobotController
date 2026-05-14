@@ -15,43 +15,52 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(13.4) // Weigh Robot in KG
-            .forwardZeroPowerAcceleration(-32.20906457774129) // Tuning OpMode
-            .lateralZeroPowerAcceleration(-39.73511957623294) // Tuning OpMode
+            .mass(12.55)
+            .forwardZeroPowerAcceleration(-32.20906457774129) // RETUNE via Tuning OpMode
+            .lateralZeroPowerAcceleration(-39.73511957623294) // RETUNE via Tuning OpMode
 
+            // Retune via Tuning OpMode
             .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0, 0))
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.025, 0, 0.00001, 0.6, 0.01))
             .headingPIDFCoefficients(new PIDFCoefficients( 1, 0, 0, 0.01));
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
-            .rightFrontMotorName("rfMotor")
-            .rightRearMotorName("rbMotor")
-            .leftRearMotorName("lbMotor")
-            .leftFrontMotorName("lfMotor")
+            .leftFrontMotorName("leftFront")
+            .leftRearMotorName("leftBack")
+            .rightFrontMotorName("rightFront")
+            .rightRearMotorName("rightBack")
             .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .xVelocity(125.14010) // Tuning OpMode
-            .yVelocity(50.3566989); // Tuning OpMode
+
+            .xVelocity(50.0) // RETUNE via Tuning OpMode
+            .yVelocity(50.0); // RETUNE via Tuning OpMode
 
 
-    public static ThreeWheelIMUConstants localizerConstants = new ThreeWheelIMUConstants() // This changes based on whether you use 2 odometry wheels or 3, see docs
-            .forwardTicksToInches(0.00197913724762) // Tuning OpMode (take average of 5ish runs)
-            .strafeTicksToInches(0.001195489955537) // Tuning OpMode (take average of 5ish runs)
-            .turnTicksToInches(0.014324695549060188) // Tuning OpMode (take average of 5ish runs)
-            .leftPodY(3.5) // From center in inches, chart on docs
-            .rightPodY(-2.3) // From center in inches, chart on docs
-            .strafePodX(-5.75) // From center in inches, chart on docs
-            .leftEncoder_HardwareMapName("lfMotor")
-            .rightEncoder_HardwareMapName("rbMotor")
-            .strafeEncoder_HardwareMapName("lbMotor")
-            .leftEncoderDirection(Encoder.FORWARD)
-            .rightEncoderDirection(Encoder.FORWARD)
+    public static ThreeWheelIMUConstants localizerConstants = new ThreeWheelIMUConstants()
+            .forwardTicksToInches(0.00195966359)
+            .strafeTicksToInches(0.00134015956)
+            .turnTicksToInches(0.00195966359)
+
+            .leftPodY(4.3109)
+            .rightPodY(-4.0007)
+            .strafePodX(-6.6970)
+
+            .leftEncoder_HardwareMapName("leftFront")
+            .rightEncoder_HardwareMapName("rightFront")
+            .strafeEncoder_HardwareMapName("rightBack")
+
+            .leftEncoderDirection(Encoder.REVERSE)
+            .rightEncoderDirection(Encoder.REVERSE)
             .strafeEncoderDirection(Encoder.FORWARD)
+
             .IMU_HardwareMapName("imu")
-            .IMU_Orientation(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT, RevHubOrientationOnRobot.UsbFacingDirection.UP));
+            .IMU_Orientation(new RevHubOrientationOnRobot(
+                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+            ));
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
