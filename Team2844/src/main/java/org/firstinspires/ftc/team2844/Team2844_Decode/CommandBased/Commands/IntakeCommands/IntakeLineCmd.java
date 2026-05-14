@@ -39,17 +39,17 @@ public class IntakeLineCmd extends CommandBase {
     public void execute() {
         boolean ballInBeam = intakeSubsystem.ballInBeam();
         boolean topBroken = shooterFeedSubsystem.topBroken();
-        boolean bayOne = spindexerSubsystem.ballInBayOne();
+        //boolean bayOne = spindexerSubsystem.ballInBayOne();
 
-        if(bayOne){
+        if(ballInBeam){
             hasBeenBayOne = true;
         }
 
-        if(!(ballInBeam && topBroken && bayOne)){
+        if(!(ballInBeam && topBroken)){
 
             if(!topBroken){
 //                new ParallelCommandGroup(new UptakeCmd(kickSubsystem), new TransferCmd(shooterFeedSubsystem));
-                if(bayOne) {
+               /* if(bayOne) {
                     if(ballInBeam){
                         intakeSubsystem.stop();
                     }
@@ -62,15 +62,17 @@ public class IntakeLineCmd extends CommandBase {
                         intakeSubsystem.activate(Constants.INTAKE_SPEED);
                         kickSubsystem.rotateKickerDownIntake();
                     }
-                }
+                }*/
 
+                intakeSubsystem.activate(Constants.INTAKE_SPEED);
+                kickSubsystem.rotateKickerDown();
                 kickSubsystem.runKickerSpin();
                 kickSubsystem.runSFeedForward();
-                shooterFeedSubsystem.runTFeedForward();
+                //shooterFeedSubsystem.runTFeedForward();
                 timer.reset();
             } else {
 //                new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem));
-                if(!bayOne){
+                /*if(!bayOne){
                     if(shooterFeedSubsystem.tFeedBusy()){
 
                         kickSubsystem.rotateKickerDownExtra();
@@ -100,6 +102,12 @@ public class IntakeLineCmd extends CommandBase {
                     shooterFeedSubsystem.slowFeed();
                 } else {
                     shooterFeedSubsystem.stopTFeed();
+                }*/
+
+                if(!ballInBeam){
+                    intakeSubsystem.activate(Constants.INTAKE_SPEED);
+                } else {
+                    intakeSubsystem.stop();
                 }
             }
 
@@ -115,6 +123,6 @@ public class IntakeLineCmd extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (ballInBeam && topBroken && bayOne);
+        return (ballInBeam && topBroken);
     }
 }

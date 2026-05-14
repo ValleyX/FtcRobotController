@@ -17,4 +17,9 @@ public class AimTurretCmd extends CommandBase {
     public void initialize() {
         aimSubsystem.aimTurret(degrees);
     }
+
+    @Override
+    public boolean isFinished() {
+        return (degrees - 1.0 <= aimSubsystem.getTurretDegrees() && aimSubsystem.getTurretDegrees() <= degrees + 1.0);
+    }
 }

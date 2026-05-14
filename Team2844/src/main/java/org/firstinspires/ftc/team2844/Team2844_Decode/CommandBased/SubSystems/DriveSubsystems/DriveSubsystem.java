@@ -52,14 +52,34 @@ public class DriveSubsystem extends SubsystemBase {
         return Math.toDegrees(drive.localizer.getPose().heading.toDouble());
     }
 
-    /**Gives the heading as if the robot was set pointing towards the audience(the limelight requires this)*/
-    public double getRobotAudienceHeading(int pipeline){
+    /**Gives the heading as if the robot was set pointing towards the opposite wall your color (field Centric requires this)*/
+    public double getRobotDriveHeading(int pipeline){
         double heading = getRobotHeading();
         if(pipeline == Constants.BLUE_PIPELINE){
             heading -= 90;
         } else if (pipeline == Constants.RED_PIPELINE){
             heading += 90;
         }
+
+        while(heading > 180) heading -= 360;
+        while (heading <= -180) heading += 360;
+        return heading;
+    }
+
+    /**Gives the heading as if the robot was set pointing towards the red wall (field Centric requires this)*/
+    public double getRobotBlueDriveHeading(){
+        double heading = getRobotHeading();
+        heading += 90;
+
+        while(heading > 180) heading -= 360;
+        while (heading <= -180) heading += 360;
+        return heading;
+    }
+
+    /**Gives the heading as if the robot was set pointing towards the blue wall (field Centric requires this)*/
+    public double getRobotRedDriveHeading(){
+        double heading = getRobotHeading();
+        heading -= 90;
 
         while(heading > 180) heading -= 360;
         while (heading <= -180) heading += 360;
