@@ -232,7 +232,7 @@ public class TeleOpBase extends LinearOpMode {
             }
 
             /* ---------- TELEMETRY ---------- */
-            double actualRPM = (robot.shooterMotor.getVelocity() * 60.0) / robot.ENCODER_TICS;
+            double actualRPM = (robot.shooterMotorBilda.getVelocity() * 60.0) / robot.ENCODER_TICS;
 
             telemetry.addData("--- DRIVE STATE ---", "");
             telemetry.addData("BabyMode", babyMode);
@@ -241,7 +241,6 @@ public class TeleOpBase extends LinearOpMode {
             telemetry.addData("--- SHOOTER ---", "");
             telemetry.addData("Target RPM (incl. offset)", targetRPM);
             telemetry.addData("Actual RPM", actualRPM);
-            telemetry.addData("Motor Power", robot.shooterMotor.getPower());
             telemetry.addData("Servo Closed?", robot.servoClosed());
 
             telemetry.addData("--- INTAKE ---", "");

@@ -69,7 +69,8 @@ public class RobotHardware {
     /*
      * Shooter, Intake & Flick Motors
      */
-    public DcMotorEx shooterMotor;
+    public DcMotorEx shooterMotorBilda;
+    public DcMotorEx shooterMotorRev;
     public DcMotorEx intakeMotor;
     //public DcMotorEx flickMotor;
 
@@ -107,7 +108,8 @@ public class RobotHardware {
 
     public double hoodAim = 0.0;
 
-    public PIDFCoefficients shooterCoefficients;
+    public PIDFCoefficients shooterCoefficientsBilda;
+    public PIDFCoefficients shooterCoefficientsRev;
     public PIDFCoefficients newShooterCoefficients;
 
     /*
@@ -170,15 +172,16 @@ public class RobotHardware {
 
 
         /* --- SHOOTER, INTAKE, FLICK INIT --- */
-        shooterMotor = opMode_.hardwareMap.get(DcMotorEx.class, "shooter");
+        shooterMotorBilda = opMode_.hardwareMap.get(DcMotorEx.class, "shooter");
+        shooterMotorRev = opMode_.hardwareMap.get(DcMotorEx.class, "shooter1");
         intakeMotor = opMode_.hardwareMap.get(DcMotorEx.class, "intake");
-        //flickMotor = opMode_.hardwareMap.get(DcMotorEx.class, "flickMotor");
 
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        //flickMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotorBilda.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        shooterMotorBilda.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotorRev.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        shooterMotorRev.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Shooter Servos
         blockSer = opMode_.hardwareMap.get(Servo.class, "blockSer");
@@ -201,9 +204,11 @@ public class RobotHardware {
             beamBreak = null;
         }
 
-        shooterCoefficients = shooterMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterCoefficientsBilda = shooterMotorBilda.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterCoefficientsRev = shooterMotorRev.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
         newShooterCoefficients = new PIDFCoefficients(15.0, 0.0, 0.0, 1.0);
-        shooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
+        shooterMotorBilda.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
+        shooterMotorRev.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
 
 
         /* --- LIMELIGHT INIT --- */
@@ -375,7 +380,8 @@ public class RobotHardware {
 
     public void setShootPower(double power) {
         double temp = Math.max(-1.0, Math.min(1.0, power));
-        shooterMotor.setPower(temp);
+        shooterMotorBilda.setPower(temp);
+        shooterMotorRev.setPower(temp);
     }
 
     public void feed() {
@@ -385,7 +391,8 @@ public class RobotHardware {
 
     public void extake(double power) {
         intake(-power);
-        shooterMotor.setPower(-power);
+        shooterMotorBilda.setPower(-power);
+        shooterMotorRev.setPower(-power);
         openServo();
     }
 
@@ -395,24 +402,27 @@ public class RobotHardware {
     }
 
     public void stopShooter() {
-        shooterMotor.setVelocity(0); // Using Velocity for encoder consistency
+        shooterMotorBilda.setVelocity(0);
+        shooterMotorRev.setVelocity(0);
         stopFeed();
     }
 
     public double getShootVelocity() {
-        return (shooterMotor.getVelocity() / ENCODER_TICS);
+        return (shooterMotorBilda.getVelocity() / ENCODER_TICS);
     }
 
     public void setShootVelocity(double velocity) {
-        shooterMotor.setVelocity(velocity * ENCODER_TICS);
+        shooterMotorBilda.setVelocity(velocity * ENCODER_TICS);
+        shooterMotorRev.setVelocity((velocity * ENCODER_TICS));
     }
 
     public void setShooterRPM(double rpm) {
-        shooterMotor.setVelocity((rpm * ENCODER_TICS) / 60.0);
+        shooterMotorBilda.setVelocity((rpm * ENCODER_TICS) / 60.0);
+        shooterMotorRev.setVelocity((rpm * ENCODER_TICS) / 60.0);
     }
 
     public double calculateRegression() {
-        double shooterVel = 0;
+        double shooterVel = lastKnownSpeed();
         double x = getBotDis();
         if (x == -999) return shooterVel;
 
@@ -431,7 +441,7 @@ public class RobotHardware {
     }
 
     public double lastKnownSpeed() {
-        return shooterMotor.getVelocity() / ENCODER_TICS;
+        return shooterMotorBilda.getVelocity() / ENCODER_TICS;
     }
 
     public double getHoodAim(double distance) {

@@ -37,9 +37,9 @@ public class DefaultAimCmd extends CommandBase {
                 }
             }
         } else if(Math.abs(targetAngle-Constants.NEUTRAL_TURRET) < Constants.MAX_NEUTRAL){
-            aimSubsystem.aimTurret(targetAngle);
+            //aimSubsystem.aimTurret(targetAngle);
         } else {
-            aimSubsystem.aimTurret(Constants.NEUTRAL_TURRET);
+            //aimSubsystem.aimTurret(Constants.NEUTRAL_TURRET);
         }
     }
 
