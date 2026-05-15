@@ -95,6 +95,8 @@ public class Constants {
     //Pinpoint
     public static final double NO_PP = -999.0;
 
+    public static final double NO_HEADING = -999.0;
+
     //Control Hub Ports
         //Motor Ports
     public static final String CM0 = "leftFront";

@@ -186,7 +186,7 @@ public class Subsystems {
 
         //1. drive subsystem
         //tankDriveSubsystem = new TankDriveSubsystem(leftMotorGroup,rightMotorGroup);
-        mecDriveSubsystem = new DriveSubsystem(hardwareMap);
+        mecDriveSubsystem = new DriveSubsystem(hardwareMap, pipelineNum);
         //2. Intake subsystem
         intakeSubsystem = new IntakeSubsystem(intakeMotor, intakeBB);
         //3. Kick subsystem

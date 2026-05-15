@@ -130,7 +130,7 @@ public class SensorSubsystem extends SubsystemBase {
     public double getBotYLLMT2(){
         if(llResult != null && llResult.isValid()){
             //Yes I know that gives the -x back but the MT2 was giving values that were off from what they were supposed to be and this fixes it
-            return -getBotPoseLLMT2().getPosition().y*Constants.METER_TO_INCH;
+            return getBotPoseLLMT2().getPosition().y*Constants.METER_TO_INCH;
         }
         return Constants.NO_LL;
     }

@@ -17,8 +17,20 @@ public class DriveSubsystem extends SubsystemBase {
 
     public MecanumDrive drive;
 
-    public DriveSubsystem(HardwareMap hardwareMap){
-        drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, SavedVars.startingHeading));
+    public DriveSubsystem(HardwareMap hardwareMap, int pipline){
+
+        double temp = SavedVars.startingHeading;
+        if(temp == Constants.NO_HEADING || temp == (Constants.NO_HEADING%360.0)) {
+            if (pipline == Constants.BLUE_PIPELINE) {
+                drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, Math.toRadians(-90.0)));
+            } else if (pipline == Constants.RED_PIPELINE) {
+                drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, Math.toRadians(90.0)));
+            } else {
+                drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, 0.0));
+            }
+        } else {
+            drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, temp));
+        }
         //drive = new MecanumDrive(hardwareMap, new Pose2d(0.0, 0.0, 0.0));
     }
 
@@ -63,7 +75,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         while(heading > 180) heading -= 360;
         while (heading <= -180) heading += 360;
-        return heading;
+        return Math.toRadians(heading);
     }
 
     /**Gives the heading as if the robot was set pointing towards the red wall (field Centric requires this)*/
@@ -73,7 +85,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         while(heading > 180) heading -= 360;
         while (heading <= -180) heading += 360;
-        return heading;
+        return Math.toRadians(heading);
     }
 
     /**Gives the heading as if the robot was set pointing towards the blue wall (field Centric requires this)*/
@@ -83,7 +95,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         while(heading > 180) heading -= 360;
         while (heading <= -180) heading += 360;
-        return heading;
+        return Math.toRadians(heading);
     }
 
     public double getRobotHeadingRadians(){
@@ -145,7 +157,7 @@ public class DriveSubsystem extends SubsystemBase {
         double botX = getBotX();
         double botY = getBotY();
         double angle = 0.0;
-        double tempHeading = getHeadingFlipped();
+        double tempHeading = getRobotHeading();
 
         double limelightX = 0.0;
         double limelightY = 0.0;

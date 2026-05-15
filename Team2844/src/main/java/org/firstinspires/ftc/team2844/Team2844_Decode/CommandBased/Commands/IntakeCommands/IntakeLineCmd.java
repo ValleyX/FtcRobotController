@@ -104,11 +104,11 @@ public class IntakeLineCmd extends CommandBase {
                     shooterFeedSubsystem.stopTFeed();
                 }*/
 
-                if(!ballInBeam){
+                //if(!ballInBeam){
                     intakeSubsystem.activate(Constants.INTAKE_SPEED);
-                } else {
-                    intakeSubsystem.stop();
-                }
+                //} else {
+                //    intakeSubsystem.stop();
+                //}
             }
 
         } else {

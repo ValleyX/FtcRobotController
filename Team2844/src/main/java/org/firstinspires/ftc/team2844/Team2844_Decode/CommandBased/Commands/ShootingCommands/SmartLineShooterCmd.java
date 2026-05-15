@@ -13,6 +13,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Spin
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopSpinCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeExtraCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
@@ -37,21 +38,22 @@ public class SmartLineShooterCmd extends SequentialCommandGroup {
                         //Also set the velocity to the amount based on distance from apriltag
                         new VelocityShootCmd(shooterSubsystem, velocity),
 
-                        new ConditionalCommand(
-                                new StopIntakeCmd(intakeSubsystem),
+                        //new ConditionalCommand(
+                        //        new StopIntakeCmd(intakeSubsystem),
                                 new ActivateIntakeCmd(intakeSubsystem),
-                                spindexerSubsystem::ballInBayOne
-                        ),
+                                //spindexerSubsystem::ballInBayOne
+                        //),
 
                         //if your at velocity, uptake and shoot, otherwise, don't
                         new ConditionalCommand(
                                 new ParallelCommandGroup(
                                         new TransferCmd(shooterFeedSubsystem),
-                                        new ConditionalCommand(
-                                                new StopUptakeCmd(kickSubsystem),
-                                                new SequentialCommandGroup(new UptakeShootCmd(kickSubsystem, spindexerSubsystem, shooterFeedSubsystem)),
-                                                shooterFeedSubsystem::topBroken
-                                        )
+                                        //new ConditionalCommand(
+                                        //        new StopUptakeCmd(kickSubsystem),
+                                                //new SequentialCommandGroup(new UptakeShootCmd(kickSubsystem, spindexerSubsystem, shooterFeedSubsystem)),
+                                                new UptakeCmd(kickSubsystem)
+                                        //        shooterFeedSubsystem::topBroken
+                                        //)
 
                                 ),
                                 new ParallelCommandGroup(
