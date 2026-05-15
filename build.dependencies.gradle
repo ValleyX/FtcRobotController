@@ -16,6 +16,6 @@ dependencies {
     implementation 'com.bylazar:fullpanels:1.0.12' //added by Tanner
 
     // ValleyLib
-    implementation 'com.github.ValleyX:valleyLib:1.0.6'
+    //implementation 'com.github.ValleyX:valleyLib:1.0.6'
 }
 

@@ -45,6 +45,4 @@ dependencies {
     implementation 'org.ftclib.ftclib:core:2.1.1' // core
     //*end JAE Add
 
-    // ValleyLib
-    implementation 'com.github.ValleyX:valleyLib:1.0.6'
 }
