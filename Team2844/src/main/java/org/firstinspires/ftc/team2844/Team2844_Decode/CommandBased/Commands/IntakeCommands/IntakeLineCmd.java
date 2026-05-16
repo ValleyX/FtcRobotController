@@ -97,12 +97,12 @@ public class IntakeLineCmd extends CommandBase {
                 //kickSubsystem.stopKickerSpin();
                 //kickSubsystem.stopSFeed();
 
-
+                */
                 if(timer.time() < 75) {
                     shooterFeedSubsystem.slowFeed();
                 } else {
                     shooterFeedSubsystem.stopTFeed();
-                }*/
+                }
 
                 //if(!ballInBeam){
                     intakeSubsystem.activate(Constants.INTAKE_SPEED);

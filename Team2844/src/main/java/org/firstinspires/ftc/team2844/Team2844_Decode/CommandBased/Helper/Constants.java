@@ -86,8 +86,8 @@ public class Constants {
     public static final double BLUE_APRILTAG_X = -1.482 * 39.3701;
     public static final double BLUE_APRILTAG_Y = -1.413 * 39.3701;
 
-    public static final double RED_APRILTAG_X = 1.482 * 39.3701;
-    public static final double RED_APRILTAG_Y = -1.413 * 39.3701;
+    public static final double RED_APRILTAG_X = -1.482 * 39.3701;
+    public static final double RED_APRILTAG_Y = 1.413 * 39.3701;
 
     //Good numbers to have
     public static final double METER_TO_INCH = 39.3701;

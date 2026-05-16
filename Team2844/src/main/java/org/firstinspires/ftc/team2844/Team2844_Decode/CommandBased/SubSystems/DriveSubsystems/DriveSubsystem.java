@@ -157,7 +157,7 @@ public class DriveSubsystem extends SubsystemBase {
         double botX = getBotX();
         double botY = getBotY();
         double angle = 0.0;
-        double tempHeading = getHeadingFlipped();
+        double tempHeading = getRobotHeading();
 
         double limelightX = 0.0;
         double limelightY = 0.0;
