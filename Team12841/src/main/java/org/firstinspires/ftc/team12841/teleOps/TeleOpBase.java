@@ -163,7 +163,7 @@ public class TeleOpBase extends LinearOpMode {
             {
                 //targetRPM = robot.calculateRegression();
             }
-            robot.aimHood(robot.getHoodAim(robot.getBotDis()));
+
             robot.setShooterRPM(targetRPM);
             //robot.shooterMotor.setPower(1);
 
@@ -177,6 +177,7 @@ public class TeleOpBase extends LinearOpMode {
 
                 // 2. Wait for 300ms, then check velocity to feed
                 if (shootTimer.getElapsedTimeSeconds() > 0.3) {
+                    robot.aimHood(robot.getHoodAim(robot.getBotDis()));
                     robot.feed();
                 }
             } else {

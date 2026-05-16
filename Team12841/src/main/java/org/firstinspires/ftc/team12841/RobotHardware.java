@@ -113,7 +113,7 @@ public class RobotHardware {
     private boolean pipelineCalled = false;
 
     private static double velThresh = PanelsConfig.velThresh;
-    private static double ENCODER_TICS = PanelsConfig.ENCODER_TICS;
+    public static double ENCODER_TICS = PanelsConfig.ENCODER_TICS;
     private static double hoodAim = PanelsConfig.hoodAim;
     private static double VEL_BOTTOM_THRESH = PanelsConfig.VEL_BOTTOM_THRESH;
     private static double ghettoIn = PanelsConfig.ghettoIn;
