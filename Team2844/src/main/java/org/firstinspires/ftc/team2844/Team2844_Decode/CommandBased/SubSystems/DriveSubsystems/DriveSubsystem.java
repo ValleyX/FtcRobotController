@@ -159,13 +159,6 @@ public class DriveSubsystem extends SubsystemBase {
         double angle = 0.0;
         double tempHeading = getHeadingFlipped();
 
-        tempHeading += 180.0;
-        if(tempHeading > 360.0){
-            tempHeading -= 360.0;
-        } else if (tempHeading < 0.0){
-            tempHeading += 360.0;
-        }
-
 
         double limelightX = 0.0;
         double limelightY = 0.0;
@@ -182,7 +175,7 @@ public class DriveSubsystem extends SubsystemBase {
         opposite = limelightX + botX;
         adjacent = limelightY + botY;
 
-        angle = Math.toDegrees(Math.atan2(adjacent, opposite));
+        angle = Math.toDegrees(Math.atan2(opposite, adjacent));
 
         double turretAngle = (360.0-angle)-tempHeading;
 
