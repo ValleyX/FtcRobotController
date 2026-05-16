@@ -187,6 +187,7 @@ public class TeleOpBase extends LinearOpMode {
                     robot.stopFeed();
                 }
             }
+
             lastBumper = gamepad1.right_bumper; // Track state for the next frame
 
             /* ---------- LIGHT TIMERS ---------- */
