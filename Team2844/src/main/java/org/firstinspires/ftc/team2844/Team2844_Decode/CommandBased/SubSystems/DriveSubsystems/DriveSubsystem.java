@@ -157,7 +157,15 @@ public class DriveSubsystem extends SubsystemBase {
         double botX = getBotX();
         double botY = getBotY();
         double angle = 0.0;
-        double tempHeading = getRobotHeading();
+        double tempHeading = getHeadingFlipped();
+
+        tempHeading += 180.0;
+        if(tempHeading > 360.0){
+            tempHeading -= 360.0;
+        } else if (tempHeading < 0.0){
+            tempHeading += 360.0;
+        }
+
 
         double limelightX = 0.0;
         double limelightY = 0.0;
@@ -166,15 +174,13 @@ public class DriveSubsystem extends SubsystemBase {
         if(pipeline == Constants.BLUE_PIPELINE || pipeline == Constants.BLUE_PIPELINE_MOTIF){
             limelightX = Constants.BLUE_APRILTAG_X;
             limelightY = Constants.BLUE_APRILTAG_Y;
-            tempHeading = tempHeading;
         } else if(pipeline == Constants.RED_PIPELINE || pipeline == Constants.RED_PIPELINE_MOTIF){
             limelightX = Constants.RED_APRILTAG_X;
             limelightY = Constants.RED_APRILTAG_Y;
-            tempHeading = -tempHeading;
         }
 
-        opposite = limelightX - botX;
-        adjacent = limelightY - botY;
+        opposite = limelightX + botX;
+        adjacent = limelightY + botY;
 
         angle = Math.toDegrees(Math.atan2(adjacent, opposite));
 
