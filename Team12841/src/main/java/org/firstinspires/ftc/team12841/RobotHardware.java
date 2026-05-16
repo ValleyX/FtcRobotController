@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.team12841;
 
+import static org.firstinspires.ftc.team12841.configs.PanelsConfig.IN_POS;
+import static org.firstinspires.ftc.team12841.configs.PanelsConfig.OUT_POS;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -32,9 +35,6 @@ public class RobotHardware {
     private final LinearOpMode opMode_;
     private final ElapsedTime runtime = new ElapsedTime();
     public Follower follower;
-
-    public static final long BUFFER_TIME = 1200;
-    public static final double INTAKE_SPEED = 1.0;
 
     /*
      * Drivetrain Motors & Sensors
@@ -84,8 +84,6 @@ public class RobotHardware {
     private Servo ballStop;
 
     // Servo Constants
-    private final double OUT_POS = 0.5;
-    private final double IN_POS = 0.0;
     private boolean servoClosed;
 
     /*
@@ -102,11 +100,6 @@ public class RobotHardware {
     /*
      * Shooter Conversions & Tracking
      */
-    public final double ENCODER_TICS = 28.0; // Acts as SHOOTER_TICKS_PER_REV
-    public double velThresh = 100;
-    public final double VEL_BOTTOM_THRESH = 1.0;
-
-    public double hoodAim = 0.0;
 
     public PIDFCoefficients shooterCoefficientsBilda;
     public PIDFCoefficients shooterCoefficientsRev;
@@ -119,6 +112,12 @@ public class RobotHardware {
     private LLResult llResult;
     private boolean pipelineCalled = false;
 
+    private static double velThresh = PanelsConfig.velThresh;
+    private static double ENCODER_TICS = PanelsConfig.ENCODER_TICS;
+    private static double hoodAim = PanelsConfig.hoodAim;
+    private static double VEL_BOTTOM_THRESH = PanelsConfig.VEL_BOTTOM_THRESH;
+    private static double ghettoIn = PanelsConfig.ghettoIn;
+    private static double ghettoOut = PanelsConfig.ghettoOut;
 
     /**
      * Primary Constructor
@@ -481,11 +480,11 @@ public class RobotHardware {
     }
 
     public void stopBallHold() {
-        ballStop.setPosition(0);
+        ballStop.setPosition(ghettoIn);
     }
 
     public void stopBallRelease() {
-        ballStop.setPosition(.2);
+        ballStop.setPosition(ghettoOut);
     }
 
     public void testServo(double pos) {
