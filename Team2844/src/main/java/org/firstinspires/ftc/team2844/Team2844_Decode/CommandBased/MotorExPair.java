@@ -62,4 +62,6 @@ public class MotorExPair {
     public double getVelocity(){
         return Math.max(motor1.getVelocity(), motor2.getVelocity());
     }
+
+    public double getPower(){return Math.max(motor1.get(), motor2.get());}
 }

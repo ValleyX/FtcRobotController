@@ -50,4 +50,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public boolean inRange(){return (vel-Constants.VELOCITY_THRESHHOLD < getVelocity()) && (getVelocity() < vel+Constants.VELOCITY_THRESHHOLD);}
+
+    public double getPower(){
+        return shooterMotors.getPower();
+    }
 }

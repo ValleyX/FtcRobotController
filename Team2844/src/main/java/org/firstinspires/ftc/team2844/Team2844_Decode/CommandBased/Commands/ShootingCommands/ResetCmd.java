@@ -22,7 +22,7 @@ public class ResetCmd extends ParallelCommandGroup {
                 new VelocityShootCmd(shooterSubsystem, () -> Constants.MIN_VELOCITY),
                 new StopTransferCmd(shooterFeedSubsystem),
                 new StopIntakeCmd(intakeSubsystem),
-                new NeutralAimCmd(aimSubsystem),
+                //new NeutralAimCmd(aimSubsystem),
                 new StopUptakeCmd(kickSubsystem)
         );
     }

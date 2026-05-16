@@ -68,7 +68,7 @@ public class IntakeLineCmd extends CommandBase {
                 kickSubsystem.rotateKickerDown();
                 kickSubsystem.runKickerSpin();
                 kickSubsystem.runSFeedForward();
-                //shooterFeedSubsystem.runTFeedForward();
+                shooterFeedSubsystem.runTFeedForward();
                 timer.reset();
             } else {
 //                new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem));
@@ -98,10 +98,12 @@ public class IntakeLineCmd extends CommandBase {
                 //kickSubsystem.stopSFeed();
 
                 */
-                if(timer.time() < 75) {
+                if(timer.time() < 90) {
                     shooterFeedSubsystem.slowFeed();
+                    kickSubsystem.rotateKickerDownExtra();
                 } else {
                     shooterFeedSubsystem.stopTFeed();
+                    kickSubsystem.rotateKickerDown();
                 }
 
                 //if(!ballInBeam){

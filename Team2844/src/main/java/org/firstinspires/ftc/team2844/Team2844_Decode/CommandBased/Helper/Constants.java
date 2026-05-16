@@ -41,7 +41,7 @@ public class Constants {
 
 
     //Uptake
-    public static double KICKDOWN = 0.27;
+    public static double KICKDOWN = 0.29;
     public static double KICKDOWN_EXTRA = 0.33;
     public static double KICKDOWN_LESS = 0.27;
     public static double KICKDOWN_INTAKE = 0.2;

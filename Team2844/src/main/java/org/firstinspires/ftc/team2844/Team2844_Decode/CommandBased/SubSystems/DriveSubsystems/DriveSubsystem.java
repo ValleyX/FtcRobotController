@@ -202,21 +202,27 @@ public class DriveSubsystem extends SubsystemBase {
 
 
         if(pipeline == Constants.BLUE_PIPELINE || pipeline == Constants.BLUE_PIPELINE_MOTIF){
-            limelightX = Constants.BLUE_APRILTAG_X;
+            limelightX = -Constants.BLUE_APRILTAG_X;
             limelightY = Constants.BLUE_APRILTAG_Y;
-            tempHeading = heading;
         } else if(pipeline == Constants.RED_PIPELINE || pipeline == Constants.RED_PIPELINE_MOTIF){
-            limelightX = Constants.RED_APRILTAG_X;
+            limelightX = -Constants.RED_APRILTAG_X;
             limelightY = Constants.RED_APRILTAG_Y;
-            tempHeading = -heading;
         }
 
         opposite = limelightX - botX;
         adjacent = limelightY - botY;
 
-        angle = Math.toDegrees(Math.atan2(adjacent, opposite));
+        angle = Math.toDegrees(Math.atan2(opposite, adjacent));
 
-        return Math.max(Math.min(330, (360.0-angle)-tempHeading), 10);
+        double turretAngle = (360.0-angle)-tempHeading;
+
+        if(turretAngle > 360.0){
+            turretAngle -= 360.0;
+        } else if (turretAngle < 0.0){
+            turretAngle += 360.0;
+        }
+
+        return Math.max(Math.min(Constants.MAX_DEGREE, turretAngle), Constants.MIN_DEGREE);
         //return 90.0;
     }
 
@@ -246,7 +252,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public double hoodLinReg(int pipeline){
         double distance = pinpointDistance(pipeline);
-        return 0.0;
+        return Math.max(Math.min(((.0038895 * distance) + -0.111817), 1.0), 0.0);
     }
 
 
