@@ -165,15 +165,15 @@ public class DriveSubsystem extends SubsystemBase {
 
 
         if(pipeline == Constants.BLUE_PIPELINE || pipeline == Constants.BLUE_PIPELINE_MOTIF){
-            limelightX = Constants.BLUE_APRILTAG_X;
+            limelightX = -Constants.BLUE_APRILTAG_X;
             limelightY = Constants.BLUE_APRILTAG_Y;
         } else if(pipeline == Constants.RED_PIPELINE || pipeline == Constants.RED_PIPELINE_MOTIF){
-            limelightX = Constants.RED_APRILTAG_X;
+            limelightX = -Constants.RED_APRILTAG_X;
             limelightY = Constants.RED_APRILTAG_Y;
         }
 
-        opposite = limelightX + botX;
-        adjacent = limelightY + botY;
+        opposite = limelightX - botX;
+        adjacent = limelightY - botY;
 
         angle = Math.toDegrees(Math.atan2(opposite, adjacent));
 

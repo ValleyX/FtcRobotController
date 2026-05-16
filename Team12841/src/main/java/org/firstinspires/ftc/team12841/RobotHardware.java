@@ -115,9 +115,9 @@ public class RobotHardware {
     private static double velThresh = PanelsConfig.velThresh;
     public static double ENCODER_TICS = PanelsConfig.ENCODER_TICS;
     private static double hoodAim = PanelsConfig.hoodAim;
-    private static double VEL_BOTTOM_THRESH = PanelsConfig.VEL_BOTTOM_THRESH;
-    private static double ghettoIn = PanelsConfig.ghettoIn;
-    private static double ghettoOut = PanelsConfig.ghettoOut;
+    public static double VEL_BOTTOM_THRESH = PanelsConfig.VEL_BOTTOM_THRESH;
+    public static double ghettoIn = PanelsConfig.ghettoIn;
+    public static double ghettoOut = PanelsConfig.ghettoOut;
 
     /**
      * Primary Constructor
