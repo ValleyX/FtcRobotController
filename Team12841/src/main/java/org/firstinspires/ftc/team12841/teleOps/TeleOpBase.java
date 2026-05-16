@@ -182,6 +182,7 @@ public class TeleOpBase extends LinearOpMode {
                 }
             } else {
                 // Reset state when bumper is released
+                robot.aimHood(0);
                 robot.stopBallHold();
                 if (!intaking) {
                     robot.stopFeed();
