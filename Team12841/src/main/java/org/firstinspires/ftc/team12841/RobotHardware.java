@@ -481,11 +481,11 @@ public class RobotHardware {
     }
 
     public void stopBallHold() {
-        ballStop.setPosition(1);
+        ballStop.setPosition(0);
     }
 
     public void stopBallRelease() {
-        ballStop.setPosition(.4);
+        ballStop.setPosition(.2);
     }
 
     public void testServo(double pos) {
