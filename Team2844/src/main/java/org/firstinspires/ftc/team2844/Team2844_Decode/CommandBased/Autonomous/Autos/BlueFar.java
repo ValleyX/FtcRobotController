@@ -12,8 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.CommandAction;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.CommandGroupAction;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.SmartLineShooterAutoCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.SmartLineShooterAutoAct;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.SavePosCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ResetCmd;
@@ -70,10 +69,10 @@ public class BlueFar extends LinearOpMode {
                 .setReversed(true)
                 .splineToConstantHeading(new Vector2d(-72 + (Constants.BOT_WIDTH / 2.0), 20.0), Math.toRadians(90.0));
 
-        shootLoop = new CommandGroupAction(new SmartLineShooterAutoCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
+        shootLoop = new SmartLineShooterAutoAct(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                 subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
                 subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem,
-                telemetry), this);
+                telemetry);
 
         intake = new CommandAction(new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem));
 

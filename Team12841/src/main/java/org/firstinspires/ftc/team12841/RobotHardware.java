@@ -205,7 +205,7 @@ public class RobotHardware {
 
         shooterCoefficientsBilda = shooterMotorBilda.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterCoefficientsRev = shooterMotorRev.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        newShooterCoefficients = new PIDFCoefficients(15.0, 0.0, 0.0, 1.0);
+        newShooterCoefficients = new PIDFCoefficients(1.0, 0.0, 0.0, 30.0);
         shooterMotorBilda.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
         shooterMotorRev.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, newShooterCoefficients);
 

@@ -22,7 +22,7 @@ public class PanelsConfig {
     public static double hoodAim = 0;
 
     public static double ghettoIn = 0;
-    public static double ghettoOut = 0.1;
+    public static double ghettoOut = 0.2;
     public static double BABY = 0.4;
 
 }

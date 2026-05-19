@@ -15,9 +15,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(12.55)
-            .forwardZeroPowerAcceleration(-32.20906457774129) // RETUNE via Tuning OpMode
-            .lateralZeroPowerAcceleration(-39.73511957623294) // RETUNE via Tuning OpMode
+            .mass(13.25)
+            .forwardZeroPowerAcceleration(-42.35279772504574)
+            .lateralZeroPowerAcceleration(-52.12965524222374)
 
             // Retune via Tuning OpMode
             .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0, 0))
@@ -35,8 +35,8 @@ public class Constants {
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
 
-            .xVelocity(50.0) // RETUNE via Tuning OpMode
-            .yVelocity(50.0); // RETUNE via Tuning OpMode
+            .xVelocity(74.07182655453025)
+            .yVelocity(38.78943760054205);
 
 
     public static ThreeWheelIMUConstants localizerConstants = new ThreeWheelIMUConstants()
@@ -44,9 +44,9 @@ public class Constants {
             .strafeTicksToInches(0.00134015956)
             .turnTicksToInches(0.00195966359)
 
-            .leftPodY(4.3109)
-            .rightPodY(-4.0007)
-            .strafePodX(-6.6970)
+            .leftPodY(-4.3109)//was 4.3109
+            .rightPodY(4.3007)//was -4.0007
+            .strafePodX(-6.6970)//-6.6970
 
             .leftEncoder_HardwareMapName("leftFront")
             .rightEncoder_HardwareMapName("rightFront")
