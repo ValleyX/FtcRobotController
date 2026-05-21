@@ -21,7 +21,7 @@ public class IntakeLineCmd extends CommandBase {
     boolean hasBeenBayOne;
     ElapsedTime timer;
 
-    public IntakeLineCmd(ShooterFeedSubsystem shooterFeedSubsystem, IntakeSubsystem intakeSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem){
+    public IntakeLineCmd(ShooterFeedSubsystem shooterFeedSubsystem, IntakeSubsystem intakeSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem) {
         this.intakeSubsystem = intakeSubsystem;
         this.shooterFeedSubsystem = shooterFeedSubsystem;
         this.kickSubsystem = kickSubsystem;
@@ -39,92 +39,50 @@ public class IntakeLineCmd extends CommandBase {
     public void execute() {
         boolean ballInBeam = intakeSubsystem.ballInBeam();
         boolean topBroken = shooterFeedSubsystem.topBroken();
-        //boolean bayOne = spindexerSubsystem.ballInBayOne();
 
-        if(ballInBeam){
+        if (ballInBeam) {
             hasBeenBayOne = true;
         }
 
-        if(!(ballInBeam && topBroken)){
 
-            if(!topBroken){
-//                new ParallelCommandGroup(new UptakeCmd(kickSubsystem), new TransferCmd(shooterFeedSubsystem));
-               /* if(bayOne) {
-                    if(ballInBeam){
-                        intakeSubsystem.stop();
-                    }
-
-                    kickSubsystem.rotateKickerDown();
-                } else {
-                    if(hasBeenBayOne){
-                        kickSubsystem.rotateKickerDownExtra();
-                    } else {
-                        intakeSubsystem.activate(Constants.INTAKE_SPEED);
-                        kickSubsystem.rotateKickerDownIntake();
-                    }
-                }*/
-
-                intakeSubsystem.activate(Constants.INTAKE_SPEED);
-                kickSubsystem.rotateKickerDown();
+        if (!topBroken) {
+            intakeSubsystem.activate(Constants.INTAKE_SPEED);
+            kickSubsystem.rotateKickerDown();
+            kickSubsystem.runKickerSpin();
+            kickSubsystem.runSFeedForward();
+            shooterFeedSubsystem.runTFeedForward();
+            timer.reset();
+        } else {
+            if (timer.time() < 100) {
+                shooterFeedSubsystem.slowFeed();
+                kickSubsystem.rotateKickerDownExtra();
                 kickSubsystem.runKickerSpin();
                 kickSubsystem.runSFeedForward();
-                shooterFeedSubsystem.runTFeedForward();
-                timer.reset();
             } else {
-//                new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem));
-                /*if(!bayOne){
-                    if(shooterFeedSubsystem.tFeedBusy()){
-
-                        kickSubsystem.rotateKickerDownExtra();
-                        kickSubsystem.runKickerSpin();
-                        kickSubsystem.runSFeedForward();
-
-                        if(intakeSubsystem.ballInBeam()){
-                            intakeSubsystem.stop();
-                        } else {
-                            intakeSubsystem.activate(Constants.INTAKE_SPEED);
-                        }
-                    } else {
-                        kickSubsystem.rotateKickerDownIntake();
-                        kickSubsystem.stopKickerSpin();
-                        kickSubsystem.stopSFeed();
-                        intakeSubsystem.activate(Constants.INTAKE_SPEED);
-                    }
-                } else {
-                    intakeSubsystem.activate(Constants.INTAKE_SPEED);
-                }
-                //kickSubsystem.rotateKickerUp();
-                //kickSubsystem.stopKickerSpin();
-                //kickSubsystem.stopSFeed();
-
-                */
-                if(timer.time() < 90) {
-                    shooterFeedSubsystem.slowFeed();
-                    kickSubsystem.rotateKickerDownExtra();
-                } else {
-                    shooterFeedSubsystem.stopTFeed();
-                    kickSubsystem.rotateKickerDown();
-                }
-
-                //if(!ballInBeam){
-                    intakeSubsystem.activate(Constants.INTAKE_SPEED);
-                //} else {
-                //    intakeSubsystem.stop();
-                //}
+                shooterFeedSubsystem.stopTFeed();
+                kickSubsystem.rotateKickerUp();
+                kickSubsystem.stopKickerSpin();
+                kickSubsystem.runSFeedBackward();
             }
 
-        } else {
-            //new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem), new StopIntakeCmd(intakeSubsystem));
-            intakeSubsystem.stop();
-            kickSubsystem.rotateKickerUp();
-            kickSubsystem.stopKickerSpin();
-            kickSubsystem.stopSFeed();
-            shooterFeedSubsystem.stopTFeed();
+            intakeSubsystem.activate(Constants.INTAKE_SPEED);
         }
+
     }
+
+
 
     @Override
     public boolean isFinished() {
-        return (ballInBeam && topBroken);
+        return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        intakeSubsystem.stop();
+        kickSubsystem.rotateKickerUp();
+        kickSubsystem.stopKickerSpin();
+        kickSubsystem.stopSFeed();
+        shooterFeedSubsystem.stopTFeed();
     }
 }

@@ -175,8 +175,16 @@ public class Constants {
     public static final String EDI6 = "";
     public static final String EDI7 = "";
 
+
+    //BOT DIMENSIONS
     public static final double BOT_WIDTH = 17.0;
     public static final double BOT_LENGTH = 17.75;
+    /**How far forward the Limelight is in inches*/
+    public static final double LL_FORWARD_OFFSET = 0.18611088 * METER_TO_INCH;
+    /**How far up the Limelight is in inches*/
+    public static final double LL_UP_OFFSET = 0.31369 * METER_TO_INCH;
+
+
     public static final double STRAFE_CORRECTION = 1.0;
 
 
@@ -188,23 +196,16 @@ public class Constants {
     public static final double TFEED_SPEED = 0.8;
 
     /* TODO LIST
-      - No spinny - Basil
-
 
       - Get Shooter Velocity Working
          * get the linreg for shooter
-         * get hood linreg working
 
-      - get pose tracking with the odometry pods
-        * get distance from limelight
       - get Metatags with the limelight
         * update pinpoint pose with metatag pos
 
-      - Auto!!!
-       - get command to action wrapper working with command groups
-       - get commands working in auto
-       - get the correct coords
-       - use limelight and pinpoint in auto
+      - make auto better :(
+
+      -
 
      */
 }

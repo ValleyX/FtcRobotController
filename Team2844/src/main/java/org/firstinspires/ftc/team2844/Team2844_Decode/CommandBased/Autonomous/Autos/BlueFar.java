@@ -46,7 +46,7 @@ public class BlueFar extends LinearOpMode {
 
     public void initialize() {
         initialPose = new Pose2d(-72 + (Constants.BOT_LENGTH / 2.0), Constants.BOT_WIDTH / 2.0, Math.toRadians(0.0));
-        subsystems = new Subsystems(hardwareMap, Constants.BLUE_PIPELINE_MOTIF, initialPose);
+        subsystems = new Subsystems(hardwareMap, Constants.BLUE_PIPELINE, initialPose);
         // instantiate MecanumDrive at a particular pose.
 
 

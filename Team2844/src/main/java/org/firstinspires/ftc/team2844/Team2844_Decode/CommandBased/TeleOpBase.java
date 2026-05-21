@@ -196,6 +196,7 @@ public class TeleOpBase extends CommandOpMode {
 
         time.reset();
         new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem).schedule();
+        new AimTurretCmd(subsystems.aimSubsystem, Constants.NEUTRAL_TURRET);
         sleep(250);
 
         subsystems.aimSubsystem.aimHood(0.0);

@@ -31,6 +31,7 @@ public class SmartLineShooterCmd extends SequentialCommandGroup {
     public SmartLineShooterCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem, DriveSubsystem driveSubsystem, SpindexerSubsystem spindexerSubsystem){
         DoubleSupplier velocity = () -> driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
         addCommands(
+                new FullAimToLLCmd(aimSubsystem, sensorSubsystem, driveSubsystem),
                 new ParallelCommandGroup(
                         //At the same time, aim the turret
                         new FullAimToLLCmd(aimSubsystem, sensorSubsystem, driveSubsystem),
@@ -40,7 +41,7 @@ public class SmartLineShooterCmd extends SequentialCommandGroup {
 
                         //new ConditionalCommand(
                         //        new StopIntakeCmd(intakeSubsystem),
-                                new ActivateIntakeCmd(intakeSubsystem),
+                        new ActivateIntakeCmd(intakeSubsystem),
                                 //spindexerSubsystem::ballInBayOne
                         //),
 
@@ -51,7 +52,7 @@ public class SmartLineShooterCmd extends SequentialCommandGroup {
                                         //new ConditionalCommand(
                                         //        new StopUptakeCmd(kickSubsystem),
                                                 //new SequentialCommandGroup(new UptakeShootCmd(kickSubsystem, spindexerSubsystem, shooterFeedSubsystem)),
-                                                new UptakeCmd(kickSubsystem)
+                                        new UptakeCmd(kickSubsystem)
                                         //        shooterFeedSubsystem::topBroken
                                         //)
 

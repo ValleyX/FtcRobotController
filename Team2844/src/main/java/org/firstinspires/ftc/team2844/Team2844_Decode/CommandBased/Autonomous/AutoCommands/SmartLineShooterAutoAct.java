@@ -58,7 +58,7 @@ public class SmartLineShooterAutoAct implements Action {
                 new CommandAction(new VelocityShootCmd(shooterSubsystem, velocity)),
                 new CommandAction(new ActivateIntakeCmd(intakeSubsystem)),
                 new InRange(shooterFeedSubsystem, kickSubsystem, shooterSubsystem)
-        );
+        ).run(telemetryPacket);
 
         return (shooterFeedSubsystem.topBroken() || intakeSubsystem.ballInBeam());
     }

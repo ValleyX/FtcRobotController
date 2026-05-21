@@ -55,6 +55,7 @@ public class FullAimToLLCmd extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return ((Math.abs(tx) < Constants.TURRET_THRESHHOLD)) ||
+                ( Math.abs(driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()) - aimSubsystem.getTurretDegrees()) < Constants.TURRET_THRESHHOLD);
     }
 }

@@ -40,13 +40,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void drive(double strafeSpeed, double forwardSpeed, double turnSpeed, DoubleSupplier heading) {
         drive.updatePoseEstimate();
-        double botHeading = -heading.getAsDouble();
+        double botHeading = heading.getAsDouble();
         //botHeading = 0;
 
         //code for field centric (Idk how it works, pretty sure it's magic or makes triangles or something)
         //REMEMBER IT USES RADIANS
-        double rotX = strafeSpeed * Math.cos(-botHeading) - forwardSpeed * Math.sin(-botHeading);
-        double rotY = strafeSpeed * Math.sin(-botHeading) + forwardSpeed * Math.cos(-botHeading);
+        double rotX = strafeSpeed * Math.cos(botHeading) - forwardSpeed * Math.sin(botHeading);
+        double rotY = strafeSpeed * Math.sin(botHeading) + forwardSpeed * Math.cos(botHeading);
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turnSpeed), 1);
         double frontLeftPower = (rotY - (rotX * Constants.STRAFE_CORRECTION) + turnSpeed) / denominator;
         double backLeftPower = (rotY + rotX + turnSpeed) / denominator;
@@ -81,7 +81,7 @@ public class DriveSubsystem extends SubsystemBase {
     /**Gives the heading as if the robot was set pointing towards the red wall (field Centric requires this)*/
     public double getRobotBlueDriveHeading(){
         double heading = getRobotHeading();
-        heading += 90;
+        heading -= 90;
 
         while(heading > 180) heading -= 360;
         while (heading <= -180) heading += 360;
@@ -91,7 +91,7 @@ public class DriveSubsystem extends SubsystemBase {
     /**Gives the heading as if the robot was set pointing towards the blue wall (field Centric requires this)*/
     public double getRobotRedDriveHeading(){
         double heading = getRobotHeading();
-        heading -= 90;
+        heading += 90;
 
         while(heading > 180) heading -= 360;
         while (heading <= -180) heading += 360;
@@ -157,7 +157,7 @@ public class DriveSubsystem extends SubsystemBase {
         double botX = getBotX();
         double botY = getBotY();
         double angle = 0.0;
-        double tempHeading = getHeadingFlipped();
+        double tempHeading = getRobotHeading();
 
 
         double limelightX = 0.0;
@@ -165,26 +165,32 @@ public class DriveSubsystem extends SubsystemBase {
 
 
         if(pipeline == Constants.BLUE_PIPELINE || pipeline == Constants.BLUE_PIPELINE_MOTIF){
-            limelightX = -Constants.BLUE_APRILTAG_X;
+            limelightX = Constants.BLUE_APRILTAG_X;
             limelightY = Constants.BLUE_APRILTAG_Y;
+            angle = 270.0;
+
+            opposite = distanceFormula(limelightX, limelightY, botX, limelightY);
+            adjacent = distanceFormula(limelightX, limelightY, limelightX, botY);
+
+            angle -= Math.toDegrees(Math.atan2(-opposite, -adjacent));
         } else if(pipeline == Constants.RED_PIPELINE || pipeline == Constants.RED_PIPELINE_MOTIF){
-            limelightX = -Constants.RED_APRILTAG_X;
+            limelightX = Constants.RED_APRILTAG_X;
             limelightY = Constants.RED_APRILTAG_Y;
+            angle = 90.0;
+
+            opposite = distanceFormula(limelightX, limelightY, botX, limelightY);
+            adjacent = distanceFormula(limelightX, limelightY, limelightX, botY);
+
+            angle += Math.toDegrees(Math.atan2(-opposite, -adjacent));
         }
 
-        opposite = limelightX - botX;
-        adjacent = limelightY - botY;
-
-        angle = Math.toDegrees(Math.atan2(opposite, adjacent));
-
-        double turretAngle = (360.0-angle)-tempHeading;
+        double turretAngle = angle - tempHeading;
 
         if(turretAngle > 360.0){
             turretAngle -= 360.0;
         } else if (turretAngle < 0.0){
             turretAngle += 360.0;
         }
-
         return Math.max(Math.min(Constants.MAX_DEGREE, turretAngle), Constants.MIN_DEGREE);
         //return 90.0;
     }
@@ -267,6 +273,10 @@ public class DriveSubsystem extends SubsystemBase {
         if(pose != null){
             drive.localizer.setPose(new Pose2d(pose.getPosition().x,pose.getPosition().y, getRobotHeading()));
         }
+    }
+
+    private double distanceFormula(double a, double b, double x, double y){
+        return Math.sqrt(Math.pow((a-x), 2) + Math.pow((b-y), 2));
     }
 
     // this is a option for the subsystem
