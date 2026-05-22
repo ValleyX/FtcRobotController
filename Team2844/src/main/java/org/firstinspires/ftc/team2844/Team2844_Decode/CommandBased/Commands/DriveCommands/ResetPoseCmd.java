@@ -22,7 +22,7 @@ public class ResetPoseCmd extends CommandBase {
     @Override
     public void initialize() {
         if(sensorSubsystem.getTx() != Constants.NO_LL){
-            driveSubsystem.setPinpointPose(new Pose2d(sensorSubsystem.getBotXLLMT2(), sensorSubsystem.getBotYLLMT2(), driveSubsystem.getRobotHeading()));
+            driveSubsystem.setPinpointPose(new Pose2d(sensorSubsystem.getBotXLLMT2(), sensorSubsystem.getBotYLLMT2(), driveSubsystem.getRobotHeadingRadians()));
         } else if(pipeline == Constants.BLUE_PIPELINE || pipeline == Constants.BLUE_PIPELINE_MOTIF) {
             driveSubsystem.setPinpointPose(new Pose2d(72.0 - Constants.BOT_WIDTH/2.0, 72.0 - Constants.BOT_WIDTH/2.0, Math.toRadians(-90.0)));
         } else {

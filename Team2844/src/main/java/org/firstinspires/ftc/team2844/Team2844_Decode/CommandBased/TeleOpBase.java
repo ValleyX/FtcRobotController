@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Aimi
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretNegative;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretPositive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.DriveCommand;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.ResetImuCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.ResetPoseCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeSortCmd;
@@ -60,6 +62,7 @@ public class TeleOpBase extends CommandOpMode {
     AimTurretCmd neutralAimTurretCmd;
     IntakeLineCmd intakeLineCmd;
     StopIntakeLineCmd stopIntakeLineCmd;
+    ResetImuCmd resetImuCmd;
 
     boolean sortMode;
 
@@ -97,10 +100,13 @@ public class TeleOpBase extends CommandOpMode {
 
         if(pipelineNum == Constants.BLUE_PIPELINE){
             mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, subsystems.mecDriveSubsystem::getRobotBlueDriveHeading);
+            resetImuCmd = new ResetImuCmd(subsystems.mecDriveSubsystem, -90.0);
         } else if (pipelineNum == Constants.RED_PIPELINE){
             mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, subsystems.mecDriveSubsystem::getRobotRedDriveHeading);
+            resetImuCmd = new ResetImuCmd(subsystems.mecDriveSubsystem, 90.0);
         } else {
             mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, subsystems.mecDriveSubsystem::getRobotHeadingRadians);
+            resetImuCmd = new ResetImuCmd(subsystems.mecDriveSubsystem, 0.0);
         }
 
         runIntakeSortCmd = new IntakeSortCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
@@ -139,37 +145,40 @@ public class TeleOpBase extends CommandOpMode {
                         new StopTransferCmd(subsystems.shooterFeedSubsystem)));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.X)
-                .whenHeld(new PreviousSlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem));
+                .whenHeld(new AimTurretCmd(subsystems.aimSubsystem, Constants.NEUTRAL_TURRET));
 
-        m_driveOp.getGamepadButton(GamepadKeys.Button.B)
-                .whenHeld(new NextSlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem));
+        m_driveOp.getGamepadButton(GamepadKeys.Button.B);
+                //.whenHeld(new NextSlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem));
 
-        m_driveOp.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 0));
+        m_driveOp.getGamepadButton(GamepadKeys.Button.Y);
+                //.whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 0));
 
-
-        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenHeld(new MoveTurretNegative(subsystems.aimSubsystem));
-
-        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                .whenHeld(new MoveTurretPositive(subsystems.aimSubsystem));
-
-        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-                .whenHeld(new MoveHoodNegative(subsystems.aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenHeld(new MoveHoodPositive(subsystems.aimSubsystem));
+                .whenPressed(new MoveTurretNegative(subsystems.aimSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
+                .whenPressed(new MoveTurretPositive(subsystems.aimSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(new MoveHoodNegative(subsystems.aimSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new MoveHoodPositive(subsystems.aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.BACK)
                 .whenPressed( new AimTurretCmd(subsystems.aimSubsystem, 180.0)
                         .andThen(new ResetPoseCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, subsystems.sensorSubsystem.getPipeline())));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.START)
+                .whenHeld(resetImuCmd);
 
 
         //Default Commands
         register(subsystems.aimSubsystem, subsystems.shooterSubsystem);
         subsystems.aimSubsystem.setDefaultCommand(new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, pipelineNum));
         subsystems.aimSubsystem.setDefaultCommand(new HoodCmd(subsystems.aimSubsystem, () -> subsystems.mecDriveSubsystem.hoodLinReg(pipelineNum)));
-        subsystems.shooterSubsystem.setDefaultCommand(new DefaultVelocityShootCmd(subsystems.shooterSubsystem, () -> subsystems.mecDriveSubsystem.velocityLinReg(pipelineNum)));
+        subsystems.shooterSubsystem.setDefaultCommand(new DefaultVelocityShootCmd(subsystems.shooterSubsystem, subsystems.mecDriveSubsystem, pipelineNum));
 
         /* -------------- Driving Command Loop -------------- */
             //this will make the drive command always run
@@ -196,7 +205,7 @@ public class TeleOpBase extends CommandOpMode {
 
         time.reset();
         new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem).schedule();
-        new AimTurretCmd(subsystems.aimSubsystem, Constants.NEUTRAL_TURRET);
+        new AimTurretCmd(subsystems.aimSubsystem, Constants.NEUTRAL_TURRET).schedule();
         sleep(250);
 
         subsystems.aimSubsystem.aimHood(0.0);

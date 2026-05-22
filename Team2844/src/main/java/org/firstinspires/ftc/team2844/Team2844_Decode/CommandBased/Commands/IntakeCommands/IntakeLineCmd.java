@@ -21,12 +21,15 @@ public class IntakeLineCmd extends CommandBase {
     boolean hasBeenBayOne;
     ElapsedTime timer;
 
+    boolean startedFull;
+
     public IntakeLineCmd(ShooterFeedSubsystem shooterFeedSubsystem, IntakeSubsystem intakeSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem) {
         this.intakeSubsystem = intakeSubsystem;
         this.shooterFeedSubsystem = shooterFeedSubsystem;
         this.kickSubsystem = kickSubsystem;
         this.spindexerSubsystem = spindexerSubsystem;
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+        startedFull = shooterFeedSubsystem.topBroken();
         addRequirements(intakeSubsystem, shooterFeedSubsystem, shooterFeedSubsystem);
     }
 
@@ -53,14 +56,22 @@ public class IntakeLineCmd extends CommandBase {
             shooterFeedSubsystem.runTFeedForward();
             timer.reset();
         } else {
-            if (timer.time() < 100) {
-                shooterFeedSubsystem.slowFeed();
+
+            if(!startedFull) {
                 kickSubsystem.rotateKickerDownExtra();
+            } else {
+                kickSubsystem.rotateKickerUp();
+            }
+            if (timer.time() < 50 && !startedFull) {
+                shooterFeedSubsystem.slowFeed();
+                kickSubsystem.runKickerSpin();
+                kickSubsystem.runSFeedForward();
+            } else if(timer.time() < 500&& !startedFull){
+                shooterFeedSubsystem.stopTFeed();
                 kickSubsystem.runKickerSpin();
                 kickSubsystem.runSFeedForward();
             } else {
                 shooterFeedSubsystem.stopTFeed();
-                kickSubsystem.rotateKickerUp();
                 kickSubsystem.stopKickerSpin();
                 kickSubsystem.runSFeedBackward();
             }

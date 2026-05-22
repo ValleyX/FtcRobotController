@@ -14,9 +14,9 @@ public class Constants {
     public static final double SERVO_DEGREE_TO_TURRET_DEGREE = TURRET_GEAR_RATIO;
 //    public static final double DEGREES = 1/((5.0*24.0*360.0)/130.0);
 
-    public static final double TURRET_THRESHHOLD = 1.0;
+    public static final double TURRET_THRESHHOLD = 3.0;
 
-    public static final double MAX_DEGREE = 265.0;
+    public static final double MAX_DEGREE = 260.0;
     public static final double MIN_DEGREE = 10.0;
 
     public static final double MAX_TURN = MAX_DEGREE * SERVO_DEGREE_TO_TURRET_DEGREE;
@@ -42,7 +42,7 @@ public class Constants {
 
     //Uptake
     public static double KICKDOWN = 0.29;
-    public static double KICKDOWN_EXTRA = 0.33;
+    public static double KICKDOWN_EXTRA = 0.34;
     public static double KICKDOWN_LESS = 0.27;
     public static double KICKDOWN_INTAKE = 0.2;
     public static double KICKUP = 0.15;
@@ -200,12 +200,7 @@ public class Constants {
       - Get Shooter Velocity Working
          * get the linreg for shooter
 
-      - get Metatags with the limelight
-        * update pinpoint pose with metatag pos
-
       - make auto better :(
-
-      -
 
      */
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Aim
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 
 public class AimTurretCmd extends CommandBase {
@@ -20,6 +21,6 @@ public class AimTurretCmd extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (degrees - 1.0 <= aimSubsystem.getTurretDegrees() && aimSubsystem.getTurretDegrees() <= degrees + 1.0);
+        return (degrees - Constants.TURRET_THRESHHOLD <= aimSubsystem.getTurretDegrees() && aimSubsystem.getTurretDegrees() <= degrees + Constants.TURRET_THRESHHOLD);
     }
 }

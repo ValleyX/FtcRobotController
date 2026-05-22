@@ -106,6 +106,10 @@ public class DriveSubsystem extends SubsystemBase {
         drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, 0.0));
     }
 
+    public void resetIMU(double degrees){
+        drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(degrees)));
+    }
+
 
     public Pose2d getBotPose(){
         if(drive.localizer.getPose() != null){
