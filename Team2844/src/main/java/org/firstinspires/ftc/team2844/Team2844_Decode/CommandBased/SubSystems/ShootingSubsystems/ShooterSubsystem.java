@@ -54,4 +54,20 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getPower(){
         return shooterMotors.getPower();
     }
+
+    public void setPIDs(double p, double i, double d){
+        shooterMotors.setPIDs(p, i, d);
+    }
+
+    public double[] getPIDs(){
+        return shooterMotors.getPIDs();
+    }
+
+    public void setFeedForward(double ks, double kv){
+        shooterMotors.setFeedForward(ks, kv);
+    }
+
+    public double[] getFeedForward(){
+        return shooterMotors.getFeedForward();
+    }
 }

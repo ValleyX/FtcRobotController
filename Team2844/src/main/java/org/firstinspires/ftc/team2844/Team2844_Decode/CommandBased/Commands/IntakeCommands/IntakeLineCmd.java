@@ -63,10 +63,10 @@ public class IntakeLineCmd extends CommandBase {
                 kickSubsystem.rotateKickerUp();
             }
             if (timer.time() < 50 && !startedFull) {
-                shooterFeedSubsystem.slowFeed();
+                shooterFeedSubsystem.runTFeedForward();
                 kickSubsystem.runKickerSpin();
                 kickSubsystem.runSFeedForward();
-            } else if(timer.time() < 500&& !startedFull){
+            } else if(timer.time() < 200&& !startedFull){
                 shooterFeedSubsystem.stopTFeed();
                 kickSubsystem.runKickerSpin();
                 kickSubsystem.runSFeedForward();

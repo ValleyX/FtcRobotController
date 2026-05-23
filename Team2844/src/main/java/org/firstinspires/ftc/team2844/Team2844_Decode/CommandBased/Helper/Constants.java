@@ -47,6 +47,15 @@ public class Constants {
     public static double KICKDOWN_INTAKE = 0.2;
     public static double KICKUP = 0.15;
 
+    public static double REG_STEP = 50;
+
+    public static double P_GAIN = 0.10;
+    public static double I_GAIN = 0.00;
+    public static double D_GAIN = 0.00;
+
+    public static double VEL_KS = 0.0;
+    public static double VEL_KV = 0.0;
+
 
     //spindexer
     public static double SLOT_ZERO = 0.055;

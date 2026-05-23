@@ -269,7 +269,6 @@ public class TeleOpBase extends CommandOpMode {
 
             telemetry.addData("Camera Heading", cameraHeading);
             telemetry.addData("Limelight Tx: ", subsystems.sensorSubsystem.getTx());
-            telemetry.addData("Average Distance from MetaTag: ", subsystems.sensorSubsystem.getDis());
             telemetry.addData("Limelight Bot X: ", subsystems.sensorSubsystem.getBotXLL());
             telemetry.addData("Limelight Bot Y: ", subsystems.sensorSubsystem.getBotYLL());
 
@@ -282,29 +281,20 @@ public class TeleOpBase extends CommandOpMode {
             telemetry.addData("Turret Degrees: ", subsystems.aimSubsystem.getTurretDegrees());
             telemetry.addData("Turn to with PP", subsystems.mecDriveSubsystem.getPinpointTurretAngle(pipelineNum));
 
-            //telemetry.addData("Raw Axon Voltage: ", subsystems.aimSubsystem.getVoltage());
-            //telemetry.addData("Axon degrees: ", subsystems.aimSubsystem.getAxonValue());
-            telemetry.addData("Slot: ", subsystems.spindexerSubsystem.getSlot());
-            telemetry.addData("Spindexer Pos: ", subsystems.spindexerSubsystem.getPosition());
-
             telemetry.addData("Top beam break is broken: ", subsystems.shooterFeedSubsystem.topBroken());
             telemetry.addData("Ball in Bottom Beam: ", subsystems.intakeSubsystem.ballInBeam());
 
-            telemetry.addData("Ball in Bay One: ", subsystems.spindexerSubsystem.ballInBayOne());
-            telemetry.addData("Ball in Bay Two: ", subsystems.spindexerSubsystem.ballInBayTwo());
-            telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
-
+            telemetry.addData("LL Distance", subsystems.sensorSubsystem.getDis());
+            telemetry.addData("Average Distance", subsystems.sensorSubsystem.avgDis(subsystems.mecDriveSubsystem.pinpointDistance(pipelineNum)));
+            telemetry.addData("Pinpoint distance", subsystems.mecDriveSubsystem.pinpointDistance(pipelineNum));
+            telemetry.addData("expected Velocity", subsystems.mecDriveSubsystem.velocityLinReg(pipelineNum));
             telemetry.addData("Velocity: ", subsystems.shooterSubsystem.getVelocity());
             telemetry.addData("Shooter Power", subsystems.shooterSubsystem.getPower());
             telemetry.addData("In range: ", subsystems.shooterSubsystem.inRange());
             //telemetry.addData("In range testing bool supplier: ", subsystems.shooterSubsystem.inRange(() ->1000, () ->1000).getAsBoolean());
-            telemetry.addData("Empty: ", subsystems.spindexerSubsystem.empty());
-            telemetry.addData("Full: ", subsystems.spindexerSubsystem.fullSpindexer());
 
             telemetry.addData("Kicker Rotate", subsystems.kickSubsystem.getKickerRotate());
-            //telemetry.addData("Bay one alpha", subsystems.spindexerSubsystem.bayOneAlpha());
-            //telemetry.addData("Bay two alpha", subsystems.spindexerSubsystem.bayTwoAlpha());
-            //telemetry.addData("Bay Three alpha", subsystems.spindexerSubsystem.bayThreeAlpha());
+
 
             TelemetryPacket packet = new TelemetryPacket();
             packet.fieldOverlay().setStroke("#3F51B5");

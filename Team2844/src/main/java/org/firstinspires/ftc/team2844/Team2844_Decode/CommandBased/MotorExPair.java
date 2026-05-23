@@ -64,4 +64,22 @@ public class MotorExPair {
     }
 
     public double getPower(){return Math.max(motor1.get(), motor2.get());}
+
+    public void setPIDs(double p, double i, double d){
+        motor1.setVeloCoefficients(p, i, d);
+        motor2.setVeloCoefficients(p, i, d);
+    }
+
+    public double[] getPIDs(){
+        return motor1.getVeloCoefficients();
+    }
+
+    public void setFeedForward(double ks, double kv){
+        motor1.setFeedforwardCoefficients(ks, kv);
+        motor2.setFeedforwardCoefficients(ks, kv);
+    }
+
+    public double[] getFeedForward(){
+        return motor1.getFeedforwardCoefficients();
+    }
 }
