@@ -152,9 +152,10 @@ public class RegressionTeleOp extends CommandOpMode {
         m_driveOp.getGamepadButton(GamepadKeys.Button.B)
                 .whenPressed(new InstantCommand(() ->velocity.subtractNum(Constants.REG_STEP)));
 
-        m_driveOp.getGamepadButton(GamepadKeys.Button.Y)
+       /* m_driveOp.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(new InstantCommand(() -> subsystems.shooterSubsystem.setPIDs(Constants.P_GAIN, Constants.I_GAIN, Constants.D_GAIN), subsystems.shooterSubsystem))
                 .whenPressed(new InstantCommand(() -> subsystems.shooterSubsystem.setFeedForward(Constants.VEL_KS, Constants.VEL_KV), subsystems.shooterSubsystem));
+       */
 
 
 
@@ -182,6 +183,7 @@ public class RegressionTeleOp extends CommandOpMode {
         register(subsystems.aimSubsystem, subsystems.shooterSubsystem);
         subsystems.aimSubsystem.setDefaultCommand(new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, pipelineNum));
         subsystems.aimSubsystem.setDefaultCommand(new HoodCmd(subsystems.aimSubsystem, () -> subsystems.mecDriveSubsystem.hoodLinReg(pipelineNum)));
+        //subsystems.aimSubsystem.setDefaultCommand(new HoodCmd(subsystems.aimSubsystem, () ->0.0));
         subsystems.shooterSubsystem.setDefaultCommand(new DefaultVelocityRegCmd(subsystems.shooterSubsystem, subsystems.mecDriveSubsystem, pipelineNum, velocity));
         //subsystems.shooterSubsystem.setDefaultCommand(new DefaultVelocityShootCmd(subsystems.shooterSubsystem, subsystems.mecDriveSubsystem, pipelineNum));
 
@@ -270,6 +272,16 @@ public class RegressionTeleOp extends CommandOpMode {
             while(cameraHeading > 180) cameraHeading -= 360;
             while (cameraHeading <= -180) cameraHeading += 360;
             subsystems.sensorSubsystem.updateOrientation(cameraHeading);
+
+            subsystems.shooterSubsystem.setPIDs(
+                    Constants.P_GAIN,
+                    Constants.I_GAIN,
+                    Constants.D_GAIN
+            );
+            subsystems.shooterSubsystem.setFeedForward(
+                    Constants.VEL_KS,
+                    Constants.VEL_KV * (12.0/hardwareMap.voltageSensor.iterator().next().getVoltage())
+            );
 
 
             telemetry.addData("Camera Heading", cameraHeading);

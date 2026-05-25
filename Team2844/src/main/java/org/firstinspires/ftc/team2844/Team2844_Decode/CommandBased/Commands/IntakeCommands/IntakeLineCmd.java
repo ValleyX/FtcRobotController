@@ -53,25 +53,14 @@ public class IntakeLineCmd extends CommandBase {
             kickSubsystem.rotateKickerDown();
             kickSubsystem.runKickerSpin();
             kickSubsystem.runSFeedForward();
-            shooterFeedSubsystem.runTFeedForward();
             timer.reset();
         } else {
-
-            if(!startedFull) {
-                kickSubsystem.rotateKickerDownExtra();
+            if(timer.time() < 450 && !startedFull){
+                kickSubsystem.rotateKickerDownIntake();
+                kickSubsystem.runKickerSpin();
+                kickSubsystem.runSFeedForward();
             } else {
                 kickSubsystem.rotateKickerUp();
-            }
-            if (timer.time() < 50 && !startedFull) {
-                shooterFeedSubsystem.runTFeedForward();
-                kickSubsystem.runKickerSpin();
-                kickSubsystem.runSFeedForward();
-            } else if(timer.time() < 200&& !startedFull){
-                shooterFeedSubsystem.stopTFeed();
-                kickSubsystem.runKickerSpin();
-                kickSubsystem.runSFeedForward();
-            } else {
-                shooterFeedSubsystem.stopTFeed();
                 kickSubsystem.stopKickerSpin();
                 kickSubsystem.runSFeedBackward();
             }

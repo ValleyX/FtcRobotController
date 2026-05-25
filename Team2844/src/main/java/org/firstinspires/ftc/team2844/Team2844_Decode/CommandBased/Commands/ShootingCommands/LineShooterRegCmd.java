@@ -1,15 +1,19 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands;
 
-import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimHoodCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.ActivateIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotShootCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopSpinCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeExtraCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
@@ -23,10 +27,8 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 import java.util.function.DoubleSupplier;
 
 public class LineShooterRegCmd extends SequentialCommandGroup {
-    public LineShooterRegCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem,
-                             SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, KickSubsystem kickSubsystem,
-                             IntakeSubsystem intakeSubsystem, DriveSubsystem driveSubsystem,
-                             SpindexerSubsystem spindexerSubsystem, DoubleSupplier velocity){
+
+    public LineShooterRegCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem, DriveSubsystem driveSubsystem, SpindexerSubsystem spindexerSubsystem, DoubleSupplier velocity){
         addCommands(
                 new FullAimToLLCmd(aimSubsystem, sensorSubsystem, driveSubsystem),
                 new ParallelCommandGroup(
@@ -38,7 +40,7 @@ public class LineShooterRegCmd extends SequentialCommandGroup {
 
                         //new ConditionalCommand(
                         //        new StopIntakeCmd(intakeSubsystem),
-                        new ActivateIntakeCmd(intakeSubsystem),
+                        //        new ActivateIntakeCmd(intakeSubsystem),
                         //spindexerSubsystem::ballInBayOne
                         //),
 
@@ -46,12 +48,14 @@ public class LineShooterRegCmd extends SequentialCommandGroup {
                         new ConditionalCommand(
                                 new ParallelCommandGroup(
                                         new TransferCmd(shooterFeedSubsystem),
-                                        //new ConditionalCommand(
-                                        //        new StopUptakeCmd(kickSubsystem),
-                                        //new SequentialCommandGroup(new UptakeShootCmd(kickSubsystem, spindexerSubsystem, shooterFeedSubsystem)),
-                                        new UptakeCmd(kickSubsystem)
-                                        //        shooterFeedSubsystem::topBroken
-                                        //)
+                                        new ConditionalCommand(
+                                                //        new StopUptakeCmd(kickSubsystem),
+                                                //new SequentialCommandGroup(new UptakeShootCmd(kickSubsystem, spindexerSubsystem, shooterFeedSubsystem)),
+                                                new UptakeExtraCmd(kickSubsystem),
+                                                new UptakeCmd(kickSubsystem),
+                                                shooterFeedSubsystem::topBroken
+                                        ),
+                                        new ActivateIntakeCmd(intakeSubsystem)
 
                                 ),
                                 new ParallelCommandGroup(
@@ -64,9 +68,21 @@ public class LineShooterRegCmd extends SequentialCommandGroup {
         );
     }
 
+    /*@Override
+    public void execute(){
+        new FullAimToLLCmd(aimSubsystem, sensorSubsystem);
+
+        double velo = sensorSubsystem.velocityLinReg();
+        shooterSubsystem.setVelocity(velo);
+        if(shooterSubsystem.inRange(velo)){
+            new ParallelCommandGroup(new UptakeCmd(kickSubsystem), new TransferCmd(shooterFeedSubsystem));
+        }
+
+    }
+*/
     @Override
     public boolean isFinished() {
+        //return spindexerSubsystem.empty() && !shooterFeedSubsystem.topBroken();
         return true;
     }
-
 }

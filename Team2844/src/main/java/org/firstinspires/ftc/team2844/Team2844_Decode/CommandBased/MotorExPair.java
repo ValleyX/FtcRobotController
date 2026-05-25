@@ -82,4 +82,8 @@ public class MotorExPair {
     public double[] getFeedForward(){
         return motor1.getFeedforwardCoefficients();
     }
+
+    public void voltageCompensation(boolean temp){
+
+    }
 }

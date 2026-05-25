@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 //import com.arcrobotics.ftclib.hardware.motors.CRServo;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
@@ -28,6 +30,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem(MotorExPair shooterMotors){
         vel = 0.0;
         this.shooterMotors = shooterMotors;
+        shooterMotors.setRunMode(MotorEx.RunMode.VelocityControl);
+
     }
 
     public void setPower(double power){
@@ -46,7 +50,6 @@ public class ShooterSubsystem extends SubsystemBase {
     public BooleanSupplier inRange(DoubleSupplier velocity, DoubleSupplier currentVelocity){
         return () -> (velocity.getAsDouble()-Constants.VELOCITY_THRESHHOLD < currentVelocity.getAsDouble()) &&
                 (currentVelocity.getAsDouble() < velocity.getAsDouble()+Constants.VELOCITY_THRESHHOLD);
-        //return () -> true;
     }
 
     public boolean inRange(){return (vel-Constants.VELOCITY_THRESHHOLD < getVelocity()) && (getVelocity() < vel+Constants.VELOCITY_THRESHHOLD);}

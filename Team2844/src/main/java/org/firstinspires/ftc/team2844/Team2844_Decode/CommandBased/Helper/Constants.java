@@ -34,7 +34,7 @@ public class Constants {
     public static final double MAX_VOLTAGE = 3.06;
 
 
-    public static final double VELOCITY_THRESHHOLD = 350;
+    public static final double VELOCITY_THRESHHOLD = 100;
     public static final double MIN_VELOCITY = 1000;
 
 
@@ -42,19 +42,19 @@ public class Constants {
 
     //Uptake
     public static double KICKDOWN = 0.29;
-    public static double KICKDOWN_EXTRA = 0.34;
+    public static double KICKDOWN_EXTRA = 0.36;
     public static double KICKDOWN_LESS = 0.27;
-    public static double KICKDOWN_INTAKE = 0.2;
+    public static double KICKDOWN_INTAKE = 0.43;
     public static double KICKUP = 0.15;
 
     public static double REG_STEP = 50;
 
-    public static double P_GAIN = 0.10;
-    public static double I_GAIN = 0.00;
-    public static double D_GAIN = 0.00;
+    public static double P_GAIN = 0.09;
+    public static double I_GAIN = 0.0;
+    public static double D_GAIN = 0.0;
 
     public static double VEL_KS = 0.0;
-    public static double VEL_KV = 0.0;
+    public static double VEL_KV = 1.12;
 
 
     //spindexer

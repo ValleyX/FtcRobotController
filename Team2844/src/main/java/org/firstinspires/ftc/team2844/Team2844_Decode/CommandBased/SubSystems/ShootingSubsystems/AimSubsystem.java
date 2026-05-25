@@ -342,13 +342,11 @@ public class AimSubsystem extends SubsystemBase {
     }
 
     public double getAxonValue() {
-        return (((axonIn.getVoltage() - Constants.MIN_VOLTAGE) / (Constants.MAX_VOLTAGE - Constants.MIN_VOLTAGE)) * 360.0);// + turnover*360;
+        return (((axonIn.getVoltage() - Constants.MIN_VOLTAGE) / (Constants.MAX_VOLTAGE - Constants.MIN_VOLTAGE)) * 360.0);
     }
 
     public double getTurretDegrees() {
         return getAxonValue();
-                //+ turnover*360)
-                // Constants.SERVO_DEGREE_TO_TURRET_DEGREE;
     }
 
 

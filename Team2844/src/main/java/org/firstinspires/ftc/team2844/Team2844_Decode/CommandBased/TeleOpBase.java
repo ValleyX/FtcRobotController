@@ -266,6 +266,16 @@ public class TeleOpBase extends CommandOpMode {
             while (cameraHeading <= -180) cameraHeading += 360;
             subsystems.sensorSubsystem.updateOrientation(cameraHeading);
 
+            subsystems.shooterSubsystem.setPIDs(
+                    Constants.P_GAIN,
+                    Constants.I_GAIN,
+                    Constants.D_GAIN
+            );
+            subsystems.shooterSubsystem.setFeedForward(
+                    Constants.VEL_KS,
+                    Constants.VEL_KV * (12.0/hardwareMap.voltageSensor.iterator().next().getVoltage())
+            );
+
 
             telemetry.addData("Camera Heading", cameraHeading);
             telemetry.addData("Limelight Tx: ", subsystems.sensorSubsystem.getTx());

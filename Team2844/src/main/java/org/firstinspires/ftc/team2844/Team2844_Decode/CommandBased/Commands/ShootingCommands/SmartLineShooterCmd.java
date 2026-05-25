@@ -41,7 +41,7 @@ public class SmartLineShooterCmd extends SequentialCommandGroup {
 
                         //new ConditionalCommand(
                         //        new StopIntakeCmd(intakeSubsystem),
-                        new ActivateIntakeCmd(intakeSubsystem),
+                        //        new ActivateIntakeCmd(intakeSubsystem),
                                 //spindexerSubsystem::ballInBayOne
                         //),
 
@@ -49,12 +49,14 @@ public class SmartLineShooterCmd extends SequentialCommandGroup {
                         new ConditionalCommand(
                                 new ParallelCommandGroup(
                                         new TransferCmd(shooterFeedSubsystem),
-                                        //new ConditionalCommand(
+                                        new ConditionalCommand(
                                         //        new StopUptakeCmd(kickSubsystem),
                                                 //new SequentialCommandGroup(new UptakeShootCmd(kickSubsystem, spindexerSubsystem, shooterFeedSubsystem)),
-                                        new UptakeCmd(kickSubsystem)
-                                        //        shooterFeedSubsystem::topBroken
-                                        //)
+                                                new UptakeExtraCmd(kickSubsystem),
+                                                new UptakeCmd(kickSubsystem),
+                                                shooterFeedSubsystem::topBroken
+                                        ),
+                                        new ActivateIntakeCmd(intakeSubsystem)
 
                                 ),
                                 new ParallelCommandGroup(
