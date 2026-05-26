@@ -60,12 +60,12 @@ public class IntakeLineCmd extends CommandBase {
                 kickSubsystem.runKickerSpin();
                 kickSubsystem.runSFeedForward();
             } else {
-                kickSubsystem.rotateKickerUp();
+                //kickSubsystem.rotateKickerUp();
                 kickSubsystem.stopKickerSpin();
                 kickSubsystem.runSFeedBackward();
             }
 
-            intakeSubsystem.activate(Constants.INTAKE_SPEED);
+            intakeSubsystem.activate(Constants.INTAKE_SPEED*0.8);
         }
 
     }
@@ -80,7 +80,7 @@ public class IntakeLineCmd extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         intakeSubsystem.stop();
-        kickSubsystem.rotateKickerUp();
+        //kickSubsystem.rotateKickerUp();
         kickSubsystem.stopKickerSpin();
         kickSubsystem.stopSFeed();
         shooterFeedSubsystem.stopTFeed();

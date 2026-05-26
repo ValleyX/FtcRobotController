@@ -316,6 +316,11 @@ public class RegressionTeleOp extends CommandOpMode {
             telemetry.addData("Velocity KS: ", subsystems.shooterSubsystem.getFeedForward()[0]);
             telemetry.addData("Velocity KV: ", subsystems.shooterSubsystem.getFeedForward()[1]);
 
+            telemetry.addData("Left Front Power: ", subsystems.mecDriveSubsystem.drive.leftFront.getPower());
+            telemetry.addData("Left Back Power: ", subsystems.mecDriveSubsystem.drive.leftBack.getPower());
+            telemetry.addData("Right Front Power: ", subsystems.mecDriveSubsystem.drive.rightFront.getPower());
+            telemetry.addData("Right Back Power: ", subsystems.mecDriveSubsystem.drive.rightBack.getPower());
+
             //telemetry.addData("In range testing bool supplier: ", subsystems.shooterSubsystem.inRange(() ->1000, () ->1000).getAsBoolean());
 
             telemetry.addData("Kicker Rotate", subsystems.kickSubsystem.getKickerRotate());

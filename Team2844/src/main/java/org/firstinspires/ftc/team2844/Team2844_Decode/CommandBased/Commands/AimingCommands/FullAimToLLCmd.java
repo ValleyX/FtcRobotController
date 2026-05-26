@@ -54,8 +54,6 @@ public class FullAimToLLCmd extends CommandBase {
             seen = true;
             if(ppTimer.time(TimeUnit.MILLISECONDS) > 100)
                 looped = true;
-
-
             if (!(Math.abs(tx) < Constants.TURRET_THRESHHOLD)) {
                 savedTx = tx;
                 //aimSubsystem.aimTurret(pos - tx);
@@ -73,7 +71,7 @@ public class FullAimToLLCmd extends CommandBase {
             //driveSubsystem.setPinpointPose(new Pose2d(sensorSubsystem.getBotXLLMT2(), sensorSubsystem.getBotYLLMT2(), driveSubsystem.getRobotHeading()));
             //}
             //driveSubsystem.setPinpointPose();
-        } else if(llTimer.time(TimeUnit.MILLISECONDS) < 20 && seen) {
+        } else if(llTimer.time(TimeUnit.MILLISECONDS) < 100 && seen) {
             if (!(Math.abs(savedTx) < Constants.TURRET_THRESHHOLD)) {
                 if (savedTx < 0.0) {
                     aimSubsystem.aimTurret(pos + Math.min(8.0, Math.abs(savedTx)));

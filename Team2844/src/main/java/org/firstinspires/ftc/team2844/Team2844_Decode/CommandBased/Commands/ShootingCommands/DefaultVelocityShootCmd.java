@@ -22,7 +22,8 @@ public class DefaultVelocityShootCmd extends CommandBase {
 
     @Override
     public void execute() {
-        shooterSubsystem.setVelocity(driveSubsystem.velocityLinReg(pipeline));
+        //shooterSubsystem.setVelocity(driveSubsystem.velocityLinReg(pipeline));
+        shooterSubsystem.setVelocity(1000);
     }
 
     @Override

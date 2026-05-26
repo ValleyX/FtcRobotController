@@ -48,10 +48,15 @@ public class DriveSubsystem extends SubsystemBase {
         double rotX = strafeSpeed * Math.cos(botHeading) - forwardSpeed * Math.sin(botHeading);
         double rotY = strafeSpeed * Math.sin(botHeading) + forwardSpeed * Math.cos(botHeading);
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turnSpeed), 1);
-        double frontLeftPower = (rotY - (rotX * Constants.STRAFE_CORRECTION) + turnSpeed) / denominator;
+        double frontLeftPower = (rotY - (rotX) + turnSpeed) / denominator;
         double backLeftPower = (rotY + rotX + turnSpeed) / denominator;
-        double frontRightPower = (rotY + (rotX * Constants.STRAFE_CORRECTION) - turnSpeed) / denominator;
+        double frontRightPower = (rotY + (rotX) - turnSpeed) / denominator;
         double backRightPower = (rotY - rotX - turnSpeed) / denominator;
+
+        frontLeftPower = Math.min(1, Math.max(frontLeftPower  * Constants.DRIVE_CORRECTION, -1));
+        backLeftPower = Math.min(1, Math.max(backLeftPower  * Constants.DRIVE_CORRECTION, -1));
+        frontRightPower = Math.min(1, Math.max(frontRightPower  * Constants.DRIVE_CORRECTION, -1));
+        backRightPower = Math.min(1, Math.max(backRightPower  * Constants.DRIVE_CORRECTION, -1));
 
         drive.leftFront.setPower(frontLeftPower);
         drive.rightFront.setPower(frontRightPower);
@@ -269,7 +274,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public double velocityLinReg(int pipeline){
         double distance = pinpointDistance(pipeline);
-        return 1500;
+        return 824.0388 + 2.851657*distance + 0.008433107*Math.pow(distance, 2);
     }
 
 

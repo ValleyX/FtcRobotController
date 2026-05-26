@@ -47,14 +47,14 @@ public class Constants {
     public static double KICKDOWN_INTAKE = 0.43;
     public static double KICKUP = 0.15;
 
-    public static double REG_STEP = 50;
+    public static double REG_STEP = 20;
 
-    public static double P_GAIN = 0.09;
+    public static double P_GAIN = 0.14;
     public static double I_GAIN = 0.0;
     public static double D_GAIN = 0.0;
 
     public static double VEL_KS = 0.0;
-    public static double VEL_KV = 1.12;
+    public static double VEL_KV = 1.15;
 
 
     //spindexer
@@ -194,7 +194,7 @@ public class Constants {
     public static final double LL_UP_OFFSET = 0.31369 * METER_TO_INCH;
 
 
-    public static final double STRAFE_CORRECTION = 1.0;
+    public static double DRIVE_CORRECTION = 1.4;
 
 
 
@@ -205,9 +205,6 @@ public class Constants {
     public static final double TFEED_SPEED = 0.8;
 
     /* TODO LIST
-
-      - Get Shooter Velocity Working
-         * get the linreg for shooter
 
       - make auto better :(
 
