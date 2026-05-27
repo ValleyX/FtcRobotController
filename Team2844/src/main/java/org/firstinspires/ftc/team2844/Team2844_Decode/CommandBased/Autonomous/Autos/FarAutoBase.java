@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -26,7 +27,7 @@ import java.util.function.Supplier;
 
 
 @Autonomous(name = "Blue Zamboni Far", group = "Autonomous")
-public class BlueFar extends LinearOpMode {
+public class FarAutoBase extends CommandOpMode {
     Subsystems subsystems;
     Pose2d initialPose;
     MecanumDrive drive;

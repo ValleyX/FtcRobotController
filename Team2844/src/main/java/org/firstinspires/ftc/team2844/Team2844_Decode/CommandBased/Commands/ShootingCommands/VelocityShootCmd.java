@@ -19,7 +19,7 @@ public class VelocityShootCmd extends CommandBase {
 
     @Override
     public void initialize() {
-        shooterSubsystem.setVelocity(velocity.getAsDouble());;
+        shooterSubsystem.setVelocity(velocity.getAsDouble());
     }
 
     @Override

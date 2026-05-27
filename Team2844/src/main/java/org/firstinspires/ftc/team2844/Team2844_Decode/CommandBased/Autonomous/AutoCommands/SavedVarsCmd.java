@@ -3,24 +3,27 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.A
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.Roadrunner.MecanumDrive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 
 import java.util.function.Supplier;
 
 public class SavedVarsCmd extends CommandBase {
-    double x;
-    double y;
-    double heading;
-    public SavedVarsCmd(Supplier<Pose2d> pose){
-        this.x = pose.get().position.x;
-        this.y = pose.get().position.y;
-        this.heading = pose.get().heading.toDouble();
+
+    DriveSubsystem mecDrive;
+    public SavedVarsCmd(DriveSubsystem mecDrive){
+        this.mecDrive = mecDrive;
     }
 
-    public void initialize(){
-        SavedVars.startingX = x;
-        SavedVars.startingY = y;
-        SavedVars.startingHeading = heading;
+    @Override
+    public void execute() {
+        //mecDrive.drive.localizer.update();
+        Pose2d pose = mecDrive.drive.localizer.getPose();
+        SavedVars.startingY = pose.position.y;
+        SavedVars.startingX = pose.position.x;
+        SavedVars.startingHeading = pose.heading.toDouble();
+
     }
 
     @Override

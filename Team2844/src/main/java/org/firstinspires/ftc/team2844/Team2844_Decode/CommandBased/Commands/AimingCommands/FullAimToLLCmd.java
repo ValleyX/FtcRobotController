@@ -21,6 +21,8 @@ public class FullAimToLLCmd extends CommandBase {
     boolean looped;
     ElapsedTime llTimer;
     ElapsedTime ppTimer;
+    boolean finished = true;
+    boolean const2 = false;
 
     public FullAimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem){
         this.aimSubsystem = aimSubsystem;
@@ -29,6 +31,17 @@ public class FullAimToLLCmd extends CommandBase {
         llTimer = new ElapsedTime();
         ppTimer = new ElapsedTime();
         addRequirements(aimSubsystem);
+    }
+
+    public FullAimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem, boolean finished){
+        this.aimSubsystem = aimSubsystem;
+        this.sensorSubsystem = sensorSubsystem;
+        this.driveSubsystem = driveSubsystem;
+        llTimer = new ElapsedTime();
+        ppTimer = new ElapsedTime();
+        addRequirements(aimSubsystem);
+        this.finished = finished;
+        const2 = true;
     }
 
 
@@ -88,6 +101,9 @@ public class FullAimToLLCmd extends CommandBase {
 
     @Override
     public boolean isFinished() {
+        if(const2){
+            return finished;
+        }
         return ((Math.abs(tx) < Constants.TURRET_THRESHHOLD)) ||
                 ( Math.abs(driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()) - aimSubsystem.getTurretDegrees()) < Constants.TURRET_THRESHHOLD);
     }

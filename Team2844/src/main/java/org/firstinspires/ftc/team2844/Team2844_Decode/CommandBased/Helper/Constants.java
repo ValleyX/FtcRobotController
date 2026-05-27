@@ -27,6 +27,7 @@ public class Constants {
     public static final double TURRET_GAIN = 0.009;
     public static final double GAIN_THRESH = 20.0;
     public static final double NEUTRAL_TURRET = 180.0;
+    public static double RADIUS_FROM_CENTER = 3.5;
     /**How many degrees off of the Neutral position the turret will go to track the target when not shooting */
     public static double MAX_NEUTRAL = 40.0;
 
@@ -37,12 +38,13 @@ public class Constants {
     public static final double VELOCITY_THRESHHOLD = 100;
     public static final double MIN_VELOCITY = 1000;
 
-
+//Driving
+    public static double DRIVE_CORRECTION = 1.4;
 
 
     //Uptake
-    public static double KICKDOWN = 0.29;
-    public static double KICKDOWN_EXTRA = 0.36;
+    public static double KICKDOWN = 0.3;
+    public static double KICKDOWN_EXTRA = 0.40;
     public static double KICKDOWN_LESS = 0.27;
     public static double KICKDOWN_INTAKE = 0.43;
     public static double KICKUP = 0.15;
@@ -84,7 +86,6 @@ public class Constants {
 
     //Limelight
     public static final int NO_LL = -999;
-    public static final String LL = "limelight";
 
     public static final int BLUE_PIPELINE = 0;
     public static final int RED_PIPELINE = 1;
@@ -92,11 +93,11 @@ public class Constants {
     public static final int BLUE_PIPELINE_MOTIF = 2;
     public static final int RED_PIPELINE_MOTIF = 3;
 
-    public static final double BLUE_APRILTAG_X = -1.482 * 39.3701;
-    public static final double BLUE_APRILTAG_Y = -1.413 * 39.3701;
+    public static final double BLUE_APRILTAG_X = -58.3727;
+    public static final double BLUE_APRILTAG_Y = -55.6425;
 
-    public static final double RED_APRILTAG_X = -1.482 * 39.3701;
-    public static final double RED_APRILTAG_Y = 1.413 * 39.3701;
+    public static final double RED_APRILTAG_X = -58.3727;
+    public static final double RED_APRILTAG_Y = 55.6425;
 
     //Good numbers to have
     public static final double METER_TO_INCH = 39.3701;
@@ -106,8 +107,43 @@ public class Constants {
 
     public static final double NO_HEADING = -999.0;
 
+
+
+
+    //Intake and transfer
+    public static final double INTAKE_SPEED = 1.0;
+
+    public static final double SLOW_TFEED = 0.1;
+    public static final double TFEED_SPEED = 1.0;
+
+
+    /* --------------------------- AUTO CONSTANTS --------------------------- */
+    //ALL CONSTANTS ARE BASED ON BLUE SIDE, ALL HEADING CONSTANTS ARE IN DEGREES, ALL TIME IS IN MILLISECONDS
+    public static double CSHOOT_SPOT_X = -36.0;
+    public static double CSHOOT_SPOT_Y = -24.0;
+
+    public static double CSHOOT_DEGREES = -90.0;
+
+    public static double CPICKUP1_X = -10.0;
+    public static double CPICKUP1_Y = -56.0;
+    public static double CPICKUP1_DEGREES = 0.0;
+
+    public static double CPICKUP2_X = 10.0;
+    public static double CPICKUP2_Y = -48.0;
+    public static double CPICKUP2_DEGREES = 0.0;
+
+    public static double CEND_X = -52.0;
+    public static double CEND_Y = -12.0;
+    public static double CEND_DEGREES = -90.0;
+
+    public static long SHOOTER_TIMEOUT = 1500;
+
+
+
+    /* ---------------------------- Physical Robot Information ---------------------------- */
+    public static final String LL = "limelight";
     //Control Hub Ports
-        //Motor Ports
+            //Motor Ports
     public static final String CM0 = "leftFront";
     public static final String CM1 = "leftBack";
     public static final String CM2 = "rightBack";
@@ -193,16 +229,6 @@ public class Constants {
     /**How far up the Limelight is in inches*/
     public static final double LL_UP_OFFSET = 0.31369 * METER_TO_INCH;
 
-
-    public static double DRIVE_CORRECTION = 1.4;
-
-
-
-    //Intake
-    public static final double INTAKE_SPEED = 1.0;
-
-    public static final double SLOW_TFEED = 0.005;
-    public static final double TFEED_SPEED = 0.8;
 
     /* TODO LIST
 

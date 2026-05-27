@@ -65,7 +65,7 @@ public class IntakeLineCmd extends CommandBase {
                 kickSubsystem.runSFeedBackward();
             }
 
-            intakeSubsystem.activate(Constants.INTAKE_SPEED*0.8);
+            intakeSubsystem.activate(Constants.INTAKE_SPEED);
         }
 
     }

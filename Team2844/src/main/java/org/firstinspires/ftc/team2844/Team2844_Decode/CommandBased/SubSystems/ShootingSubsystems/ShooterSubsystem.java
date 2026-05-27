@@ -28,7 +28,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param shooterMotors The Flywheel motor group that shoots the artifacts
      */
     public ShooterSubsystem(MotorExPair shooterMotors){
-        vel = 0.0;
+        vel = 1000.0;
         this.shooterMotors = shooterMotors;
         shooterMotors.setRunMode(MotorEx.RunMode.VelocityControl);
 

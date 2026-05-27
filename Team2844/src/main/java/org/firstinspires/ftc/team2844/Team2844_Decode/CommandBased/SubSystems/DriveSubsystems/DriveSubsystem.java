@@ -168,6 +168,9 @@ public class DriveSubsystem extends SubsystemBase {
         double angle = 0.0;
         double tempHeading = getRobotHeading();
 
+        double shooterX = botX + Constants.RADIUS_FROM_CENTER * Math.cos(Math.toRadians(tempHeading));
+        double shooterY = botY + Constants.RADIUS_FROM_CENTER * Math.sin(Math.toRadians(tempHeading));
+
 
         double limelightX = 0.0;
         double limelightY = 0.0;
@@ -178,8 +181,8 @@ public class DriveSubsystem extends SubsystemBase {
             limelightY = Constants.BLUE_APRILTAG_Y;
             angle = 270.0;
 
-            opposite = distanceFormula(limelightX, limelightY, botX, limelightY);
-            adjacent = distanceFormula(limelightX, limelightY, limelightX, botY);
+            opposite = distanceFormula(limelightX, limelightY, shooterX, limelightY);
+            adjacent = distanceFormula(limelightX, limelightY, limelightX, shooterY);
 
             angle -= Math.toDegrees(Math.atan2(-opposite, -adjacent));
         } else if(pipeline == Constants.RED_PIPELINE || pipeline == Constants.RED_PIPELINE_MOTIF){
@@ -187,8 +190,8 @@ public class DriveSubsystem extends SubsystemBase {
             limelightY = Constants.RED_APRILTAG_Y;
             angle = 90.0;
 
-            opposite = distanceFormula(limelightX, limelightY, botX, limelightY);
-            adjacent = distanceFormula(limelightX, limelightY, limelightX, botY);
+            opposite = distanceFormula(limelightX, limelightY, shooterX, limelightY);
+            adjacent = distanceFormula(limelightX, limelightY, limelightX, shooterY);
 
             angle += Math.toDegrees(Math.atan2(-opposite, -adjacent));
         }
@@ -274,7 +277,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     public double velocityLinReg(int pipeline){
         double distance = pinpointDistance(pipeline);
-        return 824.0388 + 2.851657*distance + 0.008433107*Math.pow(distance, 2);
+        //return 824.0388 + 2.851657*distance + 0.008433107*Math.pow(distance, 2);
+        //y=0.00000921885x^{4}-0.00288935x^{3}+0.317132x^{2}-9.88495x+993.83429
+        return (0.00000921885*(Math.pow(distance, 4)))-(0.00288935*(Math.pow(distance, 3)))+(0.317132*(Math.pow(distance, 2)))-(9.88495*(distance))+(993.83429);
     }
 
 
