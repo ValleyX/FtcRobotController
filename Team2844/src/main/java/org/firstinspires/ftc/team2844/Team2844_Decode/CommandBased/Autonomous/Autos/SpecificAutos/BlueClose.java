@@ -10,6 +10,8 @@ public class BlueClose extends CloseAutoBase {
     @Override
     public void initialize() {
         super.pipeline = Constants.BLUE_PIPELINE;
+        Constants.CPICKUP1_Y = Constants.CBLUEPICKUP1_Y;
+        Constants.CPICKUP2_Y = Constants.CBLUEPICKUP2_Y;
         super.initialize();
     }
 }

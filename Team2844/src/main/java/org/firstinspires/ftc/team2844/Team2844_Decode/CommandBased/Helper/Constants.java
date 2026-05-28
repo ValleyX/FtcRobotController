@@ -126,12 +126,14 @@ public class Constants {
 
     public static double CPICKUP1_X = -16.0;
     public static double CPICKUP1_Y = -56.0;
-    public static double CREDPICKUP1_Y = -48.0;
+    public static double CBLUEPICKUP1_Y = -56.0;
+    public static double CREDPICKUP1_Y = -50.0;
     public static double CPICKUP1_DEGREES = 0.0;
 
     public static double CPICKUP2_X = 8.0;
     public static double CPICKUP2_Y = -52.0;
-    public static double CREDPICKUP2_Y = -48.0;
+    public static double CBLUEPICKUP2_Y = -52.0;
+    public static double CREDPICKUP2_Y = -38.0;
     public static double CPICKUP2_DEGREES = 0.0;
 
     public static double CEND_X = -52.0;

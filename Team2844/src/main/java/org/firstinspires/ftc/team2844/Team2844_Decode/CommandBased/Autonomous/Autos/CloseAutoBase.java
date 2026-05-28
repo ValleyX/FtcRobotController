@@ -96,12 +96,12 @@ public class CloseAutoBase extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(Constants.CPICKUP2_X, Constants.CPICKUP2_Y *flip), Math.toRadians(0.0*flip));
 
         moveToShoot3 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(Constants.CPICKUP2_X, Constants.CPICKUP2_Y *flip, Math.toRadians(Constants.CPICKUP2_DEGREES *flip)))
-                .setReversed(!red)
-                .splineToSplineHeading(new Pose2d(Constants.CSHOOT_SPOT_X, Constants.CSHOOT_SPOT_Y *flip, Math.toRadians(Constants.CSHOOT_DEGREES *flip)), Math.toRadians(90.0*flip));
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(Constants.CSHOOT_SPOT_X, Constants.CSHOOT_SPOT_Y *flip, Math.toRadians(Constants.CSHOOT_DEGREES *flip)), Math.toRadians(90.0*flip), new TranslationalVelConstraint(20.0));
 
         leave = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(Constants.CSHOOT_SPOT_X, Constants.CSHOOT_SPOT_Y *flip, Math.toRadians(Constants.CSHOOT_DEGREES *flip)))
                 .setTangent(Math.toRadians(180.0*flip))
-                .splineToLinearHeading(new Pose2d(Constants.CEND_X, Constants.CEND_Y *flip, Math.toRadians(Constants.CEND_DEGREES *flip)), Math.toRadians(90.0*flip));
+                .splineToLinearHeading(new Pose2d(Constants.CEND_X, Constants.CEND_Y *flip, Math.toRadians(Constants.CEND_DEGREES *flip)), Math.toRadians(90.0*flip), new TranslationalVelConstraint(20.0));
 
         reset = (new ResetAction(subsystems.shooterFeedSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
 
@@ -119,12 +119,13 @@ public class CloseAutoBase extends LinearOpMode {
         try {
             Actions.runBlocking(
                     new SequentialAction(
-                            new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 1300)),
+                            new SetVeloPIDSAct(subsystems.shooterSubsystem, hardwareMap, true),
+                            new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 1000)),
                             new ActionDeadline(
                                     new SetVeloPIDSAct(subsystems.shooterSubsystem, hardwareMap, false),
                                     new SequentialAction(
                                             new ParallelAction(
-                                                    new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 1000)),
+                                                    new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 1200)),
                                                     moveToShoot1.build()
                                             ),
 
