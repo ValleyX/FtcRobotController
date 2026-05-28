@@ -119,7 +119,7 @@ public class CloseAutoBase extends LinearOpMode {
         try {
             Actions.runBlocking(
                     new SequentialAction(
-                            new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 13000)),
+                            new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 1300)),
                             new ActionDeadline(
                                     new SetVeloPIDSAct(subsystems.shooterSubsystem, hardwareMap, false),
                                     new SequentialAction(
