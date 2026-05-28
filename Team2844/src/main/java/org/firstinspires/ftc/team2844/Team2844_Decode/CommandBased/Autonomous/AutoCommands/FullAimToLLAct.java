@@ -1,6 +1,9 @@
-package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands;
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands;
 
-import com.arcrobotics.ftclib.command.CommandBase;
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
@@ -10,7 +13,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Sh
 
 import java.util.concurrent.TimeUnit;
 
-public class FullAimToLLCmd extends CommandBase {
+public class FullAimToLLAct implements Action {
     AimSubsystem aimSubsystem;
     SensorSubsystem sensorSubsystem;
     DriveSubsystem driveSubsystem;
@@ -23,39 +26,41 @@ public class FullAimToLLCmd extends CommandBase {
     ElapsedTime ppTimer;
     boolean finished = true;
     boolean const2 = false;
+    boolean init;
 
-    public FullAimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem){
+    public FullAimToLLAct(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem){
         this.aimSubsystem = aimSubsystem;
         this.sensorSubsystem = sensorSubsystem;
         this.driveSubsystem = driveSubsystem;
         llTimer = new ElapsedTime();
         ppTimer = new ElapsedTime();
         const2 = false;
-        addRequirements(aimSubsystem);
+        init = true;
     }
 
-    public FullAimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem, boolean finished){
+    public FullAimToLLAct(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem, boolean finished){
         this.aimSubsystem = aimSubsystem;
         this.sensorSubsystem = sensorSubsystem;
         this.driveSubsystem = driveSubsystem;
         llTimer = new ElapsedTime();
         ppTimer = new ElapsedTime();
-        addRequirements(aimSubsystem);
         this.finished = finished;
         const2 = true;
+        init = true;
     }
-
 
     @Override
-    public void initialize(){
-        savedTx = 0;
-        llTimer.reset();
-        ppTimer.reset();
-        seen = false;
-        looped = false;
-    }
+    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+        if(init){
+            savedTx = 0;
+            llTimer.reset();
+            ppTimer.reset();
+            seen = false;
+            looped = false;
+            init = false;
+        }
 
-    public void execute() {
+
         tx = sensorSubsystem.getTx();
         pos = aimSubsystem.getAxonValue();
 
@@ -91,15 +96,11 @@ public class FullAimToLLCmd extends CommandBase {
         }else {
             aimSubsystem.aimTurret(driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()));
         }
-    }
 
-
-    @Override
-    public boolean isFinished() {
         if(const2){
-            return finished;
+            return !finished;
         }
-        return ((Math.abs(tx) < Constants.TURRET_THRESHHOLD)) ||
-                ( Math.abs(driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()) - aimSubsystem.getTurretDegrees()) < Constants.TURRET_THRESHHOLD);
+        return !((Math.abs(tx) < Constants.TURRET_THRESHHOLD)) &&
+                !( Math.abs(driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()) - aimSubsystem.getTurretDegrees()) < Constants.TURRET_THRESHHOLD);
     }
 }

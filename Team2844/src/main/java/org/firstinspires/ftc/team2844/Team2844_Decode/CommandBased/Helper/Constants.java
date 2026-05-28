@@ -43,7 +43,7 @@ public class Constants {
 
 
     //Uptake
-    public static double KICKDOWN = 0.3;
+    public static double KICKDOWN = 0.28;
     public static double KICKDOWN_EXTRA = 0.40;
     public static double KICKDOWN_LESS = 0.27;
     public static double KICKDOWN_INTAKE = 0.43;
@@ -120,20 +120,22 @@ public class Constants {
     /* --------------------------- AUTO CONSTANTS --------------------------- */
     //ALL CONSTANTS ARE BASED ON BLUE SIDE, ALL HEADING CONSTANTS ARE IN DEGREES, ALL TIME IS IN MILLISECONDS
     public static double CSHOOT_SPOT_X = -36.0;
-    public static double CSHOOT_SPOT_Y = -24.0;
+    public static double CSHOOT_SPOT_Y = -28.0;
 
     public static double CSHOOT_DEGREES = -90.0;
 
-    public static double CPICKUP1_X = -10.0;
+    public static double CPICKUP1_X = -16.0;
     public static double CPICKUP1_Y = -56.0;
+    public static double CREDPICKUP1_Y = -48.0;
     public static double CPICKUP1_DEGREES = 0.0;
 
-    public static double CPICKUP2_X = 10.0;
-    public static double CPICKUP2_Y = -48.0;
+    public static double CPICKUP2_X = 8.0;
+    public static double CPICKUP2_Y = -52.0;
+    public static double CREDPICKUP2_Y = -48.0;
     public static double CPICKUP2_DEGREES = 0.0;
 
     public static double CEND_X = -52.0;
-    public static double CEND_Y = -12.0;
+    public static double CEND_Y = -20.0;
     public static double CEND_DEGREES = -90.0;
 
     public static long SHOOTER_TIMEOUT = 1500;

@@ -69,11 +69,17 @@ public class SmartLineShooterAutoAct implements Action {
 
         velocity = () -> driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
 
-        new ParallelAction(
-                new CommandAction(new FullAimToLLCmd(aimSubsystem, sensorSubsystem, driveSubsystem)),
-                new CommandAction(new VelocityShootCmd(shooterSubsystem, velocity)),
-                //new CommandAction(new ActivateIntakeCmd(intakeSubsystem)),
-                new InRange(shooterFeedSubsystem, kickSubsystem, shooterSubsystem, intakeSubsystem)
+        new SequentialAction(
+                new ParallelAction(
+                        new FullAimToLLAct(aimSubsystem, sensorSubsystem, driveSubsystem),
+                        new CommandAction(new VelocityShootCmd(shooterSubsystem, velocity))
+                ),
+                new ParallelAction(
+                        new FullAimToLLAct(aimSubsystem, sensorSubsystem, driveSubsystem, false),
+                        new CommandAction(new VelocityShootCmd(shooterSubsystem, velocity)),
+                        //new CommandAction(new ActivateIntakeCmd(intakeSubsystem)),
+                        new InRange(shooterFeedSubsystem, kickSubsystem, shooterSubsystem, intakeSubsystem)
+                )
         ).run(telemetryPacket);
 
         if(timer.time(TimeUnit.MILLISECONDS) < Constants.SHOOTER_TIMEOUT) {

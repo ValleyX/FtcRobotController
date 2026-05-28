@@ -1,42 +1,46 @@
-package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands;
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands;
 
-import com.arcrobotics.ftclib.command.CommandBase;
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterFeedSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.SpindexerSubsystem;
 
-public class IntakeLineCmd extends CommandBase {
+public class IntakeLineAct implements Action {
     ShooterFeedSubsystem shooterFeedSubsystem;
     IntakeSubsystem intakeSubsystem;
     SpindexerSubsystem spindexerSubsystem;
     KickSubsystem kickSubsystem;
     ElapsedTime timer;
-
+    boolean init;
     boolean startedFull;
-
-    public IntakeLineCmd(ShooterFeedSubsystem shooterFeedSubsystem, IntakeSubsystem intakeSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem) {
+    public IntakeLineAct(ShooterFeedSubsystem shooterFeedSubsystem, IntakeSubsystem intakeSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem) {
         this.intakeSubsystem = intakeSubsystem;
         this.shooterFeedSubsystem = shooterFeedSubsystem;
         this.kickSubsystem = kickSubsystem;
         this.spindexerSubsystem = spindexerSubsystem;
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        addRequirements(intakeSubsystem, shooterFeedSubsystem, shooterFeedSubsystem);
+        init = true;
     }
 
-    @Override
-    public void initialize() {
-        startedFull = shooterFeedSubsystem.topBroken();
-        intakeSubsystem.activate(Constants.INTAKE_SPEED);
-        kickSubsystem.runKickerSpin();
-        kickSubsystem.runSFeedForward();
-    }
 
     @Override
-    public void execute() {
+    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+        if(init){
+            startedFull = shooterFeedSubsystem.topBroken();
+            intakeSubsystem.activate(Constants.INTAKE_SPEED);
+            kickSubsystem.runKickerSpin();
+            kickSubsystem.runSFeedForward();
+            init = false;
+        }
+
         boolean topBroken = shooterFeedSubsystem.topBroken();
         if (!topBroken) {
             kickSubsystem.rotateKickerDown();
@@ -49,22 +53,6 @@ public class IntakeLineCmd extends CommandBase {
                 kickSubsystem.runSFeedBackward();
             }
         }
-
-    }
-
-
-
-    @Override
-    public boolean isFinished() {
-        return false;
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        intakeSubsystem.stop();
-        //kickSubsystem.rotateKickerUp();
-        kickSubsystem.stopKickerSpin();
-        kickSubsystem.stopSFeed();
-        shooterFeedSubsystem.stopTFeed();
+        return true;
     }
 }

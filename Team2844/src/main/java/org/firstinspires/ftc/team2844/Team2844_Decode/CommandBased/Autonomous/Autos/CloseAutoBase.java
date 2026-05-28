@@ -1,18 +1,24 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.Autos;
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.RaceAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.ActionDeadline;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.IntakeLineAct;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.ResetAction;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.SetVeloPIDSAct;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.SmartLineShooterAutoAct;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.TimeoutCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimTurretCmd;
@@ -31,7 +37,7 @@ import java.util.function.Supplier;
 
 //@Autonomous(name = "Blue Zamboni Close", group = "Autonomous")
 @Disabled
-public class CloseAutoBase extends CommandOpMode {
+public class CloseAutoBase extends LinearOpMode {
     Subsystems subsystems;
     Pose2d initialPose;
     OpMode opMode_;
@@ -53,7 +59,6 @@ public class CloseAutoBase extends CommandOpMode {
     int flip;
     public boolean red;
 
-    @Override
     public void initialize() {
         if(pipeline == Constants.RED_PIPELINE || pipeline == Constants.RED_PIPELINE_MOTIF){
             red = true;
@@ -70,17 +75,18 @@ public class CloseAutoBase extends CommandOpMode {
 
         moveToShoot1 = subsystems.mecDriveSubsystem.drive.actionBuilder(initialPose)
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(Constants.CSHOOT_SPOT_X, Constants.CSHOOT_SPOT_Y *flip, Math.toRadians(Constants.CSHOOT_DEGREES*flip)), Math.toRadians(-135.0*flip));
+                .splineToLinearHeading(new Pose2d(Constants.CSHOOT_SPOT_X, Constants.CSHOOT_SPOT_Y *flip, Math.toRadians(Constants.CSHOOT_DEGREES*flip)), Math.toRadians(45.0*flip));
 
 
         pickup1 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(Constants.CSHOOT_SPOT_X, Constants.CSHOOT_SPOT_Y *flip, Math.toRadians(Constants.CSHOOT_DEGREES *flip)))
                 .turnTo( Math.toRadians(Constants.CPICKUP1_DEGREES *flip))
                 .setTangent(Math.toRadians(-90.0*flip))
-                .splineToConstantHeading(new Vector2d(Constants.CPICKUP1_X, Constants.CPICKUP1_Y *flip), Math.toRadians(0.0*flip));
+                .splineToConstantHeading(new Vector2d(Constants.CPICKUP1_X, Constants.CPICKUP1_Y *flip), Math.toRadians(-10.0*flip));
 
 
         moveToShoot2 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(Constants.CPICKUP1_X, Constants.CPICKUP1_Y *flip, Math.toRadians(Constants.CPICKUP1_DEGREES *flip)))
-                .setReversed(!red)
+                .turnTo( Math.toRadians((Constants.CSHOOT_DEGREES-1)*flip))
+                .setTangent(Math.toRadians(90.0*flip))
                 .splineToLinearHeading(new Pose2d(Constants.CSHOOT_SPOT_X, Constants.CSHOOT_SPOT_Y *flip, Math.toRadians(Constants.CSHOOT_DEGREES *flip)), Math.toRadians(90.0*flip));
 
 
@@ -91,11 +97,11 @@ public class CloseAutoBase extends CommandOpMode {
 
         moveToShoot3 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(Constants.CPICKUP2_X, Constants.CPICKUP2_Y *flip, Math.toRadians(Constants.CPICKUP2_DEGREES *flip)))
                 .setReversed(!red)
-                .splineToLinearHeading(new Pose2d(Constants.CSHOOT_SPOT_X, Constants.CSHOOT_SPOT_Y *flip, Math.toRadians(Constants.CSHOOT_DEGREES *flip)), Math.toRadians(90.0*flip));
+                .splineToSplineHeading(new Pose2d(Constants.CSHOOT_SPOT_X, Constants.CSHOOT_SPOT_Y *flip, Math.toRadians(Constants.CSHOOT_DEGREES *flip)), Math.toRadians(90.0*flip));
 
         leave = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(Constants.CSHOOT_SPOT_X, Constants.CSHOOT_SPOT_Y *flip, Math.toRadians(Constants.CSHOOT_DEGREES *flip)))
                 .setTangent(Math.toRadians(180.0*flip))
-                .splineToSplineHeading(new Pose2d(Constants.CEND_X, Constants.CEND_Y *flip, Math.toRadians(Constants.CEND_DEGREES *flip)), Math.toRadians(90.0*flip));
+                .splineToLinearHeading(new Pose2d(Constants.CEND_X, Constants.CEND_Y *flip, Math.toRadians(Constants.CEND_DEGREES *flip)), Math.toRadians(90.0*flip));
 
         reset = (new ResetAction(subsystems.shooterFeedSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
 
@@ -113,16 +119,12 @@ public class CloseAutoBase extends CommandOpMode {
         try {
             Actions.runBlocking(
                     new SequentialAction(
-                            new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 1000)),
-                            new RaceAction(
-                                    new CommandAction(new SetVeloPIDS(subsystems.shooterSubsystem, hardwareMap, false)),
-                                    //new CommandAction(new FullAimToLLCmd(subsystems.aimSubsystem, subsystems.sensorSubsystem, subsystems.mecDriveSubsystem, false)),
+                            new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 13000)),
+                            new ActionDeadline(
+                                    new SetVeloPIDSAct(subsystems.shooterSubsystem, hardwareMap, false),
                                     new SequentialAction(
-                                            new RaceAction(
-                                                    new ParallelAction(
-                                                            new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 920)),
-                                                            new CommandAction(new FullAimToLLCmd(subsystems.aimSubsystem, subsystems.sensorSubsystem, subsystems.mecDriveSubsystem, false))
-                                                    ),
+                                            new ParallelAction(
+                                                    new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 1000)),
                                                     moveToShoot1.build()
                                             ),
 
@@ -132,16 +134,12 @@ public class CloseAutoBase extends CommandOpMode {
                                             reset,
 
 
-                                            new RaceAction(
-                                                    new CommandAction(new IntakeLineCmd(subsystems.shooterFeedSubsystem,
-                                                            subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem)),
+                                            new ActionDeadline(
+                                                    new IntakeLineAct(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem),
                                                     new SequentialAction(
                                                         pickup1.build(),
-                                                            new RaceAction(
-                                                                    new ParallelAction(
-                                                                            new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 920)),
-                                                                            new CommandAction(new FullAimToLLCmd(subsystems.aimSubsystem, subsystems.sensorSubsystem, subsystems.mecDriveSubsystem, false))
-                                                                    ),
+                                                            new ParallelAction(
+                                                                    new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 940)),
                                                                     moveToShoot2.build()
                                                             )
                                                     )
@@ -154,16 +152,12 @@ public class CloseAutoBase extends CommandOpMode {
                                                     subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, telemetry),
                                             reset,
 
-                                            new RaceAction(
-                                                    new CommandAction(new IntakeLineCmd(subsystems.shooterFeedSubsystem,
-                                                            subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem)),
+                                            new ActionDeadline(
+                                                    new IntakeLineAct(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem),
                                                     new SequentialAction(
                                                             pickup2.build(),
-                                                            new RaceAction(
-                                                                    new ParallelAction(
-                                                                            new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 920)),
-                                                                            new CommandAction(new FullAimToLLCmd(subsystems.aimSubsystem, subsystems.sensorSubsystem, subsystems.mecDriveSubsystem, false))
-                                                                    ),
+                                                            new ParallelAction(
+                                                                    new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 940)),
                                                                     moveToShoot3.build()
                                                             )
                                                     )

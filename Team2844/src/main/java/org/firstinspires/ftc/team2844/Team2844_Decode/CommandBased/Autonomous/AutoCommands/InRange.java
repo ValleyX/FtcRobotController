@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.ParallelAction;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.ActivateIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.TransferCommands.FullTransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.TransferCommands.StopTransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.TransferCommands.TransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
@@ -31,17 +32,9 @@ public class InRange implements Action {
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
         if(shooterSubsystem.inRange()) {
-            new ParallelAction(
-                    new CommandAction(new TransferCmd(shooterFeedSubsystem)),
-                    new CommandAction(new ActivateIntakeCmd(intakeSubsystem)),
-                    new UptakeAutoAct(kickSubsystem, () ->shooterFeedSubsystem.topBroken())
-            ).run(telemetryPacket);
+            new FullTransferAct(shooterFeedSubsystem, intakeSubsystem, kickSubsystem).run(telemetryPacket);
         } else {
-            new ParallelAction(
-                    new CommandAction(new StopTransferCmd(shooterFeedSubsystem)),
-                    new CommandAction(new StopIntakeCmd(intakeSubsystem)),
-                    new CommandAction(new StopUptakeCmd(kickSubsystem))
-            ).run(telemetryPacket);
+            new StopFullTransferAct(shooterFeedSubsystem, intakeSubsystem, kickSubsystem).run(telemetryPacket);
         }
         return true;
     }

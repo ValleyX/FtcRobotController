@@ -10,6 +10,8 @@ public class RedClose extends CloseAutoBase {
     @Override
     public void initialize() {
         super.pipeline = Constants.RED_PIPELINE;
+        Constants.CPICKUP1_Y = Constants.CREDPICKUP1_Y;
+        Constants.CPICKUP2_Y = Constants.CREDPICKUP2_Y;
         super.initialize();
     }
 }

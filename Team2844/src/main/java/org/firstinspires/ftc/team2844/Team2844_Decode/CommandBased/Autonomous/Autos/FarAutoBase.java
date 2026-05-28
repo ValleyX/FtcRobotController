@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.CommandAction;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 
-@Autonomous(name = "Blue Zamboni Far", group = "Autonomous")
+@Disabled
 public class FarAutoBase extends CommandOpMode {
     Subsystems subsystems;
     Pose2d initialPose;

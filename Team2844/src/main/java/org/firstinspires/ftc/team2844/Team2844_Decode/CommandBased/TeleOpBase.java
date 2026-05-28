@@ -30,6 +30,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Inta
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.DefaultVelocityShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ResetCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartLineShooterCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.TransferCommands.FullTransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.TransferCommands.StopTransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.TransferCommands.TransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
@@ -129,10 +130,10 @@ public class TeleOpBase extends CommandOpMode {
                         subsystems.intakeSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)
-                .whenHeld(new ParallelCommandGroup( new UptakeCmd(subsystems.kickSubsystem),
-                        new TransferCmd(subsystems.shooterFeedSubsystem)))
+                .whenHeld(new FullTransferCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.kickSubsystem))
                 .whenReleased( new ParallelCommandGroup(new StopUptakeCmd(subsystems.kickSubsystem),
-                        new StopTransferCmd(subsystems.shooterFeedSubsystem)));
+                        new StopTransferCmd(subsystems.shooterFeedSubsystem),
+                        new StopIntakeCmd(subsystems.intakeSubsystem)));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.X)
                 .whenHeld(new AimTurretCmd(subsystems.aimSubsystem, Constants.NEUTRAL_TURRET));
