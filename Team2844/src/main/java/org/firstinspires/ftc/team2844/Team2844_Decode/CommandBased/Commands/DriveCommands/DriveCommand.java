@@ -25,6 +25,6 @@ public class DriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        driveSubsystem.teleopDrive(strafe.getAsDouble(), -forward.getAsDouble(), turn.getAsDouble());
+        driveSubsystem.teleopDrive(-strafe.getAsDouble(), -forward.getAsDouble(), -turn.getAsDouble());
     }
 }
