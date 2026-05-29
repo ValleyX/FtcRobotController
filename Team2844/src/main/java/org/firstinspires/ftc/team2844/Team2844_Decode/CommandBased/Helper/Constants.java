@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.bylazar.configurables.annotations.Configurable;
 
 @Config
+@Configurable
 public class Constants {
 
     /* ---------------- TURRET ---------------- */
