@@ -76,8 +76,7 @@ public class BlueFar extends LinearOpMode {
 
         intake = new CommandAction(new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem));
 
-        neutralShoot = new CommandAction(new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
-                subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
+        neutralShoot = new CommandAction(new ResetCmd(subsystems));
 
         save = new CommandAction(new SavePosCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem));
 

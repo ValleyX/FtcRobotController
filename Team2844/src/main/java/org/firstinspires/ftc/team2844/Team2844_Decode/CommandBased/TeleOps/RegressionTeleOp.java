@@ -126,9 +126,7 @@ public class RegressionTeleOp extends CommandOpMode {
                 .whileHeld(new LineShooterRegCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                         subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem,
                         subsystems.mecDriveSubsystem, subsystems.spindexerSubsystem, velocity))
-                .whenReleased(new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
-                        subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem,
-                        subsystems.intakeSubsystem));
+                .whenReleased(new ResetCmd(subsystems));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)
                 .whenHeld(new ParallelCommandGroup( new UptakeCmd(subsystems.kickSubsystem),
@@ -171,7 +169,7 @@ public class RegressionTeleOp extends CommandOpMode {
 
         //Default Commands
         register(subsystems.aimSubsystem, subsystems.shooterSubsystem);
-        subsystems.aimSubsystem.setDefaultCommand(new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, pipelineNum));
+        subsystems.aimSubsystem.setDefaultCommand(new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, () -> false));
         subsystems.aimSubsystem.setDefaultCommand(new HoodCmd(subsystems.aimSubsystem, () -> subsystems.mecDriveSubsystem.hoodLinReg(pipelineNum)));
         //subsystems.aimSubsystem.setDefaultCommand(new HoodCmd(subsystems.aimSubsystem, () ->0.0));
         subsystems.shooterSubsystem.setDefaultCommand(new DefaultVelocityRegCmd(subsystems.shooterSubsystem, subsystems.mecDriveSubsystem, pipelineNum, velocity));
@@ -201,7 +199,7 @@ public class RegressionTeleOp extends CommandOpMode {
         waitForStart();
 
         time.reset();
-        new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem).schedule();
+        new ResetCmd(subsystems).schedule();
         new AimTurretCmd(subsystems.aimSubsystem, Constants.NEUTRAL_TURRET).schedule();
         sleep(250);
 

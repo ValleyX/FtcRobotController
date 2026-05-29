@@ -159,7 +159,7 @@ public class ZeroingOp extends CommandOpMode {
         waitForStart();
 
         time.reset();
-        new ResetCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.spindexerSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem).schedule();
+        new ResetCmd(subsystems).schedule();
         new AimTurretCmd(subsystems.aimSubsystem, Constants.NEUTRAL_TURRET).schedule();
         sleep(250);
 

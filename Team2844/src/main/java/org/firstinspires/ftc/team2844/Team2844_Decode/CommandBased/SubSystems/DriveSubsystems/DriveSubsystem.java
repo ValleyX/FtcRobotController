@@ -45,23 +45,23 @@ public class DriveSubsystem extends SubsystemBase {
 
         //code for field centric (Idk how it works, pretty sure it's magic or makes triangles or something)
         //REMEMBER IT USES RADIANS
-        double rotX = strafeSpeed * Math.cos(botHeading) - forwardSpeed * Math.sin(botHeading);
-        double rotY = strafeSpeed * Math.sin(botHeading) + forwardSpeed * Math.cos(botHeading);
+        double rotX = strafeSpeed * Math.cos(-botHeading) - forwardSpeed * Math.sin(-botHeading);
+        double rotY = strafeSpeed * Math.sin(-botHeading) + forwardSpeed * Math.cos(-botHeading);
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turnSpeed), 1);
-        double frontLeftPower = (rotY - (rotX) + turnSpeed) / denominator;
-        double backLeftPower = (rotY + rotX + turnSpeed) / denominator;
-        double frontRightPower = (rotY + (rotX) - turnSpeed) / denominator;
-        double backRightPower = (rotY - rotX - turnSpeed) / denominator;
+        double frontLeftPower = (rotY + (rotX) + turnSpeed) / denominator;
+        double backLeftPower = (rotY - rotX + turnSpeed) / denominator;
+        double frontRightPower = (rotY - (rotX) - turnSpeed) / denominator;
+        double backRightPower = (rotY + rotX - turnSpeed) / denominator;
 
         frontLeftPower = Math.min(1, Math.max(frontLeftPower  * Constants.DRIVE_CORRECTION, -1));
         backLeftPower = Math.min(1, Math.max(backLeftPower  * Constants.DRIVE_CORRECTION, -1));
         frontRightPower = Math.min(1, Math.max(frontRightPower  * Constants.DRIVE_CORRECTION, -1));
         backRightPower = Math.min(1, Math.max(backRightPower  * Constants.DRIVE_CORRECTION, -1));
 
-        drive.leftFront.setPower(frontLeftPower);
-        drive.rightFront.setPower(frontRightPower);
-        drive.leftBack.setPower(backLeftPower);
-        drive.rightBack.setPower(backRightPower);
+        drive.leftFront.setPower(backLeftPower);
+        drive.rightFront.setPower(backRightPower);
+        drive.leftBack.setPower(frontLeftPower);
+        drive.rightBack.setPower(frontRightPower);
 
     }
 

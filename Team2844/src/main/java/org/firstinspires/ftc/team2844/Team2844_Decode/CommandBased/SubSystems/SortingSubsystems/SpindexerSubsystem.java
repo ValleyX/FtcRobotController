@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -158,9 +157,9 @@ public class SpindexerSubsystem extends SubsystemBase {
             int[] green = bayOneGreen();
             int[] blue = bayOneBlue();
             if(Math.max(green[0] + green[1], blue[0] + blue[1]) == green[0] + green[1]){
-                return Constants.GREEN;
+                return Constants.GREEN_ARTIFACT;
             } else {
-                return Constants.PURPLE;
+                return Constants.PURPLE_ARTIFACT;
             }
         } else {
             return Constants.UNKNOWN_COLOR;
@@ -172,9 +171,9 @@ public class SpindexerSubsystem extends SubsystemBase {
             int[] green = bayTwoGreen();
             int[] blue = bayTwoBlue();
             if(Math.max(green[0] + green[1], blue[0] + blue[1]) == green[0] + green[1]){
-                return Constants.GREEN;
+                return Constants.GREEN_ARTIFACT;
             } else {
-                return Constants.PURPLE;
+                return Constants.PURPLE_ARTIFACT;
             }
         } else {
             return Constants.UNKNOWN_COLOR;
@@ -186,9 +185,9 @@ public class SpindexerSubsystem extends SubsystemBase {
             int[] green = bayThreeGreen();
             int[] blue = bayThreeBlue();
             if(Math.max(green[0] + green[1], blue[0] + blue[1]) == green[0] + green[1]){
-                return Constants.GREEN;
+                return Constants.GREEN_ARTIFACT;
             } else {
-                return Constants.PURPLE;
+                return Constants.PURPLE_ARTIFACT;
             }
         } else {
             return Constants.UNKNOWN_COLOR;
@@ -277,9 +276,9 @@ public class SpindexerSubsystem extends SubsystemBase {
                 bay3Color = temp2;
             }
 
-            if(bay1Color == Constants.PURPLE && bay2Color == Constants.PURPLE){
+            if(bay1Color == Constants.PURPLE_ARTIFACT && bay2Color == Constants.PURPLE_ARTIFACT){
                 currentPattern = Constants.PATTERN_PPG;
-            } else if(bay1Color == Constants.PURPLE && bay3Color == Constants.PURPLE){
+            } else if(bay1Color == Constants.PURPLE_ARTIFACT && bay3Color == Constants.PURPLE_ARTIFACT){
                 currentPattern = Constants.PATTERN_PGP;
             } else {
                 currentPattern = Constants.PATTERN_GPP;

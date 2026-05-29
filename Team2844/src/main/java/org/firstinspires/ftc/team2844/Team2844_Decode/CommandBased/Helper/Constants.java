@@ -5,7 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class Constants {
 
-    //turret
+    /* ---------------- TURRET ---------------- */
     //24 tooth servo head to 130 turret teeth
     private static final double SERVO_TEETH = 130.0;
     private static final double TURRET_TEETH = 130.0; //r u sure its 130?
@@ -35,20 +35,23 @@ public class Constants {
     public static final double MAX_VOLTAGE = 3.06;
 
 
+    /* ---------------- SHOOTER ---------------- */
     public static final double VELOCITY_THRESHHOLD = 100;
     public static final double MIN_VELOCITY = 1000;
 
-//Driving
+    /* ---------------- DRIVING ---------------- */
     public static double DRIVE_CORRECTION = 1.4;
 
 
-    //Uptake
+    /* ---------------- KICKER ---------------- */
     public static double KICKDOWN = 0.28;
     public static double KICKDOWN_EXTRA = 0.40;
     public static double KICKDOWN_LESS = 0.27;
     public static double KICKDOWN_INTAKE = 0.43;
     public static double KICKUP = 0.15;
 
+
+    /* ---------------- REGRESSION ---------------- */
     public static double REG_STEP = 20;
 
     public static double P_GAIN = 0.14;
@@ -59,7 +62,7 @@ public class Constants {
     public static double VEL_KV = 1.15;
 
 
-    //spindexer
+    /* ---------------- SPINDEXER (OLD) ---------------- */
     public static double SLOT_ZERO = 0.055;
     public static double SLOT_ONE = 0.055; //0.2/3 //axon 0.45
     public static double SLOT_TWO = 0.055; //2*(0.2/3) //axon 0.835
@@ -70,21 +73,23 @@ public class Constants {
 
     public static double[] SLOT_ARRAY = {SLOT_ZERO, SLOT_ONE, SLOT_TWO};//, SLOT_ZERO_LOOPED_ONE, SLOT_ONE_LOOPED_ONE, SLOT_TWO_LOOPED_ONE};
 
+
+    /* ---------------- SORTING (OLD) ---------------- */
     public static final int MIN_COLOR_SUM = 900;
     public static final int MIN_ALPHA = 450;
 
-    public static final int PURPLE = 1;
-    public static final int GREEN = 0;
+    public static final int PURPLE_ARTIFACT = 1;
+    public static final int GREEN_ARTIFACT = 0;
 
     /** If all colors added are equal to this number, they are sortable with one green and two purple*/
-    public static final int SORTABLE = PURPLE + PURPLE;
+    public static final int SORTABLE = PURPLE_ARTIFACT + PURPLE_ARTIFACT;
     public static final int UNKNOWN_COLOR = 999;
 
     public static final int PATTERN_PPG = 2110;
     public static final int PATTERN_PGP = 2101;
     public static final int PATTERN_GPP = 2011;
 
-    //Limelight
+    /* ---------------- LIMELIGHT ---------------- */
     public static final int NO_LL = -999;
 
     public static final int BLUE_PIPELINE = 0;
@@ -99,23 +104,38 @@ public class Constants {
     public static final double RED_APRILTAG_X = -58.3727;
     public static final double RED_APRILTAG_Y = 55.6425;
 
-    //Good numbers to have
-    public static final double METER_TO_INCH = 39.3701;
 
     //Pinpoint
     public static final double NO_PP = -999.0;
-
     public static final double NO_HEADING = -999.0;
 
+    //Good numbers to have
+    public static final double METER_TO_INCH = 39.3701;
 
 
 
-    //Intake and transfer
+    /* ---------------- INTAKE AND TRANSFER ---------------- */
     public static final double INTAKE_SPEED = 1.0;
 
     public static final double SLOW_TFEED = 0.1;
     public static final double TFEED_SPEED = 1.0;
 
+
+    /* ---------------- LIGHTS ---------------- */
+    public static final int TOPL_INDEX = 0;
+    public static final int MIDL_INDEX = 1;
+    public static final int BOTL_INDEX = 2;
+    public static final int LEFTL_INDEX = 3;
+    public static final int RIGHTL_INDEX = 4;
+
+    public static final double RED = 0.0;
+    public static final double ORANGE = 0.0;
+    public static final double YELLOW = 0.0;
+    public static final double GREEN = 0.0;
+    public static final double BLUE = 0.0;
+    public static final double PURPLE = 0.0;
+    public static final double BLACK = 0.0;
+    public static final double WHITE = 1.0;
 
     /* --------------------------- AUTO CONSTANTS --------------------------- */
     //ALL CONSTANTS ARE BASED ON BLUE SIDE, ALL HEADING CONSTANTS ARE IN DEGREES, ALL TIME IS IN MILLISECONDS
@@ -201,12 +221,12 @@ public class Constants {
 
 
         //Servo Ports
-    public static final String ES0 = "";
-    public static final String ES1 = "";
-    public static final String ES2 = "";
-    public static final String ES3 = "";
-    public static final String ES4 = "";
-    public static final String ES5 = "";
+    public static final String ES0 = ""; //old CR Servo transfer
+    public static final String ES1 = "rightLight";
+    public static final String ES2 = "leftLight";
+    public static final String ES3 = "botLight";
+    public static final String ES4 = "midLight";
+    public static final String ES5 = "topLight";
 
         //I2C Busses
     public static final String EBUS0 = "color1Bay3";
@@ -225,7 +245,7 @@ public class Constants {
     public static final String EDI7 = "";
 
 
-    //BOT DIMENSIONS
+    /* ---------------- BOT DIMENSIONS ---------------- */
     public static final double BOT_WIDTH = 17.0;
     public static final double BOT_LENGTH = 17.75;
     /**How far forward the Limelight is in inches*/
@@ -235,8 +255,9 @@ public class Constants {
 
 
     /* TODO LIST
-
-      - make auto better :(
-
+      - Do what the driver says :)
+        ~ stack lights
+        ~ auto can probably be better :(
+        ~ see if turret tracking can get any better
      */
 }

@@ -9,6 +9,7 @@ public class TransferCmd extends CommandBase {
 
     public TransferCmd(ShooterFeedSubsystem shooterFeedSubsystem){
         this.shooterFeedSubsystem = shooterFeedSubsystem;
+        addRequirements(shooterFeedSubsystem);
     }
 
     @Override

@@ -9,11 +9,12 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Dr
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 public class FullAimToLLCmd extends CommandBase {
-    AimSubsystem aimSubsystem;
-    SensorSubsystem sensorSubsystem;
-    DriveSubsystem driveSubsystem;
+    protected AimSubsystem aimSubsystem;
+    protected SensorSubsystem sensorSubsystem;
+    protected DriveSubsystem driveSubsystem;
     double tx;
     double pos;
     double savedTx;
@@ -24,6 +25,8 @@ public class FullAimToLLCmd extends CommandBase {
     boolean finished = true;
     boolean const2 = false;
 
+    boolean manualAim = false;
+
     public FullAimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem){
         this.aimSubsystem = aimSubsystem;
         this.sensorSubsystem = sensorSubsystem;
@@ -31,6 +34,18 @@ public class FullAimToLLCmd extends CommandBase {
         llTimer = new ElapsedTime();
         ppTimer = new ElapsedTime();
         const2 = false;
+        manualAim = false;
+        addRequirements(aimSubsystem);
+    }
+
+    public FullAimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem, BooleanSupplier manualAim){
+        this.aimSubsystem = aimSubsystem;
+        this.sensorSubsystem = sensorSubsystem;
+        this.driveSubsystem = driveSubsystem;
+        llTimer = new ElapsedTime();
+        ppTimer = new ElapsedTime();
+        const2 = false;
+        this.manualAim = manualAim.getAsBoolean();
         addRequirements(aimSubsystem);
     }
 
@@ -43,6 +58,7 @@ public class FullAimToLLCmd extends CommandBase {
         addRequirements(aimSubsystem);
         this.finished = finished;
         const2 = true;
+        manualAim = false;
     }
 
 
@@ -56,40 +72,42 @@ public class FullAimToLLCmd extends CommandBase {
     }
 
     public void execute() {
-        tx = sensorSubsystem.getTx();
-        pos = aimSubsystem.getAxonValue();
+        if(!manualAim) {
+            tx = sensorSubsystem.getTx();
+            pos = aimSubsystem.getAxonValue();
 
-        if(tx == Constants.NO_LL){
-            ppTimer.reset();
-        }
-
-        if (tx != Constants.NO_LL && (ppTimer.time(TimeUnit.MILLISECONDS) > 100 || !looped)) {
-            llTimer.reset();
-            seen = true;
-            if(ppTimer.time(TimeUnit.MILLISECONDS) > 100)
-                looped = true;
-            if (!(Math.abs(tx) < Constants.TURRET_THRESHHOLD)) {
-                savedTx = tx;
-                //aimSubsystem.aimTurret(pos - tx);
-                if (tx < 0.0) {
-                    aimSubsystem.aimTurret(pos + Math.min(8.0, Math.abs(tx)));
-                } else if (tx > 0.0) {
-                    aimSubsystem.aimTurret(pos - Math.min(8.0, Math.abs(tx)));
-                }
+            if (tx == Constants.NO_LL) {
+                ppTimer.reset();
             }
-            aimSubsystem.aimHood(driveSubsystem.hoodLinReg(sensorSubsystem.getPipeline()));
 
-        } else if(llTimer.time(TimeUnit.MILLISECONDS) < 100 && seen) {
-            if (!(Math.abs(savedTx) < Constants.TURRET_THRESHHOLD)) {
-                if (savedTx < 0.0) {
-                    aimSubsystem.aimTurret(pos + Math.min(8.0, Math.abs(savedTx)));
-                } else if (savedTx > 0.0) {
-                    aimSubsystem.aimTurret(pos - Math.min(8.0, Math.abs(savedTx)));
+            if (tx != Constants.NO_LL && (ppTimer.time(TimeUnit.MILLISECONDS) > 100 || !looped)) {
+                llTimer.reset();
+                seen = true;
+                if (ppTimer.time(TimeUnit.MILLISECONDS) > 100)
+                    looped = true;
+                if (!(Math.abs(tx) < Constants.TURRET_THRESHHOLD)) {
+                    savedTx = tx;
+                    //aimSubsystem.aimTurret(pos - tx);
+                    if (tx < 0.0) {
+                        aimSubsystem.aimTurret(pos + Math.min(8.0, Math.abs(tx)));
+                    } else if (tx > 0.0) {
+                        aimSubsystem.aimTurret(pos - Math.min(8.0, Math.abs(tx)));
+                    }
                 }
+                aimSubsystem.aimHood(driveSubsystem.hoodLinReg(sensorSubsystem.getPipeline()));
+
+            } else if (llTimer.time(TimeUnit.MILLISECONDS) < 100 && seen) {
+                if (!(Math.abs(savedTx) < Constants.TURRET_THRESHHOLD)) {
+                    if (savedTx < 0.0) {
+                        aimSubsystem.aimTurret(pos + Math.min(8.0, Math.abs(savedTx)));
+                    } else if (savedTx > 0.0) {
+                        aimSubsystem.aimTurret(pos - Math.min(8.0, Math.abs(savedTx)));
+                    }
+                }
+                aimSubsystem.aimHood(driveSubsystem.hoodLinReg(sensorSubsystem.getPipeline()));
+            } else {
+                aimSubsystem.aimTurret(driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()));
             }
-            aimSubsystem.aimHood(driveSubsystem.hoodLinReg(sensorSubsystem.getPipeline()));
-        }else {
-            aimSubsystem.aimTurret(driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()));
         }
     }
 
@@ -99,7 +117,9 @@ public class FullAimToLLCmd extends CommandBase {
         if(const2){
             return finished;
         }
-        return ((Math.abs(tx) < Constants.TURRET_THRESHHOLD)) ||
-                ( Math.abs(driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()) - aimSubsystem.getTurretDegrees()) < Constants.TURRET_THRESHHOLD);
+        if(tx != Constants.NO_LL)
+            return ((Math.abs(tx) < Constants.TURRET_THRESHHOLD));
+        else
+            return ( Math.abs(driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()) - aimSubsystem.getTurretDegrees()) < Constants.TURRET_THRESHHOLD);
     }
 }

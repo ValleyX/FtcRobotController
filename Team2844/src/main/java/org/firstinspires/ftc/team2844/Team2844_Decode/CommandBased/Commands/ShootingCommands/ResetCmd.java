@@ -2,9 +2,11 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Sho
 
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.TransferCommands.StopTransferCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Subsystems;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterFeedSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterSubsystem;
@@ -14,7 +16,10 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 
 public class ResetCmd extends ParallelCommandGroup {
 
-    public ResetCmd(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, SpindexerSubsystem spindexerSubsystem, AimSubsystem aimSubsystem, KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem){
+    public ResetCmd(Subsystems subsystems){
+        IntakeSubsystem intakeSubsystem = subsystems.intakeSubsystem;
+        ShooterFeedSubsystem shooterFeedSubsystem = subsystems.shooterFeedSubsystem;
+        KickSubsystem kickSubsystem = subsystems.kickSubsystem;
         addCommands(
                 //new VelocityShootCmd(shooterSubsystem, () -> Constants.MIN_VELOCITY),
                 new StopTransferCmd(shooterFeedSubsystem),
