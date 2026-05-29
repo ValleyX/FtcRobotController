@@ -141,6 +141,7 @@ public class Constants {
 
     /* --------------------------- AUTO CONSTANTS --------------------------- */
     //ALL CONSTANTS ARE BASED ON BLUE SIDE, ALL HEADING CONSTANTS ARE IN DEGREES, ALL TIME IS IN MILLISECONDS
+    //CLOSE
     public static double CSHOOT_SPOT_X = -36.0;
     public static double CSHOOT_SPOT_Y = -28.0;
 
@@ -162,7 +163,24 @@ public class Constants {
     public static double CEND_Y = -20.0;
     public static double CEND_DEGREES = -90.0;
 
+
+    //FAR
+    public static double FPICKUP1_X = 72 - Constants.BOT_WIDTH/2.0;
+    public static double FPICKUP1_Y = -72.0 + Constants.BOT_WIDTH/2.0;
+    public static double FPICKUP1_DEGREES = -90.0;
+
+    public static double FSHOOT_SPOT_X = 72 - Constants.BOT_WIDTH/2.0;
+    public static double FSHOOT_SPOT_Y = -Constants.BOT_WIDTH/2.0;
+    public static double FSHOOT_DEGREES = -90.0;
+
+    public static double FENDY = -48.0;
+    public static double FENDX = 72.0 - Constants.BOT_WIDTH/2.0;
+    public static double FEND_DEGREES = -90.0;
+
+
     public static long SHOOTER_TIMEOUT = 1500;
+
+
 
 
 

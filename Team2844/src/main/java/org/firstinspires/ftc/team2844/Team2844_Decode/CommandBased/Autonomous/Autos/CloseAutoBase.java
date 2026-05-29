@@ -40,7 +40,6 @@ import java.util.function.Supplier;
 public class CloseAutoBase extends LinearOpMode {
     Subsystems subsystems;
     Pose2d initialPose;
-    OpMode opMode_;
 
     //Trajectories and actions
     TrajectoryActionBuilder moveToShoot1;
@@ -52,8 +51,6 @@ public class CloseAutoBase extends LinearOpMode {
 
     //Command Actions
     Action reset;
-
-    Supplier<Pose2d> pose2dSupplier;
 
     public int pipeline;
     int flip;
@@ -104,8 +101,6 @@ public class CloseAutoBase extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(Constants.CEND_X, Constants.CEND_Y *flip, Math.toRadians(Constants.CEND_DEGREES *flip)), Math.toRadians(90.0*flip), new TranslationalVelConstraint(20.0));
 
         reset = (new ResetAction(subsystems.shooterFeedSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
-
-        pose2dSupplier = subsystems.mecDriveSubsystem.drive.localizer::getPose;
     }
 
 

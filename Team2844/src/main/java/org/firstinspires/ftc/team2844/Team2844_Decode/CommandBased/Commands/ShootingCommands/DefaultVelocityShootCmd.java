@@ -8,37 +8,41 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Sh
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.IntakeSubsystem;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class DefaultVelocityShootCmd extends CommandBase {
-    ShooterSubsystem shooterSubsystem;
     DriveSubsystem driveSubsystem;
-    IntakeSubsystem intakeSubsystem;
-    ShooterFeedSubsystem shooterFeedSubsystem;
+    ShooterSubsystem shooterSubsystem;
+    DoubleSupplier botX;
+    DoubleSupplier botY;
+    BooleanSupplier full;
     int pipeline;
 
-    public DefaultVelocityShootCmd(Subsystems subsystems){
-        this.driveSubsystem = subsystems.mecDriveSubsystem;
-        this.shooterSubsystem = subsystems.shooterSubsystem;
-        this.intakeSubsystem = subsystems.intakeSubsystem;
-        this.shooterFeedSubsystem = subsystems.shooterFeedSubsystem;
-        this.pipeline = subsystems.sensorSubsystem.getPipeline();
+    public DefaultVelocityShootCmd(ShooterSubsystem shooterSubsystem, DriveSubsystem driveSubsystem, int pipeline, DoubleSupplier botX, DoubleSupplier botY, BooleanSupplier full){
+        this.driveSubsystem = driveSubsystem;
+        this.shooterSubsystem = shooterSubsystem;
+        this.pipeline = pipeline;
+
+        this.botX = botX;
+        this.botY = botY;
+        this.full = full;
 
         addRequirements(shooterSubsystem);
     }
 
     @Override
     public void execute() {
-        double botX = driveSubsystem.getBotX();
-        double botY = driveSubsystem.getBotY();
-        if(botX < 0.0 && botY < 0.0){
-            if(botX > botY){
-                if(shooterFeedSubsystem.topBroken() && intakeSubsystem.ballInBeam())
+        double botXValue = botX.getAsDouble();
+        double botYValue = botY.getAsDouble();
+        if(botXValue < 0.0 && botYValue < 0.0){
+            if(botXValue > botYValue){
+                if(full.getAsBoolean())
                     shooterSubsystem.setVelocity(driveSubsystem.velocityLinReg(pipeline));
             }
-        } else if(botX < 0.0 && botY > 0.0){
-            if(botY < -botX){
-                if(shooterFeedSubsystem.topBroken() && intakeSubsystem.ballInBeam())
+        } else if(botXValue < 0.0 && botYValue > 0.0){
+            if(botYValue < -botXValue){
+                if(full.getAsBoolean())
                     shooterSubsystem.setVelocity(driveSubsystem.velocityLinReg(pipeline));
             }
         } else {

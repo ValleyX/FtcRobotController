@@ -27,6 +27,8 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Driv
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.FullExtakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.LightCommands.SetLightCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.LightCommands.SetLightTimedCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.LightCommands.TimerLightsCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.DefaultVelocityShootCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ResetCmd;
@@ -108,8 +110,8 @@ public class TeleOpBase extends CommandOpMode {
         intakeLineCmd = new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
         extakeCmd = new FullExtakeCmd(subsystems.intakeSubsystem, subsystems.shooterFeedSubsystem, subsystems.kickSubsystem);
         timerLights = new TimerLightsCmd(subsystems.lightSubsystem, Constants.BOTL_INDEX);
-        defaultVelocityShootCmd = new DefaultVelocityShootCmd(subsystems);
-        defaultAimCmd = new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, manualAim);
+        defaultVelocityShootCmd = new DefaultVelocityShootCmd(subsystems.shooterSubsystem, subsystems.mecDriveSubsystem, pipelineNum, ()->subsystems.mecDriveSubsystem.getBotX(), ()->subsystems.mecDriveSubsystem.getBotY(), ()->subsystems.intakeSubsystem.ballInBeam() && subsystems.shooterFeedSubsystem.topBroken());
+        defaultAimCmd = new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, ()->subsystems.mecDriveSubsystem.getBotX(), ()->subsystems.mecDriveSubsystem.getBotY(), manualAim);
 
         sortMode = false;
 
@@ -209,6 +211,8 @@ public class TeleOpBase extends CommandOpMode {
             if(start){
                 start = false;
                 timerLights.schedule();
+                new SetLightCmd(subsystems.lightSubsystem, Constants.TOPL_INDEX, Constants.GREEN).schedule();
+                new SetLightTimedCmd(subsystems.lightSubsystem, Constants.MIDL_INDEX, Constants.YELLOW, 10000).schedule();
             }
 
             if ( rightTriggerReader.wasJustPressed()) {

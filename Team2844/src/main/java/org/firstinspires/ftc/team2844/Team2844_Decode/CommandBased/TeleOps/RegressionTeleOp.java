@@ -169,7 +169,7 @@ public class RegressionTeleOp extends CommandOpMode {
 
         //Default Commands
         register(subsystems.aimSubsystem, subsystems.shooterSubsystem);
-        subsystems.aimSubsystem.setDefaultCommand(new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, () -> false));
+        subsystems.aimSubsystem.setDefaultCommand(new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, ()->subsystems.mecDriveSubsystem.getBotX(), ()->subsystems.mecDriveSubsystem.getBotY(), ()->false));
         subsystems.aimSubsystem.setDefaultCommand(new HoodCmd(subsystems.aimSubsystem, () -> subsystems.mecDriveSubsystem.hoodLinReg(pipelineNum)));
         //subsystems.aimSubsystem.setDefaultCommand(new HoodCmd(subsystems.aimSubsystem, () ->0.0));
         subsystems.shooterSubsystem.setDefaultCommand(new DefaultVelocityRegCmd(subsystems.shooterSubsystem, subsystems.mecDriveSubsystem, pipelineNum, velocity));

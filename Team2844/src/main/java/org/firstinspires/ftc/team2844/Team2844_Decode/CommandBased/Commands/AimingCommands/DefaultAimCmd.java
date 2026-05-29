@@ -8,56 +8,44 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Dr
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
-public class DefaultAimCmd extends FullAimToLLCmd {
+public class DefaultAimCmd extends CommandBase {
 
     AimSubsystem aimSubsystem;
     DriveSubsystem driveSubsystem;
     SensorSubsystem sensorSubsystem;
+    DoubleSupplier botX;
+    DoubleSupplier botY;
     BooleanSupplier manualAim;
     boolean init;
-    public DefaultAimCmd(AimSubsystem aimSubsystem, DriveSubsystem driveSubsystem, SensorSubsystem sensorSubsystem, BooleanSupplier manualAim){
-        super(aimSubsystem, sensorSubsystem, driveSubsystem);
+    public DefaultAimCmd(AimSubsystem aimSubsystem, DriveSubsystem driveSubsystem, DoubleSupplier botX, DoubleSupplier botY, BooleanSupplier manualAim){
         this.aimSubsystem = aimSubsystem;
         this.driveSubsystem = driveSubsystem;
-        this.sensorSubsystem = sensorSubsystem;
         this.manualAim = manualAim;
+        this.botX = botX;
+        this.botY = botY;
         init = true;
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
     }
 
     @Override
     public void execute() {
         if(!manualAim.getAsBoolean()){
-            double botX = driveSubsystem.getBotX();
-            double botY = driveSubsystem.getBotY();
+            double botXValue = botX.getAsDouble();
+            double botYValue = botY.getAsDouble();
             double turretAngle = driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline());
-            if(botX < 0.0 && botY < 0.0){
-                if(botX > botY){
-                    if(init){
-                        init = false;
-                        super.initialize();
-                    }
+            if(botXValue < 0.0 && botYValue < 0.0){
+                if(botXValue > botYValue){
                     if(Constants.MIN_DEGREE + 10 < turretAngle
                             && turretAngle < Constants.MAX_DEGREE - 10)
-                        super.execute();
+                        aimSubsystem.aimTurret(turretAngle);
                 }
-            } else if(botX < 0.0 && botY > 0.0){
-                if(botY < -botX){
-                    if(init){
-                        init = false;
-                        super.initialize();
-                    }
+            } else if(botXValue < 0.0 && botYValue > 0.0){
+                if(botYValue < -botXValue){
                     if(Constants.MIN_DEGREE + 10 < turretAngle
                             && turretAngle < Constants.MAX_DEGREE - 10)
-                        super.execute();
+                        aimSubsystem.aimTurret(turretAngle);
                 }
-            } else {
-                init = true;
             }
         }
     }
