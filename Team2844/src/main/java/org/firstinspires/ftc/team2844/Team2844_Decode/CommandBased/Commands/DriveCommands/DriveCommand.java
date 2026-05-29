@@ -17,6 +17,7 @@ public class DriveCommand extends CommandBase {
         this.strafe = strafe;
         this.forward = forward;
         this.turn = turn;
+
         // heading unused — Pedro handles field-centric internally via its localizer
 
         addRequirements(driveSubsystem);

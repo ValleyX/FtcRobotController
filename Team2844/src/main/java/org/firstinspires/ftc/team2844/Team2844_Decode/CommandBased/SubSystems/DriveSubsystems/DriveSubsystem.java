@@ -32,7 +32,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         follower = PedroConstants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(SavedVars.startingX, SavedVars.startingY, startHeadingRad));
-        follower.startTeleopDrive();
+        follower.startTeleopDrive(true);
 
         // RR drive still needed for getBotX/Y, pinpointDistance, turret math, etc.
         double temp = SavedVars.startingHeading;
@@ -51,7 +51,7 @@ public class DriveSubsystem extends SubsystemBase {
     // Called by DriveCommand every loop for teleop
     public void teleopDrive(double strafeSpeed, double forwardSpeed, double turnSpeed) {
         // false = field-centric; Pedro handles the heading rotation internally via its localizer
-        follower.updateVectors();
+        follower.setTeleOpDrive(strafeSpeed, forwardSpeed, turnSpeed, false);
     }
 
     // Kept intact for any auto commands that still use it
