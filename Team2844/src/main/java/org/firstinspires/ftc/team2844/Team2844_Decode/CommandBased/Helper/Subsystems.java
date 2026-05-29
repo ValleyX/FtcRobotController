@@ -273,6 +273,14 @@ public class Subsystems {
         // ----- Limelight ----- //
         limelight = hardwareMap.get(Limelight3A.class, Constants.LL);
 
+        /* -------------- Lights -------------- */
+        topLight = hardwareMap.get(Servo.class, Constants.ES5);
+        midLight = hardwareMap.get(Servo.class, Constants.ES4);
+        botLight = hardwareMap.get(Servo.class, Constants.ES3);
+        leftLight = hardwareMap.get(Servo.class, Constants.ES2);
+        rightLight = hardwareMap.get(Servo.class, Constants.ES1);
+        lightArray = new Servo[]{topLight, midLight, botLight, leftLight, rightLight};
+
         /* -------------- Subsystems -------------- */
         /* 1. intake
          * 2. Kick
@@ -297,5 +305,7 @@ public class Subsystems {
         aimSubsystem = new AimSubsystem(hoodAim, axon, axonIn);
         //7. Sensor Subsystem
         sensorSubsystem = new SensorSubsystem(limelight, pipelineNum);
+        //9. Lights Subsystem
+        lightSubsystem = new LightSubsystem(lightArray);
     }
 }

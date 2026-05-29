@@ -27,6 +27,7 @@ public class LightSubsystem extends SubsystemBase {
 
     public void setLight(int index, double color){
         colors[index] = color;
+        lightArray[index].setPosition(color);
     }
 
     public double getColor(int index){

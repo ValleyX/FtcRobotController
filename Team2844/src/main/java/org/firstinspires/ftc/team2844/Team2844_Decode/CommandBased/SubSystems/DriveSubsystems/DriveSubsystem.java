@@ -16,45 +16,45 @@ import java.util.function.DoubleSupplier;
 
 public class DriveSubsystem extends SubsystemBase {
 
-    public MecanumDrive drive;    // kept for auto and all existing pose/distance methods
-    public Follower follower;     // teleop drive only
+    public MecanumDrive drive;
+    public Follower follower;
+    private double headingOffset;
 
-    // Teleop constructor
     public DriveSubsystem(HardwareMap hardwareMap, int pipeline) {
-        double startHeadingRad;
-        if (pipeline == Constants.BLUE_PIPELINE) {
-            startHeadingRad = Math.toRadians(-90.0);
-        } else if (pipeline == Constants.RED_PIPELINE) {
-            startHeadingRad = Math.toRadians(90.0);
-        } else {
-            startHeadingRad = 0.0;
-        }
+        double temp = SavedVars.startingHeading;
 
         follower = PedroConstants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(SavedVars.startingX, SavedVars.startingY, startHeadingRad));
-        follower.startTeleopDrive(true);
 
-        // RR drive still needed for getBotX/Y, pinpointDistance, turret math, etc.
-        double temp = SavedVars.startingHeading;
         if (temp == Constants.NO_HEADING || temp == (Constants.NO_HEADING % 360.0)) {
-            drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, startHeadingRad));
+            // No prior auto — use pipeline defaults for both RR init and FC offset
+            if (pipeline == Constants.BLUE_PIPELINE) {
+                drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, Math.toRadians(-90.0)));
+                headingOffset = Math.toRadians(-90.0);
+            } else if (pipeline == Constants.RED_PIPELINE) {
+                drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, Math.toRadians(90.0)));
+                headingOffset = Math.toRadians(90.0);
+            } else {
+                drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, 0.0));
+                headingOffset = 0.0;
+            }
         } else {
-            drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, temp));
+            // Prior auto exists — temp is in degrees (RR convention), same convention as Pedro
+            // headingOffset rotates FC reference to compensate for where the bot actually ended up
+            drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, Math.toRadians(temp)));
+            headingOffset = -Math.toRadians(temp);
         }
+
+        follower.startTeleOpDrive(true);
     }
 
-    // Auto constructor — RR only, no Pedro follower
     public DriveSubsystem(HardwareMap hardwareMap, Pose2d pose) {
         drive = new MecanumDrive(hardwareMap, pose);
     }
 
-    // Called by DriveCommand every loop for teleop
     public void teleopDrive(double strafeSpeed, double forwardSpeed, double turnSpeed) {
-        // false = field-centric; Pedro handles the heading rotation internally via its localizer
-        follower.setTeleOpDrive(strafeSpeed, forwardSpeed, turnSpeed, false);
+        follower.setTeleOpDrive(strafeSpeed, forwardSpeed, turnSpeed, false, headingOffset);
     }
 
-    // Kept intact for any auto commands that still use it
     public void drive(double strafeSpeed, double forwardSpeed, double turnSpeed, DoubleSupplier heading) {
         drive.updatePoseEstimate();
         double botHeading = heading.getAsDouble();

@@ -52,6 +52,8 @@ public class TeleOpBase extends CommandOpMode {
     FullExtakeCmd extakeCmd;
     ResetImuCmd resetImuCmd;
     TimerLightsCmd timerLights;
+    DefaultAimCmd defaultAimCmd;
+    DefaultVelocityShootCmd defaultVelocityShootCmd;
 
     boolean sortMode;
     boolean intake = false;
@@ -106,6 +108,8 @@ public class TeleOpBase extends CommandOpMode {
         intakeLineCmd = new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
         extakeCmd = new FullExtakeCmd(subsystems.intakeSubsystem, subsystems.shooterFeedSubsystem, subsystems.kickSubsystem);
         timerLights = new TimerLightsCmd(subsystems.lightSubsystem, Constants.BOTL_INDEX);
+        defaultVelocityShootCmd = new DefaultVelocityShootCmd(subsystems);
+        defaultAimCmd = new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, manualAim);
 
         sortMode = false;
 
@@ -152,7 +156,7 @@ public class TeleOpBase extends CommandOpMode {
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.BACK)
                 .whenPressed( new AimTurretCmd(subsystems.aimSubsystem, 180.0)
-                        .andThen(new ResetPoseCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, subsystems.sensorSubsystem.getPipeline())));
+                        .andThen(new ResetPoseCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, pipelineNum)));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.START)
                 .whileHeld(resetImuCmd);
@@ -160,9 +164,9 @@ public class TeleOpBase extends CommandOpMode {
 
         //Default Commands
         register(subsystems.aimSubsystem, subsystems.shooterSubsystem);
-        subsystems.aimSubsystem.setDefaultCommand(new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, manualAim));
+        subsystems.aimSubsystem.setDefaultCommand(defaultAimCmd);
         subsystems.aimSubsystem.setDefaultCommand(new HoodCmd(subsystems.aimSubsystem, () -> subsystems.mecDriveSubsystem.hoodLinReg(pipelineNum)));
-        subsystems.shooterSubsystem.setDefaultCommand(new DefaultVelocityShootCmd(subsystems));
+        subsystems.shooterSubsystem.setDefaultCommand(defaultVelocityShootCmd);
 
         /* -------------- Driving Command Loop -------------- */
             //this will make the drive command always run
@@ -194,6 +198,7 @@ public class TeleOpBase extends CommandOpMode {
 
         subsystems.aimSubsystem.aimHood(0.0);
         subsystems.spindexerSubsystem.runToSlotZero();
+        boolean start = true;
 
         while (opModeIsActive()){
             //Scheduler must be loop called for everything else to run
@@ -201,7 +206,8 @@ public class TeleOpBase extends CommandOpMode {
             rightTriggerReader.readValue();
             leftTriggerReader.readValue();
 
-            if(!timerLights.isScheduled()){
+            if(start){
+                start = false;
                 timerLights.schedule();
             }
 
@@ -219,7 +225,7 @@ public class TeleOpBase extends CommandOpMode {
 
             if(intake  && !intakeLineCmd.isScheduled()){
                 intakeLineCmd.schedule(true);
-            }else {
+            }else if(!intake){
                 intakeLineCmd.cancel();
             }
 

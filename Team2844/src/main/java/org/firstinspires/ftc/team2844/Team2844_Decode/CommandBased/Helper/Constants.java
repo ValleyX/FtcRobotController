@@ -42,7 +42,7 @@ public class Constants {
     public static final double MIN_VELOCITY = 1000;
 
     /* ---------------- DRIVING ---------------- */
-    public static double DRIVE_CORRECTION = 1.4;
+    public static double DRIVE_CORRECTION = 1.0;
 
 
     /* ---------------- KICKER ---------------- */
@@ -130,12 +130,12 @@ public class Constants {
     public static final int LEFTL_INDEX = 3;
     public static final int RIGHTL_INDEX = 4;
 
-    public static final double RED = 0.0;
-    public static final double ORANGE = 0.0;
-    public static final double YELLOW = 0.0;
-    public static final double GREEN = 0.0;
-    public static final double BLUE = 0.0;
-    public static final double PURPLE = 0.0;
+    public static final double RED = 0.28;
+    public static final double ORANGE = 0.333;
+    public static final double YELLOW = 0.388;
+    public static final double GREEN = 0.5;
+    public static final double BLUE = 0.611;
+    public static final double PURPLE = 0.72;
     public static final double BLACK = 0.0;
     public static final double WHITE = 1.0;
 

@@ -10,10 +10,17 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Sh
 import java.util.function.BooleanSupplier;
 
 public class DefaultAimCmd extends FullAimToLLCmd {
+
+    AimSubsystem aimSubsystem;
+    DriveSubsystem driveSubsystem;
+    SensorSubsystem sensorSubsystem;
     BooleanSupplier manualAim;
     boolean init;
     public DefaultAimCmd(AimSubsystem aimSubsystem, DriveSubsystem driveSubsystem, SensorSubsystem sensorSubsystem, BooleanSupplier manualAim){
         super(aimSubsystem, sensorSubsystem, driveSubsystem);
+        this.aimSubsystem = aimSubsystem;
+        this.driveSubsystem = driveSubsystem;
+        this.sensorSubsystem = sensorSubsystem;
         this.manualAim = manualAim;
         init = true;
     }
@@ -28,24 +35,25 @@ public class DefaultAimCmd extends FullAimToLLCmd {
         if(!manualAim.getAsBoolean()){
             double botX = driveSubsystem.getBotX();
             double botY = driveSubsystem.getBotY();
+            double turretAngle = driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline());
             if(botX < 0.0 && botY < 0.0){
                 if(botX > botY){
                     if(init){
                         init = false;
-                        initialize();
+                        super.initialize();
                     }
-                    if(Constants.MIN_DEGREE + 10 < driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline())
-                            && driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()) < Constants.MAX_DEGREE - 10)
+                    if(Constants.MIN_DEGREE + 10 < turretAngle
+                            && turretAngle < Constants.MAX_DEGREE - 10)
                         super.execute();
                 }
             } else if(botX < 0.0 && botY > 0.0){
                 if(botY < -botX){
                     if(init){
                         init = false;
-                        initialize();
+                        super.initialize();
                     }
-                    if(Constants.MIN_DEGREE + 10 < driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline())
-                            && driveSubsystem.getPinpointTurretAngle(sensorSubsystem.getPipeline()) < Constants.MAX_DEGREE - 10)
+                    if(Constants.MIN_DEGREE + 10 < turretAngle
+                            && turretAngle < Constants.MAX_DEGREE - 10)
                         super.execute();
                 }
             } else {
