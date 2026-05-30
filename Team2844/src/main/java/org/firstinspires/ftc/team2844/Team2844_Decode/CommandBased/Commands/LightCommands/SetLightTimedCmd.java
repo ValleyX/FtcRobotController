@@ -27,6 +27,10 @@ public class SetLightTimedCmd extends CommandBase {
     @Override
     public void initialize() {
         timer.reset();
+    }
+
+    @Override
+    public void execute() {
         lightSubsystem.setLight(index, color);
     }
 

@@ -25,6 +25,7 @@ public class DefaultAimCmd extends CommandBase {
         this.manualAim = manualAim;
         this.botX = botX;
         this.botY = botY;
+        addRequirements(aimSubsystem);
         init = true;
     }
 

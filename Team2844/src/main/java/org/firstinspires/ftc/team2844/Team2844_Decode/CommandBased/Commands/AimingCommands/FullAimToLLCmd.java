@@ -25,7 +25,7 @@ public class FullAimToLLCmd extends CommandBase {
     boolean finished = true;
     boolean const2 = false;
 
-    boolean manualAim = false;
+    BooleanSupplier manualAim;
 
     public FullAimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem){
         this.aimSubsystem = aimSubsystem;
@@ -34,7 +34,7 @@ public class FullAimToLLCmd extends CommandBase {
         llTimer = new ElapsedTime();
         ppTimer = new ElapsedTime();
         const2 = false;
-        manualAim = false;
+        this.manualAim = ()->false;
         addRequirements(aimSubsystem);
     }
 
@@ -45,7 +45,7 @@ public class FullAimToLLCmd extends CommandBase {
         llTimer = new ElapsedTime();
         ppTimer = new ElapsedTime();
         const2 = false;
-        this.manualAim = manualAim.getAsBoolean();
+        this.manualAim = manualAim;
         addRequirements(aimSubsystem);
     }
 
@@ -58,7 +58,19 @@ public class FullAimToLLCmd extends CommandBase {
         addRequirements(aimSubsystem);
         this.finished = finished;
         const2 = true;
-        manualAim = false;
+        this.manualAim = ()->false;
+    }
+
+    public FullAimToLLCmd(AimSubsystem aimSubsystem, SensorSubsystem sensorSubsystem, DriveSubsystem driveSubsystem, BooleanSupplier manualAim, boolean finished){
+        this.aimSubsystem = aimSubsystem;
+        this.sensorSubsystem = sensorSubsystem;
+        this.driveSubsystem = driveSubsystem;
+        llTimer = new ElapsedTime();
+        ppTimer = new ElapsedTime();
+        addRequirements(aimSubsystem);
+        this.finished = finished;
+        const2 = true;
+        this.manualAim = manualAim;
     }
 
 
@@ -72,7 +84,8 @@ public class FullAimToLLCmd extends CommandBase {
     }
 
     public void execute() {
-        if(!manualAim) {
+        boolean temp = manualAim.getAsBoolean();
+        if(!temp) {
             tx = sensorSubsystem.getTx();
             pos = aimSubsystem.getAxonValue();
 

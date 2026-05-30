@@ -83,10 +83,10 @@ public class Subsystems {
     private Limelight3A limelight;
 
     /* -------------- Lights -------------- */
-    private Servo topLight, midLight, botLight, leftLight, rightLight;
+    private CRServo topLight, midLight, botLight, leftLight, rightLight;
 
     /**The array of all the lights, it goes in order, 0: top, 1: mid, 2: bot, 3: left, 4: right*/
-    private Servo[] lightArray;
+    private CRServo[] lightArray;
 
 
     /* ------------------- Subsystem Declarations ------------------- */
@@ -186,12 +186,12 @@ public class Subsystems {
         axonIn = hardwareMap.get(AnalogInput.class, Constants.CAI2);
 
         /* -------------- Lights -------------- */
-        topLight = hardwareMap.get(Servo.class, Constants.ES5);
-        midLight = hardwareMap.get(Servo.class, Constants.ES4);
-        botLight = hardwareMap.get(Servo.class, Constants.ES3);
-        leftLight = hardwareMap.get(Servo.class, Constants.ES2);
-        rightLight = hardwareMap.get(Servo.class, Constants.ES1);
-        lightArray = new Servo[]{topLight, midLight, botLight, leftLight, rightLight};
+        topLight = hardwareMap.get(CRServo.class, Constants.ES5);
+        midLight = hardwareMap.get(CRServo.class, Constants.ES4);
+        botLight = hardwareMap.get(CRServo.class, Constants.ES3);
+        leftLight = hardwareMap.get(CRServo.class, Constants.ES2);
+        rightLight = hardwareMap.get(CRServo.class, Constants.ES1);
+        lightArray = new CRServo[]{topLight, midLight, botLight, leftLight, rightLight};
         /* -------------- Subsystems -------------- */
         /* 1. drive
          * 2. intake
@@ -274,12 +274,12 @@ public class Subsystems {
         limelight = hardwareMap.get(Limelight3A.class, Constants.LL);
 
         /* -------------- Lights -------------- */
-        topLight = hardwareMap.get(Servo.class, Constants.ES5);
-        midLight = hardwareMap.get(Servo.class, Constants.ES4);
-        botLight = hardwareMap.get(Servo.class, Constants.ES3);
-        leftLight = hardwareMap.get(Servo.class, Constants.ES2);
-        rightLight = hardwareMap.get(Servo.class, Constants.ES1);
-        lightArray = new Servo[]{topLight, midLight, botLight, leftLight, rightLight};
+        topLight = hardwareMap.get(CRServo.class, Constants.ES5);
+        midLight = hardwareMap.get(CRServo.class, Constants.ES4);
+        botLight = hardwareMap.get(CRServo.class, Constants.ES3);
+        leftLight = hardwareMap.get(CRServo.class, Constants.ES2);
+        rightLight = hardwareMap.get(CRServo.class, Constants.ES1);
+        lightArray = new CRServo[]{topLight, midLight, botLight, leftLight, rightLight};
 
         /* -------------- Subsystems -------------- */
         /* 1. intake

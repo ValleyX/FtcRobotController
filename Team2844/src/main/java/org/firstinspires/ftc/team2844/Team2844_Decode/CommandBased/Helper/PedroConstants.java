@@ -7,8 +7,10 @@ import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
+import com.pedropathing.ftc.localization.constants.TwoWheelConstants;
 import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -26,26 +28,27 @@ public class PedroConstants {
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            // TODO: run ForwardVelocityTuner and StrafeVelocityTuner to get real values
+            // These don't matter for FC
             .xVelocity(60.0)
             .yVelocity(50.0);
 
-    public static PinpointConstants localizerConstants = new PinpointConstants()
-            .hardwareMapName("pinpoint")  // matches Constants.CBUS1
-            // TODO: measure pod offsets from center of rotation in inches
-            .forwardPodY(0.0)
-            .strafePodX(0.0)
-            // TODO: run LocalizationTest and flip these if x/y go the wrong direction
-            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
-            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
+    public static TwoWheelConstants localizerConstants = new TwoWheelConstants()
+            .forwardEncoder_HardwareMapName("leftFront")
+            .strafeEncoder_HardwareMapName("rightBack")
+            .IMU_HardwareMapName("imu")
+            .IMU_Orientation(
+                    new RevHubOrientationOnRobot(
+                            RevHubOrientationOnRobot.LogoFacingDirection.DOWN,
+                            RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
+                    )
+            );
 
     public static FollowerConstants followerConstants = new FollowerConstants()
-            // TODO: weigh your robot in kg
-            .mass(10.0)
-            // TODO: run ZeroPowerAccelerationTuner to get real values
+            .mass(15.9)
+            // These don't matter for FC
             .forwardZeroPowerAcceleration(-30.0)
             .lateralZeroPowerAcceleration(-60.0)
-            // PIDF defaults — tune after localizer is verified
+            // PIDF defaults — tune after localizer is verified, still don't matter for FC
             .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0, 0.01))
             .headingPIDFCoefficients(new PIDFCoefficients(1.0, 0, 0, 0.01))
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.1, 0, 0.00035, 0.6, 0.015))
@@ -58,7 +61,7 @@ public class PedroConstants {
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
                 .mecanumDrivetrain(driveConstants)
-                .pinpointLocalizer(localizerConstants)
+                .twoWheelLocalizer(localizerConstants)
                 .pathConstraints(pathConstraints)
                 .build();
     }

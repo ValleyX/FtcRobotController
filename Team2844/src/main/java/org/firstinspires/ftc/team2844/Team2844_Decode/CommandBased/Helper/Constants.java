@@ -56,12 +56,12 @@ public class Constants {
     /* ---------------- REGRESSION ---------------- */
     public static double REG_STEP = 20;
 
-    public static double P_GAIN = 0.14;
+    public static double P_GAIN = 0.22;
     public static double I_GAIN = 0.0;
     public static double D_GAIN = 0.0;
 
     public static double VEL_KS = 0.0;
-    public static double VEL_KV = 1.15;
+    public static double VEL_KV = 1.1;
 
 
     /* ---------------- SPINDEXER (OLD) ---------------- */

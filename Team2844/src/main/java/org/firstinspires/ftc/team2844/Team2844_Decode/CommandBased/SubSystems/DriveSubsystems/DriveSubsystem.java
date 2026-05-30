@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.D
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.FTCCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -20,6 +21,8 @@ public class DriveSubsystem extends SubsystemBase {
     public Follower follower;
     private double headingOffset;
 
+
+
     public DriveSubsystem(HardwareMap hardwareMap, int pipeline) {
         double temp = SavedVars.startingHeading;
 
@@ -29,7 +32,7 @@ public class DriveSubsystem extends SubsystemBase {
             // No prior auto — use pipeline defaults for both RR init and FC offset
             if (pipeline == Constants.BLUE_PIPELINE) {
                 drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, Math.toRadians(-90.0)));
-                headingOffset = Math.toRadians(-90.0);
+                headingOffset = Math.toRadians(-90);
             } else if (pipeline == Constants.RED_PIPELINE) {
                 drive = new MecanumDrive(hardwareMap, new Pose2d(SavedVars.startingX, SavedVars.startingY, Math.toRadians(90.0)));
                 headingOffset = Math.toRadians(90.0);
@@ -58,25 +61,37 @@ public class DriveSubsystem extends SubsystemBase {
     public void drive(double strafeSpeed, double forwardSpeed, double turnSpeed, DoubleSupplier heading) {
         drive.updatePoseEstimate();
         double botHeading = heading.getAsDouble();
+        //botHeading = 0;
 
-        double rotX = strafeSpeed * Math.cos(-botHeading) - forwardSpeed * Math.sin(-botHeading);
-        double rotY = strafeSpeed * Math.sin(-botHeading) + forwardSpeed * Math.cos(-botHeading);
+        //code for field centric (Idk how it works, pretty sure it's magic or makes triangles or something)
+        //REMEMBER IT USES RADIANS
+        double rotX = strafeSpeed * Math.cos(botHeading) - forwardSpeed * Math.sin(botHeading);
+        double rotY = strafeSpeed * Math.sin(botHeading) + forwardSpeed * Math.cos(botHeading);
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turnSpeed), 1);
-        double frontLeftPower  = (rotY + rotX + turnSpeed) / denominator;
-        double backLeftPower   = (rotY - rotX + turnSpeed) / denominator;
-        double frontRightPower = (rotY - rotX - turnSpeed) / denominator;
-        double backRightPower  = (rotY + rotX - turnSpeed) / denominator;
+        double frontLeftPower = (rotY - (rotX) + turnSpeed) / denominator;
+        double backLeftPower = (rotY + rotX + turnSpeed) / denominator;
+        double frontRightPower = (rotY + (rotX) - turnSpeed) / denominator;
+        double backRightPower = (rotY - rotX - turnSpeed) / denominator;
 
-        frontLeftPower  = Math.min(1, Math.max(frontLeftPower  * Constants.DRIVE_CORRECTION, -1));
-        backLeftPower   = Math.min(1, Math.max(backLeftPower   * Constants.DRIVE_CORRECTION, -1));
-        frontRightPower = Math.min(1, Math.max(frontRightPower * Constants.DRIVE_CORRECTION, -1));
-        backRightPower  = Math.min(1, Math.max(backRightPower  * Constants.DRIVE_CORRECTION, -1));
+        frontLeftPower = Math.min(1, Math.max(frontLeftPower  * Constants.DRIVE_CORRECTION, -1));
+        backLeftPower = Math.min(1, Math.max(backLeftPower  * Constants.DRIVE_CORRECTION, -1));
+        frontRightPower = Math.min(1, Math.max(frontRightPower  * Constants.DRIVE_CORRECTION, -1));
+        backRightPower = Math.min(1, Math.max(backRightPower  * Constants.DRIVE_CORRECTION, -1));
 
-        drive.leftFront.setPower(backLeftPower);
-        drive.rightFront.setPower(backRightPower);
-        drive.leftBack.setPower(frontLeftPower);
-        drive.rightBack.setPower(frontRightPower);
+        drive.leftFront.setPower(frontLeftPower);
+        drive.rightFront.setPower(frontRightPower);
+        drive.leftBack.setPower(backLeftPower);
+        drive.rightBack.setPower(backRightPower);
     }
+
+    /*public void setDrivePower(double frontLeft, double backLeft, double frontRight, double backRight) {
+
+        drive.leftFront.setPower(frontLeft);
+        drive.rightFront.setPower(frontRight);
+        drive.leftBack.setPower(backLeft);
+        drive.rightBack.setPower(backRight);
+    }*/
+
 
     public double getRobotHeading() {
         return Math.toDegrees(drive.localizer.getPose().heading.toDouble());
@@ -110,11 +125,16 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void resetIMU() {
-        drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, 0.0));
+        //drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, 0.0));
+
     }
+
+
+
 
     public void resetIMU(double degrees) {
         drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(degrees)));
+        follower.setPose(new Pose(drive.localizer.getPose().position.x,drive.localizer.getPose().position.y, Math.toRadians(degrees)));
     }
 
     public Pose2d getBotPose() {

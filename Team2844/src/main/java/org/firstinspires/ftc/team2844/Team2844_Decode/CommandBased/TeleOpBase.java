@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.Roadrunner.Drawing;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimTurretCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.DefaultAimCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.HoodCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodNegative;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodPositive;
@@ -39,6 +40,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.Spin
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Subsystems;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 
 import java.util.function.BooleanSupplier;
 
@@ -60,7 +62,7 @@ public class TeleOpBase extends CommandOpMode {
     boolean sortMode;
     boolean intake = false;
 
-    boolean manualAimPrim = false;
+    boolean manualAimPrim = true;
     BooleanSupplier manualAim = ()->manualAimPrim;
 
     /* ------------------- Gamepad Declaration ------------------- */
@@ -157,17 +159,18 @@ public class TeleOpBase extends CommandOpMode {
                 .whenPressed(new MoveHoodPositive(subsystems.aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.BACK)
-                .whenPressed( new AimTurretCmd(subsystems.aimSubsystem, 180.0)
-                        .andThen(new ResetPoseCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, pipelineNum)));
+                //.whenPressed( new AimTurretCmd(subsystems.aimSubsystem, 180.0)
+                        //.andThen
+                .whenPressed(new ResetPoseCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, pipelineNum));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.START)
-                .whileHeld(resetImuCmd);
+                .whenPressed(resetImuCmd);
 
 
         //Default Commands
         register(subsystems.aimSubsystem, subsystems.shooterSubsystem);
-        subsystems.aimSubsystem.setDefaultCommand(defaultAimCmd);
-        subsystems.aimSubsystem.setDefaultCommand(new HoodCmd(subsystems.aimSubsystem, () -> subsystems.mecDriveSubsystem.hoodLinReg(pipelineNum)));
+        //subsystems.aimSubsystem.setDefaultCommand(new FullAimToLLCmd(subsystems.aimSubsystem, subsystems.sensorSubsystem, subsystems.mecDriveSubsystem, manualAim, false));
+        subsystems.aimSubsystem.setDefaultCommand(new HoodCmd(subsystems.aimSubsystem, ()-> subsystems.mecDriveSubsystem.hoodLinReg(pipelineNum)));
         subsystems.shooterSubsystem.setDefaultCommand(defaultVelocityShootCmd);
 
         /* -------------- Driving Command Loop -------------- */
@@ -209,10 +212,10 @@ public class TeleOpBase extends CommandOpMode {
             leftTriggerReader.readValue();
 
             if(start){
-                start = false;
                 timerLights.schedule();
                 new SetLightCmd(subsystems.lightSubsystem, Constants.TOPL_INDEX, Constants.GREEN).schedule();
                 new SetLightTimedCmd(subsystems.lightSubsystem, Constants.MIDL_INDEX, Constants.YELLOW, 10000).schedule();
+                start = false;
             }
 
             if ( rightTriggerReader.wasJustPressed()) {
@@ -275,6 +278,13 @@ public class TeleOpBase extends CommandOpMode {
             telemetry.addData("Velocity: ", subsystems.shooterSubsystem.getVelocity());
             //telemetry.addData("Shooter Power", subsystems.shooterSubsystem.getPower());
             //telemetry.addData("In range: ", subsystems.shooterSubsystem.inRange());
+
+            telemetry.addData("Manual Aim", manualAim.getAsBoolean());
+            telemetry.addData("Manual Aim supposed to be ", manualAimPrim);
+
+            telemetry.addData("Top Light color", subsystems.lightSubsystem.getColor(Constants.TOPL_INDEX));
+            telemetry.addData("Mid Light color", subsystems.lightSubsystem.getColor(Constants.MIDL_INDEX));
+            telemetry.addData("Bot Light color", subsystems.lightSubsystem.getColor(Constants.BOTL_INDEX));
 
             telemetry.addData("Left Front Power: ", subsystems.mecDriveSubsystem.drive.leftFront.getPower());
             telemetry.addData("Left Back Power: ", subsystems.mecDriveSubsystem.drive.leftBack.getPower());

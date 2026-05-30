@@ -9,7 +9,7 @@ import java.util.function.DoubleSupplier;
 public class DriveCommand extends CommandBase {
 
     private DriveSubsystem driveSubsystem;
-    private DoubleSupplier strafe, forward, turn;
+    private DoubleSupplier strafe, forward, turn, heading;
 
     // heading supplier kept in signature so TeleOpBase doesn't need to change
     public DriveCommand(DriveSubsystem driveSubsystem, DoubleSupplier strafe, DoubleSupplier forward, DoubleSupplier turn, DoubleSupplier heading) {
@@ -17,6 +17,7 @@ public class DriveCommand extends CommandBase {
         this.strafe = strafe;
         this.forward = forward;
         this.turn = turn;
+        this.heading = heading;
 
         // heading unused — Pedro handles field-centric internally via its localizer
 
@@ -25,6 +26,6 @@ public class DriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        driveSubsystem.teleopDrive(-strafe.getAsDouble(), -forward.getAsDouble(), -turn.getAsDouble());
+        driveSubsystem.drive(strafe.getAsDouble(), -forward.getAsDouble(), turn.getAsDouble(), heading);
     }
 }
