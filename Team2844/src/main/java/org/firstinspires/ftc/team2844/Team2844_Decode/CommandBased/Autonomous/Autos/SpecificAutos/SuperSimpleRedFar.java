@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.Autos;
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.Autos.SpecificAutos;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.CommandAction;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.ResetAction;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.SetVeloPIDSAct;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.SmartLineShooterAutoAct;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.AutoCommands.SavePosCmd;
@@ -28,8 +29,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 
-@Disabled
-public class FarAutoBase extends LinearOpMode {
+@Autonomous(name = "Super Simple Red")
+public class SuperSimpleRedFar extends LinearOpMode {
     Subsystems subsystems;
     Pose2d initialPose;
     MecanumDrive drive;
@@ -38,23 +39,23 @@ public class FarAutoBase extends LinearOpMode {
     TrajectoryActionBuilder moveToShoot2;
     TrajectoryActionBuilder moveToShoot3;
     TrajectoryActionBuilder pickup1;
-    TrajectoryActionBuilder pickup2;
+    TrajectoryActionBuilder leave;
 
     Action shootLoop;
     Action intake;
     Action neutralShoot;
     Action save;
+    Action reset;
 
     Supplier<Pose2d> pose2dSupplier;
-    int pipeline;
 
     public void initialize() {
-        initialPose = new Pose2d(72 - (Constants.BOT_LENGTH / 2.0), -Constants.BOT_WIDTH / 2.0, Math.toRadians(-90.0));
-        subsystems = new Subsystems(hardwareMap, pipeline, initialPose);
+        initialPose = new Pose2d(72 - (Constants.BOT_LENGTH / 2.0), Constants.BOT_WIDTH / 2.0, Math.toRadians(-180.0));
+        subsystems = new Subsystems(hardwareMap, Constants.RED_PIPELINE, initialPose);
         // instantiate MecanumDrive at a particular pose.
 
 
-        pickup1 = subsystems.mecDriveSubsystem.drive.actionBuilder(initialPose)
+       /* pickup1 = subsystems.mecDriveSubsystem.drive.actionBuilder(initialPose)
                 .setTangent(Math.toRadians(-90.0))
                 .splineToLinearHeading(new Pose2d(72.0 - (Constants.BOT_LENGTH / 2.0), -72.0+(Constants.BOT_LENGTH / 2.0), Math.toRadians(-90.0)), Math.toRadians(-90.0));
 
@@ -71,18 +72,23 @@ public class FarAutoBase extends LinearOpMode {
 
         moveToShoot3 = subsystems.mecDriveSubsystem.drive.actionBuilder(new Pose2d(-72 + (Constants.BOT_WIDTH / 2.0), 72 - (Constants.BOT_LENGTH / 2.0), Math.toRadians(90.0)))
                 .setReversed(true)
-                .splineToConstantHeading(new Vector2d(-72 + (Constants.BOT_WIDTH / 2.0), 20.0), Math.toRadians(90.0));
+                .splineToConstantHeading(new Vector2d(-72 + (Constants.BOT_WIDTH / 2.0), 20.0), Math.toRadians(90.0));*/
+        leave = subsystems.mecDriveSubsystem.drive.actionBuilder(initialPose)
+                .lineToX(36);
+//                .turnTo(90.0)
+//                .lineToY(72.0-Constants.BOT_LENGTH/2.0);
 
         shootLoop = new SmartLineShooterAutoAct(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                 subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
                 subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem,
-                true);
+                true, ()->1800);
 
         intake = new CommandAction(new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem));
 
         neutralShoot = new CommandAction(new ResetCmd(subsystems));
 
         save = new CommandAction(new SavePosCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem));
+        reset = new ResetAction(subsystems.shooterFeedSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem);
 
         pose2dSupplier = subsystems.mecDriveSubsystem.drive.localizer::getPose;
     }
@@ -116,9 +122,10 @@ public class FarAutoBase extends LinearOpMode {
                             new SetVeloPIDSAct(subsystems.shooterSubsystem, hardwareMap, false),
                             new SequentialAction(
                                     /*new CommandAction(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 0)),*/
-
                                     shootLoop,
-                                    neutralShoot,
+                                    reset,
+                                    leave.build()
+                                   /* neutralShoot,
 
                                     new ParallelAction(
                                             intake,
@@ -173,14 +180,15 @@ public class FarAutoBase extends LinearOpMode {
                                     new ParallelAction(
                                             intake,
                                             pickup2.build()
-                                    )
+                                    )*/
                             ),
                             save
                     ));
         } finally {
-            SavedVars.startingY = subsystems.mecDriveSubsystem.getBotY();
-            SavedVars.startingX = subsystems.mecDriveSubsystem.getBotX();
-            SavedVars.startingHeading = subsystems.mecDriveSubsystem.getRobotHeading();
+            Pose2d pose = subsystems.mecDriveSubsystem.drive.localizer.getPose();
+            SavedVars.startingY = pose.position.y;
+            SavedVars.startingX = pose.position.x;
+            SavedVars.startingHeading = pose.heading.toDouble();
         }
     }
 }

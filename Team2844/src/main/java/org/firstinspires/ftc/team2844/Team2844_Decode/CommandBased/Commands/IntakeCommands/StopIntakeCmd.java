@@ -14,7 +14,7 @@ public class StopIntakeCmd  extends CommandBase {
 
     @Override
     public void execute(){
-        intakeSubsystem.activate(0.0);
+        intakeSubsystem.stop();
     }
 
     @Override

@@ -10,7 +10,7 @@ public class TimerLightsCmd extends SequentialCommandGroup {
         addCommands(
                 new SetLightTimedCmd(lightSubsystem, index, Constants.GREEN, 60000),
                 new SetLightTimedCmd(lightSubsystem, index, Constants.YELLOW, 45000),
-                new BlinkLightCmd(lightSubsystem, index, Constants.RED, Constants.BLACK, 1000, 15000)
+                new BlinkLightCmd(lightSubsystem, index, Constants.RED, Constants.BLACK, 200, 15000)
         );
     }
 }

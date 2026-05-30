@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public class LightSubsystem extends SubsystemBase {
     /**The array of all the lights, it goes in this order: 0: top, 1: mid, 2: bot, 3: left, 4: right*/
-    CRServo[] lightArray;
+    Servo[] lightArray;
 
     ElapsedTime timer;
 
@@ -20,7 +20,7 @@ public class LightSubsystem extends SubsystemBase {
 
     double time;
 
-    public LightSubsystem(CRServo[] lightArray){
+    public LightSubsystem(Servo[] lightArray){
         this.lightArray = lightArray;
         timer = new ElapsedTime();
         timer.reset();
@@ -28,7 +28,7 @@ public class LightSubsystem extends SubsystemBase {
 
     public void setLight(int index, double color){
         colors[index] = color;
-        lightArray[index].setPower(color);
+        lightArray[index].setPosition(color);
     }
 
     public double getColor(int index){
@@ -37,19 +37,19 @@ public class LightSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         //TOP
-        lightArray[Constants.TOPL_INDEX].setPower(colors[Constants.TOPL_INDEX]);
+        lightArray[Constants.TOPL_INDEX].setPosition(colors[Constants.TOPL_INDEX]);
 
         //MID
-        lightArray[Constants.MIDL_INDEX].setPower(colors[Constants.MIDL_INDEX]);
+        lightArray[Constants.MIDL_INDEX].setPosition(colors[Constants.MIDL_INDEX]);
 
         //BOT
-        lightArray[Constants.BOTL_INDEX].setPower(colors[Constants.BOTL_INDEX]);
+        lightArray[Constants.BOTL_INDEX].setPosition(colors[Constants.BOTL_INDEX]);
 
         //LEFT
-        lightArray[Constants.LEFTL_INDEX].setPower(colors[Constants.LEFTL_INDEX]);
+        lightArray[Constants.LEFTL_INDEX].setPosition(colors[Constants.LEFTL_INDEX]);
 
         //RIGHT
-        lightArray[Constants.RIGHTL_INDEX].setPower(colors[Constants.RIGHTL_INDEX]);
+        lightArray[Constants.RIGHTL_INDEX].setPosition(colors[Constants.RIGHTL_INDEX]);
 
     }
 }

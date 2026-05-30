@@ -43,6 +43,9 @@ public class Constants {
 
     /* ---------------- DRIVING ---------------- */
     public static double DRIVE_CORRECTION = 1.0;
+    public static double ALIGN_GAIN = 0.04;
+
+    public static double ALIGN_SPEED = 0.8;
 
 
     /* ---------------- KICKER ---------------- */
@@ -56,12 +59,12 @@ public class Constants {
     /* ---------------- REGRESSION ---------------- */
     public static double REG_STEP = 20;
 
-    public static double P_GAIN = 0.22;
+    public static double P_GAIN = 0.14;
     public static double I_GAIN = 0.0;
     public static double D_GAIN = 0.0;
 
     public static double VEL_KS = 0.0;
-    public static double VEL_KV = 1.1;
+    public static double VEL_KV = 1.15;
 
 
     /* ---------------- SPINDEXER (OLD) ---------------- */
@@ -179,6 +182,7 @@ public class Constants {
 
 
     public static long SHOOTER_TIMEOUT = 1500;
+    public static long FAR_SHOOTER_TIMEOUT = 10000;
 
 
 

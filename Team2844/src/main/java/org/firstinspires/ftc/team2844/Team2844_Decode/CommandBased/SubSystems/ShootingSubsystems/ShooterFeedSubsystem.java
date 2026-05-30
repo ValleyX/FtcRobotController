@@ -14,6 +14,8 @@ public class ShooterFeedSubsystem extends SubsystemBase {
     public ShooterFeedSubsystem(Motor tFeed, DigitalChannel topBB){
         this.tFeed = tFeed;
         this.topBB = topBB;
+
+        tFeed.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
     }
 
     public void runTFeedForward() {

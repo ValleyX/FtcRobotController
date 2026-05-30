@@ -18,4 +18,12 @@ public class FullTransferCmd extends ParallelCommandGroup {
                 new FullUptakeCmd(kickSubsystem, shooterFeedSubsystem)
         );
     }
+
+    public FullTransferCmd(ShooterFeedSubsystem shooterFeedSubsystem, IntakeSubsystem intakeSubsystem, KickSubsystem kickSubsystem, boolean finished){
+        addCommands(
+                new TransferCmd(shooterFeedSubsystem),
+                new ActivateIntakeCmd(intakeSubsystem),
+                new FullUptakeCmd(kickSubsystem, shooterFeedSubsystem, finished)
+        );
+    }
 }

@@ -10,6 +10,7 @@ public class ActivateIntakeCmd extends CommandBase {
 
     public ActivateIntakeCmd(IntakeSubsystem intakeSubsystem){
         this.intakeSubsystem = intakeSubsystem;
+        addRequirements(intakeSubsystem);
     }
 
     @Override

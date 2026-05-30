@@ -9,9 +9,19 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.So
 public class FullUptakeCmd extends CommandBase {
     KickSubsystem kickSubsystem;
     ShooterFeedSubsystem shooterFeedSubsystem;
+
+    boolean finished;
     public FullUptakeCmd(KickSubsystem kickSubsystem, ShooterFeedSubsystem shooterFeedSubsystem){
         this.kickSubsystem = kickSubsystem;
         this.shooterFeedSubsystem = shooterFeedSubsystem;
+        this.finished = false;
+    }
+
+    public FullUptakeCmd(KickSubsystem kickSubsystem, ShooterFeedSubsystem shooterFeedSubsystem, boolean finished){
+        this.kickSubsystem = kickSubsystem;
+        this.shooterFeedSubsystem = shooterFeedSubsystem;
+        this.finished = finished;
+        addRequirements(kickSubsystem);
     }
 
     @Override
@@ -28,6 +38,6 @@ public class FullUptakeCmd extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return finished;
     }
 }

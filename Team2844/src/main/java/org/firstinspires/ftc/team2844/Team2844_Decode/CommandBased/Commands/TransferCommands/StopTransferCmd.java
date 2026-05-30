@@ -9,6 +9,7 @@ public class StopTransferCmd extends CommandBase {
 
     public StopTransferCmd(ShooterFeedSubsystem shooterFeedSubsystem){
         this.shooterFeedSubsystem = shooterFeedSubsystem;
+        addRequirements(shooterFeedSubsystem);
     }
 
     @Override
