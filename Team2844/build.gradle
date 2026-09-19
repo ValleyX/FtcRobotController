@@ -37,6 +37,9 @@ dependencies {
     implementation "com.acmerobotics.roadrunner:actions:1.0.1" //added by CW
     implementation "com.acmerobotics.dashboard:dashboard:0.4.17" //added by CW
 
+    // Tanner Add
+    implementation 'com.github.ValleyX.valleyLib:core:1.0.8'
+    implementation 'com.github.ValleyX.valleyLib:ftc:1.0.8'
 
     //*JAE Add
     // Check for the latest version on GitHub
