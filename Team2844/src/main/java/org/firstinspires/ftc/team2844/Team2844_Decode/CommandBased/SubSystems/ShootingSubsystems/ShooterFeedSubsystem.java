@@ -17,7 +17,7 @@ public class ShooterFeedSubsystem extends SubsystemBase {
     }
 
     public void runTFeedForward() {
-        tFeed.set(1.0);
+        tFeed.set(Constants.TFEED_SPEED);
     }
 
     public void stopTFeed(){

@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 //import com.arcrobotics.ftclib.hardware.motors.CRServo;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
@@ -9,7 +11,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.MotorExPair;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-//Shooter Subsystem for the turret targeting, and the shooter motor
+/**Shooter Subsystem for the shooter motors*/
 public class ShooterSubsystem extends SubsystemBase {
 
     //Shooting Motor
@@ -26,8 +28,10 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param shooterMotors The Flywheel motor group that shoots the artifacts
      */
     public ShooterSubsystem(MotorExPair shooterMotors){
-        vel = 0.0;
+        vel = 1000.0;
         this.shooterMotors = shooterMotors;
+        shooterMotors.setRunMode(MotorEx.RunMode.VelocityControl);
+
     }
 
     public void setPower(double power){
@@ -46,8 +50,27 @@ public class ShooterSubsystem extends SubsystemBase {
     public BooleanSupplier inRange(DoubleSupplier velocity, DoubleSupplier currentVelocity){
         return () -> (velocity.getAsDouble()-Constants.VELOCITY_THRESHHOLD < currentVelocity.getAsDouble()) &&
                 (currentVelocity.getAsDouble() < velocity.getAsDouble()+Constants.VELOCITY_THRESHHOLD);
-        //return () -> true;
     }
 
     public boolean inRange(){return (vel-Constants.VELOCITY_THRESHHOLD < getVelocity()) && (getVelocity() < vel+Constants.VELOCITY_THRESHHOLD);}
+
+    public double getPower(){
+        return shooterMotors.getPower();
+    }
+
+    public void setPIDs(double p, double i, double d){
+        shooterMotors.setPIDs(p, i, d);
+    }
+
+    public double[] getPIDs(){
+        return shooterMotors.getPIDs();
+    }
+
+    public void setFeedForward(double ks, double kv){
+        shooterMotors.setFeedForward(ks, kv);
+    }
+
+    public double[] getFeedForward(){
+        return shooterMotors.getFeedForward();
+    }
 }

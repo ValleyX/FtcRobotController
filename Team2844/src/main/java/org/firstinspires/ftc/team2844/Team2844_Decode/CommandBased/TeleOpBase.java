@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased;
 
-import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -11,26 +13,36 @@ import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Autonomous.Roadrunner.Drawing;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.AimTurretCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.DefaultAimCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.HoodCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodNegative;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveHoodPositive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretNegative;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.MoveTurretPositive;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.DriveCommand;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.ResetImuCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.DriveCommands.ResetPoseCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.FullExtakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeLineCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.IntakeSortCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeLineCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.NeutralShooterCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.LightCommands.SetLightCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.LightCommands.SetLightTimedCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.LightCommands.TimerLightsCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.DefaultVelocityShootCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.ResetCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.SmartLineShooterCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.StopTransferCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.ShootingCommands.TransferCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.SlotCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.TransferCommands.FullTransferCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.TransferCommands.StopTransferCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
-import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.UptakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Constants;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.SavedVars;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Subsystems;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
+
+import java.util.function.BooleanSupplier;
 
 @Disabled
 public class TeleOpBase extends CommandOpMode {
@@ -39,18 +51,24 @@ public class TeleOpBase extends CommandOpMode {
     //private DriveCmdTank driveCmdTank;
     //private DriveCmdArcade driveCmdArcade;
     private DriveCommand mecDriveCmd;
-    StopIntakeCmd stopIntakeCmd;
-    IntakeSortCmd runIntakeSortCmd;
-    UptakeCmd uptakeCmd;
-    AimTurretCmd neutralAimTurretCmd;
+
     IntakeLineCmd intakeLineCmd;
-    StopIntakeLineCmd stopIntakeLineCmd;
+    FullExtakeCmd extakeCmd;
+    ResetImuCmd resetImuCmd;
+    TimerLightsCmd timerLights;
+    DefaultAimCmd defaultAimCmd;
+    DefaultVelocityShootCmd defaultVelocityShootCmd;
 
     boolean sortMode;
+    boolean intake = false;
+
+    boolean manualAimPrim = true;
+    BooleanSupplier manualAim = ()->manualAimPrim;
 
     /* ------------------- Gamepad Declaration ------------------- */
     private GamepadEx m_driveOp;
     TriggerReader rightTriggerReader;
+    TriggerReader leftTriggerReader;
 
     /* ------------------- Variable Declarations ------------------- */
     public int pipelineNum = 0;
@@ -79,14 +97,23 @@ public class TeleOpBase extends CommandOpMode {
         //driveCmdTank = new DriveCmdTank(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightY);
             //Arcade Drive controls
         //driveCmdArcade = new DriveCmdArcade(tankDriveSubsystem, m_driveOp::getLeftY, m_driveOp::getRightX);
-        mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, subsystems.mecDriveSubsystem::getRobotHeadingRadians);
 
-        runIntakeSortCmd = new IntakeSortCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
-        stopIntakeCmd = new StopIntakeCmd(subsystems.intakeSubsystem);
-        uptakeCmd = new UptakeCmd(subsystems.kickSubsystem);
-        neutralAimTurretCmd = new AimTurretCmd(subsystems.aimSubsystem, 90.0);
+        if(pipelineNum == Constants.BLUE_PIPELINE){
+            mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, subsystems.mecDriveSubsystem::getRobotBlueDriveHeading);
+            resetImuCmd = new ResetImuCmd(subsystems.mecDriveSubsystem, -90.0);
+        } else if (pipelineNum == Constants.RED_PIPELINE){
+            mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, subsystems.mecDriveSubsystem::getRobotRedDriveHeading);
+            resetImuCmd = new ResetImuCmd(subsystems.mecDriveSubsystem, 90.0);
+        } else {
+            mecDriveCmd = new DriveCommand(subsystems.mecDriveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, subsystems.mecDriveSubsystem::getRobotHeadingRadians);
+            resetImuCmd = new ResetImuCmd(subsystems.mecDriveSubsystem, 0.0);
+        }
+
         intakeLineCmd = new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
-        stopIntakeLineCmd = new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem);
+        extakeCmd = new FullExtakeCmd(subsystems.intakeSubsystem, subsystems.shooterFeedSubsystem, subsystems.kickSubsystem);
+        timerLights = new TimerLightsCmd(subsystems.lightSubsystem, Constants.BOTL_INDEX);
+        defaultVelocityShootCmd = new DefaultVelocityShootCmd(subsystems.shooterSubsystem, subsystems.mecDriveSubsystem, pipelineNum, ()->subsystems.mecDriveSubsystem.getBotX(), ()->subsystems.mecDriveSubsystem.getBotY(), ()->subsystems.intakeSubsystem.ballInBeam() && subsystems.shooterFeedSubsystem.topBroken());
+        defaultAimCmd = new DefaultAimCmd(subsystems.aimSubsystem, subsystems.mecDriveSubsystem, ()->subsystems.mecDriveSubsystem.getBotX(), ()->subsystems.mecDriveSubsystem.getBotY(), manualAim);
 
         sortMode = false;
 
@@ -97,43 +124,54 @@ public class TeleOpBase extends CommandOpMode {
         rightTriggerReader = new TriggerReader(
                 m_driveOp, GamepadKeys.Trigger.RIGHT_TRIGGER
         );
+        leftTriggerReader = new TriggerReader(
+                m_driveOp, GamepadKeys.Trigger.LEFT_TRIGGER
+        );
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem))
-                .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
+                .whileHeld(new SmartLineShooterCmd(subsystems, manualAim))
+                .whenReleased(new ResetCmd(subsystems));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.A)
-                .whenHeld(new ParallelCommandGroup( new UptakeCmd(subsystems.kickSubsystem),
-                        new TransferCmd(subsystems.shooterFeedSubsystem)))
+                .whenHeld(new FullTransferCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.kickSubsystem))
                 .whenReleased( new ParallelCommandGroup(new StopUptakeCmd(subsystems.kickSubsystem),
-                        new StopTransferCmd(subsystems.shooterFeedSubsystem)));
+                        new StopTransferCmd(subsystems.shooterFeedSubsystem),
+                        new StopIntakeCmd(subsystems.intakeSubsystem)));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 0));
+                .whenPressed(new InstantCommand(()-> manualAimPrim = !manualAimPrim))
+                .whenPressed(new AimTurretCmd(subsystems.aimSubsystem, Constants.NEUTRAL_TURRET));
 
-        m_driveOp.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 1));
+        m_driveOp.getGamepadButton(GamepadKeys.Button.B);
 
-        m_driveOp.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new SlotCmd(subsystems.spindexerSubsystem, subsystems.kickSubsystem, 2));
-
-
-        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenHeld(new MoveTurretNegative(subsystems.aimSubsystem));
-
-        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                .whenHeld(new MoveTurretPositive(subsystems.aimSubsystem));
-
-        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-                .whenHeld(new MoveHoodNegative(subsystems.aimSubsystem));
+        m_driveOp.getGamepadButton(GamepadKeys.Button.Y);
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenHeld(new MoveHoodPositive(subsystems.aimSubsystem));
+                .whenPressed(new MoveTurretNegative(subsystems.aimSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
+                .whenPressed(new MoveTurretPositive(subsystems.aimSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(new MoveHoodNegative(subsystems.aimSubsystem));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new MoveHoodPositive(subsystems.aimSubsystem));
 
         m_driveOp.getGamepadButton(GamepadKeys.Button.BACK)
-                .whenPressed(new ResetPoseCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem.getPipeline()));
+                //.whenPressed( new AimTurretCmd(subsystems.aimSubsystem, 180.0)
+                        //.andThen
+                .whenPressed(new ResetPoseCmd(subsystems.mecDriveSubsystem, subsystems.sensorSubsystem, pipelineNum));
+
+        m_driveOp.getGamepadButton(GamepadKeys.Button.START)
+                .whenPressed(resetImuCmd);
 
 
+        //Default Commands
+        register(subsystems.aimSubsystem, subsystems.shooterSubsystem);
+        //subsystems.aimSubsystem.setDefaultCommand(new FullAimToLLCmd(subsystems.aimSubsystem, subsystems.sensorSubsystem, subsystems.mecDriveSubsystem, manualAim, false));
+        subsystems.aimSubsystem.setDefaultCommand(new HoodCmd(subsystems.aimSubsystem, ()-> subsystems.mecDriveSubsystem.hoodLinReg(pipelineNum)));
+        subsystems.shooterSubsystem.setDefaultCommand(defaultVelocityShootCmd);
 
         /* -------------- Driving Command Loop -------------- */
             //this will make the drive command always run
@@ -159,55 +197,70 @@ public class TeleOpBase extends CommandOpMode {
         waitForStart();
 
         time.reset();
-        new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem).schedule();
+        new ResetCmd(subsystems).schedule();
+        new AimTurretCmd(subsystems.aimSubsystem, Constants.NEUTRAL_TURRET).schedule();
         sleep(250);
 
         subsystems.aimSubsystem.aimHood(0.0);
         subsystems.spindexerSubsystem.runToSlotZero();
+        boolean start = true;
 
         while (opModeIsActive()){
             //Scheduler must be loop called for everything else to run
             CommandScheduler.getInstance().run();
             rightTriggerReader.readValue();
+            leftTriggerReader.readValue();
 
-            if(m_driveOp.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) && subsystems.spindexerSubsystem.empty()){
-                sortMode = !sortMode;
+            if(start){
+                timerLights.schedule();
+                new SetLightCmd(subsystems.lightSubsystem, Constants.TOPL_INDEX, Constants.GREEN).schedule();
+                new SetLightTimedCmd(subsystems.lightSubsystem, Constants.MIDL_INDEX, Constants.YELLOW, 10000).schedule();
+                start = false;
             }
 
-            //Right trigger press checking, if true, runs intake, else stops intake (may cause issues later if constantly scheduling stop...)
-            /*if ( rightTriggerReader.isDown() && !sortMode) {
-                new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
-            } else if (rightTriggerReader.wasJustReleased() && !sortMode) {
-                new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
-            } else if (rightTriggerReader.isDown() && sortMode){
-                new IntakeSortCmd(subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
-            } else if (rightTriggerReader.wasJustReleased() && sortMode){
-                new StopIntakeCmd(subsystems.intakeSubsystem);
+            if ( rightTriggerReader.wasJustPressed()) {
+                intake = !intake;
+            } else if(leftTriggerReader.wasJustPressed() && !extakeCmd.isScheduled()){
+                extakeCmd.schedule();
+            } else if(leftTriggerReader.wasJustReleased()){
+                extakeCmd.cancel();
+            }
+//            } else if (rightTriggerReader.wasJustReleased()) {
+//                intakeLineCmd.interruptOn(() ->true);
+//                new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
+//            }
+
+            if(intake  && !intakeLineCmd.isScheduled()){
+                intakeLineCmd.schedule(true);
+            }else if(!intake){
+                intakeLineCmd.cancel();
             }
 
-            if(!sortMode){
-                m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                        .whileHeld(new SmartLineShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem))
-                        .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
-            } else {
-                m_driveOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                        .whileHeld(new SmartSortShootCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem))
-                        .whenReleased(new NeutralShooterCmd(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem, subsystems.aimSubsystem, subsystems.kickSubsystem, subsystems.intakeSubsystem));
-            }*/
-
-            if ( rightTriggerReader.isDown()) {
-                new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
-            } else if (rightTriggerReader.wasJustReleased()) {
-                new StopIntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem).schedule();
-            }
-
-            subsystems.sensorSubsystem.updateOrientation(subsystems.mecDriveSubsystem.getRobotHeading());
 
 
+            double cameraHeading = subsystems.mecDriveSubsystem.getRobotHeading() + (subsystems.aimSubsystem.getTurretDegrees()-180);
+            while(cameraHeading > 180) cameraHeading -= 360;
+            while (cameraHeading <= -180) cameraHeading += 360;
+            subsystems.sensorSubsystem.updateOrientation(cameraHeading);
+
+            subsystems.shooterSubsystem.setPIDs(
+                    Constants.P_GAIN,
+                    Constants.I_GAIN,
+                    Constants.D_GAIN
+            );
+            subsystems.shooterSubsystem.setFeedForward(
+                    Constants.VEL_KS,
+                    Constants.VEL_KV * (12.0/hardwareMap.voltageSensor.iterator().next().getVoltage())
+            );
+
+
+            //stelemetry.addData("Camera Heading", cameraHeading);
             telemetry.addData("Limelight Tx: ", subsystems.sensorSubsystem.getTx());
-            telemetry.addData("Average Distance from MetaTag: ", subsystems.sensorSubsystem.getDis());
-            telemetry.addData("Limelight Bot X: ", subsystems.sensorSubsystem.getBotXLL());
-            telemetry.addData("Limelight Bot Y: ", subsystems.sensorSubsystem.getBotYLL());
+            //telemetry.addData("Limelight Bot X: ", subsystems.sensorSubsystem.getBotXLL());
+            //telemetry.addData("Limelight Bot Y: ", subsystems.sensorSubsystem.getBotYLL());
+
+            telemetry.addData("Limelight Bot X MT2: ", subsystems.sensorSubsystem.getBotXLLMT2());
+            telemetry.addData("Limelight Bot Y MT2: ", subsystems.sensorSubsystem.getBotYLLMT2());
 
             telemetry.addData("Imu Degrees: ", subsystems.mecDriveSubsystem.getRobotHeading());
             telemetry.addData("Pinpoint Bot X: ", subsystems.mecDriveSubsystem.getBotX());
@@ -215,25 +268,34 @@ public class TeleOpBase extends CommandOpMode {
             telemetry.addData("Turret Degrees: ", subsystems.aimSubsystem.getTurretDegrees());
             telemetry.addData("Turn to with PP", subsystems.mecDriveSubsystem.getPinpointTurretAngle(pipelineNum));
 
-            telemetry.addData("Raw Axon Voltage: ", subsystems.aimSubsystem.getVoltage());
-            telemetry.addData("Axon degrees: ", subsystems.aimSubsystem.getAxonValue());
-            telemetry.addData("Slot: ", subsystems.spindexerSubsystem.getSlot());
-            telemetry.addData("Spindexer Pos: ", subsystems.spindexerSubsystem.getPosition());
+            //telemetry.addData("Top beam break is broken: ", subsystems.shooterFeedSubsystem.topBroken());
+            //telemetry.addData("Ball in Bottom Beam: ", subsystems.intakeSubsystem.ballInBeam());
 
-            telemetry.addData("Top beam break is broken: ", subsystems.shooterFeedSubsystem.topBroken());
-            telemetry.addData("Ball in Beam: ", subsystems.intakeSubsystem.ballInBeam());
+            //telemetry.addData("LL Distance", subsystems.sensorSubsystem.getDis());
+            //telemetry.addData("Average Distance", subsystems.sensorSubsystem.avgDis(subsystems.mecDriveSubsystem.pinpointDistance(pipelineNum)));
+            telemetry.addData("Pinpoint distance", subsystems.mecDriveSubsystem.pinpointDistance(pipelineNum));
+            telemetry.addData("expected Velocity", subsystems.mecDriveSubsystem.velocityLinReg(pipelineNum));
+            telemetry.addData("Velocity: ", subsystems.shooterSubsystem.getVelocity());
+            //telemetry.addData("Shooter Power", subsystems.shooterSubsystem.getPower());
+            //telemetry.addData("In range: ", subsystems.shooterSubsystem.inRange());
 
-            telemetry.addData("Ball in Bay One: ", subsystems.spindexerSubsystem.ballInBayOne());
-            telemetry.addData("Ball in Bay Two: ", subsystems.spindexerSubsystem.ballInBayTwo());
-            telemetry.addData("Ball in Bay Three: ", subsystems.spindexerSubsystem.ballInBayThree());
+            telemetry.addData("Manual Aim", manualAim.getAsBoolean());
+            telemetry.addData("Manual Aim supposed to be ", manualAimPrim);
 
-            telemetry.addData("Velocity", subsystems.shooterSubsystem.getVelocity());
-            telemetry.addData("In range testing bool supplier: ", subsystems.shooterSubsystem.inRange(() ->1000, () ->1000).getAsBoolean());
-            telemetry.addData("Empty: ", subsystems.spindexerSubsystem.empty());
-            telemetry.addData("Full: ", subsystems.spindexerSubsystem.fullSpindexer());
-            //telemetry.addData("Bay one alpha", subsystems.spindexerSubsystem.bayOneAlpha());
-            //telemetry.addData("Bay two alpha", subsystems.spindexerSubsystem.bayTwoAlpha());
-            //telemetry.addData("Bay Three alpha", subsystems.spindexerSubsystem.bayThreeAlpha());
+            telemetry.addData("Top Light color", subsystems.lightSubsystem.getColor(Constants.TOPL_INDEX));
+            telemetry.addData("Mid Light color", subsystems.lightSubsystem.getColor(Constants.MIDL_INDEX));
+            telemetry.addData("Bot Light color", subsystems.lightSubsystem.getColor(Constants.BOTL_INDEX));
+
+            telemetry.addData("Left Front Power: ", subsystems.mecDriveSubsystem.drive.leftFront.getPower());
+            telemetry.addData("Left Back Power: ", subsystems.mecDriveSubsystem.drive.leftBack.getPower());
+            telemetry.addData("Right Front Power: ", subsystems.mecDriveSubsystem.drive.rightFront.getPower());
+            telemetry.addData("Right Back Power: ", subsystems.mecDriveSubsystem.drive.rightBack.getPower());
+
+
+            TelemetryPacket packet = new TelemetryPacket();
+            packet.fieldOverlay().setStroke("#3F51B5");
+            Drawing.drawRobot(packet.fieldOverlay(), subsystems.mecDriveSubsystem.getBotPose());
+            FtcDashboard.getInstance().sendTelemetryPacket(packet);
 
             if(isStopRequested()){
                 SavedVars.reset();
@@ -272,4 +334,8 @@ public class TeleOpBase extends CommandOpMode {
         telemetry.addData("Bay Three Red Values: ",subsystems.spindexerSubsystem.bayThreeRed()[0] + ", " +  subsystems.spindexerSubsystem.bayThreeRed()[1]);
         telemetry.addData("Bay Three Green Values: ",subsystems.spindexerSubsystem.bayThreeGreen()[0] + ", "+subsystems.spindexerSubsystem.bayThreeGreen()[1]);
     }*/
+
+    //make do this stuff
+    //intake off when ball in bay one
+    //keep kick down until beam is broken and extra with timeout
 }

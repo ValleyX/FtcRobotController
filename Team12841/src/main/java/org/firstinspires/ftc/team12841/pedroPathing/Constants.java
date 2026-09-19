@@ -15,43 +15,52 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(13.2)
-            .forwardZeroPowerAcceleration(-32.20906457774129)
-            .lateralZeroPowerAcceleration(-39.73511957623294)
+            .mass(13.25)
+            .forwardZeroPowerAcceleration(-42.35279772504574)
+            .lateralZeroPowerAcceleration(-52.12965524222374)
 
+            // Retune via Tuning OpMode
             .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0, 0))
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.025, 0, 0.00001, 0.6, 0.01))
             .headingPIDFCoefficients(new PIDFCoefficients( 1, 0, 0, 0.01));
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
-            .rightFrontMotorName("rfMotor")
-            .rightRearMotorName("rbMotor")
-            .leftRearMotorName("lbMotor")
-            .leftFrontMotorName("lfMotor")
+            .leftFrontMotorName("leftFront")
+            .leftRearMotorName("leftBack")
+            .rightFrontMotorName("rightFront")
+            .rightRearMotorName("rightBack")
             .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .xVelocity(125.14010)
-            .yVelocity(50.3566989);
+
+            .xVelocity(74.07182655453025)
+            .yVelocity(38.78943760054205);
 
 
     public static ThreeWheelIMUConstants localizerConstants = new ThreeWheelIMUConstants()
-            .forwardTicksToInches(0.00197913724762) // 0.0019727156766619694, 0.001966752403543089, 0.00199794366264916
-            .strafeTicksToInches(0.001195489955537)
-            .turnTicksToInches(0.014324695549060188)
-            .leftPodY(3.5) // 2 3/8in
-            .rightPodY(-2.3) // 2 5/16
-            .strafePodX(-5.75)
-            .leftEncoder_HardwareMapName("lfMotor")
-            .rightEncoder_HardwareMapName("rbMotor")
-            .strafeEncoder_HardwareMapName("lbMotor")
-            .leftEncoderDirection(Encoder.FORWARD)
-            .rightEncoderDirection(Encoder.FORWARD)
+            .forwardTicksToInches(0.00195966359)
+            .strafeTicksToInches(0.00134015956)
+            .turnTicksToInches(0.00195966359)
+
+            .leftPodY(-4.3109)//was 4.3109
+            .rightPodY(4.3007)//was -4.0007
+            .strafePodX(-6.6970)//-6.6970
+
+            .leftEncoder_HardwareMapName("leftFront")
+            .rightEncoder_HardwareMapName("rightFront")
+            .strafeEncoder_HardwareMapName("rightBack")
+
+            .leftEncoderDirection(Encoder.REVERSE)
+            .rightEncoderDirection(Encoder.REVERSE)
             .strafeEncoderDirection(Encoder.FORWARD)
+
             .IMU_HardwareMapName("imu")
-            .IMU_Orientation(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT, RevHubOrientationOnRobot.UsbFacingDirection.UP));
+            .IMU_Orientation(new RevHubOrientationOnRobot(
+                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+            ));
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 

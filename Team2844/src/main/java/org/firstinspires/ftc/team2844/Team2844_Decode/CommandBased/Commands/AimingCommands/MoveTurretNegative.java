@@ -14,7 +14,7 @@ public class MoveTurretNegative extends CommandBase {
     }
 
     @Override
-    public void initialize(){
+    public void execute(){
         aimSubsystem.moveTurret(-TURN_TICK);
     }
 

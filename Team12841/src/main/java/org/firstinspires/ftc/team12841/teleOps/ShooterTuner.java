@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.team12841.teleOps;
 
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.team12841.RobotHardware;
+
 
 @TeleOp(name = "TUNE SHOOTER")
 public class ShooterTuner extends LinearOpMode
@@ -15,9 +16,10 @@ public class ShooterTuner extends LinearOpMode
 
     //public DcMotorEx shooterMotor;
     RobotHardware shooterHardware;
-
-    public double highVelocity = 4500;
-    public double lowVelocity = 3000;
+    RobotHardware robot;
+    public double highVelocity = 2000;
+    public double lowVelocity = 0;
+    public double stop = 0;
 
     double curTargetVelocity = highVelocity;
     double F = 0;
@@ -25,12 +27,18 @@ public class ShooterTuner extends LinearOpMode
     double[] stepSizes = {10.0, 1.0, 0.1,0.001,0.0001};
     int stepIndex = 1;
 
+    private boolean lastBumper = false;
+    private Timer shootTimer = new Timer();
+    private boolean intaking = false;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
         shooterHardware = new RobotHardware(this);
+        robot = new RobotHardware(this);
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
-        shooterHardware.shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        shooterHardware.shooterMotorRev.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        shooterHardware.shooterMotorBilda.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         telemetry.addLine("Init Complete");
 
         waitForStart();
@@ -41,7 +49,9 @@ public class ShooterTuner extends LinearOpMode
             if (gamepad1.yWasPressed()) {
                 if (curTargetVelocity == highVelocity) {
                     curTargetVelocity = lowVelocity;
-                } else { curTargetVelocity = highVelocity; }
+                } else {
+                    curTargetVelocity = highVelocity;
+                }
             }
 
             // allow to toggle through how big of step to make in P and F adjust
@@ -69,14 +79,58 @@ public class ShooterTuner extends LinearOpMode
 
             //Set new PIDF Coeff
             pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
-            shooterHardware.shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+            shooterHardware.shooterMotorRev.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+            shooterHardware.shooterMotorBilda.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
             //telemetry.addLine("Init Complete");
 
             //set velocity
-            shooterHardware.shooter.setVelocity(shooterHardware.calculateRegression(shooterHardware.getDistance()));
+            shooterHardware.setShooterRPM(curTargetVelocity);
 
-            double curVelocity = (shooterHardware.shooter.getVelocity() * 60.0) / RobotHardware.SHOOTER_TICKS_PER_REV;
+            double curVelocity = (shooterHardware.shooterMotorBilda.getVelocity() * -60.0) / RobotHardware.ENCODER_TICS;
             double error = curTargetVelocity - curVelocity;
+
+            if (gamepad1.right_bumper) {
+                // 1. On the very first press, reset the timer
+                if (!lastBumper) {
+                    shootTimer.resetTimer();
+                    robot.stopBallRelease(); // Open the blocker immediately
+                }
+
+                // 2. Wait for 300ms, then check velocity to feed
+                if (shootTimer.getElapsedTimeSeconds() > 0.3) {
+                    robot.aimHood(robot.getHoodAim(robot.getBotDis()));
+                    robot.feed();
+                }
+            } else {
+                // Reset state when bumper is released
+                robot.aimHood(0);
+                robot.stopBallHold();
+                if (!intaking) {
+                    robot.stopFeed();
+                }
+            }
+
+            boolean isFull = robot.threeBall();
+            robot.setFullLight(isFull ? 1.0 : 0.0);
+
+            boolean intaking = false;
+
+            if (gamepad1.right_trigger > 0.2) {
+                // Intake
+                robot.intake(1.0);
+                intaking = true;
+            } else if (gamepad1.left_trigger > 0.2) {
+                // Extake
+                robot.extake(1.0);
+                robot.closeServo(); // Assuming this is needed for extake based on original code
+                intaking = true;
+            } else {
+                if (!gamepad1.right_bumper) {
+                    robot.intake(0);
+                }
+            }
+
+            lastBumper = gamepad1.right_bumper; // Track state for the next frame
 
             telemetry.addData("Target Velocity", curTargetVelocity);
             telemetry.addData("Current Velocity", "%.5f", curVelocity);
@@ -110,4 +164,3 @@ public class ShooterTuner extends LinearOpMode
     }
 
 }
-

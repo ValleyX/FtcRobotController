@@ -1,0 +1,29 @@
+package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.TransferCommands;
+
+import com.arcrobotics.ftclib.command.CommandBase;
+
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems.KickSubsystem;
+
+public class UptakeLessCmd extends CommandBase {
+    KickSubsystem kickSubsystem;
+
+    public UptakeLessCmd(KickSubsystem kickSubsystem){
+        this.kickSubsystem = kickSubsystem;
+        addRequirements(kickSubsystem);
+    }
+
+    @Override
+    public void initialize() {
+        kickSubsystem.rotateKickerDownLess();
+        kickSubsystem.runKickerSpin();
+        kickSubsystem.runSFeedForward();
+        // Extra kick logic? Yea that would probably go in here. or maybe in the shoot logic itself
+        //spindexerSubsystem.runToShootSlot(spindexerSubsystem.getSlot());
+    }
+
+
+    @Override
+    public boolean isFinished() {
+        return true;
+    }
+}

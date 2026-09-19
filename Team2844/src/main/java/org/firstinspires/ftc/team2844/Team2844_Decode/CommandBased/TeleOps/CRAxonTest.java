@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -15,7 +16,7 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Consta
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.GamepadPair;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.RTPAxon;
 
-
+@Disabled
 // TeleOp test class for manual tuning and testing
 @TeleOp(name = "Cont. Rotation Axon Test", group = "test")
 public class CRAxonTest extends LinearOpMode {

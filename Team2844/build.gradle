@@ -23,19 +23,20 @@ android {
     }
 }
 
-repositories { //added by carter
-    maven { //added by CW
-        url = 'https://maven.brott.dev/' //added by CW
-        //mavenCentral() //added bue JAE
-    }//added by CW
-}//added by CW
-
 dependencies {
     implementation project(':FtcRobotController')
-    implementation "com.acmerobotics.roadrunner:ftc:0.1.23" //added by CW
-    implementation "com.acmerobotics.roadrunner:core:1.0.1" //added by CW
-    implementation "com.acmerobotics.roadrunner:actions:1.0.1" //added by CW
-    implementation "com.acmerobotics.dashboard:dashboard:0.4.17" //added by CW
+    // CW Add
+    implementation "com.acmerobotics.roadrunner:ftc:0.1.23"
+    implementation "com.acmerobotics.roadrunner:core:1.0.1"
+    implementation "com.acmerobotics.roadrunner:actions:1.0.1"
+    implementation "com.acmerobotics.dashboard:dashboard:0.5.1"
+    // End CW Add
+
+    // TC Add
+    implementation 'com.pedropathing:ftc:2.1.1'
+    implementation 'com.pedropathing:telemetry:1.0.0'
+    implementation 'com.bylazar:fullpanels:1.0.12'
+    // End TC Add
 
     // Tanner Add
     implementation 'com.github.ValleyX.valleyLib:core:1.0.8'
@@ -46,4 +47,5 @@ dependencies {
     implementation 'org.ftclib.ftclib:vision:2.1.0' // vision
     implementation 'org.ftclib.ftclib:core:2.1.1' // core
     //*end JAE Add
+
 }

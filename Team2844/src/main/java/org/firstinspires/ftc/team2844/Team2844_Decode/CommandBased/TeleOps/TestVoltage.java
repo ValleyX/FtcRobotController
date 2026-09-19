@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.TeleOps;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Helper.Subsystems;
 
+@Disabled
 @TeleOp(name = "Test Voltage")
 public class TestVoltage extends CommandOpMode {
     Subsystems subsystems;

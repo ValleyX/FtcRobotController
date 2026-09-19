@@ -14,10 +14,11 @@ public class IntakeLineCmd extends CommandBase {
     IntakeSubsystem intakeSubsystem;
     SpindexerSubsystem spindexerSubsystem;
     KickSubsystem kickSubsystem;
-
     ElapsedTime timer;
 
-    public IntakeLineCmd(ShooterFeedSubsystem shooterFeedSubsystem, IntakeSubsystem intakeSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem){
+    boolean startedFull;
+
+    public IntakeLineCmd(ShooterFeedSubsystem shooterFeedSubsystem, IntakeSubsystem intakeSubsystem, SpindexerSubsystem spindexerSubsystem, KickSubsystem kickSubsystem) {
         this.intakeSubsystem = intakeSubsystem;
         this.shooterFeedSubsystem = shooterFeedSubsystem;
         this.kickSubsystem = kickSubsystem;
@@ -27,48 +28,43 @@ public class IntakeLineCmd extends CommandBase {
     }
 
     @Override
-    public void execute() {
-        boolean ballInBeam = intakeSubsystem.ballInBeam();
-        boolean topBroken = shooterFeedSubsystem.topBroken();
-        boolean bayOne = spindexerSubsystem.ballInBayOne();
-
-        if(!(ballInBeam && topBroken && bayOne)){
-            intakeSubsystem.activate(Constants.INTAKE_SPEED);
-            if(!topBroken){
-//                new ParallelCommandGroup(new UptakeCmd(kickSubsystem), new TransferCmd(shooterFeedSubsystem));
-                if(bayOne) {
-                    kickSubsystem.rotateKickerDown();
-                } else {
-                    kickSubsystem.rotateKickerDownIntake();
-                }
-                kickSubsystem.runKickerSpin();
-                kickSubsystem.runSFeedForward();
-                shooterFeedSubsystem.runTFeedForward();
-                timer.reset();
-            } else {
-//                new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem));
-                kickSubsystem.rotateKickerUp();
-                kickSubsystem.stopKickerSpin();
-                kickSubsystem.stopSFeed();
-                if(timer.time() < 100) {
-                    shooterFeedSubsystem.slowFeed();
-                } else {
-                    shooterFeedSubsystem.stopTFeed();
-                }
-            }
-
-        } else {
-            //new ParallelCommandGroup(new StopUptakeCmd(kickSubsystem), new StopTransferCmd(shooterFeedSubsystem), new StopIntakeCmd(intakeSubsystem));
-            intakeSubsystem.stop();
-            kickSubsystem.rotateKickerUp();
-            kickSubsystem.stopKickerSpin();
-            kickSubsystem.stopSFeed();
-            shooterFeedSubsystem.stopTFeed();
-        }
+    public void initialize() {
+        startedFull = shooterFeedSubsystem.topBroken();
+        intakeSubsystem.activate(Constants.INTAKE_SPEED);
+        kickSubsystem.runKickerSpin();
+        kickSubsystem.runSFeedForward();
     }
 
     @Override
+    public void execute() {
+        boolean topBroken = shooterFeedSubsystem.topBroken();
+        if (!topBroken) {
+            kickSubsystem.rotateKickerDown();
+            timer.reset();
+        } else {
+            if(timer.time() < 450 && !startedFull){
+                kickSubsystem.rotateKickerDownIntake();
+            } else {
+                kickSubsystem.stopKickerSpin();
+                kickSubsystem.runSFeedBackward();
+            }
+        }
+
+    }
+
+
+
+    @Override
     public boolean isFinished() {
-        return true;
+        return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        intakeSubsystem.stop();
+        //kickSubsystem.rotateKickerUp();
+        kickSubsystem.stopKickerSpin();
+        kickSubsystem.stopSFeed();
+        shooterFeedSubsystem.stopTFeed();
     }
 }

@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.MotorExPair;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.DriveSubsystems.SensorSubsystem;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ExtraSubsystems.LightSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.AimSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterFeedSubsystem;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ShootingSubsystems.ShooterSubsystem;
@@ -81,6 +82,13 @@ public class Subsystems {
     /* ------------------- Limelight ------------------- */
     private Limelight3A limelight;
 
+    /* -------------- Lights -------------- */
+    private CRServo topLight, midLight, botLight, leftLight, rightLight;
+
+    /**The array of all the lights, it goes in order, 0: top, 1: mid, 2: bot, 3: left, 4: right*/
+    private CRServo[] lightArray;
+
+
     /* ------------------- Subsystem Declarations ------------------- */
     /**
      * Drive Subsystem
@@ -117,6 +125,9 @@ public class Subsystems {
      * Pinpoint Subsystem
      */
     public SensorSubsystem sensorSubsystem;
+
+    /**Light Subsystem: Controls the stack of lights and the lights on the side*/
+    public LightSubsystem lightSubsystem;
 
 
     /* ------------------- Sensor Declarations ------------------- */
@@ -174,6 +185,13 @@ public class Subsystems {
         topBreak = hardwareMap.get(DigitalChannel.class, Constants.CDI0);
         axonIn = hardwareMap.get(AnalogInput.class, Constants.CAI2);
 
+        /* -------------- Lights -------------- */
+        topLight = hardwareMap.get(CRServo.class, Constants.ES5);
+        midLight = hardwareMap.get(CRServo.class, Constants.ES4);
+        botLight = hardwareMap.get(CRServo.class, Constants.ES3);
+        leftLight = hardwareMap.get(CRServo.class, Constants.ES2);
+        rightLight = hardwareMap.get(CRServo.class, Constants.ES1);
+        lightArray = new CRServo[]{topLight, midLight, botLight, leftLight, rightLight};
         /* -------------- Subsystems -------------- */
         /* 1. drive
          * 2. intake
@@ -182,11 +200,13 @@ public class Subsystems {
          * 5. Shooter
          * 6. ShooterFeed
          * 7. Aim
-         * 8. Sensor */
+         * 8. Sensor
+         * 9. Lights
+         */
 
         //1. drive subsystem
         //tankDriveSubsystem = new TankDriveSubsystem(leftMotorGroup,rightMotorGroup);
-        mecDriveSubsystem = new DriveSubsystem(hardwareMap);
+        mecDriveSubsystem = new DriveSubsystem(hardwareMap, pipelineNum);
         //2. Intake subsystem
         intakeSubsystem = new IntakeSubsystem(intakeMotor, intakeBB);
         //3. Kick subsystem
@@ -201,6 +221,8 @@ public class Subsystems {
         aimSubsystem = new AimSubsystem(hoodAim, axon, axonIn);
         //8. Sensor Subsystem
         sensorSubsystem = new SensorSubsystem(limelight, pipelineNum);
+        //9. Lights Subsystem
+        lightSubsystem = new LightSubsystem(lightArray);
     }
 
 
@@ -251,6 +273,14 @@ public class Subsystems {
         // ----- Limelight ----- //
         limelight = hardwareMap.get(Limelight3A.class, Constants.LL);
 
+        /* -------------- Lights -------------- */
+        topLight = hardwareMap.get(CRServo.class, Constants.ES5);
+        midLight = hardwareMap.get(CRServo.class, Constants.ES4);
+        botLight = hardwareMap.get(CRServo.class, Constants.ES3);
+        leftLight = hardwareMap.get(CRServo.class, Constants.ES2);
+        rightLight = hardwareMap.get(CRServo.class, Constants.ES1);
+        lightArray = new CRServo[]{topLight, midLight, botLight, leftLight, rightLight};
+
         /* -------------- Subsystems -------------- */
         /* 1. intake
          * 2. Kick
@@ -275,5 +305,7 @@ public class Subsystems {
         aimSubsystem = new AimSubsystem(hoodAim, axon, axonIn);
         //7. Sensor Subsystem
         sensorSubsystem = new SensorSubsystem(limelight, pipelineNum);
+        //9. Lights Subsystem
+        lightSubsystem = new LightSubsystem(lightArray);
     }
 }

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.SortingSubsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -94,12 +93,12 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public void runToShootSlot(int desiredSlot){
-        if(0 <= desiredSlot && desiredSlot < Constants.SLOT_ARRAY.length) {
+        if(0 < desiredSlot && desiredSlot < Constants.SLOT_ARRAY.length) {
             pos = desiredSlot;
-            spindexer.setPosition(Constants.SLOT_ARRAY[desiredSlot] - 0.005);
+            spindexer.setPosition(Constants.SLOT_ARRAY[desiredSlot]);
         } else if (desiredSlot >= Constants.SLOT_ARRAY.length){
             pos = Constants.SLOT_ARRAY.length-1;
-            spindexer.setPosition(Constants.SLOT_ARRAY[Constants.SLOT_ARRAY.length-1] - 0.005);
+            spindexer.setPosition(Constants.SLOT_ARRAY[Constants.SLOT_ARRAY.length-1]);
         } else {
             pos = 0;
             spindexer.setPosition(Constants.SLOT_ARRAY[0]);
@@ -110,7 +109,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         return pos;
     }
 
-    private boolean ballInBayOne(boolean raw){
+    private boolean ballInBayOneRaw(){
         return (color1Bay1.alpha() > Constants.MIN_ALPHA || color2Bay1.alpha() > Constants.MIN_ALPHA);
     }
 
@@ -118,7 +117,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         return bay1;
     }
 
-    private boolean ballInBayTwo(boolean raw){
+    private boolean ballInBayTwoRaw(){
         return (color1Bay2.alpha() > Constants.MIN_ALPHA || color2Bay2.alpha() > Constants.MIN_ALPHA);
     }
 
@@ -126,7 +125,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         return bay2;
     }
 
-    private boolean ballInBayThree(boolean raw){
+    private boolean ballInBayThreeRaw(){
         return (color1Bay3.alpha() > Constants.MIN_ALPHA || color2Bay3.alpha() > Constants.MIN_ALPHA);
     }
 
@@ -158,9 +157,9 @@ public class SpindexerSubsystem extends SubsystemBase {
             int[] green = bayOneGreen();
             int[] blue = bayOneBlue();
             if(Math.max(green[0] + green[1], blue[0] + blue[1]) == green[0] + green[1]){
-                return Constants.GREEN;
+                return Constants.GREEN_ARTIFACT;
             } else {
-                return Constants.PURPLE;
+                return Constants.PURPLE_ARTIFACT;
             }
         } else {
             return Constants.UNKNOWN_COLOR;
@@ -172,9 +171,9 @@ public class SpindexerSubsystem extends SubsystemBase {
             int[] green = bayTwoGreen();
             int[] blue = bayTwoBlue();
             if(Math.max(green[0] + green[1], blue[0] + blue[1]) == green[0] + green[1]){
-                return Constants.GREEN;
+                return Constants.GREEN_ARTIFACT;
             } else {
-                return Constants.PURPLE;
+                return Constants.PURPLE_ARTIFACT;
             }
         } else {
             return Constants.UNKNOWN_COLOR;
@@ -186,9 +185,9 @@ public class SpindexerSubsystem extends SubsystemBase {
             int[] green = bayThreeGreen();
             int[] blue = bayThreeBlue();
             if(Math.max(green[0] + green[1], blue[0] + blue[1]) == green[0] + green[1]){
-                return Constants.GREEN;
+                return Constants.GREEN_ARTIFACT;
             } else {
-                return Constants.PURPLE;
+                return Constants.PURPLE_ARTIFACT;
             }
         } else {
             return Constants.UNKNOWN_COLOR;
@@ -277,9 +276,9 @@ public class SpindexerSubsystem extends SubsystemBase {
                 bay3Color = temp2;
             }
 
-            if(bay1Color == Constants.PURPLE && bay2Color == Constants.PURPLE){
+            if(bay1Color == Constants.PURPLE_ARTIFACT && bay2Color == Constants.PURPLE_ARTIFACT){
                 currentPattern = Constants.PATTERN_PPG;
-            } else if(bay1Color == Constants.PURPLE && bay3Color == Constants.PURPLE){
+            } else if(bay1Color == Constants.PURPLE_ARTIFACT && bay3Color == Constants.PURPLE_ARTIFACT){
                 currentPattern = Constants.PATTERN_PGP;
             } else {
                 currentPattern = Constants.PATTERN_GPP;
@@ -315,13 +314,93 @@ public class SpindexerSubsystem extends SubsystemBase {
         }
     }
 
+    public int getFirstFull(){
+        if(!bay1) {
+            if (pos == 0) {
+                if (bay1) {
+                    return 0;
+                } else if (bay2) {
+                    return 1;
+                } else if (bay3) {
+                    return 2;
+                } else {
+                    return 0;
+                }
+            } else if (pos == 1) {
+                if (bay1) {
+                    return 1;
+                } else if (bay2) {
+                    return 2;
+                } else if (bay3) {
+                    return 0;
+                } else {
+                    return 0;
+                }
+            } else if (pos == 2) {
+                if (bay1) {
+                    return 2;
+                } else if (bay2) {
+                    return 0;
+                } else if (bay3) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        }
+
+        return pos;
+    }
+
+    public int getLastFull(){
+        if(!fullSpindexer()) {
+            if (pos == 0) {
+                if (bay3) {
+                    return 2;
+                } else if (bay2) {
+                    return 1;
+                } else if (bay1) {
+                    return 0;
+                } else {
+                    return pos;
+                }
+            } else if (pos == 1) {
+                if (bay3) {
+                    return 0;
+                } else if (bay2) {
+                    return 2;
+                } else if (bay1) {
+                    return 1;
+                } else {
+                    return pos;
+                }
+            } else if (pos == 2) {
+                if (bay3) {
+                    return 1;
+                } else if (bay2) {
+                    return 0;
+                } else if (bay1) {
+                    return 2;
+                } else {
+                    return pos;
+                }
+            }
+        }
+
+        return 2;
+    }
+
+    public boolean bayOneReady(){
+        return !bay1 && !empty();
+    }
+
 
 
     @Override
     public void periodic() {
-        bay1 = ballInBayOne(true);
-        bay2 = ballInBayTwo(true);
-        bay3 = ballInBayThree(true);
+        bay1 = ballInBayOneRaw();
+        bay2 = ballInBayTwoRaw();
+        bay3 = ballInBayThreeRaw();
 
         bay1green = bayOneGreen(true);
         bay1blue = bayOneBlue(true);

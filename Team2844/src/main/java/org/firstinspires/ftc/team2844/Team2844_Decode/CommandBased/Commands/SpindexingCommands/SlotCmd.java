@@ -25,6 +25,7 @@ public class SlotCmd extends CommandBase {
         addRequirements(spindexerSubsystem, kickSubsystem);
 
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
         if(0 <= desiredSlot && desiredSlot < Constants.SLOT_ARRAY.length) {
             this.desiredSlot = desiredSlot;
         } else if (0 > desiredSlot) {
@@ -36,6 +37,12 @@ public class SlotCmd extends CommandBase {
 
     @Override
     public void initialize() {
+        if (desiredSlot < 0) {
+            desiredSlot = 0;
+        } else if(Constants.SLOT_ARRAY.length <= desiredSlot){
+            desiredSlot = Constants.SLOT_ARRAY.length-1;
+        }
+
         slot = spindexerSubsystem.getSlot();
         timer.reset();
         if(slot - desiredSlot < 0){

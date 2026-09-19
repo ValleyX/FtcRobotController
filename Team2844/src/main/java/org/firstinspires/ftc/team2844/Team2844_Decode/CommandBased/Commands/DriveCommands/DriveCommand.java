@@ -11,6 +11,7 @@ public class DriveCommand extends CommandBase {
     private DriveSubsystem driveSubsystem;
     private DoubleSupplier strafe, forward, turn, heading;
 
+    // heading supplier kept in signature so TeleOpBase doesn't need to change
     public DriveCommand(DriveSubsystem driveSubsystem, DoubleSupplier strafe, DoubleSupplier forward, DoubleSupplier turn, DoubleSupplier heading) {
         this.driveSubsystem = driveSubsystem;
         this.strafe = strafe;
@@ -18,35 +19,13 @@ public class DriveCommand extends CommandBase {
         this.turn = turn;
         this.heading = heading;
 
-        //this will prevent the drive subsystem from being used by another command
+        // heading unused — Pedro handles field-centric internally via its localizer
+
         addRequirements(driveSubsystem);
     }
 
-    /* The normal process for a command is:
-    @Override
-      public void initialize() {
-       // This will run ONCE when the Command is initialized
-    }
-
     @Override
     public void execute() {
-    //This will be run every period until isFinished is TRUE
-    }
-
-    @Override
-    public boolean isFinished() {
-    //This will be run after EXECUTE to check if the Command has finished
-        return true;
-    }
-
-     @Override
-    public boolean end(boolean interrupted) {
-    //This is called once when isFinished is TRUE.  This is used to clean up the command (i.g. stop motors)
-    }
-
-     */
-    @Override
-    public void execute() {
-        driveSubsystem.drive(-strafe.getAsDouble(), forward.getAsDouble(), turn.getAsDouble(), heading);
+        driveSubsystem.drive(strafe.getAsDouble(), -forward.getAsDouble(), turn.getAsDouble(), heading);
     }
 }

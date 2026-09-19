@@ -7,12 +7,14 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.Dr
 
 public class ResetImuCmd extends CommandBase {
     DriveSubsystem driveSubsystem;
-    public ResetImuCmd(DriveSubsystem driveSubsystem){
+    double degrees;
+    public ResetImuCmd(DriveSubsystem driveSubsystem, double degrees){
         this.driveSubsystem = driveSubsystem;
+        this.degrees = degrees;
     }
 
     @Override
     public void initialize() {
-        driveSubsystem.resetIMU();
+        driveSubsystem.resetIMU(degrees);
     }
 }

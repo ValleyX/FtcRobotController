@@ -33,7 +33,7 @@ public class MecanumCmdTeleOp extends CommandOpMode {
         m_driveOp = new GamepadEx(gamepad1);
 
         //Create a drive subsystem and pass in the motors
-        driveSubsystem = new DriveSubsystem(hardwareMap);
+        driveSubsystem = new DriveSubsystem(hardwareMap, 0);
 
         //Create a new drive command and pass in the drive subsystem and the gamepad control values
         driveCommand = new DriveCommand(driveSubsystem, m_driveOp::getLeftX, m_driveOp::getLeftY, m_driveOp::getRightX, driveSubsystem::getRobotHeadingRadians);
