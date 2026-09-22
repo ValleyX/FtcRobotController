@@ -33,17 +33,21 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCompatibilityManager;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagClusterDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
 import java.util.List;
 
 /*
  * This OpMode illustrates the basics of AprilTag recognition and pose estimation, using
  * the easy way.
+ *
+ * Note: See ConceptAprilTag.java for how to add a camera compatibility quirk
  *
  * For an introduction to AprilTags, see the FTC-DOCS link below:
  * https://ftc-docs.firstinspires.org/en/latest/apriltag/vision_portal/apriltag_intro/apriltag-intro.html
@@ -81,6 +85,7 @@ public class ConceptAprilTagEasy extends LinearOpMode {
     @Override
     public void runOpMode() {
 
+        // See ConceptAprilTag.java for how to add a camera compatibility quirk
         initAprilTag();
 
         // Wait for the DS start button to be touched.
@@ -89,24 +94,22 @@ public class ConceptAprilTagEasy extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        if (opModeIsActive()) {
-            while (opModeIsActive()) {
+        while (opModeIsActive()) {
 
-                telemetryAprilTag();
+            telemetryAprilTag();
 
-                // Push telemetry to the Driver Station.
-                telemetry.update();
+            // Push telemetry to the Driver Station.
+            telemetry.update();
 
-                // Save CPU resources; can resume streaming when needed.
-                if (gamepad1.dpad_down) {
-                    visionPortal.stopStreaming();
-                } else if (gamepad1.dpad_up) {
-                    visionPortal.resumeStreaming();
-                }
-
-                // Share the CPU.
-                sleep(20);
+            // Save CPU resources; can resume streaming when needed.
+            if (gamepad1.dpad_down) {
+                visionPortal.stopStreaming();
+            } else if (gamepad1.dpad_up) {
+                visionPortal.resumeStreaming();
             }
+
+            // Share the CPU.
+            sleep(20);
         }
 
         // Save more CPU resources when camera is no longer needed.
@@ -143,23 +146,25 @@ public class ConceptAprilTagEasy extends LinearOpMode {
 
         // Step through the list of detections and display info for each one.
         for (AprilTagDetection detection : currentDetections) {
-            // SDK 12 split AprilTagDetection into an abstract base plus one
-            // subclass per detection kind. Tag id, metadata and center now live
-            // on AprilTagSingleDetection, so narrow before reading them and skip
-            // anything that is not a single-tag detection.
-            if (!(detection instanceof AprilTagSingleDetection)) {
-                continue;
-            }
-            AprilTagSingleDetection tag = (AprilTagSingleDetection) detection;
+            if (detection instanceof AprilTagSingleDetection) {
+                AprilTagSingleDetection singleDet = (AprilTagSingleDetection) detection;
 
-            if (tag.metadata != null) {
-                telemetry.addLine(String.format("\n==== (ID %d) %s", tag.id, tag.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", tag.ftcPose.pitch, tag.ftcPose.roll, tag.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", tag.ftcPose.range, tag.ftcPose.bearing, tag.ftcPose.elevation));
-            } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", tag.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", tag.center.x, tag.center.y));
+                if (singleDet.metadata != null) {
+                    telemetry.addLine(String.format("\n==== (ID %d) %s", singleDet.id, singleDet.metadata.name));
+                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                    telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+                } else {
+                    telemetry.addLine(String.format("\n==== (ID %d) Unknown", singleDet.id));
+                    telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", singleDet.center.x, singleDet.center.y));
+                }
+            }  else {
+                AprilTagClusterDetection clusterDet = (AprilTagClusterDetection) detection;
+                telemetry.addLine(String.format("\n==== Tag Cluster (%s)", clusterDet.metadata.name));
+                telemetry.addLine(String.format("Percent tags found: %d", clusterDet.percentClusterFound));
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
             }
         }   // end for() loop
 
