@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.commands.hangcommands;
+package org.firstinspires.ftc.team12841.commands.hangcommands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.subsystems.LiftSubsystem;
+import org.firstinspires.ftc.team12841.subsystems.LiftSubsystem;
 
 /**This extends the hang out at the second stage of the hang sequence*/
 public class HangExtend extends CommandBase {

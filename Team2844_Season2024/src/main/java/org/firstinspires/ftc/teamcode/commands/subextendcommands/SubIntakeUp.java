@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.commands.subextendcommands;
+package org.firstinspires.ftc.team12841.commands.subextendcommands;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.Drivers.RobotHardware;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.team12841.Drivers.RobotHardware;
+import org.firstinspires.ftc.team12841.subsystems.IntakeSubsystem;
 
 public class SubIntakeUp extends CommandBase {
 

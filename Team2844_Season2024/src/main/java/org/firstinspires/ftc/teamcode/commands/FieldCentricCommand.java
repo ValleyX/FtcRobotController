@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.commands;
+package org.firstinspires.ftc.team12841.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
+import org.firstinspires.ftc.team12841.subsystems.DriveSubsystem;
 
 /**this is where any driving is*/
 public class FieldCentricCommand extends CommandBase {

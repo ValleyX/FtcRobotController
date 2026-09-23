@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.team12841.autonomous;
 
 /*
 Written by Benjamin Ettinger
@@ -11,13 +11,13 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Drivers.AprilTag;
-import org.firstinspires.ftc.teamcode.Drivers.GyroDrive;
-import org.firstinspires.ftc.teamcode.Drivers.IntakeDriver;
-import org.firstinspires.ftc.teamcode.Drivers.LiftDrive;
-import org.firstinspires.ftc.teamcode.Drivers.RobotHardware;
-import org.firstinspires.ftc.teamcode.testcode.GyroDriveTest;
-import org.firstinspires.ftc.teamcode.testcode.RobotHardwareTestVersion;
+import org.firstinspires.ftc.team12841.Drivers.AprilTag;
+import org.firstinspires.ftc.team12841.Drivers.GyroDrive;
+import org.firstinspires.ftc.team12841.Drivers.IntakeDriver;
+import org.firstinspires.ftc.team12841.Drivers.LiftDrive;
+import org.firstinspires.ftc.team12841.Drivers.RobotHardware;
+import org.firstinspires.ftc.team12841.testcode.GyroDriveTest;
+import org.firstinspires.ftc.team12841.testcode.RobotHardwareTestVersion;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Autonomous(name="BlueFarDropPark")

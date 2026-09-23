@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.commands.autocommands;
+package org.firstinspires.ftc.team12841.commands.autocommands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Drivers.RobotHardware;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.team12841.Drivers.RobotHardware;
+import org.firstinspires.ftc.team12841.subsystems.IntakeSubsystem;
 
 public class IntakeSpit extends CommandBase {
     IntakeSubsystem m_intake;

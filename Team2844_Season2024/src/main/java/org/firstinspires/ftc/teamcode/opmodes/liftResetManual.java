@@ -1,12 +1,12 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.team12841.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Drivers.RobotHardware;
-import org.firstinspires.ftc.teamcode.commands.autocommands.SubToLength;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LiftSubsystem;
+import org.firstinspires.ftc.team12841.Drivers.RobotHardware;
+import org.firstinspires.ftc.team12841.commands.autocommands.SubToLength;
+import org.firstinspires.ftc.team12841.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.team12841.subsystems.LiftSubsystem;
 
 @TeleOp(name = "lift reset")
 

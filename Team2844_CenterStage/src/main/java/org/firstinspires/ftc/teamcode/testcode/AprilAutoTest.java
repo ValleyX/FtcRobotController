@@ -1,12 +1,12 @@
-package org.firstinspires.ftc.teamcode.testcode;
+package org.firstinspires.ftc.team12841.testcode;
 
         import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
         import com.qualcomm.robotcore.eventloop.opmode.Disabled;
         import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
-        import org.firstinspires.ftc.teamcode.Drivers.RobotHardware;
-        import org.firstinspires.ftc.teamcode.Drivers.OdometryDrive;
+        import org.firstinspires.ftc.team12841.Drivers.RobotHardware;
+        import org.firstinspires.ftc.team12841.Drivers.OdometryDrive;
 
 //robot must pe put in the same place to relatively same position per game to be consistant
 //Position distance from corner near board is about 48 inches

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleop;
+package org.firstinspires.ftc.team12841.teleop;
 
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -16,8 +16,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.Drivers.GyroDrive;
-import org.firstinspires.ftc.teamcode.Drivers.RobotHardware;
+import org.firstinspires.ftc.team12841.Drivers.GyroDrive;
+import org.firstinspires.ftc.team12841.Drivers.RobotHardware;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;

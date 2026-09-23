@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.commands.autocommands;
+package org.firstinspires.ftc.team12841.commands.autocommands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.team12841.subsystems.IntakeSubsystem;
 
 public class SubToLength extends CommandBase {
     IntakeSubsystem m_intake;

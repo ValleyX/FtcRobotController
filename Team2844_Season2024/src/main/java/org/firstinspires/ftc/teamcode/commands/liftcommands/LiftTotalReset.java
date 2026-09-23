@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.commands.liftcommands;
+package org.firstinspires.ftc.team12841.commands.liftcommands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.Drivers.RobotHardware;
-import org.firstinspires.ftc.teamcode.subsystems.LiftSubsystem;
+import org.firstinspires.ftc.team12841.Drivers.RobotHardware;
+import org.firstinspires.ftc.team12841.subsystems.LiftSubsystem;
 
 /** Resets lift to original position no matter where it starts and restarts encoder*/
 

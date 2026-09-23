@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.commands.liftcommands;
+package org.firstinspires.ftc.team12841.commands.liftcommands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Drivers.RobotHardware;
-import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LiftSubsystem;
+import org.firstinspires.ftc.team12841.Drivers.RobotHardware;
+import org.firstinspires.ftc.team12841.subsystems.DriveSubsystem;
+import org.firstinspires.ftc.team12841.subsystems.LiftSubsystem;
 
 /**This hooks specimins on chamber bar */
 public class LiftScore extends CommandBase {

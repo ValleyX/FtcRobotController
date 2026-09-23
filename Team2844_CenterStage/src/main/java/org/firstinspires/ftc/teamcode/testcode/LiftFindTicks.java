@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.testcode;
+package org.firstinspires.ftc.team12841.testcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.Drivers.ClimberDriver;
-import org.firstinspires.ftc.teamcode.Drivers.LiftDrive;
-import org.firstinspires.ftc.teamcode.Drivers.RobotHardware;
+import org.firstinspires.ftc.team12841.Drivers.ClimberDriver;
+import org.firstinspires.ftc.team12841.Drivers.LiftDrive;
+import org.firstinspires.ftc.team12841.Drivers.RobotHardware;
 
 
 @TeleOp(name = "liftTicks")

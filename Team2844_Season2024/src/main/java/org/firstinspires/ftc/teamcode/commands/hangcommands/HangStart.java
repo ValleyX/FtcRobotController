@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.commands.hangcommands;
+package org.firstinspires.ftc.team12841.commands.hangcommands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Drivers.RobotHardware;
-import org.firstinspires.ftc.teamcode.subsystems.LiftSubsystem;
+import org.firstinspires.ftc.team12841.Drivers.RobotHardware;
+import org.firstinspires.ftc.team12841.subsystems.LiftSubsystem;
 
 /**This puts the hang out at the start of the hang sequence*/
 public class HangStart extends CommandBase {

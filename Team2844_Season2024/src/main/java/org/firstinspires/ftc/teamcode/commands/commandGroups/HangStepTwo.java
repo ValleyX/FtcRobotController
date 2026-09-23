@@ -1,16 +1,16 @@
-package org.firstinspires.ftc.teamcode.commands.commandGroups;
+package org.firstinspires.ftc.team12841.commands.commandGroups;
 
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.commands.hangcommands.HangExtend;
-import org.firstinspires.ftc.teamcode.commands.hangcommands.HangReset;
-import org.firstinspires.ftc.teamcode.commands.liftcommands.LiftIn;
-import org.firstinspires.ftc.teamcode.commands.liftcommands.LiftReset;
-import org.firstinspires.ftc.teamcode.commands.liftcommands.LiftTotalReset;
-import org.firstinspires.ftc.teamcode.subsystems.LiftSubsystem;
+import org.firstinspires.ftc.team12841.commands.hangcommands.HangExtend;
+import org.firstinspires.ftc.team12841.commands.hangcommands.HangReset;
+import org.firstinspires.ftc.team12841.commands.liftcommands.LiftIn;
+import org.firstinspires.ftc.team12841.commands.liftcommands.LiftReset;
+import org.firstinspires.ftc.team12841.commands.liftcommands.LiftTotalReset;
+import org.firstinspires.ftc.team12841.subsystems.LiftSubsystem;
 
 /** second step of hang sequence*/
 public class HangStepTwo extends SequentialCommandGroup {

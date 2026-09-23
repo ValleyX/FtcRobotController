@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.testcode;
+package org.firstinspires.ftc.team12841.testcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.Drivers.OdometryGlobalCoordinatePosition;
+import org.firstinspires.ftc.team12841.Drivers.OdometryGlobalCoordinatePosition;
 
 /**
  * Created by Sarthak on 6/1/2019.

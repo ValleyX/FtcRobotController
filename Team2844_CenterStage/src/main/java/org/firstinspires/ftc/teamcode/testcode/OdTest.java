@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.testcode;
+package org.firstinspires.ftc.team12841.testcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Drivers.OdometryDrive;
-import org.firstinspires.ftc.teamcode.Drivers.RobotHardware;
+import org.firstinspires.ftc.team12841.Drivers.OdometryDrive;
+import org.firstinspires.ftc.team12841.Drivers.RobotHardware;
 @Disabled
 @Autonomous(name="OdometryTest")
 public class OdTest extends LinearOpMode {

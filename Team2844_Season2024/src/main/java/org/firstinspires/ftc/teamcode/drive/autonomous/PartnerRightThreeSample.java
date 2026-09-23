@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.autonomous;
+package org.firstinspires.ftc.team12841.drive.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -7,13 +7,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Drivers.RobotHardware;
-import org.firstinspires.ftc.teamcode.commands.autocommands.AutoScoreHigh;
-import org.firstinspires.ftc.teamcode.commands.liftcommands.LiftHighChamber;
-import org.firstinspires.ftc.teamcode.commands.liftcommands.LiftTotalReset;
-import org.firstinspires.ftc.teamcode.commands.liftcommands.LiftToHumanPlayer;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystems.LiftSubsystem;
+import org.firstinspires.ftc.team12841.Drivers.RobotHardware;
+import org.firstinspires.ftc.team12841.commands.autocommands.AutoScoreHigh;
+import org.firstinspires.ftc.team12841.commands.liftcommands.LiftHighChamber;
+import org.firstinspires.ftc.team12841.commands.liftcommands.LiftTotalReset;
+import org.firstinspires.ftc.team12841.commands.liftcommands.LiftToHumanPlayer;
+import org.firstinspires.ftc.team12841.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.team12841.subsystems.LiftSubsystem;
 
 @Disabled
 @Autonomous(group = "drive") //makes it an autonomous program
