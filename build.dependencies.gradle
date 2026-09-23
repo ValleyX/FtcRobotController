@@ -1,12 +1,3 @@
-repositories {
-    // Gradle Base Stuff
-    mavenCentral()
-    google() // Needed for androidx
-    // Pedro Pathing
-    maven { url = 'https://maven.pedropathing.com' } //added by Tanner
-    maven { url = "https://mymaven.bylazar.com/releases" } //added by Tanner
-}
-
 dependencies {
     implementation 'org.firstinspires.ftc:Inspection:12.0.0'
     implementation 'org.firstinspires.ftc:Blocks:12.0.0'

@@ -16,20 +16,3 @@ plugins {
     id 'com.android.application' version '8.13.2' apply false
     id 'com.android.library' version '8.13.2' apply false
 }
-
-// This is now required because aapt2 has to be downloaded from the
-// google() repository beginning with version 3.2 of the Android Gradle Plugin
-allprojects {
-    repositories {
-        mavenCentral()
-        google()
-        // Tanner Add
-        maven { url = uri("https://mymaven.bylazar.com/releases") }
-        maven { url = uri("https://maven.pedropathing.com") }
-        maven { url = uri("https://jitpack.io") }
-    }
-}
-
-repositories {
-    mavenCentral()
-}
