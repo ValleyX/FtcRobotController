@@ -19,6 +19,8 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem(Motor intakeMotor, DigitalChannel intakeBB) {
         this.intakeBB = intakeBB;
         this.intakeMotor = intakeMotor;
+
+        intakeMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
     }
 
     public void activate(double power) {

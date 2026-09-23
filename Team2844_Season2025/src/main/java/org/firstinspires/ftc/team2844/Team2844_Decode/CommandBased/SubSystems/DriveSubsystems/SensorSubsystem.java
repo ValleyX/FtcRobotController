@@ -73,6 +73,10 @@ public class SensorSubsystem extends SubsystemBase {
         return Constants.NO_LL;
     }
 
+    public boolean isValid(){
+        return llResult != null && llResult.isValid();
+    }
+
     public void updateOrientation(double heading){
         limelight.updateRobotOrientation(heading);
     }

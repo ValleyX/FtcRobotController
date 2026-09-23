@@ -81,14 +81,14 @@ public class FarSimpleBase extends LinearOpMode {
             Actions.runBlocking(
                     new SequentialAction(
                             new SetVeloPIDSAct(subsystems.shooterSubsystem, hardwareMap, true),
-                            new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 1300)),
+                            new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 1600)),
                             new ActionDeadline(
                                     new SetVeloPIDSAct(subsystems.shooterSubsystem, hardwareMap, false),
                                     new SequentialAction(
 
                                             new SmartLineShooterAutoAct(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                                                     subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                                                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, telemetry),
+                                                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, true),
                                             reset,
 
 
@@ -97,7 +97,7 @@ public class FarSimpleBase extends LinearOpMode {
                                                     new SequentialAction(
                                                             pickup1.build(),
                                                             new ParallelAction(
-                                                                    new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 1300)),
+                                                                    new CommandAction(new VelocityShootCmd(subsystems.shooterSubsystem, () -> 1600)),
                                                                     moveToShoot2.build()
                                                             )
                                                     )
@@ -107,7 +107,7 @@ public class FarSimpleBase extends LinearOpMode {
 
                                             new SmartLineShooterAutoAct(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                                                     subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                                                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, telemetry),
+                                                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, true),
                                             reset
                                     )
                             ),

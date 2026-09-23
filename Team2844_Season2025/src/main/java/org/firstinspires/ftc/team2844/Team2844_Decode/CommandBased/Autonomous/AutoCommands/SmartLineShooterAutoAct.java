@@ -38,12 +38,13 @@ public class SmartLineShooterAutoAct implements Action {
 
     DoubleSupplier velocity;
     ElapsedTime timer;
+    double timeout;
 
     boolean init;
     public SmartLineShooterAutoAct(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem,
                                    SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem,
                                    KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem, DriveSubsystem driveSubsystem,
-                                   Telemetry telemetry){
+                                   boolean far){
 
         this.spindexerSubsystem = spindexerSubsystem;
         this.shooterFeedSubsystem = shooterFeedSubsystem;
@@ -54,10 +55,44 @@ public class SmartLineShooterAutoAct implements Action {
         this.kickSubsystem = kickSubsystem;
         this.driveSubsystem = driveSubsystem;
 
+        if(far){
+            timeout = Constants.FAR_SHOOTER_TIMEOUT;
+        } else {
+            timeout = Constants.SHOOTER_TIMEOUT;
+        }
+
         timer = new ElapsedTime();
         timer.reset();
 
         init = true;
+        velocity = () -> driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
+    }
+
+    public SmartLineShooterAutoAct(ShooterSubsystem shooterSubsystem, ShooterFeedSubsystem shooterFeedSubsystem,
+                                   SensorSubsystem sensorSubsystem, AimSubsystem aimSubsystem, SpindexerSubsystem spindexerSubsystem,
+                                   KickSubsystem kickSubsystem, IntakeSubsystem intakeSubsystem, DriveSubsystem driveSubsystem,
+                                   boolean far, DoubleSupplier velocity){
+
+        this.spindexerSubsystem = spindexerSubsystem;
+        this.shooterFeedSubsystem = shooterFeedSubsystem;
+        this.intakeSubsystem = intakeSubsystem;
+        this.shooterSubsystem = shooterSubsystem;
+        this.sensorSubsystem = sensorSubsystem;
+        this.aimSubsystem = aimSubsystem;
+        this.kickSubsystem = kickSubsystem;
+        this.driveSubsystem = driveSubsystem;
+
+        if(far){
+            timeout = Constants.FAR_SHOOTER_TIMEOUT;
+        } else {
+            timeout = Constants.SHOOTER_TIMEOUT;
+        }
+
+        timer = new ElapsedTime();
+        timer.reset();
+
+        init = true;
+        this.velocity = velocity;
     }
 
     @Override
@@ -66,8 +101,6 @@ public class SmartLineShooterAutoAct implements Action {
             timer.reset();
             init = false;
         }
-
-        velocity = () -> driveSubsystem.velocityLinReg(sensorSubsystem.getPipeline());
 
         new SequentialAction(
                 new ParallelAction(
@@ -82,9 +115,9 @@ public class SmartLineShooterAutoAct implements Action {
                 )
         ).run(telemetryPacket);
 
-        if(timer.time(TimeUnit.MILLISECONDS) < Constants.SHOOTER_TIMEOUT) {
+        if(timer.time(TimeUnit.MILLISECONDS) < timeout) {
             return true;
-        } else if(timer.time(TimeUnit.MILLISECONDS) < Constants.SHOOTER_TIMEOUT + 1000) {
+        } else if(timer.time(TimeUnit.MILLISECONDS) < timeout + 1000) {
             new FullTransferAct(shooterFeedSubsystem, intakeSubsystem, kickSubsystem).run(telemetryPacket);
             return true;
         } else{

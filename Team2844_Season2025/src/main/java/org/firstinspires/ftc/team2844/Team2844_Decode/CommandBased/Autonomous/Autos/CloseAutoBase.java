@@ -126,7 +126,7 @@ public class CloseAutoBase extends LinearOpMode {
 
                                             new SmartLineShooterAutoAct(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                                                     subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                                                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, telemetry),
+                                                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, false),
                                             reset,
 
 
@@ -145,7 +145,7 @@ public class CloseAutoBase extends LinearOpMode {
 
                                             new SmartLineShooterAutoAct(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                                                     subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                                                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, telemetry),
+                                                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, false),
                                             reset,
 
                                             new ActionDeadline(
@@ -162,7 +162,7 @@ public class CloseAutoBase extends LinearOpMode {
 
                                             new SmartLineShooterAutoAct(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                                                     subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
-                                                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, telemetry),
+                                                    subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem, false),
                                             reset
                                     )
                             ),

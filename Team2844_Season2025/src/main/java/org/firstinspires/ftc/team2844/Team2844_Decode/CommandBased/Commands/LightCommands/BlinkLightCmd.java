@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.ExtraSubsystems.LightSubsystem;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 public class BlinkLightCmd extends CommandBase {
     ElapsedTime totalTimer;
@@ -16,14 +17,16 @@ public class BlinkLightCmd extends CommandBase {
     long blinkTime;
     long totalTime;
     double prevColor;
+    boolean const1;
+    BooleanSupplier finished;
     /**
      * BlinkLightCmd
      * @param lightSubsystem
      * @param index
      * @param color1 The first color to blink
      * @param color2 The second color to blink
-     * @param blinkTime The length of each blink
-     * @param totalTime The total length of blinking
+     * @param blinkTime The length of each blink in milliseconds
+     * @param totalTime The total length of blinking in milliseconds
      * */
     public BlinkLightCmd(LightSubsystem lightSubsystem, int index, double color1, double color2, long blinkTime, long totalTime){
         totalTimer = new ElapsedTime();
@@ -37,6 +40,24 @@ public class BlinkLightCmd extends CommandBase {
         this.blinkTime = blinkTime;
         this.totalTime = totalTime;
         prevColor = lightSubsystem.getColor(index);
+        const1 = true;
+        finished = ()-> false;
+    }
+
+    public BlinkLightCmd(LightSubsystem lightSubsystem, int index, double color1, double color2, long blinkTime, BooleanSupplier finished){
+        totalTimer = new ElapsedTime();
+        totalTimer.reset();
+        blinkTimer = new ElapsedTime();
+        blinkTimer.reset();
+        this.lightSubsystem = lightSubsystem;
+        this.index = index;
+        this.color1 = color1;
+        this.color2 = color2;
+        this.blinkTime = blinkTime;
+        this.totalTime = totalTime;
+        prevColor = lightSubsystem.getColor(index);
+        const1 = false;
+        this.finished = finished;
     }
 
     @Override
@@ -59,7 +80,9 @@ public class BlinkLightCmd extends CommandBase {
 
     @Override
     public boolean isFinished(){
-        return totalTimer.time(TimeUnit.MILLISECONDS) > totalTime;
+        if(const1)
+            return totalTimer.time(TimeUnit.MILLISECONDS) > totalTime;
+        return finished.getAsBoolean();
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.AimingCommands.FullAimToLLCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.ActivateIntakeCmd;
+import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.IntakeCommands.StopIntakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.SpindexingCommands.StopUptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.TransferCommands.UptakeCmd;
 import org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.Commands.TransferCommands.UptakeExtraCmd;
@@ -56,7 +57,8 @@ public class LineShooterRegCmd extends SequentialCommandGroup {
                                 ),
                                 new ParallelCommandGroup(
                                         new StopTransferCmd(shooterFeedSubsystem),
-                                        new StopUptakeCmd(kickSubsystem)
+                                        new StopUptakeCmd(kickSubsystem),
+                                        new StopIntakeCmd(intakeSubsystem)
                                 ),
                                 shooterSubsystem::inRange
                         )
@@ -76,9 +78,4 @@ public class LineShooterRegCmd extends SequentialCommandGroup {
 
     }
 */
-    @Override
-    public boolean isFinished() {
-        //return spindexerSubsystem.empty() && !shooterFeedSubsystem.topBroken();
-        return true;
-    }
 }

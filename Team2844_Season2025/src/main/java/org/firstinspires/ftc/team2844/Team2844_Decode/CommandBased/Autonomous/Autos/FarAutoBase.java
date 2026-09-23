@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 
 
 @Disabled
-public class FarAutoBase extends CommandOpMode {
+public class FarAutoBase extends LinearOpMode {
     Subsystems subsystems;
     Pose2d initialPose;
     MecanumDrive drive;
@@ -46,10 +46,11 @@ public class FarAutoBase extends CommandOpMode {
     Action save;
 
     Supplier<Pose2d> pose2dSupplier;
+    int pipeline;
 
     public void initialize() {
         initialPose = new Pose2d(72 - (Constants.BOT_LENGTH / 2.0), -Constants.BOT_WIDTH / 2.0, Math.toRadians(-90.0));
-        subsystems = new Subsystems(hardwareMap, Constants.BLUE_PIPELINE, initialPose);
+        subsystems = new Subsystems(hardwareMap, pipeline, initialPose);
         // instantiate MecanumDrive at a particular pose.
 
 
@@ -75,7 +76,7 @@ public class FarAutoBase extends CommandOpMode {
         shootLoop = new SmartLineShooterAutoAct(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                 subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
                 subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem,
-                telemetry);
+                true);
 
         intake = new CommandAction(new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem));
 
@@ -108,7 +109,6 @@ public class FarAutoBase extends CommandOpMode {
         }
         waitForStart();
         if (isStopRequested()) return;
-        subsystems.sensorSubsystem.setPipeline(Constants.BLUE_PIPELINE);
 
         try {
             Actions.runBlocking(

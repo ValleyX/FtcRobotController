@@ -3,7 +3,6 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.D
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.ftc.FTCCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -21,7 +20,10 @@ public class DriveSubsystem extends SubsystemBase {
     public Follower follower;
     private double headingOffset;
 
+    double flDrivePower, frDrivePower, blDrivePower, brDrivePower;
+    double flTurnPower, frTurnPower, blTurnPower, brTurnPower;
 
+    boolean noTurret = false;
 
     public DriveSubsystem(HardwareMap hardwareMap, int pipeline) {
         double temp = SavedVars.startingHeading;
@@ -58,6 +60,34 @@ public class DriveSubsystem extends SubsystemBase {
         follower.setTeleOpDrive(strafeSpeed, forwardSpeed, turnSpeed, false, headingOffset);
     }
 
+    public void drive(double strafeSpeed, double forwardSpeed, double turnSpeed, DoubleSupplier heading, boolean noTurret) {
+        drive.updatePoseEstimate();
+        double botHeading = heading.getAsDouble();
+        //botHeading = 0;
+
+        //code for field centric (Idk how it works, pretty sure it's magic or makes triangles or something)
+        //REMEMBER IT USES RADIANS
+        double rotX = strafeSpeed * Math.cos(botHeading) - forwardSpeed * Math.sin(botHeading);
+        double rotY = strafeSpeed * Math.sin(botHeading) + forwardSpeed * Math.cos(botHeading);
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(turnSpeed), 1);
+        double frontLeftPower = (rotY - (rotX) + turnSpeed) / denominator;
+        double backLeftPower = (rotY + rotX + turnSpeed) / denominator;
+        double frontRightPower = (rotY + (rotX) - turnSpeed) / denominator;
+        double backRightPower = (rotY - rotX - turnSpeed) / denominator;
+
+        frontLeftPower = Math.min(1, Math.max(frontLeftPower  * Constants.DRIVE_CORRECTION, -1));
+        backLeftPower = Math.min(1, Math.max(backLeftPower  * Constants.DRIVE_CORRECTION, -1));
+        frontRightPower = Math.min(1, Math.max(frontRightPower  * Constants.DRIVE_CORRECTION, -1));
+        backRightPower = Math.min(1, Math.max(backRightPower  * Constants.DRIVE_CORRECTION, -1));
+
+        noTurret = true;
+
+        flDrivePower = frontLeftPower;
+        frDrivePower = frontRightPower;
+        blDrivePower = backLeftPower;
+        brDrivePower = backRightPower;
+    }
+
     public void drive(double strafeSpeed, double forwardSpeed, double turnSpeed, DoubleSupplier heading) {
         drive.updatePoseEstimate();
         double botHeading = heading.getAsDouble();
@@ -78,19 +108,27 @@ public class DriveSubsystem extends SubsystemBase {
         frontRightPower = Math.min(1, Math.max(frontRightPower  * Constants.DRIVE_CORRECTION, -1));
         backRightPower = Math.min(1, Math.max(backRightPower  * Constants.DRIVE_CORRECTION, -1));
 
+        noTurret = false;
+
         drive.leftFront.setPower(frontLeftPower);
-        drive.rightFront.setPower(frontRightPower);
         drive.leftBack.setPower(backLeftPower);
         drive.rightBack.setPower(backRightPower);
+        drive.rightFront.setPower(frontRightPower);
     }
 
-    /*public void setDrivePower(double frontLeft, double backLeft, double frontRight, double backRight) {
+    public void setAlignPower(double fl, double fr, double bl, double br) {
+        flTurnPower = br;
+        frTurnPower = fr;
+        blTurnPower = bl;
+        brTurnPower = fl;
+    }
 
-        drive.leftFront.setPower(frontLeft);
-        drive.rightFront.setPower(frontRight);
-        drive.leftBack.setPower(backLeft);
-        drive.rightBack.setPower(backRight);
-    }*/
+    public void calculateDrivePowers(){
+        drive.leftFront.setPower(Math.max(Math.min(flDrivePower + flTurnPower, 1), -1));
+        drive.rightFront.setPower(Math.max(Math.min(frDrivePower + frTurnPower, 1), -1));
+        drive.leftBack.setPower(Math.max(Math.min(blDrivePower + blTurnPower, 1), -1));
+        drive.rightBack.setPower(Math.max(Math.min(brDrivePower + brTurnPower, 1), -1));
+    }
 
 
     public double getRobotHeading() {
@@ -168,7 +206,8 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public double getPinpointTurretAngle(int pipeline) {
-        double botX = getBotX(), botY = getBotY();
+        double botX = getBotX();
+        double botY = getBotY();
         double tempHeading = getRobotHeading();
         double angle = 0.0;
 
@@ -177,10 +216,12 @@ public class DriveSubsystem extends SubsystemBase {
 
         double limelightX, limelightY;
         if (pipeline == Constants.BLUE_PIPELINE || pipeline == Constants.BLUE_PIPELINE_MOTIF) {
-            limelightX = Constants.BLUE_APRILTAG_X; limelightY = Constants.BLUE_APRILTAG_Y;
+            limelightX = Constants.BLUE_APRILTAG_X;
+            limelightY = Constants.BLUE_APRILTAG_Y;
             angle = 270.0 - Math.toDegrees(Math.atan2(-distanceFormula(limelightX, limelightY, shooterX, limelightY), -distanceFormula(limelightX, limelightY, limelightX, shooterY)));
         } else if (pipeline == Constants.RED_PIPELINE || pipeline == Constants.RED_PIPELINE_MOTIF) {
-            limelightX = Constants.RED_APRILTAG_X; limelightY = Constants.RED_APRILTAG_Y;
+            limelightX = Constants.RED_APRILTAG_X;
+            limelightY = Constants.RED_APRILTAG_Y;
             angle = 90.0 + Math.toDegrees(Math.atan2(-distanceFormula(limelightX, limelightY, shooterX, limelightY), -distanceFormula(limelightX, limelightY, limelightX, shooterY)));
         }
 
@@ -189,6 +230,25 @@ public class DriveSubsystem extends SubsystemBase {
         else if (turretAngle < 0.0) turretAngle += 360.0;
         return Math.max(Math.min(Constants.MAX_DEGREE, turretAngle), Constants.MIN_DEGREE);
     }
+
+    /*public double getAlignDegrees(int pipeline) {
+        double botX = getBotX();
+        double botY = getBotY();
+        double tempHeading = getRobotHeading();
+        double angle = 0.0;
+
+        double shooterX = botX + Constants.RADIUS_FROM_CENTER * Math.cos(Math.toRadians(tempHeading));
+        double shooterY = botY + Constants.RADIUS_FROM_CENTER * Math.sin(Math.toRadians(tempHeading));
+
+        double limelightX, limelightY;
+        if (pipeline == Constants.BLUE_PIPELINE || pipeline == Constants.BLUE_PIPELINE_MOTIF) {
+            limelightX = Constants.BLUE_APRILTAG_X;
+            limelightY = Constants.BLUE_APRILTAG_Y;
+        } else if (pipeline == Constants.RED_PIPELINE || pipeline == Constants.RED_PIPELINE_MOTIF) {
+            limelightX = Constants.RED_APRILTAG_X;
+            limelightY = Constants.RED_APRILTAG_Y;
+        }
+    }*/
 
     public double getPinpointTurretAngleAuto(double botX, double botY, double heading, int pipeline) {
         double limelightX = 0.0, limelightY = 0.0;
@@ -240,6 +300,8 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         drive.updatePoseEstimate();
+        if(noTurret)
+            calculateDrivePowers();
         if (follower != null) follower.update();
     }
 }
