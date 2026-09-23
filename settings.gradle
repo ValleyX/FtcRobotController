@@ -8,7 +8,8 @@ pluginManagement {
 
 include ':FtcRobotController'
 include ':Team2844_Season2025'
-// include ':Team12841_Season2025' // Change this when szns change
+include ':Team2844_Season2026'
+include ':Team12841_Season2026'
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
