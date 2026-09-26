@@ -72,7 +72,7 @@ public class BlueFar extends LinearOpMode {
         shootLoop = new SmartLineShooterAutoAct(subsystems.shooterSubsystem, subsystems.shooterFeedSubsystem,
                 subsystems.sensorSubsystem, subsystems.aimSubsystem, subsystems.spindexerSubsystem,
                 subsystems.kickSubsystem, subsystems.intakeSubsystem, subsystems.mecDriveSubsystem,
-                telemetry);
+                true);
 
         intake = new CommandAction(new IntakeLineCmd(subsystems.shooterFeedSubsystem, subsystems.intakeSubsystem, subsystems.spindexerSubsystem, subsystems.kickSubsystem));
 

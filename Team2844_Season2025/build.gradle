@@ -21,6 +21,30 @@ android {
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
+
+    // The Control Hub runs a 32-bit userspace, so the arm64-v8a copies of the
+    // native libraries are never loaded there -- and they are not small: OpenCV
+    // alone ships 20.9 MB of arm64 on top of 15.0 MB of armv7, which is most of
+    // why this APK reached 77 MB. Dropping arm64 removes ~24 MB.
+    //
+    // If you ever need to run the Robot Controller app on a 64-bit phone rather
+    // than a Control Hub, add "arm64-v8a" back to this list.
+    // build.common.gradle sets abiFilters per build type, and build-type values
+    // win over defaultConfig, so the override has to happen there too.
+    buildTypes {
+        debug {
+            ndk {
+                abiFilters.clear()
+                abiFilters.add("armeabi-v7a")
+            }
+        }
+        release {
+            ndk {
+                abiFilters.clear()
+                abiFilters.add("armeabi-v7a")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -34,7 +58,9 @@ dependencies {
 
     // TC Add
     implementation 'com.pedropathing:ftc:2.1.1'
-    implementation 'com.pedropathing:telemetry:1.0.0'
+    // com.pedropathing:telemetry removed: nothing imports com.pedropathing.telemetry.
+    // The Panels telemetry that valleyLib's CommandOpMode uses comes from
+    // com.bylazar:fullpanels below.
     implementation 'com.bylazar:fullpanels:1.0.12'
     // End TC Add
 
@@ -44,7 +70,9 @@ dependencies {
 
     //*JAE Add
     // Check for the latest version on GitHub
-    implementation 'org.ftclib.ftclib:vision:2.1.0' // vision
+    // org.ftclib.ftclib:vision removed: nothing imports it. Note this does NOT
+    // remove OpenCV -- org.firstinspires.ftc:Vision pulls easyopencv in on its
+    // own, so the 36 MB of libopencv_java4.so is not optional.
     implementation 'org.ftclib.ftclib:core:2.1.1' // core
     //*end JAE Add
 

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.subsystems
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.vcs.valleylib.core.time.RobotClock;
 import com.vcs.valleylib.ftc.pedro.PedroSubsystem;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.PedroConstants;
@@ -18,8 +19,27 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.RobotConsta
  */
 public class DriveSubsystem extends PedroSubsystem {
 
+    /**
+     * How long the follower may run without getting measurably closer to the end
+     * of its path before the watchdog assumes something is wrong and cuts power.
+     *
+     * <p>Generous enough that a slow, heavily loaded, or briefly blocked robot is
+     * not tripped, tight enough that nothing pushes into a wall for long.
+     */
+    private static final double NO_PROGRESS_TIMEOUT_SECONDS = 2.5;
+
+    /** Inches of progress toward the endpoint that counts as "still working". */
+    private static final double PROGRESS_EPSILON_INCHES = 0.5;
+
     private double speedMultiplier = 1.0;
     private boolean babyMode = false;
+
+    /* Runaway watchdog state. */
+    private double bestDistanceToEnd = Double.POSITIVE_INFINITY;
+    private double lastProgressSeconds = 0.0;
+    private boolean wasFollowing = false;
+    private int lastChainIndex = -1;
+    private String faultReason = null;
 
     public DriveSubsystem(HardwareMap hardwareMap, Pose startingPose) {
         super(hardwareMap, PedroConstants.createFollower(hardwareMap));
@@ -64,8 +84,113 @@ public class DriveSubsystem extends PedroSubsystem {
                 true);
     }
 
+    /**
+     * Cuts drivetrain power for real.
+     *
+     * <p>Zeroing the teleop drive vector is not enough on its own: if the
+     * follower is in path-following mode it ignores that vector entirely and
+     * keeps driving. {@code breakFollowing()} zeroes and floats all four motors
+     * and drops the follower out of whatever mode it was in.
+     */
     public void stop() {
+        follower.breakFollowing();
         follower.setTeleOpDrive(0, 0, 0, false);
+    }
+
+    /**
+     * Watchdog: cuts power when the follower is driving but getting nowhere.
+     *
+     * <p>A bad localizer sign, a mis-set pod offset, or a physical block all look
+     * the same from here: the follower stays busy, commands power, and the
+     * distance to the end of the path stops falling. Left alone that means four
+     * mecanum motors stalled at full power for the rest of the OpMode, which is
+     * enough current to brown out or damage a Control Hub. So the drivetrain is
+     * the thing that has to notice, not the individual commands.
+     *
+     * <p>Once tripped the fault latches until the next path starts, so a command
+     * cannot immediately re-drive into the same stall.
+     */
+    @Override
+    public void periodic() {
+        super.periodic();
+        checkForRunaway();
+    }
+
+    private void checkForRunaway() {
+        boolean following = follower.isBusy();
+
+        if (!following) {
+            wasFollowing = false;
+            return;
+        }
+
+        double now = RobotClock.seconds();
+
+        // A new path resets the watchdog and clears any latched fault.
+        if (!wasFollowing) {
+            wasFollowing = true;
+            lastChainIndex = -1;
+            bestDistanceToEnd = Double.POSITIVE_INFINITY;
+            lastProgressSeconds = now;
+            faultReason = null;
+        }
+
+        if (follower.isLocalizationNAN()) {
+            trip("localizer returned NaN");
+            return;
+        }
+
+        Pose pose = follower.getPose();
+        if (Double.isNaN(pose.getX()) || Double.isNaN(pose.getY()) || Double.isNaN(pose.getHeading())) {
+            trip("pose went NaN");
+            return;
+        }
+
+        // An in-place turn is a hold, not a path: there is no endpoint to close
+        // on, so the progress test does not apply. Turns are bounded by the
+        // timeout TurnToHeadingCommand carries instead.
+        if (follower.isTurning() || follower.getCurrentPath() == null) {
+            lastProgressSeconds = now;
+            return;
+        }
+
+        // Each leg of a chain has its own endpoint, so the distance jumps up when
+        // the follower advances. Re-baseline instead of reading that as a stall.
+        int chainIndex = follower.getChainIndex();
+        if (chainIndex != lastChainIndex) {
+            lastChainIndex = chainIndex;
+            bestDistanceToEnd = Double.POSITIVE_INFINITY;
+            lastProgressSeconds = now;
+        }
+
+        double distance = distanceToPathEnd(pose);
+        if (distance < bestDistanceToEnd - PROGRESS_EPSILON_INCHES) {
+            bestDistanceToEnd = distance;
+            lastProgressSeconds = now;
+        } else if (now - lastProgressSeconds > NO_PROGRESS_TIMEOUT_SECONDS) {
+            trip(String.format("no progress for %.1fs, %.1f in from path end",
+                    now - lastProgressSeconds, distance));
+        }
+    }
+
+    private double distanceToPathEnd(Pose pose) {
+        Pose end = follower.getCurrentPath().getLastControlPoint();
+        return Math.hypot(end.getX() - pose.getX(), end.getY() - pose.getY());
+    }
+
+    private void trip(String reason) {
+        faultReason = reason;
+        follower.breakFollowing();
+        wasFollowing = false;
+    }
+
+    /** Non-null when the watchdog has cut power; cleared when the next path starts. */
+    public String getFaultReason() {
+        return faultReason;
+    }
+
+    public boolean hasFault() {
+        return faultReason != null;
     }
 
     private static double deadband(double value) {

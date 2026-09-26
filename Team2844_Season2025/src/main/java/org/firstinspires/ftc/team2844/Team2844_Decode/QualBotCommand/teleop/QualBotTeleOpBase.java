@@ -37,6 +37,9 @@ public abstract class QualBotTeleOpBase extends CommandOpMode {
 
     @Override
     protected void run() {
+        telemetryBus.put("Drive fault", robot.drive.hasFault()
+                ? robot.drive.getFaultReason()
+                : "none");
         telemetryBus.put("Baby mode", robot.drive.isBabyMode());
         telemetryBus.put("Aim assist", container.isAimAssistEnabled());
 

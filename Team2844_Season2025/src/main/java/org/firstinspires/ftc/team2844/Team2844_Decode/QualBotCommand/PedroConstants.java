@@ -84,24 +84,48 @@ public final class PedroConstants {
      * left pod on {@code leftFront}, right pod on {@code rightFront},
      * strafe pod on {@code rightBack}.
      *
-     * <p>TODO: verify the three encoder directions on the robot. Road Runner
-     * read the encoders raw, while Pedro folds in the direction of the motor the
-     * encoder is plugged into, so the RR reversals below do not necessarily
-     * carry over one-for-one. Push the robot forward and confirm x grows; strafe
-     * left and confirm y grows.
+     * <p><b>Encoder directions are not the Road Runner values.</b> Road Runner's
+     * {@code RawEncoder} reads ticks raw, but Pedro's {@link Encoder} multiplies
+     * by the direction of the <em>motor</em> the encoder is plugged into:
+     * {@code getMultiplier() = direction * (motor.getDirection() == FORWARD ? 1 : -1)}.
+     * Since the drivetrain config below reverses both left motors, copying Road
+     * Runner's reversals across double-negates the left pod.
+     *
+     * <p>The effective sign each pod needs, to match the tuning the pod offsets
+     * came from, is left {@code -1}, right {@code -1}, strafe {@code +1}. Working
+     * back through the motor directions:
+     * <table>
+     *   <tr><th>pod</th><th>port</th><th>motor dir</th><th>needed cfg</th></tr>
+     *   <tr><td>left</td><td>leftFront</td><td>REVERSE (-1)</td><td>FORWARD</td></tr>
+     *   <tr><td>right</td><td>rightFront</td><td>FORWARD (+1)</td><td>REVERSE</td></tr>
+     *   <tr><td>strafe</td><td>rightBack</td><td>FORWARD (+1)</td><td>FORWARD</td></tr>
+     * </table>
+     *
+     * <p>Getting this wrong is not a small error. The localizer derives forward
+     * travel from a positively weighted sum of the two parallel pods, so an
+     * inverted left pod very nearly cancels it: forward reads about 3.7% of
+     * actual, and straight-line driving also injects a false strafe of roughly
+     * 1.6x the real travel. The follower then sees a robot that never makes
+     * progress and drives at full power indefinitely. Verify on the robot before
+     * running a path: push it forward a known distance and check the reported x
+     * matches, then strafe left and check y.
      */
     public static ThreeWheelIMUConstants localizerConstants() {
         return new ThreeWheelIMUConstants()
                 .forwardTicksToInches(IN_PER_TICK)
                 .strafeTicksToInches(IN_PER_TICK)
-                .turnTicksToInches(IN_PER_TICK)
+                // Despite the name, this localizer uses this value as ticks to
+                // *radians* (TURN_TICKS_TO_RADIANS = constants.turnTicksToInches),
+                // and only when the IMU is unavailable. One tick on one pod turns
+                // the robot by IN_PER_TICK over the pod separation.
+                .turnTicksToInches(IN_PER_TICK / (LEFT_POD_Y - RIGHT_POD_Y))
                 .leftPodY(LEFT_POD_Y)
                 .rightPodY(RIGHT_POD_Y)
                 .strafePodX(STRAFE_POD_X)
                 .leftEncoder_HardwareMapName(RobotConstants.LEFT_FRONT_MOTOR)
                 .rightEncoder_HardwareMapName(RobotConstants.RIGHT_FRONT_MOTOR)
                 .strafeEncoder_HardwareMapName(RobotConstants.RIGHT_BACK_MOTOR)
-                .leftEncoderDirection(Encoder.REVERSE)
+                .leftEncoderDirection(Encoder.FORWARD)
                 .rightEncoderDirection(Encoder.REVERSE)
                 .strafeEncoderDirection(Encoder.FORWARD)
                 .IMU_HardwareMapName(RobotConstants.IMU)
