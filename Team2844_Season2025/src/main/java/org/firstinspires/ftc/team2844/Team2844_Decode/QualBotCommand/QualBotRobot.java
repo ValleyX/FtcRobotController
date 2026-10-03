@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand;
 
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
@@ -30,7 +30,7 @@ public class QualBotRobot {
     /**
      * @param startingPose where the robot is sitting on the field, in Pedro
      *                     coordinates — build it with
-     *                     {@link PedroConstants#ftcPose(double, double, double)}
+     *                     {@link PedroConstants#FIELD}
      * @param pipeline     Limelight pipeline: 0 for blue, 1 for red
      */
     public QualBotRobot(HardwareMap hardwareMap, Pose startingPose, int pipeline) {

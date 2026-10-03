@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.tuning;
 
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.PedroConstants;
@@ -23,7 +24,7 @@ public class ShooterPidTuningTeleOp extends QualBotTeleOpBase {
 
     @Override
     protected void initialize() {
-        robot = new QualBotRobot(hardwareMap, PedroConstants.ftcPose(0, 0, 0), limelightPipeline());
+        robot = new QualBotRobot(hardwareMap, new Pose(0, 0, 0), limelightPipeline());
         tuningContainer = new ShooterPidTuningContainer(robot, gamepad1, gamepad2);
         container = tuningContainer;
     }

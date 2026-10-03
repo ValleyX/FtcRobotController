@@ -28,8 +28,58 @@ android {
 //        }
         jniLibs.useLegacyPackaging true
     }
+
+    // The Control Hub runs a 32-bit userspace, so the arm64-v8a copies of the
+    // native libraries are never loaded there -- and they are not small: OpenCV
+    // alone ships 20.9 MB of arm64 on top of 15.0 MB of armv7. Dropping arm64
+    // takes about 24 MB off the APK, which matters because a Control Hub install
+    // has to copy the APK and then run dex2oat over all of it.
+    //
+    // build.common.gradle sets abiFilters per build type, and build-type values
+    // win over defaultConfig, so the override has to happen there too.
+    //
+    // If you ever need to run the Robot Controller app on a 64-bit phone rather
+    // than a Control Hub, add "arm64-v8a" back to these lists.
+    buildTypes {
+        debug {
+            ndk {
+                abiFilters.clear()
+                abiFilters.add("armeabi-v7a")
+            }
+        }
+        release {
+            ndk {
+                abiFilters.clear()
+                abiFilters.add("armeabi-v7a")
+            }
+        }
+    }
 }
 
 dependencies {
     implementation project(':FtcRobotController')
+
+    // valleyLib command-based framework.
+    //
+    // Pedro Pathing 3 (core + revhub), Panels, and the org.jspecify exclude all
+    // arrive through build.dependencies.gradle above, which this module already
+    // applies -- valleyLib is the only piece it was missing.
+    //
+    // Deliberately NOT carried over from Team2844_Season2025: Road Runner,
+    // FTC Dashboard and FTCLib. That module needs them for its legacy
+    // Road Runner and FTCLib code; this one is a clean start on Pedro 3 and
+    // valleyLib, and every unused library is dex and APK weight on a device that
+    // is already tight on both. Add them back if you actually import them.
+    implementation 'com.github.ValleyX.valleyLib:core:2.0.0'
+    implementation 'com.github.ValleyX.valleyLib:ftc:2.0.0'
+
+    // Pedro Pathing's interactive autotuner, which the pedro/ package uses.
+    // Brings in Sloth (classpath scanning, from repo.dairy.foundation) and
+    // nanohttpd, because the tuner serves a web UI off the Control Hub.
+    //
+    // Comment this out for a competition build if you want the smallest APK and
+    // the fewest things hooking Robot Controller startup: the only code that
+    // needs it is pedro/Tuning.java and pedro/procedures/, so removing those two
+    // along with this line leaves Constants.java and the robot code intact.
+    implementation 'com.pedropathing:tuning:1.0.1'
 }

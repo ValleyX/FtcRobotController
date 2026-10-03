@@ -1,16 +1,23 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.autos;
 
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.api.PoseFactory;
+import com.pedropathing.math.Pose;
 
-import static org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.PedroConstants.ftcPose;
+import org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.PedroConstants;
 
 /**
  * Waypoints for the near-goal auto, one set per alliance.
  *
- * <p>These are the same field positions the Road Runner version drove to,
- * written in the same centre-origin coordinates. The red set is very nearly the
- * blue set mirrored across y, but not exactly — the second pickup run was tuned
- * separately on each side — so both are spelled out rather than derived.
+ * <p>These are the same field positions the Road Runner version drove to, in the
+ * same centre-origin coordinates -- Pedro 3 takes bare poses, so the numbers
+ * below are the original literals with no conversion.
+ *
+ * <p>The mirroring is now Pedro's job: {@link PedroConstants#RED} is a
+ * {@link PoseFactory} carrying {@code mirrorY(0)}, which maps {@code (x, y, h)}
+ * to {@code (x, -y, -h)}. Every pose is written once, in blue coordinates, and
+ * the factory supplies the alliance. The one place the two sides genuinely differ
+ * -- the second pickup run, which was tuned separately on each side -- stays an
+ * explicit constructor argument.
  *
  * <p>Angles that look arbitrary come from the original: {@code PI/3.5} is the
  * 51.4 degree shooting heading, and the first shot sits 5 degrees off the
@@ -45,37 +52,32 @@ public class CloseAutoGeometry {
     /** Third and final shooting position. */
     public final Pose shoot3;
 
-    private CloseAutoGeometry(int sign,
+    private CloseAutoGeometry(PoseFactory alliance,
                               double pickup2EntryY,
                               double pickup2FarY,
                               double pickup2BackY) {
-        start = pose(55, 45, 45, sign);
-        shoot1 = pose(40, 25, 50, sign);
+        start = alliance.of(55, 45, 45);
+        shoot1 = alliance.of(40, 25, 50);
 
-        pickup1Entry = pose(12, 25, 90, sign);
-        pickup1Far = pose(12, 60, 90, sign);
-        pickup1Back = pose(12, 45, 90, sign);
+        pickup1Entry = alliance.of(12, 25, 90);
+        pickup1Far = alliance.of(12, 60, 90);
+        pickup1Back = alliance.of(12, 45, 90);
 
-        shoot2 = pose(24, 24, SHOOT_HEADING, sign);
+        shoot2 = alliance.of(24, 24, SHOOT_HEADING);
 
-        pickup2Entry = pose(-12, pickup2EntryY, 90, sign);
-        pickup2Far = pose(-12, pickup2FarY, 90, sign);
-        pickup2Back = pose(-12, pickup2BackY, 90, sign);
+        pickup2Entry = alliance.of(-12, pickup2EntryY, 90);
+        pickup2Far = alliance.of(-12, pickup2FarY, 90);
+        pickup2Back = alliance.of(-12, pickup2BackY, 90);
 
-        exit2 = pose(-12, 35, 90, sign);
-        shoot3 = pose(36, 20, SHOOT_HEADING, sign);
-    }
-
-    /** Mirrors y and heading for the red side; blue passes {@code sign = 1}. */
-    private static Pose pose(double x, double y, double headingDegrees, int sign) {
-        return ftcPose(x, y * sign, Math.toRadians(headingDegrees * sign));
+        exit2 = alliance.of(-12, 35, 90);
+        shoot3 = alliance.of(36, 20, SHOOT_HEADING);
     }
 
     public static CloseAutoGeometry blue() {
-        return new CloseAutoGeometry(1, 18, 66, 50);
+        return new CloseAutoGeometry(PedroConstants.BLUE, 18, 66, 50);
     }
 
     public static CloseAutoGeometry red() {
-        return new CloseAutoGeometry(-1, 24, 66, 50);
+        return new CloseAutoGeometry(PedroConstants.RED, 24, 66, 50);
     }
 }

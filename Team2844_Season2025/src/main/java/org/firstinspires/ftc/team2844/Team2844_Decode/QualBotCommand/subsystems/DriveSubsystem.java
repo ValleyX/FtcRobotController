@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.subsystems;
 
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.math.MathFunctions;
+import com.pedropathing.follower.ManualDrive;
+import com.pedropathing.math.Pose;
+import com.pedropathing.utils.Angle;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.vcs.valleylib.core.time.RobotClock;
 import com.vcs.valleylib.ftc.pedro.PedroSubsystem;
@@ -16,6 +17,12 @@ import org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.RobotConsta
  * field-centric teleop drive plus the pose estimate the rest of the robot reads
  * its heading from. {@code PedroSubsystem.periodic()} calls {@code follower.update()}
  * once per scheduler loop, so nothing else needs to.
+ *
+ * <p>Pedro 3 replaced the old teleop-drive entry points with a single
+ * {@code manual(DrivePowers)} that is robot-centric, plus {@link ManualDrive}
+ * helpers that rotate driver input into the field frame. Turning in place is no
+ * longer a dedicated call either: it is a {@code hold} of the current position
+ * with a new heading.
  */
 public class DriveSubsystem extends PedroSubsystem {
 
@@ -38,26 +45,29 @@ public class DriveSubsystem extends PedroSubsystem {
     private double bestDistanceToEnd = Double.POSITIVE_INFINITY;
     private double lastProgressSeconds = 0.0;
     private boolean wasFollowing = false;
-    private int lastChainIndex = -1;
+    private int lastPathIndex = -1;
     private String faultReason = null;
 
     public DriveSubsystem(HardwareMap hardwareMap, Pose startingPose) {
         super(hardwareMap, PedroConstants.createFollower(hardwareMap));
-        follower.setStartingPose(startingPose);
+        follower.setPose(startingPose);
     }
 
     public DriveSubsystem(HardwareMap hardwareMap) {
-        this(hardwareMap, PedroConstants.ftcPose(0, 0, 0));
+        this(hardwareMap, new Pose(0, 0, 0));
     }
 
     /* ===================== Teleop drive ===================== */
 
     /**
-     * Hands the follower over to manual control. Call once when teleop starts;
-     * path following and teleop drive are mutually exclusive modes.
+     * Puts the follower into manual mode with zero output, ready for driver input.
+     *
+     * <p>Pedro 3 has no explicit "start teleop" call -- the first {@code manual()}
+     * switches mode -- but doing it once at start means the robot is not sitting
+     * in a hold from whatever auto left behind.
      */
     public void startTeleOp() {
-        follower.startTeleopDrive(true);
+        follower.manual(0.0, 0.0, 0.0);
     }
 
     /**
@@ -68,44 +78,58 @@ public class DriveSubsystem extends PedroSubsystem {
      * @param turn    +1 turns counter-clockwise
      */
     public void driveFieldCentric(double forward, double strafe, double turn) {
-        follower.setTeleOpDrive(
-                deadband(forward) * speedMultiplier,
-                deadband(strafe) * speedMultiplier,
-                deadband(turn) * speedMultiplier,
-                false);
+        follower.manual(ManualDrive.fieldCentric(
+                scale(forward),
+                scale(strafe),
+                scale(turn),
+                follower.pose().heading()));
     }
 
     /** Same as {@link #driveFieldCentric} but relative to the robot's own nose. */
     public void driveRobotCentric(double forward, double strafe, double turn) {
-        follower.setTeleOpDrive(
-                deadband(forward) * speedMultiplier,
-                deadband(strafe) * speedMultiplier,
-                deadband(turn) * speedMultiplier,
-                true);
+        follower.manual(scale(forward), scale(strafe), scale(turn));
     }
 
-    /**
-     * Cuts drivetrain power for real.
-     *
-     * <p>Zeroing the teleop drive vector is not enough on its own: if the
-     * follower is in path-following mode it ignores that vector entirely and
-     * keeps driving. {@code breakFollowing()} zeroes and floats all four motors
-     * and drops the follower out of whatever mode it was in.
+    private double scale(double value) {
+        double deadbanded = Math.abs(value) < RobotConstants.STICK_DEADBAND ? 0.0 : value;
+        return deadbanded * speedMultiplier;
+    }
+
+    /*
+     * stop() comes from PedroSubsystem and calls follower.stop(), which latches
+     * the follower into IDLE. Pedro 3's update() calls drivetrain.stop() every
+     * cycle while idle, so that genuinely cuts power and keeps it cut -- unlike
+     * Pedro 2, where zeroing the teleop vector was ignored during path following.
      */
-    public void stop() {
-        follower.breakFollowing();
-        follower.setTeleOpDrive(0, 0, 0, false);
+
+    /**
+     * Caps follower speed as a fraction of the robot's maximum achievable
+     * velocity, taking effect immediately.
+     *
+     * <p>Pedro 3 dropped {@code setMaxPower} and exposes the cap as a Foresight
+     * {@code ConfigVar} instead. valleyLib reaches it through a protected hook,
+     * and its own {@code setMaxSpeed} returns a Command -- convenient for a
+     * routine, awkward for one-time setup -- so this sets it directly.
+     *
+     * @param maxSpeed fraction of maximum velocity, or
+     *                 {@link PedroSubsystem#NO_SPEED_LIMIT} to remove the cap
+     */
+    public void applyMaxSpeed(double maxSpeed) {
+        com.pedropathing.config.ConfigVar<Double> cap = maxPathSpeed();
+        if (cap != null) {
+            cap.set(maxSpeed);
+        }
     }
 
     /**
      * Watchdog: cuts power when the follower is driving but getting nowhere.
      *
      * <p>A bad localizer sign, a mis-set pod offset, or a physical block all look
-     * the same from here: the follower stays busy, commands power, and the
-     * distance to the end of the path stops falling. Left alone that means four
-     * mecanum motors stalled at full power for the rest of the OpMode, which is
-     * enough current to brown out or damage a Control Hub. So the drivetrain is
-     * the thing that has to notice, not the individual commands.
+     * the same from here: the follower keeps commanding power and the distance to
+     * the end of the path stops falling. Left alone that means four mecanum
+     * motors stalled at full power for the rest of the OpMode, which is enough
+     * current to brown out or damage a Control Hub. So the drivetrain is the
+     * thing that has to notice, not the individual commands.
      *
      * <p>Once tripped the fault latches until the next path starts, so a command
      * cannot immediately re-drive into the same stall.
@@ -117,9 +141,10 @@ public class DriveSubsystem extends PedroSubsystem {
     }
 
     private void checkForRunaway() {
-        boolean following = follower.isBusy();
-
-        if (!following) {
+        // Only path following is watched. A hold -- which is both an in-place turn
+        // and what Pedro parks in at the end of a path -- has no endpoint to close
+        // on, and is bounded by the timeout TurnToHeadingCommand carries.
+        if (!follower.following()) {
             wasFollowing = false;
             return;
         }
@@ -129,41 +154,30 @@ public class DriveSubsystem extends PedroSubsystem {
         // A new path resets the watchdog and clears any latched fault.
         if (!wasFollowing) {
             wasFollowing = true;
-            lastChainIndex = -1;
+            lastPathIndex = -1;
             bestDistanceToEnd = Double.POSITIVE_INFINITY;
             lastProgressSeconds = now;
             faultReason = null;
         }
 
-        if (follower.isLocalizationNAN()) {
-            trip("localizer returned NaN");
-            return;
-        }
-
-        Pose pose = follower.getPose();
-        if (Double.isNaN(pose.getX()) || Double.isNaN(pose.getY()) || Double.isNaN(pose.getHeading())) {
+        // Pedro 3 dropped isLocalizationNAN(), so check the pose directly.
+        Pose pose = follower.pose();
+        if (Double.isNaN(pose.x()) || Double.isNaN(pose.y()) || Double.isNaN(pose.heading())) {
             trip("pose went NaN");
             return;
         }
 
-        // An in-place turn is a hold, not a path: there is no endpoint to close
-        // on, so the progress test does not apply. Turns are bounded by the
-        // timeout TurnToHeadingCommand carries instead.
-        if (follower.isTurning() || follower.getCurrentPath() == null) {
-            lastProgressSeconds = now;
-            return;
-        }
-
-        // Each leg of a chain has its own endpoint, so the distance jumps up when
-        // the follower advances. Re-baseline instead of reading that as a stall.
-        int chainIndex = follower.getChainIndex();
-        if (chainIndex != lastChainIndex) {
-            lastChainIndex = chainIndex;
+        // Belt and braces: distanceToEndpoint() measures to the end of the whole
+        // path, so it should fall monotonically, but re-baseline if the follower
+        // reports a new segment rather than reading the jump as a stall.
+        int pathIndex = follower.pathIndex();
+        if (pathIndex != lastPathIndex) {
+            lastPathIndex = pathIndex;
             bestDistanceToEnd = Double.POSITIVE_INFINITY;
             lastProgressSeconds = now;
         }
 
-        double distance = distanceToPathEnd(pose);
+        double distance = follower.distanceToEndpoint();
         if (distance < bestDistanceToEnd - PROGRESS_EPSILON_INCHES) {
             bestDistanceToEnd = distance;
             lastProgressSeconds = now;
@@ -173,14 +187,9 @@ public class DriveSubsystem extends PedroSubsystem {
         }
     }
 
-    private double distanceToPathEnd(Pose pose) {
-        Pose end = follower.getCurrentPath().getLastControlPoint();
-        return Math.hypot(end.getX() - pose.getX(), end.getY() - pose.getY());
-    }
-
     private void trip(String reason) {
         faultReason = reason;
-        follower.breakFollowing();
+        follower.stop();
         wasFollowing = false;
     }
 
@@ -191,10 +200,6 @@ public class DriveSubsystem extends PedroSubsystem {
 
     public boolean hasFault() {
         return faultReason != null;
-    }
-
-    private static double deadband(double value) {
-        return Math.abs(value) < RobotConstants.STICK_DEADBAND ? 0.0 : value;
     }
 
     /* ===================== Baby mode ===================== */
@@ -215,16 +220,14 @@ public class DriveSubsystem extends PedroSubsystem {
 
     /* ===================== Pose and heading ===================== */
 
-    public Pose getPose() {
-        return follower.getPose();
-    }
+    /* getPose() comes from PedroSubsystem and returns follower.pose(). */
 
     public void setPose(Pose pose) {
         follower.setPose(pose);
     }
 
     public double getHeadingRadians() {
-        return follower.getPose().getHeading();
+        return follower.pose().heading();
     }
 
     public double getHeadingDegrees() {
@@ -234,17 +237,22 @@ public class DriveSubsystem extends PedroSubsystem {
     /**
      * Zeroes the heading in place, keeping the current x/y.
      *
-     * <p>Stands in for the old {@code imu.resetYaw()} — the driver's "my
+     * <p>Stands in for the old {@code imu.resetYaw()} -- the driver's "my
      * field-centric is crooked" button.
      */
     public void resetHeading() {
-        Pose current = follower.getPose();
-        follower.setPose(new Pose(current.getX(), current.getY(), 0.0, current.getCoordinateSystem()));
+        follower.setHeading(0.0);
     }
 
-    /** Starts an in-place turn to an absolute field heading. */
+    /**
+     * Starts an in-place turn to an absolute field heading.
+     *
+     * <p>Pedro 3 has no {@code turnTo}: a turn is a hold of the current position
+     * with a different heading.
+     */
     public void turnTo(double headingRadians) {
-        follower.turnTo(MathFunctions.normalizeAngle(headingRadians));
+        Pose current = follower.pose();
+        follower.hold(new Pose(current.x(), current.y(), Angle.normalize(headingRadians)));
     }
 
     /** Starts an in-place turn of {@code deltaRadians} from where the robot is now. */
@@ -252,7 +260,8 @@ public class DriveSubsystem extends PedroSubsystem {
         turnTo(getHeadingRadians() + deltaRadians);
     }
 
+    /** True while a commanded turn or end-of-path hold has not yet settled. */
     public boolean isTurning() {
-        return follower.isTurning();
+        return follower.holding() && follower.isBusy();
     }
 }

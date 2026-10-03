@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.teleop;
 
+import com.pedropathing.math.Pose;
 import com.vcs.valleylib.ftc.opmode.CommandOpMode;
 
 import org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.PedroConstants;
@@ -24,7 +25,7 @@ public abstract class QualBotTeleOpBase extends CommandOpMode {
         // Teleop starts wherever auto left off, which the follower has no way to
         // know, so the pose starts at the origin and the driver zeroes heading
         // with the guide button if auto ended facing an odd direction.
-        robot = new QualBotRobot(hardwareMap, PedroConstants.ftcPose(0, 0, 0), limelightPipeline());
+        robot = new QualBotRobot(hardwareMap, new Pose(0, 0, 0), limelightPipeline());
         container = new TeleOpContainer(robot, gamepad1, gamepad2);
     }
 
@@ -57,8 +58,8 @@ public abstract class QualBotTeleOpBase extends CommandOpMode {
         telemetryBus.put("Tag distance (in)", robot.vision.getDistanceInches());
 
         telemetryBus.put("Heading (deg)", robot.drive.getHeadingDegrees());
-        telemetryBus.put("Pose X", robot.drive.getPose().getX());
-        telemetryBus.put("Pose Y", robot.drive.getPose().getY());
+        telemetryBus.put("Pose X", robot.drive.getPose().x());
+        telemetryBus.put("Pose Y", robot.drive.getPose().y());
 
         telemetryBus.put("Battery (V)", robot.getBatteryVoltage());
     }

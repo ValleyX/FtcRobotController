@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.autos;
 
-import com.pedropathing.follower.Follower;
-import com.pedropathing.paths.PathChain;
+import com.pedropathing.paths.Path;
 import com.vcs.valleylib.core.command.Command;
 import com.vcs.valleylib.core.command.Commands;
 
@@ -45,24 +44,22 @@ public final class CloseAutoRoutine {
     private CloseAutoRoutine() {}
 
     public static Command build(QualBotRobot robot, CloseAutoGeometry geometry) {
-        Follower follower = robot.drive.getFollower();
-
         /* ---------- Paths ---------- */
 
-        PathChain toShoot1 = AutoPaths.line(follower, geometry.start, geometry.shoot1);
+        Path toShoot1 = AutoPaths.line(geometry.start, geometry.shoot1);
 
-        PathChain pickup1 = AutoPaths.through(follower,
+        Path pickup1 = AutoPaths.through(
                 geometry.shoot1, geometry.pickup1Entry, geometry.pickup1Far, geometry.pickup1Back);
 
-        PathChain pickup1ToShoot2 = AutoPaths.curve(follower,
+        Path pickup1ToShoot2 = AutoPaths.curve(
                 geometry.pickup1Back,
                 AutoPaths.bulgedControl(geometry.pickup1Back, geometry.shoot2, 8),
                 geometry.shoot2);
 
-        PathChain pickup2 = AutoPaths.through(follower,
+        Path pickup2 = AutoPaths.through(
                 geometry.shoot2, geometry.pickup2Entry, geometry.pickup2Far, geometry.pickup2Back);
 
-        PathChain pickup2ToShoot3 = AutoPaths.through(follower,
+        Path pickup2ToShoot3 = AutoPaths.through(
                 geometry.pickup2Back, geometry.exit2, geometry.shoot3);
 
         /* ---------- Shared pieces ---------- */

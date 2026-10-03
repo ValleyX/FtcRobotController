@@ -1,3 +1,27 @@
+/*
+ * The Robot Controller app scans every class in the APK at startup
+ * (ClassManager.processAllClasses -> ConfigurationTypeManager.filterClass ->
+ * Class.getAnnotations()) so it can find OpModes and configuration types.
+ *
+ * org.jspecify:jspecify's @NullMarked is RUNTIME-retained and lists
+ * ElementType.MODULE -- a Java 9 constant -- first in its @Target. Android 7.1's
+ * java.lang.annotation.ElementType has no MODULE, so resolving that annotation
+ * throws NoSuchFieldError. That happens inside FtcRobotControllerActivity.onCreate,
+ * which means a FATAL EXCEPTION before the app finishes starting: the Control Hub
+ * installs the APK fine and then never comes up.
+ *
+ * jspecify arrives transitively through androidx.appcompat:appcompat:1.8.0 (pulled
+ * up from the SDK's stock 1.2.0 by com.bylazar:panels).
+ *
+ * Excluding it is safe. ART silently ignores an annotation whose class is missing
+ * entirely; it only throws when the annotation class IS present and references a
+ * constant that is not. Removing the jar removes the crash without changing
+ * behaviour -- these annotations are static-analysis metadata only.
+ */
+configurations.configureEach {
+    exclude group: 'org.jspecify', module: 'jspecify'
+}
+
 dependencies {
     implementation 'org.firstinspires.ftc:Inspection:12.0.0'
     implementation 'org.firstinspires.ftc:Blocks:12.0.0'
@@ -19,9 +43,15 @@ dependencies {
     implementation 'org.firstinspires.ftc:FtcCommon:12.0.0'
     implementation 'org.firstinspires.ftc:Vision:12.0.0'
     implementation 'androidx.appcompat:appcompat:1.8.0'
-    // Pedro Pathing
-    implementation 'com.pedropathing:ftc:2.1.2' //added by Tanner
-    implementation 'com.pedropathing:telemetry:1.0.0' //added by Tanner
-    implementation 'com.bylazar:fullpanels:1.0.12' //added by Tanner
+    // Pedro Pathing 3. Pedro 3 split the old single 'ftc' artifact into a
+    // platform-agnostic 'core' plus 'revhub' for the REV/FTC hardware bindings.
+    // 3.0.1 is the newest release -- there is no 3.1 -- and it is what
+    // valleyLib 2.0.0 is built against.
+    implementation 'com.pedropathing:core:3.0.1'
+    implementation 'com.pedropathing:revhub:3.0.1'
+    implementation 'com.pedropathing:tuning:1.0.1'
+    // com.pedropathing:telemetry dropped: nothing imports it, and Panels below
+    // provides the telemetry valleyLib's CommandOpMode actually uses.
+    implementation 'com.bylazar:fullpanels:1.0.13'
 }
 

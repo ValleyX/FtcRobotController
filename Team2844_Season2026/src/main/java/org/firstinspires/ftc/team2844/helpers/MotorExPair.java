@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased;
+package org.firstinspires.ftc.team2844.helpers;
 
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 
-import java.util.List;
+import com.vcs.valleylib.ftc.hardware.Motor;
+import com.vcs.valleylib.ftc.hardware.MotorEx;
 
 public class MotorExPair {
 

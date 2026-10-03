@@ -3,7 +3,8 @@ package org.firstinspires.ftc.team2844.Team2844_Decode.CommandBased.SubSystems.D
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.follower.ManualDrive;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -49,7 +50,9 @@ public class DriveSubsystem extends SubsystemBase {
             headingOffset = -Math.toRadians(temp);
         }
 
-        follower.startTeleOpDrive(true);
+        // Pedro 3 has no startTeleOpDrive: the first manual() call switches the
+        // follower into manual mode, so seed it with zero output.
+        follower.manual(0.0, 0.0, 0.0);
     }
 
     public DriveSubsystem(HardwareMap hardwareMap, Pose2d pose) {
@@ -57,7 +60,11 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void teleopDrive(double strafeSpeed, double forwardSpeed, double turnSpeed) {
-        follower.setTeleOpDrive(strafeSpeed, forwardSpeed, turnSpeed, false, headingOffset);
+        // Pedro 3 replaced setTeleOpDrive with a robot-centric manual() plus
+        // ManualDrive helpers that rotate the input into the field frame. The
+        // argument order is kept exactly as it was.
+        follower.manual(ManualDrive.fieldCentric(
+                strafeSpeed, forwardSpeed, turnSpeed, follower.pose().heading(), headingOffset));
     }
 
     public void drive(double strafeSpeed, double forwardSpeed, double turnSpeed, DoubleSupplier heading, boolean noTurret) {

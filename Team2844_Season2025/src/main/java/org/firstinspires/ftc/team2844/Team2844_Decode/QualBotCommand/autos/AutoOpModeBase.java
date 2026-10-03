@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.autos;
 
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
 import com.vcs.valleylib.core.command.Command;
 import com.vcs.valleylib.core.time.RobotClock;
 import com.vcs.valleylib.ftc.opmode.CommandOpMode;
@@ -56,7 +56,7 @@ public abstract class AutoOpModeBase extends CommandOpMode {
         // tighter window than teleop does before letting a ball through.
         robot.shooter.useAutoVelocityThreshold();
         robot.intake.holdBall();
-        robot.drive.getFollower().setMaxPower(AUTO_MAX_POWER);
+        robot.drive.applyMaxSpeed(AUTO_MAX_POWER);
 
         routine = buildRoutine(robot);
     }
@@ -85,8 +85,8 @@ public abstract class AutoOpModeBase extends CommandOpMode {
                 : "none");
         telemetryBus.put("Timed out", timedOut);
 
-        telemetryBus.put("Pose X", robot.drive.getPose().getX());
-        telemetryBus.put("Pose Y", robot.drive.getPose().getY());
+        telemetryBus.put("Pose X", robot.drive.getPose().x());
+        telemetryBus.put("Pose Y", robot.drive.getPose().y());
         telemetryBus.put("Heading (deg)", robot.drive.getHeadingDegrees());
         telemetryBus.put("Following", robot.drive.getFollower().isBusy());
 

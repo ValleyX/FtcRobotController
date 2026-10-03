@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.team2844.Team2844_Decode.QualBotCommand.autos;
 
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.vcs.valleylib.core.command.Command;
 
