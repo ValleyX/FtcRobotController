@@ -2,6 +2,19 @@ package org.firstinspires.ftc.team2844.helpers;
 
 public class Constants {
 
+    /* ---------- VELOCITY PIDS ---------- */
+    public static final double NP = 1.0;
+    public static final double NI = 1.0;
+    public static final double ND = 1.0;
+    public static final double NF = 1.0;
+
+
+    public static final double PP = 1.0;
+    public static final double PI = 1.0;
+    public static final double PD = 1.0;
+    public static final double PF = 1.0;
+
+
     /* ---------- MISSING INFO ---------- */
     public static final double NO_HEADING = -999;
     public static final double NO_POS = -999;
@@ -64,6 +77,21 @@ public class Constants {
             default:
                 System.out.println("Target Failed to Change");
                 break;
+        }
+    }
+
+    /**
+     * This is a Config class for the turrets so that all the values can be stored in one parameter.
+     * */
+    public static class ShooterConfig{
+        public final double kP, kI, kD, kF;
+        public final String motorName;
+        public ShooterConfig(String motorName, double kP, double kI, double kD, double kF){
+            this.motorName = motorName;
+            this.kP = kP;
+            this.kI = kI;
+            this.kD = kD;
+            this.kF = kF;
         }
     }
 

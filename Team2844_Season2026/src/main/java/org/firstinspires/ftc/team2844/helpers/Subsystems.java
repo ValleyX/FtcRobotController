@@ -15,15 +15,35 @@ public class Subsystems {
     DriveSubsystem drive;
     IntakeSubsystem intake;
     LightSubsystem light;
-    ShooterSubsystem shooter;
+    ShooterSubsystem nectar;
+    ShooterSubsystem pollen;
     TurretSubsystem turret;
     VisionSubsystem vision;
 
+    Constants.ShooterConfig nectarConfig, pollenConfig;
+
     public Subsystems(HardwareMap hardwareMap, Pose startingPose, int pipeline){
+
+        nectarConfig = new Constants.ShooterConfig(
+                Constants.EHM2,
+                Constants.NP,
+                Constants.NI,
+                Constants.ND,
+                Constants.NF
+        );
+        pollenConfig = new Constants.ShooterConfig(
+                Constants.EHM3,
+                Constants.PP,
+                Constants.PI,
+                Constants.PD,
+                Constants.PF
+        );
+
         drive = new DriveSubsystem(hardwareMap, startingPose);
         intake = new IntakeSubsystem(hardwareMap);
         light = new LightSubsystem(hardwareMap);
-        shooter = new ShooterSubsystem(hardwareMap);
+        nectar = new ShooterSubsystem(hardwareMap, nectarConfig);
+        pollen = new ShooterSubsystem(hardwareMap, pollenConfig);
         turret = new TurretSubsystem(hardwareMap);
         vision = new VisionSubsystem(hardwareMap);
 
