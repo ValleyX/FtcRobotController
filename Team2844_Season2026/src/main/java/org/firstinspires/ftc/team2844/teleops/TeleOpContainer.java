@@ -2,6 +2,8 @@ package org.firstinspires.ftc.team2844.teleops;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.vcs.valleylib.core.command.Command;
+import com.vcs.valleylib.core.command.Commands;
+import com.vcs.valleylib.core.command.InstantCommand;
 import com.vcs.valleylib.ftc.RobotContainer;
 import com.vcs.valleylib.ftc.input.CommandGamepad;
 import com.vcs.valleylib.ftc.input.Trigger;
@@ -38,11 +40,21 @@ public class TeleOpContainer extends RobotContainer {
     }
 
     public void configureDefaults(){
+        subsystems.drive.setDefaultCommand(subsystems.drive.run(
+                () -> subsystems.drive.driveFieldCentric(
+                        -driver.leftY(),
+                        -driver.leftX(),
+                        -driver.rightX()
+                )
+        ));
+
 
     }
 
     public void configureDriving(){
-
+        driver.guide().onTrue(
+                Commands.runOnce(subsystems.drive::resetHeading)
+        );
     }
 
     public void configureIntake(){

@@ -69,9 +69,9 @@ public class PedroConstants {
     public static MecanumConfig drivetrainConfig() {
         return new MecanumConfig(c -> {
             c.frontLeftName.set(Constants.CHM0);
-            c.frontRightName.set(Constants.CHM2);
+            c.frontRightName.set(Constants.CHM3);
             c.backLeftName.set(Constants.CHM1);
-            c.backRightName.set(Constants.CHM3);
+            c.backRightName.set(Constants.CHM2);
 
             c.frontLeftDirection.set(DcMotorSimple.Direction.REVERSE);
             c.frontRightDirection.set(DcMotorSimple.Direction.FORWARD);
@@ -114,14 +114,14 @@ public class PedroConstants {
      */
     public static PinpointConfig localizerConfig() {
         return new PinpointConfig(c -> {
-            c.name.set("pinpoint");
+            c.name.set(Constants.CHI2C1);
 
             c.podType.set(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
             // For non-goBILDA pods, drop podType and use the tuner's measured value:
             // c.ticksPerUnit.set(OptionalDouble.of(13.26291192));
 
-            c.xPodOffset.set(0.0);
-            c.yPodOffset.set(0.0);
+            c.xPodOffset.set(Constants.XPOD_OFFSET);
+            c.yPodOffset.set(Constants.YPOD_OFFSET);
 
             c.xPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
             c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);

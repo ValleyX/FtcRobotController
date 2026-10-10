@@ -12,13 +12,13 @@ import org.firstinspires.ftc.team2844.subsystems.VisionSubsystem;
 
 public class Subsystems {
 
-    DriveSubsystem drive;
-    IntakeSubsystem intake;
-    LightSubsystem light;
-    ShooterSubsystem nectar;
-    ShooterSubsystem pollen;
-    TurretSubsystem turret;
-    VisionSubsystem vision;
+    public final DriveSubsystem drive;
+    public final IntakeSubsystem intake;
+    public final LightSubsystem light;
+    public final ShooterSubsystem nectar;
+    public final ShooterSubsystem pollen;
+    public final TurretSubsystem turret;
+    public final VisionSubsystem vision;
 
     Constants.ShooterConfig nectarConfig, pollenConfig;
 
@@ -29,14 +29,16 @@ public class Subsystems {
                 Constants.NP,
                 Constants.NI,
                 Constants.ND,
-                Constants.NF
+                Constants.NS,
+                Constants.NV
         );
         pollenConfig = new Constants.ShooterConfig(
                 Constants.EHM3,
                 Constants.PP,
                 Constants.PI,
                 Constants.PD,
-                Constants.PF
+                Constants.PS,
+                Constants.PV
         );
 
         drive = new DriveSubsystem(hardwareMap, startingPose);

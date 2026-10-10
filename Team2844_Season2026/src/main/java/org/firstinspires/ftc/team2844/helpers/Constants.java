@@ -6,13 +6,15 @@ public class Constants {
     public static final double NP = 1.0;
     public static final double NI = 1.0;
     public static final double ND = 1.0;
-    public static final double NF = 1.0;
+    public static final double NS = 1.0;
+    public static final double NV = 1.0;
 
 
     public static final double PP = 1.0;
     public static final double PI = 1.0;
     public static final double PD = 1.0;
-    public static final double PF = 1.0;
+    public static final double PS = 1.0;
+    public static final double PV = 1.0;
 
 
     /* ---------- MISSING INFO ---------- */
@@ -48,11 +50,10 @@ public class Constants {
 
     public static double STICK_DEADBAND = 0.05;
 
-    //Blue Vs. Red and Audience vs Back
 
     /**
      * This method changes the values for the goal's field coordinates depending on case given
-     *
+     * The field coordinates are rough estimates of where the cell is above when tipped up.
      * @param target 0- Blue Audience 1- Blue Back 2- Red Audience 3- Red Back
      *
      */
@@ -80,18 +81,34 @@ public class Constants {
         }
     }
 
+
+    /* ---------- PEDRO PATHING ---------- */
+    public static final double XPOD_OFFSET = 0.0;
+    public static final double YPOD_OFFSET = 0.0;
+
+
     /**
      * This is a Config class for the turrets so that all the values can be stored in one parameter.
      * */
     public static class ShooterConfig{
-        public final double kP, kI, kD, kF;
+        public final double kP, kI, kD, kS, kV;
         public final String motorName;
-        public ShooterConfig(String motorName, double kP, double kI, double kD, double kF){
+        public ShooterConfig(String motorName, double kP, double kI, double kD, double kS, double kV){
             this.motorName = motorName;
             this.kP = kP;
             this.kI = kI;
             this.kD = kD;
-            this.kF = kF;
+            this.kS = kS;
+            this.kV = kV;
+        }
+
+        public ShooterConfig(String motorName, PIDF pidf){
+            this.motorName = motorName;
+            this.kP = pidf.kP;
+            this.kI = pidf.kI;
+            this.kD = pidf.kD;
+            this.kS = pidf.kS;
+            this.kV = pidf.kV;
         }
     }
 
@@ -100,8 +117,8 @@ public class Constants {
     //Control Hub
     public static final String CHM0 = "leftFront";
     public static final String CHM1 = "leftBack";
-    public static final String CHM2 = "rightFront";
-    public static final String CHM3 = "rightBack";
+    public static final String CHM2 = "rightBack";
+    public static final String CHM3 = "rightFront";
 
 
     public static final String CHS0 = "";
@@ -112,7 +129,7 @@ public class Constants {
     public static final String CHS5 = "";
 
     public static final String CHI2C0 = "";
-    public static final String CHI2C1 = "";
+    public static final String CHI2C1 = "pinpoint";
     public static final String CHI2C2 = "";
     public static final String CHI2C3 = "";
 
@@ -129,10 +146,10 @@ public class Constants {
     public static final String CHLL = "limelight";
 
     // Expansion Hub
-    public static final String EHM0 = "";
+    public static final String EHM0 = "intake";
     public static final String EHM1 = "";
-    public static final String EHM2 = "";
-    public static final String EHM3 = "";
+    public static final String EHM2 = "nectarShooter";
+    public static final String EHM3 = "pollenShooter";
 
 
     public static final String EHS0 = "";
