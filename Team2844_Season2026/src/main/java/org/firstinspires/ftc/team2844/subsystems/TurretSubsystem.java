@@ -23,6 +23,8 @@ public class TurretSubsystem extends FtcSubsystem {
         encoder2 = hardwareMap.get(AnalogInput.class, Constants.CHDD1);
     }
 
+
+
     public void setHeading(double degrees){
         heading = degrees;
     }

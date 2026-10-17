@@ -45,15 +45,37 @@ public class Constants {
     public static final int RED_AUDIENCE = 2;
     public static final int RED_BACK = 3;
 
+    // ----- alliance tracker -----
+    public static int alliance;
+    public static final int BLUE_ALLIANCE = 0;
+    public static final int RED_ALLIANCE = 2;
+    public static void changeAlliance(int side){
+        alliance = side;
+    }
+
+    // ----- side ids -----
+    public static final int AUDIENCE_SIDE = 0;
+    public static final int BACK_SIDE = 1;
+
+    /* ---------- LIMELIGHT ---------- */
+    public static final int ALL_BLUE = 4;
+    public static final int ALL_RED = 5;
+
+    public static final double LL_HEIGHT = 15.0; //TODO get real height
 
 
     /* ---------- Set Speeds and Deadbands ---------- */
 
+    // ----- intake and transfer -----
     public static double INTAKE_SPEED = 1.0;
     public static double TRANSFER_SPEED = 1.0;
+    public static double OPEN_GATE = 0.0;
+    public static double CLOSED_GATE = 0.5;
 
+    // ----- controller -----
     public static double STICK_DEADBAND = 0.05;
 
+    // ----- shooter and hood -----
     public static double VEL_THRESHOLD = 200;
     public static double SHOOTER_IDLE = 1000;
     public static double HOOD_DEFAULT = 0.5;
@@ -101,8 +123,10 @@ public class Constants {
     public static class ShooterConfig{
         public final double kP, kI, kD, kS, kV;
         public final String motorName;
-        public ShooterConfig(String motorName, double kP, double kI, double kD, double kS, double kV){
+        public final String servoName;
+        public ShooterConfig(String motorName, String servoName, double kP, double kI, double kD, double kS, double kV){
             this.motorName = motorName;
+            this.servoName = servoName;
             this.kP = kP;
             this.kI = kI;
             this.kD = kD;
@@ -110,8 +134,9 @@ public class Constants {
             this.kV = kV;
         }
 
-        public ShooterConfig(String motorName, PIDF pidf){
+        public ShooterConfig(String motorName, String servoName, PIDF pidf){
             this.motorName = motorName;
+            this.servoName = servoName;
             this.kP = pidf.kP;
             this.kI = pidf.kI;
             this.kD = pidf.kD;
@@ -129,10 +154,10 @@ public class Constants {
     public static final String CHM3 = "rightFront";
 
 
-    public static final String CHS0 = "";
-    public static final String CHS1 = "";
-    public static final String CHS2 = "";
-    public static final String CHS3 = "";
+    public static final String CHS0 = "nectarHood";
+    public static final String CHS1 = "pollenHood";
+    public static final String CHS2 = "nectarGate";
+    public static final String CHS3 = "pollenGate";
     public static final String CHS4 = "axon1";
     public static final String CHS5 = "axon2";
 
@@ -163,9 +188,9 @@ public class Constants {
     public static final String EHS0 = "";
     public static final String EHS1 = "";
     public static final String EHS2 = "";
-    public static final String EHS3 = "";
-    public static final String EHS4 = "";
-    public static final String EHS5 = "";
+    public static final String EHS3 = "light0";
+    public static final String EHS4 = "light1";
+    public static final String EHS5 = "light2";
 
     public static final String EHI2C0 = "";
     public static final String EHI2C1 = "";
@@ -193,5 +218,4 @@ public class Constants {
     public static double INDIGO = 0.67;
     public static double VIOLET = 0.72;
     public static double WHITE = 1.00;
-
 }

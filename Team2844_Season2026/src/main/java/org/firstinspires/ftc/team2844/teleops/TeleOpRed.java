@@ -11,4 +11,9 @@ public class TeleOpRed extends TeleOpBase{
     public int limelightPipeline() {
         return Constants.RED_AUDIENCE;
     }
+
+    @Override
+    public int alliance(){
+        return Constants.RED_ALLIANCE;
+    }
 }

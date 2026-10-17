@@ -13,22 +13,19 @@ public class ShooterSubsystem extends FtcSubsystem {
     MotorEx shooter;
     Servo hood;
     public PIDF pidf;
-    public final String motorName;
-
     private double distance;
 
     public ShooterSubsystem(HardwareMap hardwareMap, Constants.ShooterConfig config){
         super(hardwareMap);
-        this.motorName = config.motorName;
 
         pidf = new PIDF(config.kP,config.kI,config.kD,config.kS,config.kV );
 
-        shooter = new MotorEx(hardwareMap, motorName);
+        shooter = new MotorEx(hardwareMap, config.motorName);
         shooter.setRunMode(Motor.RunMode.VelocityControl);
         shooter.setVeloCoefficients(pidf.kP, pidf.kI, pidf.kD);
         shooter.setFeedforwardCoefficients(pidf.kS, pidf.kV);
 
-        hood = hardwareMap.get(Servo.class, Constants.CHS0);
+        hood = hardwareMap.get(Servo.class, config.servoName);
     }
 
     public void setVelocity(double vel){

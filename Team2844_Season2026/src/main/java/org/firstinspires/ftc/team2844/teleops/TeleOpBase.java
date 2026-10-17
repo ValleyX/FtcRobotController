@@ -6,16 +6,19 @@ import com.bylazar.panels.Panels;
 import com.pedropathing.math.Pose;
 import com.vcs.valleylib.ftc.opmode.CommandOpMode;
 
+import org.firstinspires.ftc.team2844.helpers.Constants;
 import org.firstinspires.ftc.team2844.helpers.Subsystems;
 
 public abstract class TeleOpBase extends CommandOpMode {
     protected Subsystems subsystems;
     protected TeleOpContainer container;
     public abstract int limelightPipeline();
+    public abstract int alliance();
     FieldManager field;
 
     @Override
     protected void initialize() {
+        Constants.changeAlliance(alliance());
         subsystems = new Subsystems(hardwareMap, new Pose(0,0,0), limelightPipeline());
         container = new TeleOpContainer(subsystems, gamepad1, gamepad2);
 
@@ -27,6 +30,7 @@ public abstract class TeleOpBase extends CommandOpMode {
     @Override
     protected void onStart(){
         subsystems.drive.startTeleOp();
+        subsystems.light.startTimerLight();
     }
 
     @Override

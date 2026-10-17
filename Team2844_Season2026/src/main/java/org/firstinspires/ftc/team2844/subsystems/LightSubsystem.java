@@ -18,9 +18,9 @@ public class LightSubsystem extends FtcSubsystem {
 
     public LightSubsystem(HardwareMap hardwareMap) { // Constructor
         super(hardwareMap);
-        timerLight  = hardwareMap.get(Servo.class, "light0");
-        pollenLight = hardwareMap.get(Servo.class, "light1");
-        nectarLight = hardwareMap.get(Servo.class, "light2");
+        timerLight  = hardwareMap.get(Servo.class, Constants.EHS3);
+        pollenLight = hardwareMap.get(Servo.class, Constants.EHS4);
+        nectarLight = hardwareMap.get(Servo.class, Constants.EHS5);
     }
 
     public void setColorPollen(double color) {
@@ -34,17 +34,20 @@ public class LightSubsystem extends FtcSubsystem {
     public void startTimerLight() {
         run.reset();
         run.startTime();
-        if (run.seconds() > 60) {
-            timerLight.setPosition(Constants.YELLOW);
+    }
+
+    @Override
+    public void periodic() {
+        if (run.seconds() > 120) {
+            timerLight.setPosition(Constants.OFF);
+        } else if (run.seconds() > 115) {
+            //Blink Red
         } else if (run.seconds() > 100) {
             timerLight.setPosition(Constants.RED);
-        } else if (run.seconds() > 115) {
-            // Blink Red
-        } else if (run.seconds() > 120){
-            timerLight.setPosition(Constants.OFF);
+        } else if (run.seconds() > 60){
+            timerLight.setPosition(Constants.YELLOW);
         } else {
             timerLight.setPosition(Constants.GREEN);
         }
-
     }
 }

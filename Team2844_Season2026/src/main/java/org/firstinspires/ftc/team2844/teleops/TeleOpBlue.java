@@ -10,4 +10,9 @@ public class TeleOpBlue extends TeleOpBase{
     public int limelightPipeline() {
         return Constants.BLUE_BACK;
     }
+
+    @Override
+    public int alliance(){
+        return Constants.BLUE_ALLIANCE;
+    }
 }

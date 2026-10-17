@@ -8,6 +8,7 @@ import org.firstinspires.ftc.team2844.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.LightSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.team2844.subsystems.TransferSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.TurretSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.VisionSubsystem;
 
@@ -20,6 +21,7 @@ public class Subsystems {
     public final LightSubsystem light;
     public final ShooterSubsystem nectar;
     public final ShooterSubsystem pollen;
+    public final TransferSubsystem transfer;
     public final TurretSubsystem turret;
     public final VisionSubsystem vision;
 
@@ -34,6 +36,7 @@ public class Subsystems {
 
         nectarConfig = new Constants.ShooterConfig(
                 Constants.EHM2,
+                Constants.CHS0,
                 Constants.NP,
                 Constants.NI,
                 Constants.ND,
@@ -42,6 +45,7 @@ public class Subsystems {
         );
         pollenConfig = new Constants.ShooterConfig(
                 Constants.EHM3,
+                Constants.CHS1,
                 Constants.PP,
                 Constants.PI,
                 Constants.PD,
@@ -54,6 +58,7 @@ public class Subsystems {
         light = new LightSubsystem(hardwareMap);
         nectar = new ShooterSubsystem(hardwareMap, nectarConfig);
         pollen = new ShooterSubsystem(hardwareMap, pollenConfig);
+        transfer = new TransferSubsystem(hardwareMap);
         turret = new TurretSubsystem(hardwareMap);
         vision = new VisionSubsystem(hardwareMap);
 
@@ -78,6 +83,7 @@ public class Subsystems {
         nectar.setDistance(distance());
         pollen.setDistance(distance());
         turret.setHeading(drive.getHeadingDegrees());
+        transfer.setBallCount(intake.ballCount());
     }
 
 }

@@ -8,6 +8,8 @@ import com.vcs.valleylib.ftc.RobotContainer;
 import com.vcs.valleylib.ftc.input.CommandGamepad;
 import com.vcs.valleylib.ftc.input.Trigger;
 
+import org.firstinspires.ftc.team2844.commands.shoot.IdleShootCmd;
+import org.firstinspires.ftc.team2844.helpers.Constants;
 import org.firstinspires.ftc.team2844.helpers.Subsystems;
 
 public class TeleOpContainer extends RobotContainer {
@@ -48,7 +50,17 @@ public class TeleOpContainer extends RobotContainer {
                 )
         ));
 
+        subsystems.nectar.setDefaultCommand(new IdleShootCmd(subsystems.nectar));
+        subsystems.pollen.setDefaultCommand(new IdleShootCmd(subsystems.pollen));
 
+        Trigger audienceSide = new Trigger(
+                () -> subsystems.drive.getPose().y() > 72);
+
+        audienceSide.onTrue(
+                new InstantCommand(() ->subsystems.vision.setPipeline(Constants.alliance + Constants.AUDIENCE_SIDE))
+                .andThen(() ->Constants.changeTarget(Constants.alliance + Constants.AUDIENCE_SIDE)));
+        audienceSide.onFalse(new InstantCommand(() ->subsystems.vision.setPipeline(Constants.alliance + Constants.BACK_SIDE))
+                .andThen(() ->Constants.changeTarget(Constants.alliance + Constants.BACK_SIDE)));
     }
 
     public void configureDriving(){

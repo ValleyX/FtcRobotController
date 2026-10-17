@@ -67,7 +67,7 @@ public class DriveSubsystem extends PedroSubsystem {
      * */
     public double getDistance(){
         Pose pose = follower.pose();
-        return Math.sqrt(Math.pow(pose.x() - Constants.targetX, 2) + Math.pow(pose.y() - Constants.targetY, 2) + Math.pow(Constants.CELL_HEIGHT, 2));
+        return Math.sqrt(Math.pow(pose.x() - Constants.targetX, 2) + Math.pow(pose.y() - Constants.targetY, 2) + Math.pow(Constants.CELL_HEIGHT - Constants.LL_HEIGHT, 2));
     }
 
 
