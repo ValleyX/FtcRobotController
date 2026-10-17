@@ -20,7 +20,14 @@ public abstract class TeleOpBase extends CommandOpMode {
         container = new TeleOpContainer(subsystems, gamepad1, gamepad2);
 
         field = PanelsField.INSTANCE.getField();
-        field.setOffsets(PanelsField.INSTANCE.getPresets().getDEFAULT_FTC());
+        field.setBackground(PanelsField.INSTANCE.getImages().getBIOBUZZ().getDARK());
+        field.setOffsets(PanelsField.INSTANCE.getPresets().getPEDRO_PATHING());
+    }
+
+    @Override
+    protected void onStart(){
+        subsystems.drive.startTeleOp();
+
     }
 
     @Override
@@ -32,6 +39,7 @@ public abstract class TeleOpBase extends CommandOpMode {
         Pose p = subsystems.drive.getPose();
         field.setStyle(PanelsField.INSTANCE.getBLUE(), PanelsField.INSTANCE.getWHITE(), 1.0);
         field.moveCursor(p.x(), p.y());
+        field.setCursorHeading(p.heading());
         field.circle(7.0);
         field.update();
     }

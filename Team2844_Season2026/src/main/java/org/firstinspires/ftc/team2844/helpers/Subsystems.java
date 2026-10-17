@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team2844.helpers;
 
 import com.pedropathing.math.Pose;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.team2844.subsystems.DriveSubsystem;
@@ -9,6 +10,8 @@ import org.firstinspires.ftc.team2844.subsystems.LightSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.TurretSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.VisionSubsystem;
+
+import java.util.List;
 
 public class Subsystems {
 
@@ -23,6 +26,11 @@ public class Subsystems {
     Constants.ShooterConfig nectarConfig, pollenConfig;
 
     public Subsystems(HardwareMap hardwareMap, Pose startingPose, int pipeline){
+
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+        for(LynxModule hubs : allHubs){
+            hubs.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
 
         nectarConfig = new Constants.ShooterConfig(
                 Constants.EHM2,

@@ -73,13 +73,46 @@ dependencies {
     implementation 'com.github.ValleyX.valleyLib:core:2.0.0'
     implementation 'com.github.ValleyX.valleyLib:ftc:2.0.0'
 
-    // Pedro Pathing's interactive autotuner, which the pedro/ package uses.
-    // Brings in Sloth (classpath scanning, from repo.dairy.foundation) and
-    // nanohttpd, because the tuner serves a web UI off the Control Hub.
+    // com.pedropathing:tuning (the interactive autotuner the pedro/ package uses)
+    // is declared in build.dependencies.gradle, so every module gets it -- it is
+    // deliberately not repeated here.
     //
-    // Comment this out for a competition build if you want the smallest APK and
-    // the fewest things hooking Robot Controller startup: the only code that
-    // needs it is pedro/Tuning.java and pedro/procedures/, so removing those two
-    // along with this line leaves Constants.java and the robot code intact.
-    implementation 'com.pedropathing:tuning:1.0.1'
+    // Note that means Season2025 and Team12841_Season2026 also pull the tuner and
+    // Sloth. To drop it for a competition build, remove it from
+    // build.dependencies.gradle and delete pedro/Tuning.java plus
+    // pedro/procedures/; Constants.java and the robot code are unaffected.
+
+    // FTC Dashboard. Its own web UI is on port 8000 and Panels' is on 8001/8002,
+    // so those do not clash.
+    //
+    // PINNED AT 0.5.1 ON PURPOSE -- 0.6.0 BRICKS THE CONTROL HUB. DO NOT BUMP.
+    //
+    // 0.6.0 added a Limelight proxy (com.acmerobotics.dashboard.limelight.
+    // LimelightProxyManager) that binds ports 5800, 5801, 5805 and 5807 and
+    // forwards them to 172.29.0.1. Panels already does exactly that: the
+    // com.bylazar:limelightproxy plugin inside fullpanels binds 5800, 5801 and
+    // 5805 to the same target. Two listeners, same ports, same process.
+    //
+    // Dashboard starts first (@OnCreate, before Panels' attachEventLoop) and
+    // wins, so Panels' proxy loses the bind and throws
+    //
+    //     java.net.BindException: Address already in use
+    //         at fi.iki.elonen.NanoHTTPD$ServerRunnable.run
+    //
+    // on an unnamed worker thread with no handler. An uncaught exception on any
+    // thread kills the process, FtcAccessPointService sees the RC go quiet for
+    // 10 seconds and relaunches it, and it crashes again -- a permanent restart
+    // loop about 55 seconds long. The app installs fine and the hub never comes
+    // up, which looks exactly like a bricked hub.
+    //
+    // 0.5.1 has no Limelight proxy at all, so there is nothing to collide with.
+    // It is also what Team2844_Season2025 has been running on these hubs.
+    //
+    // If you ever want 0.6.0's proxy instead, keep 0.6.0 and drop Panels' copy:
+    //     implementation('com.bylazar:fullpanels:1.0.15') {
+    //         exclude group: 'com.bylazar', module: 'limelightproxy'
+    //     }
+    // Untested, and 0.6.0 also drags com.acmerobotics.dashboard:core up to
+    // 0.6.0 underneath com.bylazar:panels:1.0.6, which was built against 0.4.7.
+    implementation 'com.acmerobotics.dashboard:dashboard:0.5.1'
 }
