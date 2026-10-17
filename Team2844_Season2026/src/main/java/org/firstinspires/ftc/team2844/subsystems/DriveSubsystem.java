@@ -61,6 +61,16 @@ public class DriveSubsystem extends PedroSubsystem {
     }
 
 
+    /**
+     * Calculates the 3d distance from the bot to the bottom of the tipped up cell of the alliances color.
+     * Assumes Constants.changeTarget() has been updated recently and odometry tracking is accurate
+     * */
+    public double getDistance(){
+        Pose pose = follower.pose();
+        return Math.sqrt(Math.pow(pose.x() - Constants.targetX, 2) + Math.pow(pose.y() - Constants.targetY, 2) + Math.pow(Constants.CELL_HEIGHT, 2));
+    }
+
+
 
     /* ===================== Pose and heading ===================== */
 

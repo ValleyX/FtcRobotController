@@ -20,12 +20,15 @@ public class Constants {
     /* ---------- MISSING INFO ---------- */
     public static final double NO_HEADING = -999;
     public static final double NO_POS = -999;
+    public static final double NO_DIS = -999;
     public static final double NO_LL = -999;
 
 
     /* ---------- COORDINATE DATA ---------- */
     public static double targetX = Constants.NO_POS;
     public static double targetY = Constants.NO_POS;
+
+    public static double CELL_HEIGHT = 53.5;
 
     public static final double BLUE_AUDIENCE_X = 89.0;
     public static final double BLUE_AUDIENCE_Y = 53.0;
@@ -50,6 +53,10 @@ public class Constants {
     public static double TRANSFER_SPEED = 1.0;
 
     public static double STICK_DEADBAND = 0.05;
+
+    public static double VEL_THRESHOLD = 200;
+    public static double SHOOTER_IDLE = 1000;
+    public static double HOOD_DEFAULT = 0.5;
 
 
     /**
@@ -126,16 +133,16 @@ public class Constants {
     public static final String CHS1 = "";
     public static final String CHS2 = "";
     public static final String CHS3 = "";
-    public static final String CHS4 = "";
-    public static final String CHS5 = "";
+    public static final String CHS4 = "axon1";
+    public static final String CHS5 = "axon2";
 
     public static final String CHI2C0 = "";
     public static final String CHI2C1 = "pinpoint";
     public static final String CHI2C2 = "";
     public static final String CHI2C3 = "";
 
-    public static final String CHDD0 = "";
-    public static final String CHDD1 = "";
+    public static final String CHDD0 = "encoder1";
+    public static final String CHDD1 = "encoder2";
     public static final String CHDD2 = "";
     public static final String CHDD3 = "";
     public static final String CHDD4 = "";

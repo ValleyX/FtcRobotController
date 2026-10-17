@@ -27,6 +27,10 @@ public class VisionSubsystem extends FtcSubsystem {
         return pipeline;
     }
 
+    public double getDistance(){
+        return latestResult.getBotposeAvgDist();
+    }
+
     @Override
     public void periodic() {
         latestResult = limelight.getLatestResult();

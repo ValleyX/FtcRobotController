@@ -60,4 +60,24 @@ public class Subsystems {
         vision.setPipeline(pipeline);
     }
 
+    public double distance(){
+        double driveDis = drive.getDistance();
+        double visDis = vision.getDistance();
+        if(driveDis != Constants.NO_DIS && visDis != Constants.NO_DIS){
+            return (driveDis + visDis)/2.0;
+        } else if(driveDis != Constants.NO_DIS){
+            return driveDis;
+        } else if(visDis != Constants.NO_DIS){
+            return visDis;
+        } else {
+            return -999.0;
+        }
+    }
+
+    public void update(){
+        nectar.setDistance(distance());
+        pollen.setDistance(distance());
+        turret.setHeading(drive.getHeadingDegrees());
+    }
+
 }

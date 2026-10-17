@@ -27,12 +27,12 @@ public abstract class TeleOpBase extends CommandOpMode {
     @Override
     protected void onStart(){
         subsystems.drive.startTeleOp();
-
     }
 
     @Override
     protected void run() {
         updatePanelsField();
+        subsystems.update();
     }
 
     private void updatePanelsField(){
