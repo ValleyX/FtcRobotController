@@ -61,8 +61,9 @@ dependencies {
     implementation 'com.pedropathing:revhub:3.0.1'
     // com.pedropathing:telemetry removed: nothing imports com.pedropathing.telemetry.
     // The Panels telemetry that valleyLib's CommandOpMode uses comes from
-    // com.bylazar:fullpanels below.
-    implementation 'com.bylazar:fullpanels:1.0.13'
+    // com.bylazar:fullpanels, which build.dependencies.gradle declares for every
+    // module -- it is deliberately not repeated here, because having it in two
+    // places is how it ended up at two different versions.
     // End TC Add
 
     // Tanner Add

@@ -1,8 +1,9 @@
-package org.firstinspires.ftc.team2844.pedro;
+package org.firstinspires.ftc.teamcode.pedro;
 
 import com.pedropathing.tuning.autotune.Procedure;
 import com.pedropathing.tuning.autotune.Tuner;
 
+import org.firstinspires.ftc.team2844.pedro.PedroConstants;
 import org.firstinspires.ftc.team2844.pedro.procedures.ForesightTuner;
 import org.firstinspires.ftc.team2844.pedro.procedures.MecanumTuner;
 import org.firstinspires.ftc.team2844.pedro.procedures.OTOSTuner;
@@ -15,6 +16,27 @@ import org.firstinspires.ftc.team2844.pedro.procedures.TwoWheelTuner;
 
 /**
  * Registers Pedro's tuning procedures with the autotuner.
+ *
+ * <h2>Why this class is in org.firstinspires.ftc.teamcode and not team2844</h2>
+ * It has to be, or nothing here runs. Pedro's {@code TunerScanner} targets
+ * Sinister's {@code NarrowSearch}, which is built as:
+ *
+ * <pre>
+ *     exclude("org.firstinspires");
+ *     include("org.firstinspires.ftc.teamcode");
+ *     exclude("com.qualcomm");
+ * </pre>
+ *
+ * Those are prefix rules and the most specific one wins, so
+ * {@code org.firstinspires.ftc.teamcode} is the <b>only</b> package under
+ * {@code org.firstinspires} that gets scanned. A tuner class in
+ * {@code org.firstinspires.ftc.team2844} is silently skipped: no tuners are
+ * registered, {@code /api/tuners} returns an empty list, and the autotuner page
+ * renders its logo and nothing else.
+ *
+ * <p>Only this class needs to be scannable. The {@code Procedure} classes in
+ * {@code team2844.pedro.procedures} and {@link PedroConstants} are plain objects
+ * that these methods construct, so they can stay where they are.
  *
  * <p>Nothing calls these methods directly. Pedro's {@code TunerScanner} walks the
  * APK at startup looking for static, no-argument methods annotated

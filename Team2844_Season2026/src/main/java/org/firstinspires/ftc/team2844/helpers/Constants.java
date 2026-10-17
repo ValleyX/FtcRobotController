@@ -46,7 +46,8 @@ public class Constants {
 
     /* ---------- Set Speeds and Deadbands ---------- */
 
-    public static double intakeSpeed = 1.0;
+    public static double INTAKE_SPEED = 1.0;
+    public static double TRANSFER_SPEED = 1.0;
 
     public static double STICK_DEADBAND = 0.05;
 
@@ -147,7 +148,7 @@ public class Constants {
 
     // Expansion Hub
     public static final String EHM0 = "intake";
-    public static final String EHM1 = "";
+    public static final String EHM1 = "transfer";
     public static final String EHM2 = "nectarShooter";
     public static final String EHM3 = "pollenShooter";
 

@@ -23,15 +23,18 @@ configurations.configureEach {
 }
 
 dependencies {
-    implementation 'org.firstinspires.ftc:Inspection:12.0.0'
-    implementation 'org.firstinspires.ftc:Blocks:12.0.0'
-    implementation 'org.firstinspires.ftc:RobotCore:12.0.0'
-    implementation 'org.firstinspires.ftc:RobotServer:12.0.0'
-    implementation 'org.firstinspires.ftc:OnBotJava:12.0.0'
-    implementation 'org.firstinspires.ftc:Hardware:12.0.0'
-    implementation 'org.firstinspires.ftc:FtcCommon:12.0.0'
-    implementation 'org.firstinspires.ftc:Vision:12.0.0'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    /*
+     * This block used to be duplicated: the whole FTC SDK list appeared twice,
+     * once ending in androidx.appcompat:appcompat:1.2.0 and once in 1.8.0.
+     * Gradle papered over that by conflict-resolving to 1.8.0 until Panels 1.0.18
+     * (panels core 1.0.7) started publishing a strict constraint, at which point
+     * the two became "multiple version constraints with conflicting requirements"
+     * and resolution failed outright.
+     *
+     * Keep one declaration of each. appcompat stays at 1.8.0, which is what was
+     * resolving in practice and what Panels' material dependency needs -- the
+     * SDK's own stock pin is 1.2.0 and is too old for it.
+     */
     // Gradle Base Stuff
     implementation 'org.firstinspires.ftc:Inspection:12.0.0'
     implementation 'org.firstinspires.ftc:Blocks:12.0.0'
@@ -52,6 +55,32 @@ dependencies {
     implementation 'com.pedropathing:tuning:1.0.1'
     // com.pedropathing:telemetry dropped: nothing imports it, and Panels below
     // provides the telemetry valleyLib's CommandOpMode actually uses.
-    implementation 'com.bylazar:fullpanels:1.0.13'
+    /*
+     * Panels. fullpanels is the convenience bundle: panels core plus every plugin
+     * (telemetry, field, graph, gamepad, opmodecontrol, ...).
+     *
+     * PINNED AT 1.0.15 ON PURPOSE -- DO NOT BUMP WITHOUT RE-TESTING.
+     *
+     * 1.0.18 is the newest release, but 1.0.16+ pull panels core 1.0.7, whose
+     * Gradle module metadata declares:
+     *
+     *     "group": "androidx.appcompat", "module": "appcompat",
+     *     "version": { "strictly": "1.2.0" }
+     *
+     * A `strictly` pin cannot be conflict-resolved, so it collides with the
+     * appcompat 1.8.0 above and resolution fails outright. Dropping our 1.8.0 to
+     * satisfy it does not work either: FTC SDK 12's own FtcRobotControllerActivity
+     * then fails to compile (androidx.annotation.NonNull goes missing). Forcing
+     * 1.8.0 over the strict pin would mean running Panels against an appcompat it
+     * explicitly pinned away from, which is not worth the runtime risk.
+     *
+     * 1.0.15 is the newest version that resolves cleanly with SDK 12. It brings
+     * panels core 1.0.6 and field 1.0.9, which has the same PanelsField /
+     * FieldManager API as 1.0.10.
+     *
+     * This is the single place Panels is declared. Do not also declare it in a
+     * module build.gradle -- it drifted out of sync that way once already.
+     */
+    implementation 'com.bylazar:fullpanels:1.0.15'
 }
 
