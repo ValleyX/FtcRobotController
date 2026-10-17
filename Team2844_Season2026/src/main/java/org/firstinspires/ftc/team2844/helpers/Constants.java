@@ -181,4 +181,17 @@ public class Constants {
     public static final String EHDD6 = "";
     public static final String EHDD7 = "";
 
+    /* COLORS */
+    public static double OFF = 0.00;
+    public static double RED = 0.28;
+    public static double ORANGE = 0.33;
+    public static double YELLOW = 0.39;
+    public static double SAGE = 0.44;
+    public static double GREEN = 0.50;
+    public static double AZURE = 0.56;
+    public static double BLUE = 0.61;
+    public static double INDIGO = 0.67;
+    public static double VIOLET = 0.72;
+    public static double WHITE = 1.00;
+
 }
