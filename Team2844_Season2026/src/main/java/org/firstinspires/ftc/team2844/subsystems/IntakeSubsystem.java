@@ -11,6 +11,7 @@ public class IntakeSubsystem extends FtcSubsystem {
     private final DcMotor intakeMotor, transferMotor;
     private final DigitalChannel n0, n1, n2, n3, p0, p1, p2, p3;
     private DigitalChannel[] nectar, pollen;
+    boolean overflowed = false;
     public IntakeSubsystem(HardwareMap hardwareMap) {
         super(hardwareMap);
         intakeMotor = hardwareMap.get(DcMotor.class, Constants.EHM0);
@@ -110,8 +111,12 @@ public class IntakeSubsystem extends FtcSubsystem {
 
     @Override
     public void periodic() {
-        if(overfull()){
+        if(overfull() && !intakeMotor.isBusy()){
             spit();
+            overflowed = true;
+        } else if(overflowed){
+            stop();
+            overflowed = false;
         }
     }
 }
