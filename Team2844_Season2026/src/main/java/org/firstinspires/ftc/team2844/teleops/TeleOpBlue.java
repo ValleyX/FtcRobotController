@@ -11,6 +11,8 @@ public class TeleOpBlue extends TeleOpBase{
         return Constants.BLUE_BACK;
     }
 
+
+    /**Constants.changeAlliance(alliance) MUST BE CALLED AS THE FIRST LINE OF TELEOP BECAUSE IT AFFECTS SETUP LOGIC*/
     @Override
     public int alliance(){
         return Constants.BLUE_ALLIANCE;

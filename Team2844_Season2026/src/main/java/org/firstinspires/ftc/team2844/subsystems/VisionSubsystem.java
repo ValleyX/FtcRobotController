@@ -28,9 +28,19 @@ public class VisionSubsystem extends FtcSubsystem {
     }
 
     public double getDistance(){
-        return (latestResult.isValid() && latestResult != null)
+        return (valid())
                 ? latestResult.getBotposeAvgDist() //valid result returns avg distance(doesn't use megatags)
                 : Constants.NO_LL; //null returns -999 to avoid runtime errors
+    }
+
+    public double getTx(){
+        return (valid())
+                ? latestResult.getTx()
+                : Constants.NO_LL; //null returns -999 to avoid runtime errors
+    }
+
+    public boolean valid(){
+        return (latestResult.isValid() && latestResult != null);
     }
 
     @Override

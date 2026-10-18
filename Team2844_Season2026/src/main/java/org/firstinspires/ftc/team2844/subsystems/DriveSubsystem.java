@@ -36,18 +36,20 @@ public class DriveSubsystem extends PedroSubsystem {
     }
 
     /**
-     * Field-centric drive.
+     * Field-centric drive. Automatically corrects for red and blue by reversing the drivers controls
      *
      * @param forward +1 drives away from the driver station wall along +x
      * @param strafe  +1 drives to the left
      * @param turn    +1 turns counter-clockwise
      */
     public void driveFieldCentric(double forward, double strafe, double turn) {
+        double offsetHeading = Constants.alliance == Constants.BLUE_ALLIANCE? 0.0: Math.PI;
         follower.manual(ManualDrive.fieldCentric(
                 scale(forward),
                 scale(strafe),
                 scale(turn),
-                follower.pose().heading()));
+                follower.pose().heading(),
+                offsetHeading));
     }
 
     /** Same as {@link #driveFieldCentric} but relative to the robot's own nose. */
@@ -80,12 +82,24 @@ public class DriveSubsystem extends PedroSubsystem {
         follower.setPose(pose);
     }
 
+    /**Returns a value 0 to 2PI*/
     public double getHeadingRadians() {
         return follower.pose().heading();
     }
 
+    /**Returns a value 0 to 360*/
     public double getHeadingDegrees() {
         return Math.toDegrees(getHeadingRadians());
+    }
+
+    /**Returns a value -180 to 180*/
+    public double getNormalHeadingDegrees(){
+        return normalizeDegrees(Math.toDegrees(getHeadingRadians()));
+    }
+
+    /**Returns a value -PI to PI*/
+    public double getNormalHeadingRadians(){
+        return normalizeRadians(getHeadingRadians());
     }
 
     /**
@@ -118,4 +132,21 @@ public class DriveSubsystem extends PedroSubsystem {
     public boolean isTurning() {
         return follower.holding() && follower.isBusy();
     }
+
+    /**Converts 0 to 360 into -180 to 180*/
+    private double normalizeDegrees(double degrees){
+        double temp = degrees;
+        while (temp>180) temp-=180;
+        while (temp<-180) temp+=180;
+        return temp;
+    }
+
+    /**Converts 0 to 2PI into -PI to PI*/
+    private double normalizeRadians(double radians){
+        double temp = radians;
+        while (temp>Math.PI) temp-= Math.PI;
+        while (temp<-Math.PI) temp+=Math.PI;
+        return temp;
+    }
+
 }

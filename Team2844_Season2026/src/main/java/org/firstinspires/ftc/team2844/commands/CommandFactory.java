@@ -1,19 +1,67 @@
 package org.firstinspires.ftc.team2844.commands;
 
 import com.vcs.valleylib.core.command.Command;
+import com.vcs.valleylib.core.command.decorators.ParallelCommandGroup;
 import com.vcs.valleylib.core.command.decorators.SequentialCommandGroup;
 
+import org.firstinspires.ftc.team2844.commands.intake.IntakeCmd;
+import org.firstinspires.ftc.team2844.commands.shoot.IdleShootCmd;
+import org.firstinspires.ftc.team2844.commands.transfer.CloseGatesCmd;
+import org.firstinspires.ftc.team2844.commands.transfer.TransferCmd;
+import org.firstinspires.ftc.team2844.commands.turret.AimRelativeTurretDegreesCmd;
+import org.firstinspires.ftc.team2844.helpers.Subsystems;
+import org.firstinspires.ftc.team2844.subsystems.DriveSubsystem;
+import org.firstinspires.ftc.team2844.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.team2844.subsystems.LightSubsystem;
+import org.firstinspires.ftc.team2844.subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.team2844.subsystems.TransferSubsystem;
+import org.firstinspires.ftc.team2844.subsystems.TurretSubsystem;
+import org.firstinspires.ftc.team2844.subsystems.VisionSubsystem;
+
 public class CommandFactory {
-    public static Command IntakeState(){
+    DriveSubsystem drive;
+    IntakeSubsystem intake;
+    LightSubsystem light;
+    ShooterSubsystem nectar;
+    ShooterSubsystem pollen;
+    TransferSubsystem transfer;
+    TurretSubsystem turret;
+    VisionSubsystem vision;
+
+    public CommandFactory(Subsystems subsystems){
+        drive = subsystems.drive;
+        intake = subsystems.intake;
+        light = subsystems.light;
+        nectar = subsystems.nectar;
+        pollen = subsystems.pollen;
+        transfer = subsystems.transfer;
+        turret = subsystems.turret;
+        vision = subsystems.vision;
+    }
+
+
+
+    public Command IntakeState(){
         return new SequentialCommandGroup(
-                //start intake
-                //start transfer and close gates
+                new ParallelCommandGroup(
+                        new IdleShootCmd(nectar),
+                        new IdleShootCmd(pollen),
+                        new AimRelativeTurretDegreesCmd(turret, 0.0)
+                ),
+                new CloseGatesCmd(transfer),
+                new IntakeCmd(intake),
+                new TransferCmd(transfer)
         );
     }
 
-    public static Command ShootState(){
+    public Command ShootState(){
         return new SequentialCommandGroup(
-                //
+                //start tracking with turret
+
+                //stop intake
+                //stop transfer
+                //open gates
+                //spinup
         );
     }
 }

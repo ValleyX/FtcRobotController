@@ -8,6 +8,7 @@ import org.firstinspires.ftc.team2844.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.TransferSubsystem;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class IdleShootCmd implements Command {
@@ -18,7 +19,7 @@ public class IdleShootCmd implements Command {
 
     @Override
     public Set<Subsystem> getRequirements() {
-        return Set.of(shoot);
+        return  Collections.singleton(shoot);
     }
 
     @Override

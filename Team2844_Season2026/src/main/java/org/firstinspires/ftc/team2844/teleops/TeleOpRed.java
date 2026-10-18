@@ -12,6 +12,7 @@ public class TeleOpRed extends TeleOpBase{
         return Constants.RED_AUDIENCE;
     }
 
+    /**Constants.changeAlliance(alliance) MUST BE CALLED AS THE FIRST LINE OF TELEOP BECAUSE IT AFFECTS SETUP LOGIC*/
     @Override
     public int alliance(){
         return Constants.RED_ALLIANCE;

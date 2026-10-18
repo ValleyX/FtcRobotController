@@ -39,6 +39,22 @@ public class Constants {
     public static final double RED_BACK_X = 55.0;
     public static final double RED_BACK_Y = 91.0;
 
+
+    /* ---------- TURRET CONSTANTS ---------- */
+    public static final double MAX_ROTATION = 180.0;
+    public static final double MIN_ROTATION = -180.0;
+    public static final double MAX_SERVO_RANGE = 355.0;
+    public static final double TURRET_THRESHOLD_DEGREES = 3.0;
+
+    private static final double SERVO_TO_GEAR = 1.0/1.0; //TODO PUT REAL RATIOS IN
+    private static final double GEAR_TO_TURRET = 2.75/1.0; //TODO PUT REAL RATIOS IN
+    private static final double TOTAL_RATIO = GEAR_TO_TURRET/SERVO_TO_GEAR;
+    /**Divide the servo degrees by this number to get the turret degrees.
+     * Or multiply turret degrees by this number to get the servo degrees
+     */
+    public static final double DEGREES_PER_SERVO_PERCENT = 1/TOTAL_RATIO; //TODO PUT REAL RATIO IN
+
+
     /* ---------- ID CONSTANTS ---------- */
     public static final int BLUE_AUDIENCE = 0;
     public static final int BLUE_BACK = 1;
@@ -218,4 +234,9 @@ public class Constants {
     public static double INDIGO = 0.67;
     public static double VIOLET = 0.72;
     public static double WHITE = 1.00;
+
+
+
+    //CLOCKWISE rotation is negative heading (approaching -180)
+    //COUNTERCLOCKWISE rotation is positive heading (approaching 180)
 }
