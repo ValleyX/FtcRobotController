@@ -136,16 +136,16 @@ public class DriveSubsystem extends PedroSubsystem {
     /**Converts 0 to 360 into -180 to 180*/
     private double normalizeDegrees(double degrees){
         double temp = degrees;
-        while (temp>180) temp-=180;
-        while (temp<-180) temp+=180;
+        while (temp>180) temp-=360;
+        while (temp<-180) temp+=360;
         return temp;
     }
 
     /**Converts 0 to 2PI into -PI to PI*/
     private double normalizeRadians(double radians){
         double temp = radians;
-        while (temp>Math.PI) temp-= Math.PI;
-        while (temp<-Math.PI) temp+=Math.PI;
+        while (temp>Math.PI) temp-= 2*Math.PI;
+        while (temp<-Math.PI) temp+= 2*Math.PI;
         return temp;
     }
 

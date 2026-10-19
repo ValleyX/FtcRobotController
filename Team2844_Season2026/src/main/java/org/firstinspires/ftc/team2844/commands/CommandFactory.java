@@ -8,7 +8,6 @@ import org.firstinspires.ftc.team2844.commands.intake.IntakeCmd;
 import org.firstinspires.ftc.team2844.commands.shoot.IdleShootCmd;
 import org.firstinspires.ftc.team2844.commands.transfer.CloseGatesCmd;
 import org.firstinspires.ftc.team2844.commands.transfer.TransferCmd;
-import org.firstinspires.ftc.team2844.commands.turret.AimRelativeTurretDegreesCmd;
 import org.firstinspires.ftc.team2844.helpers.Subsystems;
 import org.firstinspires.ftc.team2844.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.IntakeSubsystem;
@@ -41,27 +40,15 @@ public class CommandFactory {
 
 
 
-    public Command IntakeState(){
+/*    public Command ExampleIntake(){
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
                         new IdleShootCmd(nectar),
-                        new IdleShootCmd(pollen),
-                        new AimRelativeTurretDegreesCmd(turret, 0.0)
+                        new IdleShootCmd(pollen)
                 ),
                 new CloseGatesCmd(transfer),
                 new IntakeCmd(intake),
                 new TransferCmd(transfer)
         );
-    }
-
-    public Command ShootState(){
-        return new SequentialCommandGroup(
-                //start tracking with turret
-
-                //stop intake
-                //stop transfer
-                //open gates
-                //spinup
-        );
-    }
+    }*/
 }

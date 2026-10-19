@@ -70,7 +70,7 @@ public class ShooterSubsystem extends FtcSubsystem {
      * Assumes -999 as invalid velocity and position
      * */
     public void shoot(double velocity, double position){
-        double pos = (0.0<position && position < 1.0) ? position : Constants.HOOD_DEFAULT; // if pos is valid, use it; otherwise, use default
+        double pos = (0.0<=position && position <= 1.0) ? position : Constants.HOOD_DEFAULT; // if pos is valid, use it; otherwise, use default
         setVelocity(velocity);
         setHood(pos);
     }

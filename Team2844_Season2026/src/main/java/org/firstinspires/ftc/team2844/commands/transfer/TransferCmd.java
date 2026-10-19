@@ -27,7 +27,7 @@ public class TransferCmd implements Command {
 
     @Override
     public boolean isFinished() {
-        return transfer.stopIfFull();
+        return transfer.full();
     }
 
     @Override

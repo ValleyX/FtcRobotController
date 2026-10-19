@@ -10,9 +10,7 @@ import com.vcs.valleylib.ftc.input.CommandGamepad;
 import com.vcs.valleylib.ftc.input.Trigger;
 
 import org.firstinspires.ftc.team2844.commands.CommandFactory;
-import org.firstinspires.ftc.team2844.commands.shoot.IdleShootCmd;
-import org.firstinspires.ftc.team2844.commands.transfer.CloseGatesCmd;
-import org.firstinspires.ftc.team2844.commands.turret.TrackTargetCmd;
+import org.firstinspires.ftc.team2844.commands.turret.DefaultTurretCmd;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 import org.firstinspires.ftc.team2844.helpers.Subsystems;
 
@@ -20,6 +18,8 @@ public class TeleOpContainer extends RobotContainer {
     public enum Cycle {IDLE, INTAKE, PREPARE, SHOOT};
 
     Subsystems subsystems;
+
+    /* ---------- Controller and Buttons ---------- */
     CommandGamepad driver;
     CommandGamepad operator;
     final Trigger shootButton;
@@ -30,16 +30,21 @@ public class TeleOpContainer extends RobotContainer {
     final Trigger turretLeftButton;
     final Trigger turretRightButton;
     final Trigger turretCenterButton;
+    final Trigger switchManual;
+    final Trigger relativeSwitch;
 
 
 
 
     StateMachine<Cycle> teleOpCycle;
     CommandFactory factory;
+    DefaultTurretCmd defaultTurretCmd;
 
     public TeleOpContainer(Subsystems subsystems, Gamepad gamepad1, Gamepad gamepad2) {
         this.subsystems = subsystems;
         factory = new CommandFactory(subsystems);
+        defaultTurretCmd = new DefaultTurretCmd(subsystems.turret, subsystems.vision);
+
         this.driver = CommandGamepad.forLogitechF310(gamepad1);
         this.operator = CommandGamepad.forLogitechF310(gamepad2);
 
@@ -53,8 +58,10 @@ public class TeleOpContainer extends RobotContainer {
         // ----- OPERATOR ----- //
         this.aimButton = operator.rightBumper();//Automatically aims at expected target position, then apriltag target position
         this.turretLeftButton = operator.x();   //turns the turret to the Left of robot
-        this.turretCenterButton = operator.y(); //turns the turret to face center of robot
+        this.turretCenterButton = operator.a(); //turns the turret to face center of robot
         this.turretRightButton = operator.b();  //turns the turret to face Right of robot
+        this.switchManual = operator.y();      //Lets the state Machine take back over
+        this.relativeSwitch = operator.leftBumper();
 
 
 
@@ -76,13 +83,19 @@ public class TeleOpContainer extends RobotContainer {
                     subsystems.transfer.stop();
                     subsystems.transfer.openGates();
                 })
-                .state(Cycle.PREPARE, new TrackTargetCmd(subsystems.turret, subsystems.vision)
-                        .alongWith(subsystems.nectar::shoot, subsystems.pollen::shoot))
-
+                .state(Cycle.PREPARE, () -> {
+                    subsystems.nectar.shoot();
+                    subsystems.pollen.shoot();
+                    defaultTurretCmd.setTrack(true);
+                })
                 //SHOOT: transfers balls into shooter when at velocity(due to transition requirements)
-                .state(Cycle.SHOOT, new TrackTargetCmd(subsystems.turret, subsystems.vision)
-                        .alongWith(subsystems.nectar::shoot, subsystems.pollen::shoot,
-                                subsystems.transfer::transfer))
+                .state(Cycle.SHOOT, () -> {
+                    subsystems.nectar.shoot();
+                    subsystems.pollen.shoot();
+                    defaultTurretCmd.setTrack(true);
+                    subsystems.transfer.transfer();
+                })
+                .onExit(Cycle.SHOOT, () -> defaultTurretCmd.setTrack(false))
 
                 //acts like an intake button with proper procedure
                 .transition(Cycle.IDLE, Cycle.INTAKE, intakeButton)
@@ -91,7 +104,8 @@ public class TeleOpContainer extends RobotContainer {
                 .transition(Cycle.PREPARE, Cycle.SHOOT,
                         shootButton
                                 .and(subsystems.nectar::atVelocity)
-                                .and(subsystems.pollen::atVelocity))
+                                .and(subsystems.pollen::atVelocity)
+                                .and(subsystems.turret::aimed))
                 .transition(Cycle.SHOOT, Cycle.PREPARE, shootButton.negate())
 
                 //Switches from idling or intaking to preparing for the shooter when it has 4 balls
@@ -133,7 +147,7 @@ public class TeleOpContainer extends RobotContainer {
 
         //Always checks the position of the robot and changes the pipeline and target based on that
         Trigger audienceSide = new Trigger(
-                () -> subsystems.drive.getPose().y() > 72);
+                () -> subsystems.drive.getPose().y() < 72);
 
         //when the robot goes to the audience side, set the pipeline and target
         audienceSide.onTrue(
@@ -142,6 +156,8 @@ public class TeleOpContainer extends RobotContainer {
         //when the robot goes to the back side, set the pipeline and target
         audienceSide.onFalse(new InstantCommand(() ->subsystems.vision.setPipeline(Constants.alliance + Constants.BACK_SIDE))
                 .andThen(() ->Constants.changeTarget(Constants.alliance + Constants.BACK_SIDE)));
+
+        subsystems.turret.setDefaultCommand(defaultTurretCmd);
     }
 
     public void configureDriving(){
@@ -155,7 +171,25 @@ public class TeleOpContainer extends RobotContainer {
     }
 
     public void configureShooting(){
+        turretLeftButton.onTrue(new InstantCommand(() -> {
+            defaultTurretCmd.setDegrees(90.0);
+            defaultTurretCmd.setManual(true);
+        }));
+        turretCenterButton.onTrue(new InstantCommand(() -> {
+            defaultTurretCmd.setDegrees(0.0);
+            defaultTurretCmd.setManual(true);
+        }));
+        turretRightButton.onTrue(new InstantCommand(() -> {
+            defaultTurretCmd.setDegrees(-90.0);
+            defaultTurretCmd.setManual(true);
+        }));
+        switchManual.onTrue(new InstantCommand(() -> defaultTurretCmd.setManual(!defaultTurretCmd.getManual())));
+        relativeSwitch.onTrue(new InstantCommand(() -> defaultTurretCmd.setRelative(!defaultTurretCmd.getRelative())));
 
+        aimButton.onTrue(new InstantCommand(() -> {
+            defaultTurretCmd.setManual(false);
+            defaultTurretCmd.setTrack(true);
+        }));
     }
 
     public void configureOperator(){

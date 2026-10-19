@@ -42,6 +42,10 @@ public class TransferSubsystem extends FtcSubsystem {
         return false;
     }
 
+    public boolean full(){
+        return ballCount == 4;
+    }
+
     public void openNectarGate(){
         nectarGate.setPosition(Constants.OPEN_GATE);
     }

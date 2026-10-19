@@ -82,7 +82,10 @@ public class Subsystems {
     public void update(){
         nectar.setDistance(distance());
         pollen.setDistance(distance());
+
         turret.setPose(drive.getPose().x(), drive.getPose().y(), drive.getNormalHeadingDegrees());
+        turret.setTx(vision.getTx());
+
         transfer.setBallCount(intake.ballCount());
     }
 
