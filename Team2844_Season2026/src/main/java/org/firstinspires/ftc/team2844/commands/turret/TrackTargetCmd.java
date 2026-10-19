@@ -15,11 +15,6 @@ public class TrackTargetCmd implements Command {
     }
 
     @Override
-    public void initialize() {
-        turret.aimToTarget();
-    }
-
-    @Override
     public void execute() {
         if(vision.valid()){
             turret.setRelativeDegrees(vision.getTx());
@@ -30,8 +25,14 @@ public class TrackTargetCmd implements Command {
 
     @Override
     public boolean isFinished() {
-        return (thresholded(turret.getAbsoluteDegrees(), turret.getTargetDegrees())  ||
-                thresholded(turret.getAbsoluteDegrees(), vision.getTx()));
+        //return (thresholded(turret.getAbsoluteDegrees(), turret.getTargetDegrees())  ||
+        //        thresholded(turret.getAbsoluteDegrees(), vision.getTx()));
+        return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        turret.setRelativeDegrees(0.0);
     }
 
     private boolean thresholded(double currentDegrees, double desiredDegrees){

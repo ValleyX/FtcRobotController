@@ -34,10 +34,12 @@ public class TransferSubsystem extends FtcSubsystem {
         transferMotor.setPower(-Constants.TRANSFER_SPEED);
     }
 
-    public void stopIfFull(){
+    public boolean stopIfFull(){
         if(ballCount == 4){
             stop();
+            return true;
         }
+        return false;
     }
 
     public void openNectarGate(){

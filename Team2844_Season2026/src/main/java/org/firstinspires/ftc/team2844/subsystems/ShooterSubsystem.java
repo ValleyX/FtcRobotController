@@ -70,9 +70,8 @@ public class ShooterSubsystem extends FtcSubsystem {
      * Assumes -999 as invalid velocity and position
      * */
     public void shoot(double velocity, double position){
-        double vel = (velocity != Constants.NO_DIS) ? velocity : Constants.SHOOTER_IDLE; // if velocity is valid then use it, otherwise use the idle speed
-        double pos = (position != Constants.NO_DIS) ? position : Constants.HOOD_DEFAULT; // if pos is valid, use it; otherwise, use default
-        setVelocity(vel);
+        double pos = (0.0<position && position < 1.0) ? position : Constants.HOOD_DEFAULT; // if pos is valid, use it; otherwise, use default
+        setVelocity(velocity);
         setHood(pos);
     }
 
@@ -99,6 +98,11 @@ public class ShooterSubsystem extends FtcSubsystem {
         double pos = (distance != Constants.NO_DIS) ? getHoodLinReg() : Constants.HOOD_DEFAULT;
         setVelocity(vel);
         setHood(pos);
+    }
+
+    public void idleShoot(){
+        setVelocity(Constants.SHOOTER_IDLE);
+        setHood(Constants.HOOD_DEFAULT);
     }
 
     /**
