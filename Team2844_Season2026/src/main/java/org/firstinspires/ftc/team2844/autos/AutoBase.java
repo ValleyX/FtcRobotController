@@ -29,6 +29,7 @@ public abstract class AutoBase extends CommandOpMode {
         Constants.changeTarget(target);
         subsystems = new Subsystems(hardwareMap, startingPose(), target);
 
+        //Keeps the turret tracking the entire auto
         turretCmd = new DefaultTurretCmd(subsystems.turret, subsystems.vision);
         subsystems.turret.setDefaultCommand(turretCmd);
     }

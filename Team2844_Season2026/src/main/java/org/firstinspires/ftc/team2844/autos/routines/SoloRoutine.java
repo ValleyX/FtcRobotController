@@ -12,27 +12,42 @@ import org.firstinspires.ftc.team2844.commands.shoot.ShootCmd;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 
 public abstract class SoloRoutine extends AutoBase {
+    //-Yellow = just moving
+    //!Red = shooting
+    //?Blue = intaking
     @Override
     public Command routine() {
         PoseFactory f = field();
         return PedroAutoDsl.auto(subsystems.drive, b -> {
+            //!Shoot preloaded immediately
             b.command(new ShootCmd(subsystems.intake, subsystems.nectar, subsystems.pollen, subsystems.transfer));
+
+            //?Grab from the garden
             b.command(new IntakeCmd(subsystems.intake));
             b.follow(SoloGeometry.toGarden(f));
+
+            //-Go through the middle to the other side (to avoid hitting parking teammate)
             b.follow(SoloGeometry.underpassFromGarden(f));
             b.action(() -> Constants.changeSide(Constants.AUDIENCE_SIDE));
+
+            //!We assume that the hive has tipped from our first shot
             b.command(new ShootCmd(subsystems.intake, subsystems.nectar, subsystems.pollen, subsystems.transfer));
+
+            //?Intake from the flowers (might have overcomplicated it)
             b.command(new IntakeCmd(subsystems.intake));
             b.parallel(
                     subsystems.drive.follow(SoloGeometry.pickupXFlower(f)),
-                    Commands.waitUntil(() -> subsystems.drive.getFollower().completion() >= 0.6)
+                    Commands.waitUntil(() -> subsystems.drive.getFollower().completion() >= 0.2)
                             .andThen(() -> subsystems.intake.flowerRampDown())
             );
             b.parallel(
                     subsystems.drive.follow(SoloGeometry.shootAgain(f)),
-                    Commands.waitUntil(() -> subsystems.drive.getFollower().completion() >= 0.2)
+                    Commands.waitUntil(() -> subsystems.drive.getFollower().completion() >= 0.8)
                             .andThen(() -> subsystems.intake.flowerRampUp())
             );
+
+            //!Shoot the pollen collected from the flowers
+            b.command(new ShootCmd(subsystems.intake, subsystems.nectar, subsystems.pollen, subsystems.transfer));
             //TODO add blob detection and state machine to keep shooting
         });
     }
