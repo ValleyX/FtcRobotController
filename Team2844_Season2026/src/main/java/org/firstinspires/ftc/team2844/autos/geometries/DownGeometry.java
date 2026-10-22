@@ -36,7 +36,7 @@ public final class DownGeometry {
     }
 
     public static Path pickupXFlower(PoseFactory f){
-        return Paths.line(readyPickup(f), AutoPaths.xFlower(f));
+        return Paths.line(readyPickup(f), AutoPaths.xFlower(f)).constant(readyPickup(f));
     }
 
     public static Path backToShoot(PoseFactory f){

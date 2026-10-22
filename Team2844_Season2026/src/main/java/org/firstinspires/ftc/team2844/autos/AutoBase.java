@@ -19,7 +19,9 @@ public abstract class AutoBase extends CommandOpMode {
     public abstract int alliance();
     public abstract int target();
     protected abstract Command routine();
-    protected abstract PoseFactory field();
+    protected PoseFactory field() {
+        return (alliance() == Constants.BLUE_ALLIANCE) ? AutoPaths.BLUE : AutoPaths.RED;
+    }
 
     @Override
     protected void initialize() {
@@ -32,12 +34,21 @@ public abstract class AutoBase extends CommandOpMode {
         //Keeps the turret tracking the entire auto
         turretCmd = new DefaultTurretCmd(subsystems.turret, subsystems.vision);
         subsystems.turret.setDefaultCommand(turretCmd);
+        turretCmd.setTrack(true);
     }
 
     @Override
     protected void onStart() {
         CommandScheduler.getInstance().schedule(
             routine().withTimeout(25.0)
+                    .andThen(() -> {
+                        subsystems.nectar.idleShoot();
+                        subsystems.pollen.idleShoot();
+                        subsystems.intake.stopIntake();
+                        subsystems.transfer.stop();
+                        subsystems.transfer.closeGates();
+                        turretCmd.setTrack(false);
+                    })
                     .andThen(new GoToCmd(subsystems.drive,
                             ()->AutoPaths.routeToPark(field(), subsystems.drive.getPose())).withTimeout(4.75))
                     .finallyDo(this::handOffToTeleop)

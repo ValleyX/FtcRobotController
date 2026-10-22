@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.team2844.commands;
 
+import com.vcs.valleylib.core.command.Command;
+import com.vcs.valleylib.core.command.decorators.ParallelCommandGroup;
+
+import org.firstinspires.ftc.team2844.commands.intake.IntakeCmd;
+import org.firstinspires.ftc.team2844.commands.transfer.TransferCmd;
 import org.firstinspires.ftc.team2844.helpers.Subsystems;
 import org.firstinspires.ftc.team2844.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.IntakeSubsystem;
@@ -30,6 +35,19 @@ public class CommandFactory {
         vision = subsystems.vision;
     }
 
+    public Command intakeAndTransfer(){
+        return new ParallelCommandGroup(
+                new IntakeCmd(intake),
+                new TransferCmd(transfer)
+        );
+    }
+
+    public static Command intakeAndTransfer(IntakeSubsystem intake, TransferSubsystem transfer){
+        return new ParallelCommandGroup(
+                new IntakeCmd(intake),
+                new TransferCmd(transfer)
+        );
+    }
 
 /*    public Command exampleIntake(){
         return new SequentialCommandGroup(

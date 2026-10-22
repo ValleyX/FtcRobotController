@@ -10,6 +10,7 @@ public class SavedVars {
         startingHeading = Constants.NO_HEADING;
         startingX = Constants.NO_POS;
         startingY = Constants.NO_POS;
+        Constants.side = Constants.NO_TARGET;
     }
 
     public static boolean validPose(){

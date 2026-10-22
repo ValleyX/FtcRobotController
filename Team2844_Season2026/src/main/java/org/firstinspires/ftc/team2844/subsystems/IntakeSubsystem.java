@@ -29,16 +29,16 @@ public class IntakeSubsystem extends FtcSubsystem {
 
 
         final DigitalChannel n0, n1, n2, n3, p0, p1, p2, p3;
-        n0 = hardwareMap.get(DigitalChannel.class, "n0");
-        n1 = hardwareMap.get(DigitalChannel.class, "n1");
-        n2 = hardwareMap.get(DigitalChannel.class, "n2");
-        n3 = hardwareMap.get(DigitalChannel.class, "n3");
+        n0 = hardwareMap.get(DigitalChannel.class, Constants.EHDD0);
+        n1 = hardwareMap.get(DigitalChannel.class, Constants.EHDD1);
+        n2 = hardwareMap.get(DigitalChannel.class, Constants.EHDD2);
+        n3 = hardwareMap.get(DigitalChannel.class, Constants.EHDD3);
         nectar = new DigitalChannel[]{n0, n1, n2, n3};
 
-        p0 = hardwareMap.get(DigitalChannel.class, "p0");
-        p1 = hardwareMap.get(DigitalChannel.class, "p1");
-        p2 = hardwareMap.get(DigitalChannel.class, "p2");
-        p3 = hardwareMap.get(DigitalChannel.class, "p3");
+        p0 = hardwareMap.get(DigitalChannel.class, Constants.EHDD4);
+        p1 = hardwareMap.get(DigitalChannel.class, Constants.EHDD5);
+        p2 = hardwareMap.get(DigitalChannel.class, Constants.EHDD6);
+        p3 = hardwareMap.get(DigitalChannel.class, Constants.EHDD7);
         pollen = new DigitalChannel[]{p0, p1, p2, p3};
     }
 
@@ -115,10 +115,10 @@ public class IntakeSubsystem extends FtcSubsystem {
     @Override
     public void periodic() {
         //if there are too many balls in the robot, spit them out. Once there are no longer too many, stop outtaking
-        if(overfull() && !intakeMotor.isBusy()){
+        if(overfull() && (intakeMotor.getPower() == 0.0)){
             outtake();
             overflowed = true;
-        } else if(overflowed){
+        } else if(overflowed && !overfull()){
             stopIntake();
             overflowed = false;
         }

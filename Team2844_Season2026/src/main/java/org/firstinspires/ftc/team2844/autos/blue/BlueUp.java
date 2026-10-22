@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.team2844.autos.blue;
 
-import com.pedropathing.api.PoseFactory;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.team2844.autos.AutoPaths;
 import org.firstinspires.ftc.team2844.autos.geometries.UpGeometry;
 import org.firstinspires.ftc.team2844.autos.routines.UpRoutine;
 import org.firstinspires.ftc.team2844.helpers.Constants;
@@ -25,10 +23,5 @@ public class BlueUp extends UpRoutine {
     @Override
     public int target() {
         return Constants.BACK_SIDE;
-    }
-
-    @Override
-    protected PoseFactory field() {
-        return AutoPaths.BLUE;
     }
 }

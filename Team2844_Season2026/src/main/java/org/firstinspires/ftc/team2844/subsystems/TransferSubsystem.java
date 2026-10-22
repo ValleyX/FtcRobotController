@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.vcs.valleylib.ftc.hardware.FtcSubsystem;
-import com.vcs.valleylib.ftc.hardware.Motor;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 
 public class TransferSubsystem extends FtcSubsystem {
@@ -76,10 +75,10 @@ public class TransferSubsystem extends FtcSubsystem {
 
     @Override
     public void periodic() {
-        if(ballCount > 4 && !transferMotor.isBusy()){
+        if(ballCount > 4 && transferMotor.getPower() != 0.0){
             spitTransfer();
             overflowed = true;
-        } else if(overflowed){
+        } else if(overflowed && !(ballCount > 4)){
             stop();
             overflowed = false;
         }

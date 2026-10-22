@@ -130,6 +130,7 @@ public class TurretSubsystem extends FtcSubsystem {
         double temp = normalizeTurretDegrees(degrees);
         //replace Constants.MAX_SERVO_RANGE with 360.0 if we want to scale the turret down instead of just having a deadspot
         temp = (Math.max(Math.min(temp, 180.0), -180.0) + 180.0) / Constants.MAX_SERVO_RANGE;
+        temp *= Constants.DEGREES_PER_SERVO_PERCENT;
         return Math.max(Math.min(temp, 1.0), 0.0);
     }
 

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team2844.helpers;
 public class Constants {
 
     /* ---------- VELOCITY PIDS ---------- */
+    //TODO PUT REAL PIDS IN
     public static final double NP = 1.0;
     public static final double NI = 1.0;
     public static final double ND = 1.0;
@@ -48,8 +49,8 @@ public class Constants {
     public static final double MAX_SERVO_RANGE = 355.0;
     public static final double TURRET_THRESHOLD_DEGREES = 3.0;
 
-    private static final double SERVO_TO_GEAR = 1.0/1.0; //TODO PUT REAL RATIOS IN
-    private static final double GEAR_TO_TURRET = 2.75/1.0; //TODO PUT REAL RATIOS IN
+    private static final double SERVO_TO_GEAR = 1.0; //TODO PUT REAL RATIOS IN
+    private static final double GEAR_TO_TURRET = 1.9; //TODO PUT REAL RATIOS IN
     private static final double TOTAL_RATIO = GEAR_TO_TURRET/SERVO_TO_GEAR;
     /**Divide the servo degrees by this number to get the turret degrees.
      * Or multiply turret degrees by this number to get the servo degrees
@@ -77,6 +78,7 @@ public class Constants {
     public static int side = NO_TARGET;
 
     /* ---------- IRL ROBOT SIZES ---------- */
+    //TODO PUT REAL WIDTH, LENGTH, AND HEIGHT
     public static final double ROBOT_WIDTH = 18.0;
     public static final double ROBOT_LENGTH = 17.0;
     public static final double ROBOT_HEIGHT = 18.0;
@@ -88,10 +90,14 @@ public class Constants {
     // ?----- intake and transfer -----
     public static double INTAKE_SPEED = 1.0;
     public static double TRANSFER_SPEED = 1.0;
+
+    //TODO REAL GATE CLOSES
     public static  double OPEN_GATE = 0.0;
     public static  double CLOSED_GATE = 0.5;
+    //TODO, REAL EMPTY TIME
     public static final long EMPTY_TIME = 500;
 
+    //TODO Put real servo sets in
     public static final double FLOWER_DOWN = 0.5;
     public static final double FLOWER_UP = 0.0;
 
@@ -231,14 +237,14 @@ public class Constants {
     public static final String EHI2C2 = "";
     public static final String EHI2C3 = "";
 
-    public static final String EHDD0 = "";
-    public static final String EHDD1 = "";
-    public static final String EHDD2 = "";
-    public static final String EHDD3 = "";
-    public static final String EHDD4 = "";
-    public static final String EHDD5 = "";
-    public static final String EHDD6 = "";
-    public static final String EHDD7 = "";
+    public static final String EHDD0 = "n0";
+    public static final String EHDD1 = "n1";
+    public static final String EHDD2 = "n2";
+    public static final String EHDD3 = "n3";
+    public static final String EHDD4 = "p0";
+    public static final String EHDD5 = "p1";
+    public static final String EHDD6 = "p2";
+    public static final String EHDD7 = "p3";
 
     /* COLORS */
     public static final double OFF = 0.00;

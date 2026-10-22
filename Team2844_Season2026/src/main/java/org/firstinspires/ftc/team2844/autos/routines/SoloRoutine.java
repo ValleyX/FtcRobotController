@@ -7,6 +7,7 @@ import com.vcs.valleylib.ftc.pedro.PedroAutoDsl;
 
 import org.firstinspires.ftc.team2844.autos.AutoBase;
 import org.firstinspires.ftc.team2844.autos.geometries.SoloGeometry;
+import org.firstinspires.ftc.team2844.commands.CommandFactory;
 import org.firstinspires.ftc.team2844.commands.intake.IntakeCmd;
 import org.firstinspires.ftc.team2844.commands.shoot.ShootCmd;
 import org.firstinspires.ftc.team2844.helpers.Constants;
@@ -16,15 +17,15 @@ public abstract class SoloRoutine extends AutoBase {
     //!Red = shooting
     //?Blue = intaking
     @Override
-    public Command routine() {
+    protected Command routine() {
         PoseFactory f = field();
         return PedroAutoDsl.auto(subsystems.drive, b -> {
             //!Shoot preloaded immediately
             b.command(new ShootCmd(subsystems.intake, subsystems.nectar, subsystems.pollen, subsystems.transfer));
 
             //?Grab from the garden
-            b.command(new IntakeCmd(subsystems.intake));
-            b.follow(SoloGeometry.toGarden(f));
+            b.command(subsystems.drive.follow(SoloGeometry.toGarden(f))
+                    .deadlineWith(CommandFactory.intakeAndTransfer(subsystems.intake, subsystems.transfer)));
 
             //-Go through the middle to the other side (to avoid hitting parking teammate)
             b.follow(SoloGeometry.underpassFromGarden(f));
@@ -34,9 +35,9 @@ public abstract class SoloRoutine extends AutoBase {
             b.command(new ShootCmd(subsystems.intake, subsystems.nectar, subsystems.pollen, subsystems.transfer));
 
             //?Intake from the flowers (might have overcomplicated it)
-            b.command(new IntakeCmd(subsystems.intake));
             b.parallel(
-                    subsystems.drive.follow(SoloGeometry.pickupXFlower(f)),
+                    subsystems.drive.follow(SoloGeometry.pickupXFlower(f))
+                            .deadlineWith(CommandFactory.intakeAndTransfer(subsystems.intake, subsystems.transfer)),
                     Commands.waitUntil(() -> subsystems.drive.getFollower().completion() >= 0.2)
                             .andThen(() -> subsystems.intake.flowerRampDown())
             );
