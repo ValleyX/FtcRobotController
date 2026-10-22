@@ -22,17 +22,19 @@ public class Constants {
     public static final double NO_POS = -999;
     public static final double NO_DIS = -999;
     public static final double NO_LL = -999;
+    public static final int NO_TARGET = -1;
+    public static final int NO_ALLIANCE = -1;
 
 
     /* ---------- COORDINATE DATA ---------- */
     public static double targetX = Constants.NO_POS;
     public static double targetY = Constants.NO_POS;
 
-    public static double CELL_HEIGHT = 53.5;
+    public static final double CELL_HEIGHT = 53.5;
 
     public static final double BLUE_AUDIENCE_X = 89.0;
     public static final double BLUE_AUDIENCE_Y = 53.0;
-    public static final double BLUE_BACK_X = 98.0;
+    public static final double BLUE_BACK_X = 89.0;
     public static final double BLUE_BACK_Y = 91.0;
     public static final double RED_AUDIENCE_X = 55.0;
     public static final double RED_AUDIENCE_Y = 53.0;
@@ -61,49 +63,65 @@ public class Constants {
     public static final int RED_AUDIENCE = 2;
     public static final int RED_BACK = 3;
 
-    // ----- alliance tracker -----
-    public static int alliance;
+    // ?----- alliance tracker -----
+    public static int alliance = NO_ALLIANCE;
     public static final int BLUE_ALLIANCE = 0;
     public static final int RED_ALLIANCE = 2;
-    public static void changeAlliance(int side){
-        alliance = side;
+    public static void changeAlliance(int team){
+        alliance = team;
     }
 
-    // ----- side ids -----
+    // ?----- side ids -----
     public static final int AUDIENCE_SIDE = 0;
     public static final int BACK_SIDE = 1;
+    public static int side = NO_TARGET;
 
-    /* ---------- LIMELIGHT ---------- */
-    public static final int ALL_BLUE = 4;
-    public static final int ALL_RED = 5;
-
+    /* ---------- IRL ROBOT SIZES ---------- */
+    public static final double ROBOT_WIDTH = 18.0;
+    public static final double ROBOT_LENGTH = 17.0;
+    public static final double ROBOT_HEIGHT = 18.0;
     public static final double LL_HEIGHT = 15.0; //TODO get real height
 
 
     /* ---------- Set Speeds and Deadbands ---------- */
 
-    // ----- intake and transfer -----
+    // ?----- intake and transfer -----
     public static double INTAKE_SPEED = 1.0;
     public static double TRANSFER_SPEED = 1.0;
-    public static double OPEN_GATE = 0.0;
-    public static double CLOSED_GATE = 0.5;
+    public static  double OPEN_GATE = 0.0;
+    public static  double CLOSED_GATE = 0.5;
+    public static final long EMPTY_TIME = 500;
 
-    // ----- controller -----
+    public static final double FLOWER_DOWN = 0.5;
+    public static final double FLOWER_UP = 0.0;
+
+    // ?----- controller -----
     public static double STICK_DEADBAND = 0.05;
 
-    // ----- shooter and hood -----
+    // ?----- shooter and hood -----
     public static double VEL_THRESHOLD = 200;
     public static double SHOOTER_IDLE = 1000;
     public static double HOOD_DEFAULT = 0.5;
 
+    public static void changeSide(int newSide){
+        side = newSide;
+        setTarget();
+    }
+
+    public static void setTarget(){
+        changeTarget(side+alliance);
+    }
+
+    public static int target = NO_TARGET;
 
     /**
      * This method changes the values for the goal's field coordinates depending on case given
      * The field coordinates are rough estimates of where the cell is above when tipped up.
-     * @param target 0- Blue Audience 1- Blue Back 2- Red Audience 3- Red Back
+     * @param t 0- Blue Audience 1- Blue Back 2- Red Audience 3- Red Back
      *
      */
-    public static void changeTarget(int target) {
+    public static void changeTarget(int t) {
+        target = t;
         switch(target) {
             case(Constants.BLUE_AUDIENCE): //Blue Audience
                 targetX = Constants.BLUE_AUDIENCE_X;
@@ -201,7 +219,7 @@ public class Constants {
     public static final String EHM3 = "pollenShooter";
 
 
-    public static final String EHS0 = "";
+    public static final String EHS0 = "flowerRamp";
     public static final String EHS1 = "";
     public static final String EHS2 = "";
     public static final String EHS3 = "light0";
@@ -223,17 +241,17 @@ public class Constants {
     public static final String EHDD7 = "";
 
     /* COLORS */
-    public static double OFF = 0.00;
-    public static double RED = 0.28;
-    public static double ORANGE = 0.33;
-    public static double YELLOW = 0.39;
-    public static double SAGE = 0.44;
-    public static double GREEN = 0.50;
-    public static double AZURE = 0.56;
-    public static double BLUE = 0.61;
-    public static double INDIGO = 0.67;
-    public static double VIOLET = 0.72;
-    public static double WHITE = 1.00;
+    public static final double OFF = 0.00;
+    public static final double RED = 0.28;
+    public static final double ORANGE = 0.33;
+    public static final double YELLOW = 0.39;
+    public static final double SAGE = 0.44;
+    public static final double GREEN = 0.50;
+    public static final double AZURE = 0.56;
+    public static final double BLUE = 0.61;
+    public static final double INDIGO = 0.67;
+    public static final double VIOLET = 0.72;
+    public static final double WHITE = 1.00;
 
 
 

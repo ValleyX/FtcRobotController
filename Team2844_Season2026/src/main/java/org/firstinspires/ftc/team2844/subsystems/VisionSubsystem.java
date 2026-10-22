@@ -45,6 +45,9 @@ public class VisionSubsystem extends FtcSubsystem {
 
     @Override
     public void periodic() {
+        if(getPipeline() != Constants.target){
+            setPipeline(Constants.target);
+        }
         latestResult = limelight.getLatestResult();
     }
 }

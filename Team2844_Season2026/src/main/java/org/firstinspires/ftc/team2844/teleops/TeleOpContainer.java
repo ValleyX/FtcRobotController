@@ -9,23 +9,30 @@ import com.vcs.valleylib.ftc.RobotContainer;
 import com.vcs.valleylib.ftc.input.CommandGamepad;
 import com.vcs.valleylib.ftc.input.Trigger;
 
+import org.firstinspires.ftc.team2844.autos.AutoPaths;
 import org.firstinspires.ftc.team2844.commands.CommandFactory;
+import org.firstinspires.ftc.team2844.commands.drive.GoToCmd;
 import org.firstinspires.ftc.team2844.commands.turret.DefaultTurretCmd;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 import org.firstinspires.ftc.team2844.helpers.Subsystems;
 
 public class TeleOpContainer extends RobotContainer {
-    public enum Cycle {IDLE, INTAKE, PREPARE, SHOOT};
+    public enum Cycle {IDLE, INTAKE, PREPARE, SHOOT}
 
     Subsystems subsystems;
 
     /* ---------- Controller and Buttons ---------- */
     CommandGamepad driver;
     CommandGamepad operator;
+
+    /*--- driver ---*/
     final Trigger shootButton;
     final Trigger intakeButton;
     final Trigger outtakeButton;
     final Trigger resetIMUButton;
+    final Trigger parkButton;
+
+    /*--- operator/oh crap ---*/
     final Trigger aimButton;
     final Trigger turretLeftButton;
     final Trigger turretRightButton;
@@ -54,6 +61,7 @@ public class TeleOpContainer extends RobotContainer {
         this.intakeButton = driver.rightTriggerButton(0.05); //runs the intake
         this.outtakeButton = driver.leftTriggerButton(0.05); //runs the intake backwards
         this.resetIMUButton = driver.guide();
+        this.parkButton = driver.dpadDown();
 
         // ----- OPERATOR ----- //
         this.aimButton = operator.rightBumper();//Automatically aims at expected target position, then apriltag target position
@@ -65,49 +73,54 @@ public class TeleOpContainer extends RobotContainer {
 
 
 
+        Trigger readyToShoot = shootButton
+                        .and(subsystems.nectar::atVelocity)
+                        .and(subsystems.pollen::atVelocity)
+                        .and(subsystems.turret::aimed);
 
-        teleOpCycle = new StateMachine<>(Cycle.IDLE)
-                // IDLE: close the gates then turn on the transfer
+        teleOpCycle = new StateMachine<>(Cycle.IDLE) //initial state
+                /*--- states ---*/
+                //?IDLE: close the gates then turn on the transfer
                 .onEnter(Cycle.IDLE, subsystems.transfer::closeGates)
                 .state(Cycle.IDLE, () -> {
+                    subsystems.intake.stopIntake();
                     subsystems.transfer.transfer();
                     subsystems.nectar.idleShoot();
                     subsystems.pollen.idleShoot();
                 })
-                //INTAKE: turn on the intake and when finished, turn it off
+                //?INTAKE: turn on the intake
                 .state(Cycle.INTAKE, subsystems.intake::intake)
-                .onExit(Cycle.INTAKE, subsystems.intake::stopIntake)
 
-                //PREPARE: turn off transfer, open gates, aim the turret to the target, spinup both shooters
+                //?PREPARE: turn off transfer, open gates, aim the turret to the target, spinup both shooters
                 .onEnter(Cycle.PREPARE, () -> {
                     subsystems.transfer.stop();
                     subsystems.transfer.openGates();
+                    subsystems.intake.stopIntake();
                 })
                 .state(Cycle.PREPARE, () -> {
                     subsystems.nectar.shoot();
                     subsystems.pollen.shoot();
                     defaultTurretCmd.setTrack(true);
                 })
-                //SHOOT: transfers balls into shooter when at velocity(due to transition requirements)
+                //?SHOOT: transfers balls into shooter when at velocity(due to transition requirements)
                 .state(Cycle.SHOOT, () -> {
                     subsystems.nectar.shoot();
                     subsystems.pollen.shoot();
                     defaultTurretCmd.setTrack(true);
                     subsystems.transfer.transfer();
+                    subsystems.intake.intake();
                 })
                 .onExit(Cycle.SHOOT, () -> defaultTurretCmd.setTrack(false))
 
+                /*--- transition buttons ---*/
                 //acts like an intake button with proper procedure
                 .transition(Cycle.IDLE, Cycle.INTAKE, intakeButton)
                 .transition(Cycle.INTAKE, Cycle.IDLE, intakeButton.negate())
                 //Acts like a shoot button with proper procedure
-                .transition(Cycle.PREPARE, Cycle.SHOOT,
-                        shootButton
-                                .and(subsystems.nectar::atVelocity)
-                                .and(subsystems.pollen::atVelocity)
-                                .and(subsystems.turret::aimed))
-                .transition(Cycle.SHOOT, Cycle.PREPARE, shootButton.negate())
+                .transition(Cycle.PREPARE, Cycle.SHOOT, readyToShoot)
+                .transition(Cycle.SHOOT, Cycle.PREPARE, readyToShoot.negate())
 
+                /*--- auto transitions ---*/
                 //Switches from idling or intaking to preparing for the shooter when it has 4 balls
                 .transition(Cycle.INTAKE, Cycle.PREPARE, subsystems.intake::full)
                 .transition(Cycle.IDLE, Cycle.PREPARE, subsystems.intake::full)
@@ -115,9 +128,11 @@ public class TeleOpContainer extends RobotContainer {
                 .transition(Cycle.PREPARE, Cycle.IDLE, subsystems.intake::empty)
                 .transition(Cycle.SHOOT, Cycle.IDLE, subsystems.intake::empty)
 
+                /*--- fast tracks ---*/
                 //Fast track to shooting/intaking
                 .transition(Cycle.IDLE, Cycle.PREPARE, shootButton.and(() -> !subsystems.intake.empty()))
                 .transition(Cycle.PREPARE, Cycle.IDLE, intakeButton.and(() -> !subsystems.intake.full()));
+
         configureBindings();
     }
 
@@ -136,6 +151,7 @@ public class TeleOpContainer extends RobotContainer {
     }
 
     public void configureDefaults(){
+        /*--- defaults ---*/
         //drive in fieldCentric
         subsystems.drive.setDefaultCommand(subsystems.drive.run(
                 () -> subsystems.drive.driveFieldCentric(
@@ -144,7 +160,10 @@ public class TeleOpContainer extends RobotContainer {
                         -driver.rightX()
                 )
         ));
+        subsystems.turret.setDefaultCommand(defaultTurretCmd);
 
+
+        /*--- triggers ---*/
         //Always checks the position of the robot and changes the pipeline and target based on that
         Trigger audienceSide = new Trigger(
                 () -> subsystems.drive.getPose().y() < 72);
@@ -152,17 +171,22 @@ public class TeleOpContainer extends RobotContainer {
         //when the robot goes to the audience side, set the pipeline and target
         audienceSide.onTrue(
                 new InstantCommand(() ->subsystems.vision.setPipeline(Constants.alliance + Constants.AUDIENCE_SIDE))
-                .andThen(() ->Constants.changeTarget(Constants.alliance + Constants.AUDIENCE_SIDE)));
+                .andThen(() ->Constants.changeSide(Constants.AUDIENCE_SIDE)));
         //when the robot goes to the back side, set the pipeline and target
         audienceSide.onFalse(new InstantCommand(() ->subsystems.vision.setPipeline(Constants.alliance + Constants.BACK_SIDE))
-                .andThen(() ->Constants.changeTarget(Constants.alliance + Constants.BACK_SIDE)));
+                .andThen(() ->Constants.changeSide(Constants.BACK_SIDE)));
 
-        subsystems.turret.setDefaultCommand(defaultTurretCmd);
     }
 
     public void configureDriving(){
         resetIMUButton.onTrue(
                 Commands.runOnce(subsystems.drive::resetHeading)
+        );
+
+        parkButton.whileTrue(
+                new GoToCmd(subsystems.drive,
+                        () ->AutoPaths.routeToPark(AutoPaths.getField(), subsystems.drive.getPose()), 0.8)
+                        .andThen(Commands.run(() -> {}, subsystems.drive))
         );
     }
 
@@ -171,6 +195,8 @@ public class TeleOpContainer extends RobotContainer {
     }
 
     public void configureShooting(){
+        //!Uses a single default command that can be modified to do different things so that the statemachine can't steal the requirement
+
         turretLeftButton.onTrue(new InstantCommand(() -> {
             defaultTurretCmd.setDegrees(90.0);
             defaultTurretCmd.setManual(true);
@@ -194,5 +220,9 @@ public class TeleOpContainer extends RobotContainer {
 
     public void configureOperator(){
 
+    }
+
+    public Command getStateMachine(){
+        return teleOpCycle;
     }
 }

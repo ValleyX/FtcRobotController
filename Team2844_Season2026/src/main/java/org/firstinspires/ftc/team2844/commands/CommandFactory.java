@@ -1,13 +1,5 @@
 package org.firstinspires.ftc.team2844.commands;
 
-import com.vcs.valleylib.core.command.Command;
-import com.vcs.valleylib.core.command.decorators.ParallelCommandGroup;
-import com.vcs.valleylib.core.command.decorators.SequentialCommandGroup;
-
-import org.firstinspires.ftc.team2844.commands.intake.IntakeCmd;
-import org.firstinspires.ftc.team2844.commands.shoot.IdleShootCmd;
-import org.firstinspires.ftc.team2844.commands.transfer.CloseGatesCmd;
-import org.firstinspires.ftc.team2844.commands.transfer.TransferCmd;
 import org.firstinspires.ftc.team2844.helpers.Subsystems;
 import org.firstinspires.ftc.team2844.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.IntakeSubsystem;
@@ -39,8 +31,7 @@ public class CommandFactory {
     }
 
 
-
-/*    public Command ExampleIntake(){
+/*    public Command exampleIntake(){
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
                         new IdleShootCmd(nectar),

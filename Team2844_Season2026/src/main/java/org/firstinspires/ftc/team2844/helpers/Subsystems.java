@@ -87,6 +87,9 @@ public class Subsystems {
         turret.setTx(vision.getTx());
 
         transfer.setBallCount(intake.ballCount());
+
+        light.turnOnNectar(intake.full());
+        light.turnOnPollen(intake.full());
     }
 
 }

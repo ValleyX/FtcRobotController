@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.team2844.subsystems;
 
-import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.ManualDrive;
 import com.pedropathing.math.Pose;
 import com.pedropathing.utils.Angle;
@@ -43,7 +42,7 @@ public class DriveSubsystem extends PedroSubsystem {
      * @param turn    +1 turns counter-clockwise
      */
     public void driveFieldCentric(double forward, double strafe, double turn) {
-        double offsetHeading = Constants.alliance == Constants.BLUE_ALLIANCE? 0.0: Math.PI;
+        double offsetHeading = Constants.alliance == Constants.BLUE_ALLIANCE? Math.PI: 0.0;
         follower.manual(ManualDrive.fieldCentric(
                 scale(forward),
                 scale(strafe),

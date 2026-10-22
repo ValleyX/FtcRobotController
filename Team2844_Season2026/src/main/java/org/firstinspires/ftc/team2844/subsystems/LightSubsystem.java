@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.team2844.subsystems;
 
-import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -28,9 +27,20 @@ public class LightSubsystem extends FtcSubsystem {
     public void setColorPollen(double color) {
         pollenLight.setPosition(color);
     }
+    public void turnOnPollen(boolean pollen){
+        double color = (pollen)? Constants.YELLOW: Constants.OFF;
+        setColorPollen(color);
+    }
 
     public void setColorNectar(double color) {
         nectarLight.setPosition(color);
+    }
+    public void turnOnNectar(boolean nectar){
+        double allianceColor = (Constants.alliance == Constants.BLUE_ALLIANCE)
+                ? Constants.BLUE
+                : Constants.RED;
+        double color = (nectar)? allianceColor: Constants.OFF;
+        setColorNectar(color);
     }
 
     public void startTimerLight() {
@@ -44,7 +54,7 @@ public class LightSubsystem extends FtcSubsystem {
             if (run.seconds() > 120) {
                 timerLight.setPosition(Constants.OFF);
             } else if (run.seconds() > 115) {
-                //Blink Red
+                //TODO Blink Red
             } else if (run.seconds() > 100) {
                 timerLight.setPosition(Constants.RED);
             } else if (run.seconds() > 60) {
