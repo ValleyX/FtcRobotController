@@ -66,4 +66,8 @@ public abstract class AutoBase extends CommandOpMode {
     protected void run() {
         subsystems.update();
     }
+
+    public DefaultTurretCmd getTurretCmd(){
+        return turretCmd;
+    }
 }

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.team2844.subsystems;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.vcs.valleylib.ftc.hardware.FtcSubsystem;
@@ -14,13 +16,15 @@ public class ShooterSubsystem extends FtcSubsystem {
     Servo hood;
     public PIDF pidf;
     private double distance;
+    private final String motorName;
 
     public ShooterSubsystem(HardwareMap hardwareMap, Constants.ShooterConfig config){
         super(hardwareMap);
 
         pidf = new PIDF(config.kP,config.kI,config.kD,config.kS,config.kV );
+        this.motorName = config.motorName;
 
-        shooter = new MotorEx(hardwareMap, config.motorName);
+        shooter = new MotorEx(hardwareMap, motorName);
         shooter.setRunMode(Motor.RunMode.VelocityControl);
         shooter.setVeloCoefficients(pidf.kP, pidf.kI, pidf.kD);
         shooter.setFeedforwardCoefficients(pidf.kS, pidf.kV);
@@ -47,7 +51,7 @@ public class ShooterSubsystem extends FtcSubsystem {
     }
 
     public void setHood(double pos){
-        hood.setPosition(pos);
+        hood.setPosition(Math.max(Math.min(pos, 1.0), 0.0));
     }
 
     public double getHood(){
@@ -130,16 +134,19 @@ public class ShooterSubsystem extends FtcSubsystem {
     }
 
 
-
-
-
-
+    @NonNull
+    @Override
+    public String toString() {
+        return motorName;
+    }
 
     public void changePIDF(PIDF pidf){
         this.pidf = pidf;
+        shooter.setVeloCoefficients(pidf.kP, pidf.kI, pidf.kD);
+        shooter.setFeedforwardCoefficients(pidf.kS, pidf.kV);
     }
 
     public PIDF getPIDF(){
-        return pidf;
+        return new PIDF(pidf.kP, pidf.kI, pidf.kD, pidf.kS, pidf.kV);
     }
 }

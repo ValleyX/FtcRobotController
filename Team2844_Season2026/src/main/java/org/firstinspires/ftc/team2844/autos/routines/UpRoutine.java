@@ -28,11 +28,12 @@ public abstract class UpRoutine extends AutoBase {
             //- Go back and wait for alliance to tip again
             b.follow(UpGeometry.readyShoot1(f));
 
-            //!Wait for alliance to tip, then shoot
+            //!Spin up the shooters
             b.command(()-> {
                 subsystems.nectar.shoot();
                 subsystems.pollen.shoot();
             });
+            //!Wait for alliance to tip, then shoot
             b.command(Commands.waitUntil(subsystems.vision::valid));
             b.command(new ShootCmd(subsystems.intake, subsystems.nectar, subsystems.pollen, subsystems.transfer));
 

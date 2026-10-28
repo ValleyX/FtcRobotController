@@ -10,9 +10,15 @@ import java.util.Set;
 
 public class TransferCmd implements Command {
     TransferSubsystem transfer;
+    double speed;
 
     public TransferCmd(TransferSubsystem transfer){
         this.transfer = transfer;
+        this.speed = 1.0;
+    }
+    public TransferCmd(TransferSubsystem transfer, double speed){
+        this.transfer = transfer;
+        this.speed = speed;
     }
 
     @Override
@@ -22,7 +28,7 @@ public class TransferCmd implements Command {
 
     @Override
     public void execute() {
-        transfer.transfer();
+        transfer.transfer(speed);
     }
 
     @Override

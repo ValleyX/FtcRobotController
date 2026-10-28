@@ -21,7 +21,7 @@ public class DriveSubsystem extends PedroSubsystem {
 
 
 
-    /* ===================== Teleop drive ===================== */
+    /* -------------------- Teleop drive -------------------- */
 
     /**
      * Puts the follower into manual mode with zero output, ready for driver input.

@@ -10,8 +10,8 @@ import org.firstinspires.ftc.team2844.helpers.Constants;
 public class TurretSubsystem extends FtcSubsystem {
     private double heading, x, y;
     private double tx;
-    private AnalogInput encoder1, encoder2;
-    private Servo axon1, axon2;
+    private final AnalogInput encoder1, encoder2;
+    private final Servo axon1, axon2;
     public TurretSubsystem(HardwareMap hardwareMap) {
         super(hardwareMap);
         heading = 0;
@@ -28,13 +28,14 @@ public class TurretSubsystem extends FtcSubsystem {
         encoder2 = hardwareMap.get(AnalogInput.class, Constants.CHDD1);
     }
 
+    /* ----- GET DEGREES ----- */
+    //? CURRENT ABSOLUTE DEGREES/RADIANS
     /**
      * Returns a value between -180 and 180 based on the reading from the axon's encoders
      * */
     public double getAbsoluteDegrees(){
         //gets the average percent of rotation from the axons and puts it in -180 to 180 range.
-        double temp = ((((encoder1.getVoltage()/encoder1.getMaxVoltage()) + (encoder2.getVoltage()/encoder2.getMaxVoltage()))/2.0)*360.0) - 180.0;
-        return temp;
+        return ((((encoder1.getVoltage()/encoder1.getMaxVoltage()) + (encoder2.getVoltage()/encoder2.getMaxVoltage()))/2.0)*360.0) - 180.0;
     }
 
     /**Returns a value between -PI and PI based on the reading from the axon's encoders
@@ -43,6 +44,98 @@ public class TurretSubsystem extends FtcSubsystem {
         return Math.toRadians(getAbsoluteDegrees());
     }
 
+
+    //?FIELD CENTRIC DEGREES, FIRST IS MOST COMPLEX
+    /**Returns the degrees of the turret relative to the field.
+     * @param targetDegrees a degree between -180 and 180;
+     * @param heading current heading of the robot between -180 and 180
+     * @return A degree between -180 and 180 that the turret should be set to in order to match the target field centric degree.
+     * */
+    public double getFieldCentricDegrees(double targetDegrees, double heading){
+        double temp = Math.max(Math.min(targetDegrees, 180), -180);
+        temp -= heading;
+        temp = normalizeTurretDegrees(temp);
+        return temp;
+    }
+    /**Returns the target degrees of the turret relative to the field.
+     * @param degrees a target degree between -180 and 180
+     * @return A degree between -180 and 180 that the turret should be set to in order to match the target field centric degree.
+     * */
+    public double getFieldCentricDegrees(double degrees){
+        return getFieldCentricDegrees(degrees, heading);
+    }
+
+    //?FIELD CENTRIC RADIANS
+    /**Returns the degrees of the turret relative to the field.
+     * @param radians a degree between -PI and PI
+     * @param heading current heading of the robot between -PI and PI
+     * @return A degree between -PI and PI that the turret should be set to in order to match the target field centric degree.
+     * */
+    public double getFieldCentricRadians(double radians, double heading){
+        return Math.toRadians(getFieldCentricDegrees(Math.toDegrees(radians), Math.toDegrees(heading)));
+    }
+    /**Returns the degrees of the turret relative to the field.
+     * @param radians a degree between -PI and PI
+     * @return A degree between -PI and PI that the turret should be set to in order to match the target field centric degree.
+     * */
+    public double getFieldCentricRadians(double radians){
+        return Math.toRadians(getFieldCentricDegrees(Math.toDegrees(radians)));
+    }
+
+    //?FIELD TARGET DEGREES AND RADIANS
+    /**
+     * @param x the x pose of the robot from 0-144
+     * @param y the y pose of the robot from 0-144
+     * @param heading the heading of the robot from -PI to PI
+     * @return What the relative heading of the turret should be set to in order to aim to the target.
+     * */
+    public double getRobotTargetRadians(double x, double y, double heading){
+        double adjacent = Constants.targetX - x;
+        double opposite = Constants.targetY - y;
+        adjacent = (adjacent != 0.0)? adjacent: 0.1;
+
+        double temp = Math.atan2(opposite, adjacent);
+        return getFieldCentricRadians(temp, heading);
+    }
+
+    /**
+     * @param x the x pose of the robot from 0-144
+     * @param y the y pose of the robot from 0-144
+     * @param heading the heading of the robot from -180 to 180
+     * @return What the relative heading of the turret should be set to in order to aim to the target.
+     * */
+    public double getRobotTargetDegrees(double x, double y, double heading){
+        return Math.toDegrees(getRobotTargetRadians(x, y, heading));
+    }
+
+    public double getRobotTargetDegrees(){
+        return getRobotTargetDegrees(x, y, heading);
+    }
+
+    public double getRobotTargetRadians(){
+        return getRobotTargetRadians(x, y, heading);
+    }
+
+
+    //?ROBOT RELATIVE TARGET DEGREES
+    /**
+     * @return What the field centric heading of the turret should be set to in order to aim to the target. Units in radians.
+     * */
+    public double getFieldTargetRadians(){
+        double adjacent = Constants.targetX - x;
+        double opposite = Constants.targetY - y;
+        adjacent = (adjacent != 0.0)? adjacent: 0.1;
+
+        return Math.atan2(opposite, adjacent);
+    }
+    /**
+     * @return What the field centric heading of the turret should be set to in order to aim to the target. Units in degrees.
+     * */
+    public double getFieldTargetDegrees(){
+        return Math.toDegrees(getFieldTargetRadians());
+    }
+
+    /* ----- SET DEGREES ----- */
     /**
      * Accepts values from -180 to 180
      * Sets the turrets relative to the robot heading
@@ -61,43 +154,24 @@ public class TurretSubsystem extends FtcSubsystem {
         axon2.setPosition(convertRadiansToServo(radians));
     }
 
-    /**Sets the turret to a field centric degree based on pedro pathings */
+    /**Sets the turret to a field centric degree based on Pedro pathing pose
+     * @param degrees The targeted degree from -180 to 180 (zero facing blue)
+     * */
     public void setFieldCentricDegrees(double degrees){
         axon1.setPosition(convertDegreesToServo(getFieldCentricDegrees(degrees)));
         axon2.setPosition(convertDegreesToServo(getFieldCentricDegrees(degrees)));
     }
 
-    public double getFieldCentricDegrees(double degrees){
-        double temp = Math.max(Math.min(degrees, 180), -180);
-        temp -= heading;
-        temp = normalizeTurretDegrees(temp);
-        return temp;
-    }
-
+    /**Sets the turret to a field centric degree based on Pedro pathing pose
+     * @param radians The targeted degree from -PI to PI (zero facing blue)
+     * */
     public void setFieldCentricRadians(double radians){
         axon1.setPosition(convertRadiansToServo(getFieldCentricRadians(radians)));
         axon2.setPosition(convertRadiansToServo(getFieldCentricRadians(radians)));
     }
 
-    public double getFieldCentricRadians(double radians){
-        return Math.toRadians(getFieldCentricDegrees(Math.toDegrees(radians)));
-    }
-
-
-    public double getTargetDegrees(){
-        return Math.toDegrees(getTargetRadians());
-    }
-
-    public double getTargetRadians(){
-        double adjacent = Constants.targetX - x;
-        double opposite = Constants.targetY - y;
-        adjacent = (adjacent != 0.0)? adjacent: 0.1;
-
-        return Math.atan2(opposite, adjacent);
-    }
-
     public void aimToTarget(){
-        setFieldCentricRadians(getTargetRadians());
+        setFieldCentricRadians(getFieldTargetRadians());
     }
 
     public void aimToTx(){
@@ -106,15 +180,17 @@ public class TurretSubsystem extends FtcSubsystem {
         }
     }
 
+    /* ----- CHECKERS ----- */
     /**
-     * Returns true if the turret is aimed at the Apriltag value or pinpoint value
+     * Returns true if the turret is aimed at the AprilTag value or pinpoint value
      * */
     public boolean aimed(){
-        return (thresholded(getAbsoluteDegrees(), getTargetDegrees())  ||
+        return (thresholded(getAbsoluteDegrees(), getFieldTargetDegrees())  ||
                 thresholded(getAbsoluteDegrees(), tx));
     }
 
 
+    /* ----- PRIVATE HELPERS ----- */
     /**Accepts values from -PI to PI but clamps it to the physical limits of the axons
      * Returns a value from 0-1 meant to be fed into the axon servos.
      * @return a value from 0-1 meant to be fed into the axon servos
@@ -128,12 +204,16 @@ public class TurretSubsystem extends FtcSubsystem {
      * */
     private double convertDegreesToServo(double degrees) {
         double temp = normalizeTurretDegrees(degrees);
-        //replace Constants.MAX_SERVO_RANGE with 360.0 if we want to scale the turret down instead of just having a deadspot
+        //replace Constants.MAX_SERVO_RANGE with 360.0 if we want to scale the turret down instead of just having a dead-spot
         temp = (Math.max(Math.min(temp, 180.0), -180.0) + 180.0) / Constants.MAX_SERVO_RANGE;
         temp *= Constants.DEGREES_PER_SERVO_PERCENT;
         return Math.max(Math.min(temp, 1.0), 0.0);
     }
 
+    /**
+     * Takes any degree and translates it to -180 to 180 degrees.
+     * Especially useful for turning 0-360 into -180 to 180
+     * */
     private double normalizeTurretDegrees(double degrees){
         double temp = degrees;
         while (temp<-180) temp+=360;
@@ -141,15 +221,18 @@ public class TurretSubsystem extends FtcSubsystem {
         return temp;
     }
 
-    private boolean thresholded(double currentDegrees, double desiredDegrees){
-        return (desiredDegrees - Constants.TURRET_THRESHOLD_DEGREES < currentDegrees &&
-                currentDegrees < desiredDegrees + Constants.TURRET_THRESHOLD_DEGREES);
+    /**
+     * Creates a threshold with Constants.TURRET_THRESHOLD_DEGREES
+     * @param currentValue The measured value that you are checking
+     * @param desiredValue The value that you would like the currentValue to get close to reaching.
+     * */
+    private boolean thresholded(double currentValue, double desiredValue){
+        return (desiredValue - Constants.TURRET_THRESHOLD_DEGREES < currentValue &&
+                currentValue < desiredValue + Constants.TURRET_THRESHOLD_DEGREES);
     }
 
-    private double distance(double x1, double y1, double x2, double y2){
-        return Math.sqrt(Math.pow((x2 -x1), 2) + Math.pow((y2 - y1), 2));
-    }
 
+    /* ----- NEEDED UPDATERS ----- */
     public void setHeading(double degrees){
         heading = degrees;
     }

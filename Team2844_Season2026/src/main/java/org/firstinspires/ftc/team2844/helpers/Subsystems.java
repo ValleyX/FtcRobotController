@@ -37,20 +37,12 @@ public class Subsystems {
         nectarConfig = new Constants.ShooterConfig(
                 Constants.EHM2,
                 Constants.CHS0,
-                Constants.NP,
-                Constants.NI,
-                Constants.ND,
-                Constants.NS,
-                Constants.NV
+                Constants.NECTAR_PIDF
         );
         pollenConfig = new Constants.ShooterConfig(
                 Constants.EHM3,
                 Constants.CHS1,
-                Constants.PP,
-                Constants.PI,
-                Constants.PD,
-                Constants.PS,
-                Constants.PV
+                Constants.POLLEN_PIDF
         );
 
         drive = new DriveSubsystem(hardwareMap, startingPose);
@@ -80,14 +72,18 @@ public class Subsystems {
     }
 
     public void update(){
+        //?Feed the distance to the shooters
         nectar.setDistance(distance());
         pollen.setDistance(distance());
 
+        //?Give the turret what it needs for the math and limelight integration
         turret.setPose(drive.getPose().x(), drive.getPose().y(), drive.getNormalHeadingDegrees());
         turret.setTx(vision.getTx());
 
+        //? Let the transfer know how many balls are counted
         transfer.setBallCount(intake.ballCount());
 
+        //?Control the Match lights
         light.turnOnNectar(intake.full());
         light.turnOnPollen(intake.full());
     }

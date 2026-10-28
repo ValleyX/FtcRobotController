@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team2844.teleops;
 
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.vcs.valleylib.core.command.Command;
 import com.vcs.valleylib.core.command.Commands;
@@ -30,6 +31,7 @@ public class TeleOpContainer extends RobotContainer {
     final Trigger intakeButton;
     final Trigger outtakeButton;
     final Trigger resetIMUButton;
+    final Trigger resetPoseButton;
     final Trigger parkButton;
 
     /*--- operator/oh crap ---*/
@@ -45,12 +47,17 @@ public class TeleOpContainer extends RobotContainer {
 
     StateMachine<Cycle> teleOpCycle;
     CommandFactory factory;
+
+    final Pose resetPose;
     DefaultTurretCmd defaultTurretCmd;
 
     public TeleOpContainer(Subsystems subsystems, Gamepad gamepad1, Gamepad gamepad2) {
         this.subsystems = subsystems;
         factory = new CommandFactory(subsystems);
         defaultTurretCmd = new DefaultTurretCmd(subsystems.turret, subsystems.vision);
+        resetPose = (Constants.alliance == Constants.BLUE_ALLIANCE)
+                ?new Pose(144.0-(Constants.ROBOT_LENGTH/2.0), Constants.ROBOT_WIDTH/2.0,180.0)
+                :new Pose(Constants.ROBOT_LENGTH/2.0, (144-Constants.ROBOT_WIDTH/2.0), 0.0);
 
         this.driver = CommandGamepad.forLogitechF310(gamepad1);
         this.operator = CommandGamepad.forLogitechF310(gamepad2);
@@ -61,6 +68,7 @@ public class TeleOpContainer extends RobotContainer {
         this.intakeButton = driver.rightTriggerButton(0.05); //runs the intake
         this.outtakeButton = driver.leftTriggerButton(0.05); //runs the intake backwards
         this.resetIMUButton = driver.guide();
+        this.resetPoseButton = driver.start();
         this.parkButton = driver.dpadDown();
 
         // ----- OPERATOR ----- //
@@ -164,6 +172,7 @@ public class TeleOpContainer extends RobotContainer {
 
 
         /*--- triggers ---*/
+        //?Change Target Trigger
         //Always checks the position of the robot and changes the pipeline and target based on that
         Trigger audienceSide = new Trigger(
                 () -> subsystems.drive.getPose().y() < 72);
@@ -176,11 +185,29 @@ public class TeleOpContainer extends RobotContainer {
         audienceSide.onFalse(new InstantCommand(() ->subsystems.vision.setPipeline(Constants.alliance + Constants.BACK_SIDE))
                 .andThen(() ->Constants.changeSide(Constants.BACK_SIDE)));
 
+
+        //?Lock Turret Trigger
+        //Locks the turret if it is under the targets so that the turret doesn't spin rapidly
+        Trigger lockTurret = new Trigger(
+                () -> (48.0 < subsystems.drive.getPose().x() && subsystems.drive.getPose().x() < 96.0)
+                        && (54.0 < subsystems.drive.getPose().y() && subsystems.drive.getPose().y() < 90.0)
+        );
+
+        lockTurret.onTrue(new InstantCommand(
+                ()->defaultTurretCmd.setLocked(true)));
+        lockTurret.onFalse(new InstantCommand(
+                ()->defaultTurretCmd.setLocked(false)));
+
+
     }
 
     public void configureDriving(){
         resetIMUButton.onTrue(
                 Commands.runOnce(subsystems.drive::resetHeading)
+        );
+
+        resetPoseButton.onTrue(
+                Commands.runOnce(()->subsystems.drive.setPose(resetPose))
         );
 
         parkButton.whileTrue(

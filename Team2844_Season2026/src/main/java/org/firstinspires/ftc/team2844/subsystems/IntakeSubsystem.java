@@ -48,6 +48,7 @@ public class IntakeSubsystem extends FtcSubsystem {
     public void intake(){
         intakeMotor.setPower(Constants.INTAKE_SPEED);
     }
+    public void intake(double speed){intakeMotor.setPower(speed);}
 
     /**
      * Stop the intake

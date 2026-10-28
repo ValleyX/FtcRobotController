@@ -13,6 +13,7 @@ public class DefaultTurretCmd implements Command {
     TurretSubsystem turret;
     VisionSubsystem vision;
     boolean track;
+    boolean locked;
     boolean manual;
     boolean relative;
     double degrees;
@@ -20,6 +21,7 @@ public class DefaultTurretCmd implements Command {
     public DefaultTurretCmd(TurretSubsystem turret, VisionSubsystem vision){
         this.turret = turret;
         this.vision = vision;
+        locked = false;
         track = false;
         manual = false;
         relative = false;
@@ -44,11 +46,13 @@ public class DefaultTurretCmd implements Command {
             } else {
                 turret.setFieldCentricDegrees(degrees);
             }
-        } else if(track){
-            if(vision.valid()){
-                turret.aimToTx();
-            } else {
-                turret.aimToTarget();
+        } else if(track && !locked){
+            if(!turret.aimed()) {
+                if (vision.valid()) {
+                    turret.aimToTx();
+                } else {
+                    turret.aimToTarget();
+                }
             }
         } else {
             turret.setRelativeDegrees(0.0);
@@ -66,7 +70,7 @@ public class DefaultTurretCmd implements Command {
     }
 
     /* ---------- GETTERS AND SETTERS ---------- */
-    //relative boolean
+    //? relative
     public void setRelative(boolean relative){
         this.relative = relative;
     }
@@ -74,7 +78,7 @@ public class DefaultTurretCmd implements Command {
         return relative;
     }
 
-    //Degrees
+    //? Degrees
     public void setDegrees(double degrees){
         this.degrees = degrees;
     }
@@ -82,7 +86,7 @@ public class DefaultTurretCmd implements Command {
         return degrees;
     }
 
-    //Boolean Manual
+    //? Manual
     public void setManual(boolean manual){
         this.manual = manual;
     }
@@ -90,11 +94,19 @@ public class DefaultTurretCmd implements Command {
         return manual;
     }
 
-    //Boolean Track
+    //? Track
     public void setTrack(boolean track){
         this.track = track;
     }
     public boolean getTrack(){
         return track;
+    }
+
+    //? Locked
+    public void setLocked(boolean lock){
+        this.locked = lock;
+    }
+    public boolean getLocked(){
+        return locked;
     }
 }

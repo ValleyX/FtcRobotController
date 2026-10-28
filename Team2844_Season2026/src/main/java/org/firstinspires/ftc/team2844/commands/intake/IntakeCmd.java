@@ -10,8 +10,14 @@ import java.util.Set;
 
 public class IntakeCmd implements Command {
     IntakeSubsystem intake;
+    double speed;
     public IntakeCmd(IntakeSubsystem intake){
         this.intake = intake;
+        this.speed = 1.0;
+    }
+    public IntakeCmd(IntakeSubsystem intake, double speed){
+        this.intake = intake;
+        this.speed = speed;
     }
 
     @Override
@@ -21,7 +27,7 @@ public class IntakeCmd implements Command {
 
     @Override
     public void execute() {
-        intake.intake();
+        intake.intake(speed);
     }
 
     @Override

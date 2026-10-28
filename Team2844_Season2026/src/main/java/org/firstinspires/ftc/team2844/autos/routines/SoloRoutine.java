@@ -8,7 +8,6 @@ import com.vcs.valleylib.ftc.pedro.PedroAutoDsl;
 import org.firstinspires.ftc.team2844.autos.AutoBase;
 import org.firstinspires.ftc.team2844.autos.geometries.SoloGeometry;
 import org.firstinspires.ftc.team2844.commands.CommandFactory;
-import org.firstinspires.ftc.team2844.commands.intake.IntakeCmd;
 import org.firstinspires.ftc.team2844.commands.shoot.ShootCmd;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 
@@ -28,8 +27,10 @@ public abstract class SoloRoutine extends AutoBase {
                     .deadlineWith(CommandFactory.intakeAndTransfer(subsystems.intake, subsystems.transfer)));
 
             //-Go through the middle to the other side (to avoid hitting parking teammate)
+            b.doInstant(()-> super.getTurretCmd().setLocked(true));
             b.follow(SoloGeometry.underpassFromGarden(f));
             b.action(() -> Constants.changeSide(Constants.AUDIENCE_SIDE));
+            b.doInstant(()-> super.getTurretCmd().setLocked(false));
 
             //!We assume that the hive has tipped from our first shot
             b.command(new ShootCmd(subsystems.intake, subsystems.nectar, subsystems.pollen, subsystems.transfer));

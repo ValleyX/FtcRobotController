@@ -7,15 +7,17 @@ public class Constants {
     public static final double NP = 1.0;
     public static final double NI = 1.0;
     public static final double ND = 1.0;
-    public static final double NS = 1.0;
-    public static final double NV = 1.0;
+    public static final double NS = 0.0;
+    public static final double NV = 0.0;
+    public static final PIDF NECTAR_PIDF = new PIDF(NP, NI, ND, NS, NV);
 
 
     public static final double PP = 1.0;
     public static final double PI = 1.0;
     public static final double PD = 1.0;
-    public static final double PS = 1.0;
-    public static final double PV = 1.0;
+    public static final double PS = 0.0;
+    public static final double PV = 0.0;
+    public static final PIDF POLLEN_PIDF = new PIDF(PP, PI, PD, PS, PV);
 
 
     /* ---------- MISSING INFO ---------- */
@@ -108,6 +110,7 @@ public class Constants {
     public static double VEL_THRESHOLD = 200;
     public static double SHOOTER_IDLE = 1000;
     public static double HOOD_DEFAULT = 0.5;
+    public static double MAX_HOOD = 0.8;
 
     public static void changeSide(int newSide){
         side = newSide;
@@ -196,6 +199,7 @@ public class Constants {
 
     public static final String CHS0 = "nectarHood";
     public static final String CHS1 = "pollenHood";
+//    public static final String CHS2 = "gate";
     public static final String CHS2 = "nectarGate";
     public static final String CHS3 = "pollenGate";
     public static final String CHS4 = "axon1";
