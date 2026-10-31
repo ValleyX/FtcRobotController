@@ -53,7 +53,7 @@ public abstract class TestingTeleOp extends CommandOpMode {
         //Telemetry
         telemetryBus.put("Use Bumpers to Switch States", "");
         telemetryBus.put("In State: ", container.getStateMachine().getState().toString());
-        telemetryBus.put("", "");
+        telemetryBus.put(" ", " ");
 
         switch(container.getStateMachine().getState()){
             case DRIVE:
@@ -75,19 +75,19 @@ public abstract class TestingTeleOp extends CommandOpMode {
                 telemetryBus.put("A:                   ", "Change Selected Shooter");
                 telemetryBus.put("Y:                   ", "Open/Close Gates");
                 telemetryBus.put("X, B:                ", "Change Selected PIDF Value");
-                telemetryBus.put("", "");
-                telemetryBus.put("", "");
+                telemetryBus.put(" ", " ");
+                telemetryBus.put(" ", " ");
                 telemetryBus.put("Selected Shooter:        ", container.currentShooter.toString());
                 telemetryBus.put("Selected PIDF:           ", container.getSelectedPIDF());
                 telemetryBus.put("Current PIDF Step Value: ", container.pidfArray[container.pidfMultiplier]);
-                telemetryBus.put("", "");
+                telemetryBus.put(" ", " ");
                 telemetryBus.put("Expected Velocity:           ", container.velocity);
                 telemetryBus.put("Velocity:                    ", container.currentShooter.getVelocity());
                 telemetryBus.put("Current Velocity Step Value: ", container.velocityArray[container.velocityMultiplier]);
-                telemetryBus.put("", "");
+                telemetryBus.put(" ", " ");
                 telemetryBus.put("Hood Pos:        ", container.currentShooter.getHood());
                 telemetryBus.put("Hood Step Value: ", container.hoodArray[container.hoodMultiplier]);
-                telemetryBus.put("", "");
+                telemetryBus.put(" ", " ");
                 PIDF temp = container.currentShooter.getPIDF();
                 telemetryBus.put("P:  ", temp.kP);
                 telemetryBus.put("I:  ", temp.kI);
@@ -105,14 +105,14 @@ public abstract class TestingTeleOp extends CommandOpMode {
                 telemetryBus.put("Y:                   ", "Open/Close Gates");
                 telemetryBus.put("Velocity Multiplier: ", container.velocityArray[container.velocityMultiplier]);
                 telemetryBus.put("Hood Multiplier:     ", container.hoodArray[container.hoodMultiplier]);
-                telemetryBus.put("", "");
-                telemetryBus.put("", "");
+                telemetryBus.put(" ", " ");
+                telemetryBus.put(" ", " ");
                 telemetryBus.put("Expected Velocity:  ", container.velocity);
                 telemetryBus.put("Nectar Velocity:    ", subsystems.nectar.getVelocity());
                 telemetryBus.put("Pollen Velocity:    ", subsystems.pollen.getVelocity());
-                telemetryBus.put("", "");
+                telemetryBus.put(" ", " ");
                 telemetryBus.put("Hood Positions:     ", container.hoodPos);
-                telemetryBus.put("", "");
+                telemetryBus.put(" ", " ");
                 telemetryBus.put("Average Distance:   ", subsystems.distance());
                 telemetryBus.put("Limelight Distance: ", subsystems.vision.getDistance());
                 telemetryBus.put("Pinpoint Distance:  ", subsystems.drive.getDistance());
@@ -126,10 +126,10 @@ public abstract class TestingTeleOp extends CommandOpMode {
                 telemetryBus.put("B:                   ", "Turn Turret Right");
                 telemetryBus.put("Y:                   ", "Track Turret");
                 telemetryBus.put("Dpad Left and Right: ", "Step Turret");
-                telemetryBus.put("", "");
-                telemetryBus.put("", "");
+                telemetryBus.put(" ", " ");
+                telemetryBus.put(" ", " ");
                 telemetryBus.put("Current Turret Relative Degrees:      ", subsystems.turret.getAbsoluteDegrees());
-                telemetryBus.put("Current Field Centric Degrees:        ", subsystems.turret.getFieldCentricDegrees(subsystems.drive.getNormalHeadingDegrees()));
+                telemetryBus.put("Current Field Centric Degrees:        ", subsystems.turret.getFieldCentricDegrees(subsystems.turret.getAbsoluteDegrees(),subsystems.drive.getNormalHeadingDegrees()));
                 telemetryBus.put("Expected Robot Tracking Degrees:      ", subsystems.turret.getRobotTargetDegrees());
                 telemetryBus.put("Expected Field Tracking Degrees:      ", subsystems.turret.getFieldTargetDegrees());
                 telemetryBus.put("Expected Turret Degrees(fed heading): ", subsystems.turret.getRobotTargetDegrees(subsystems.drive.getPose().x(), subsystems.drive.getPose().y(), subsystems.drive.getNormalHeadingDegrees()));

@@ -227,8 +227,8 @@ public class TestingContainer {
         when(Cycle.PIDF, leftStickRight).onTrue(new InstantCommand(()-> pidfMultiplier = addCapped(pidfMultiplier, pidfArray.length-1))); //Increase multiplier
         when(Cycle.PIDF, leftStickLeft).onTrue(new InstantCommand(()-> pidfMultiplier = subtractCapped(pidfMultiplier))); //Decrease multiplier
 
-        when(Cycle.PIDF, driver.x()).onTrue(new InstantCommand(()-> currentPIDF = subtractCapped(currentPIDF))); //Next PIDF
-        when(Cycle.PIDF, driver.b()).onTrue(new InstantCommand(()-> currentPIDF = addCapped(currentPIDF, 4))); //Previous PIDF
+        when(Cycle.PIDF, driver.x()).onTrue(new InstantCommand(()-> currentPIDF = subtractCapped(currentPIDF))); //Previous PIDF
+        when(Cycle.PIDF, driver.b()).onTrue(new InstantCommand(()-> currentPIDF = addCapped(currentPIDF, 4))); //Next PIDF
         when(Cycle.PIDF, driver.a()).onTrue(new InstantCommand(()-> {
             if(currentShooter == subsystems.nectar){
                 currentShooter = subsystems.pollen;
