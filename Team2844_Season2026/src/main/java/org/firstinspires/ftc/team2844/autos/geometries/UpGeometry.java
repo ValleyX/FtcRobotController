@@ -20,7 +20,7 @@ public final class UpGeometry {
         return f.of(144-(Constants.ROBOT_LENGTH/2.0),144-(Constants.ROBOT_WIDTH/2.0), 0.0);}
 
     public static Pose readyToShoot(PoseFactory f){
-        return f.of(96.0, 108.0, 90.0);
+        return f.of(96.0, 108.0, -90.0);
     }
 
     /* ----- Paths ----- */

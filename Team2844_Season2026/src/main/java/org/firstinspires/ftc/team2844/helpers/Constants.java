@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.team2844.helpers;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.bylazar.configurables.annotations.Configurable;
+
+@Config
+@Configurable
 public class Constants {
 
     /* ---------- VELOCITY PIDS ---------- */
@@ -81,8 +86,8 @@ public class Constants {
 
     /* ---------- IRL ROBOT SIZES ---------- */
     //TODO PUT REAL WIDTH, LENGTH, AND HEIGHT
-    public static final double ROBOT_WIDTH = 18.0;
-    public static final double ROBOT_LENGTH = 17.0;
+    public static final double ROBOT_WIDTH = 14.0;
+    public static final double ROBOT_LENGTH = 19.75;
     public static final double ROBOT_HEIGHT = 18.0;
     public static final double LL_HEIGHT = 15.0; //TODO get real height
 

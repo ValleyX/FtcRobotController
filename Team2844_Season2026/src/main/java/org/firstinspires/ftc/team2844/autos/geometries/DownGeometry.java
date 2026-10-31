@@ -17,13 +17,13 @@ public final class DownGeometry {
 
     /* ----- Poses ----- */
     public static Pose startingPose(PoseFactory f){return f.of(72.0+(Constants.ROBOT_WIDTH/2.0), (Constants.ROBOT_LENGTH/2.0),-90.0);}
-    public static Pose readyPickup(PoseFactory f){return f.of(96.0,12.0,90.0);}
-    public static Pose shoot(PoseFactory f){return f.of( 96.0, 12.0, -90.0);}
+    public static Pose readyPickup(PoseFactory f){return f.of(96.0,18.0,-90.0);}
+    public static Pose shoot(PoseFactory f){return f.of( 96.0, 18.0, 90.0);}
 
 
     /* ----- Paths ----- */
     public static Command turnToFlower(DriveSubsystem drive){
-        return new TurnToCmd(drive, Math.toRadians(90.0));
+        return new TurnToCmd(drive, Math.toRadians(-90.0));
     }
 
     public static Path readyShoot(PoseFactory f){

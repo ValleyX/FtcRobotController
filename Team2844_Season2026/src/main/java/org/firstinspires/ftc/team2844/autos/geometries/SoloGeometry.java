@@ -30,8 +30,12 @@ public final class SoloGeometry {
     public static Path underpassFromGarden(PoseFactory f){
         Pose start = intakeFromGarden(f);
         Pose middle = throughMiddle(f);
+        Pose beforeMiddle = f.of(middle.x() - 10*Math.cos(Math.toRadians(-90.0)), middle.y() - 25*Math.sin(Math.toRadians(-90.0)), middle.heading());
+        Pose afterMiddle =  f.of(middle.x() + 5*Math.cos(Math.toRadians(-90.0)), middle.y() + 5*Math.sin(Math.toRadians(-90.0)), middle.heading());
         Pose end = flippedShoot(f);
-        return Paths.through(start, middle, end)
+        return Paths.path(
+                    Paths.curve(start, beforeMiddle, middle),
+                    Paths.curve(middle, afterMiddle, end))
                 .heading(Interpolator.piecewise()
                         .until(0.2, Interpolator.constant(start))
                         .until(0.8, Interpolator.linear(start, end))
