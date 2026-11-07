@@ -33,6 +33,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -78,7 +79,7 @@ public class RobotHardware {
     private  DcMotorEx drumShooterTwo= null; //We are using two motors for the drum shooter so this acts as the right sided one
 
     // This declares the IMU needed to get the current direction the robot is facing
-    private IMU imu;
+    private IMU imu = null;
 
 
 
@@ -171,7 +172,7 @@ public class RobotHardware {
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        intakeMotor.setDirection(DcMotor.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         feederMotor.setDirection(DcMotor.Direction.FORWARD);
         drumShooter.setDirection(DcMotor.Direction.REVERSE);
         drumShooterTwo.setDirection(DcMotor.Direction.REVERSE);
@@ -204,14 +205,8 @@ public class RobotHardware {
         drumShooterTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
-
-        // Define and initialize ALL installed servos.
-        /*leftHand = myOpMode.hardwareMap.get(Servo.class, "left_hand");
-        rightHand = myOpMode.hardwareMap.get(Servo.class, "right_hand");
-        leftHand.setPosition(MID_SERVO);
-        rightHand.setPosition(MID_SERVO);*/
-
         imu = myOpMode.hardwareMap.get(IMU.class, "imu");
+
         // This needs to be changed to match the orientation on your robot
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
@@ -220,8 +215,8 @@ public class RobotHardware {
 
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
 
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
@@ -525,11 +520,13 @@ public class RobotHardware {
     /************************************************************************************
      This section contains functions for the Helper and accessor Functions
      ***********************************************************************************/
-    public void setDrumSpeedPower(double drumVelocity){
-       // drumShooter.setPower(drumPower);
-       // drumShooterTwo.setPower(drumPower);
-        drumShooter.setVelocity(drumVelocity);
-        drumShooterTwo.setVelocity(drumVelocity);
+    public void setDrumSpeedPower(double drumPower){
+        //need to run without encoder since we are using DcMotorEx for drum shooters
+        drumShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drumShooterTwo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+       drumShooter.setPower(drumPower);
+       drumShooterTwo.setPower(drumPower);
+
     }
 
     public void setIntakeMotorPower(double intakePower){
@@ -547,17 +544,18 @@ public class RobotHardware {
     }
 
 
-
+    // This function sets the drum velocity based on TPS
     public void setDrumVelocity(double RPM){
         // Set velocity in encoder ticks per second (TPS)
         // 4" drum wheels
         // 28 Tics/rev
         //6000 RPM motors
         //RPM to TPS = (28/60) * RPM
+        drumShooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        drumShooterTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         double TPS = RPM*(28.0/60);
         drumShooter.setVelocity(TPS);
         drumShooterTwo.setVelocity(TPS);
-
     }
 
     public double getDrumVelocity(){

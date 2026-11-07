@@ -58,29 +58,15 @@ public class TelopMecanumFieldDrive_w_RH extends LinearOpMode {
     RobotHardware robot = new RobotHardware(this);
 
 
- /*   // This declares the seven motors needed
-    DcMotor frontLeftDrive;
-    DcMotor frontRightDrive;
-    DcMotor backLeftDrive;
-    DcMotor backRightDrive;
-    DcMotor intakeMotor;
-    DcMotor feederMotor;
-    DcMotor drumShooter;
-    DcMotor drumShooterTwo; //We are using two motors for the drum shooter so this acts as the right sided one
-
-    // This declares the IMU needed to get the current direction the robot is facing
-    IMU imu;
-
-    double drumSpeed;
-    double intakeSpeed; // this holds a variable speed for tuning the system
-    double feederSpeed; // this holds a variable speed for tuning the system*/
-    private double drumSpeed = .40;
+   //double feederSpeed; // this holds a variable speed for tuning the system*/
+    private double drumSpeed = 0.45;
     private double intakeSpeed = 0.3; // this holds a variable speed for tuning the system
     private double feederSpeed = 1.0; // this holds a variable speed for tuning the system
 
     @Override
     public void runOpMode() {
 
+        //Initializes all the motors in Robot Hardware Class
         robot.init();
 
         // Wait for the game to start (driver presses START)
@@ -93,136 +79,94 @@ public class TelopMecanumFieldDrive_w_RH extends LinearOpMode {
             telemetry.addLine("Hold left bumper to drive in robot relative");
             telemetry.addLine("The left joystick sets the robot direction");
             telemetry.addLine("Moving the right joystick left and right turns the robot");
-            telemetry.addData("DrumSpeed:", "%1.2f", drumSpeed);
-            telemetry.addData("drum motor speed", "%f", robot.getDrumSpeed());
+            telemetry.addData("DrumSpeed:", "%1.2f", robot.getDrumVelocity());
+            telemetry.addData("drum motor power", "%1.2f", drumSpeed);
             telemetry.addData("intakeSpeed:", "%1.2f", intakeSpeed);
             telemetry.addData("feederSpeed:", "%1.2f", feederSpeed);
             telemetry.update();
+
+            //  Right Bumper = Power on Drumb to speed
+            //  Y Button = Stop drum power
+            //  Left Bumper = Turn on Feeder
+            //  A Button = Reset IMU orientation
+            //  Left Trigger = Turn on Intake
+            //  Right Trigger = Reverse Intake (extake)
+            //
+            //  D-Pad UP =  Increment Drum Speed
+            //  D-Pad DOWN = Decrement Drum Speed
+            //  D-Pad Left =  Increment Intake Speed
+            //  D-Pad DOWN = Decrement Intake Speed
+            //  X Button = Increment Feeder Speed
+            //  B Button = Decrement Feeder Speed
+
+            // Robot is only Field Centric Drive!!
+            robot.driveFieldRelative(-gamepad1.right_stick_y, gamepad1.right_stick_x, gamepad1.left_stick_x);
+
             // If you press the A button, then you reset the Yaw to be zero from the way
             // the robot is currently pointing
             if (gamepad1.a) {
                 robot.setImuYaw();
             }
-            // If you press the left bumper, you get a drive from the point of view of the robot
-            // (much like driving an RC vehicle)
-            //*************************************
-            // Forward would be 2 and 3 which are wrong. Left and right are strafe.
-            // rotate would be 1 and 0 which would be wrong
-            // 2 and 3 are wrong on one and 0 and 1 are wrong on the other (basically reverse two of them)
-            if (gamepad1.right_trigger_pressed) {
-                robot.drive(-gamepad1.right_stick_y, gamepad1.right_stick_x, gamepad1.left_stick_x);
-            } else {
-                robot.driveFieldRelative(-gamepad1.right_stick_y, gamepad1.right_stick_x, gamepad1.left_stick_x);
+
+            // Turn drum on until y is pressed
+            if (gamepad1.right_bumper) {
+                robot.setDrumSpeedPower(drumSpeed);
+                telemetry.addLine("Drum powerup");
+            }
+            if (gamepad1.yWasPressed()) {
+                robot.setDrumSpeedPower(0.0); // set feeder power to 0 percent
+                telemetry.addLine("Drum stopped");
             }
 
-
-            if (gamepad1.leftBumperWasPressed() ) {
+            if (gamepad1.left_bumper) {
+                //intakeMotor.setPower(intakeSpeed); // set feeder power to 20 percent
                 robot.setFeederMotorPower(feederSpeed);
+            } else {
+                robot.setFeederMotorPower(0.0); // set feeder power to 0 percent
             }
-            if (gamepad1.bWasPressed()) {
-                            robot.setFeederMotorPower(0.0); // set feeder power to 0 percent
-            }
-//            if (gamepad1.left_bumper) {
-//                //intakeMotor.setPower(intakeSpeed); // set feeder power to 20 percent
-//                robot.setFeederMotorPower(feederSpeed);
-//            } else {
-//                robot.setFeederMotorPower(0.0); // set feeder power to 0 percent
-//            }
 
             //NOTES  40 to 45% seems to work if drum is at full speed
-            if (gamepad1.right_bumper) {
-                robot.setDrumSpeedPower(drumSpeed); //drum spins when we hit right bumper
+//            if (gamepad1.right_bumper) {
+//                robot.setDrumSpeedPower(drumSpeed); //drum spins when we hit right bumper
+//
+//            } //else {
+//            if (gamepad1.rightBumperWasReleased()) {
+//                robot.setDrumSpeedPower(0.0); // set shooter power to 0 percent
+//                robot.setFeederMotorPower(0.0); // set feeder power to 0 percent
+//               // robot.setDrumSpeedPower(0.0);
+//            }
 
-            } //else {
-            if (gamepad1.rightBumperWasReleased()) {
-                robot.setDrumSpeedPower(0.0); // set shooter power to 0 percent
-                robot.setFeederMotorPower(0.0); // set feeder power to 0 percent
-               // robot.setDrumSpeedPower(0.0);
+            //This is for ball intake
+            if (gamepad1.left_trigger_pressed) { //This is for intake going forward
+                robot.setIntakeMotorPower(0.75);
             }
-
-            //need more power to feeder to extake, try 100%
-            if (gamepad1.left_trigger_pressed) {
-                robot.setIntakeMotorPower(-0.75); // extakes the intake in case the objects need to be removed
+            else if (gamepad1.right_trigger_pressed) { //This is used in order to extake
+                robot.setIntakeMotorPower(-0.75);
             } else {
-                robot.setIntakeMotorPower(0.0); // stops extaking
+                robot.setIntakeMotorPower(0.0);
             }
             // adjust the speed for drum when up Dpad or Down Dpad was pressed
             if (gamepad1.dpadUpWasPressed()) {
-                drumSpeed = Math.min((drumSpeed + 0.01), 1); // Increases drum speed on click
+                drumSpeed = Math.min((drumSpeed + 0.01), 1); // Increases drum speed on click of Top D Pad
             }
             if (gamepad1.dpadDownWasPressed()) {
-                drumSpeed = Math.max((drumSpeed - 0.01), 0); // decreases drum speed on click
+                drumSpeed = Math.max((drumSpeed - 0.01), 0); // decreases drum speed on click of Bottom D Pad
             }
             // adjust the intake speed when left Dpad or Right Dpad are pressed
             if (gamepad1.dpadLeftWasPressed()) {
-                intakeSpeed = Math.min((intakeSpeed + 0.05), 1);
+                intakeSpeed = Math.min((intakeSpeed + 0.05), 1); //Increases intake speed on click of Left D Pad
             }
             if (gamepad1.dpadRightWasPressed()) {
-                intakeSpeed = Math.max((intakeSpeed - 0.05), 0);
+                intakeSpeed = Math.max((intakeSpeed - 0.05), 0); //Decreases intake speed on click of Right D Pad
             }
             // adjust the speed for feeder when X or B is pressed
             if (gamepad1.xWasPressed()) {
-                feederSpeed = Math.min((feederSpeed + 0.05), 1);
+                feederSpeed = Math.min((feederSpeed + 0.05), 1); //Increases feeder speed on click of X
             }
             if (gamepad1.bWasPressed()) {
-                feederSpeed = Math.max((feederSpeed - 0.05), 0);
+                feederSpeed = Math.max((feederSpeed - 0.05), 0); //Decreases feeder speed on click of B
             }
         }
     }
 
-//    // This routine drives the robot field relative
-//    private void driveFieldRelative(double forward, double right, double rotate) {
-//        // First, convert direction being asked to drive to polar coordinates
-//        double theta = Math.atan2(forward, right);
-//        double r = Math.hypot(right, forward);
-//
-//        // Second, rotate angle by the angle the robot is pointing
-//        theta = AngleUnit.normalizeRadians(theta -
-//                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
-//
-//        // Third, convert back to cartesian
-//        double newForward = r * Math.sin(theta);
-//        double newRight = r * Math.cos(theta);
-//
-//        // Finally, call the drive method with robot relative forward and right amounts
-//        drive(newForward, newRight, rotate);
-//    }
-//
-//    // Thanks to FTC16072 for sharing this code!!
-// /*   public void drive(double forward, double right, double rotate) {
-//        // This calculates the power needed for each wheel based on the amount of forward,
-//        // strafe right, and rotate
-//        double frontLeftPower = forward + right + rotate;
-//        double frontRightPower = forward - right - rotate;
-//        double backRightPower = forward + right - rotate;
-//        double backLeftPower = forward - right + rotate;
-//
-//     */   /*double maxPowerFrontLeft = 1.0;
-//        double maxPowerFrontRight = 1.0;
-//        double maxPowerBackLeftPower = 1.0;
-//        double maxPowerBackRightPower = 1.0;*/
-//        double maxPower = 1.0;
-//        double maxSpeed = 1.0;  // make this slower for outreaches
-//
-//        // This is needed to make sure we don't pass > 1.0 to any wheel
-//        // It allows us to keep all of the motors in proportion to what they should
-//        // be and not get clipped
-//        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
-//        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
-//        maxPower = Math.max(maxPower, Math.abs(backRightPower));
-//        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
-//       /* maxPowerFrontLeft = Math.max(maxPowerFrontLeft, Math.abs(frontLeftPower));
-//        maxPowerFrontRight = Math.max(maxPowerFrontRight, Math.abs(frontRightPower));
-//        maxPowerBackLeftPower = Math.max(maxPowerBackLeftPower, Math.abs(backLeftPower));
-//        maxPowerBackRightPower = Math.max(maxPowerBackRightPower, Math.abs(backRightPower));
-//        */
-//
-//        // We multiply by maxSpeed so that it can be set lower for outreaches
-//        // When a young child is driving the robot, we may not want to allow full
-//        // speed.
-//        frontLeftDrive.setPower(maxSpeed * (frontLeftPower / maxPower));
-//        frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
-//        backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
-//        backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
-//    }
 }
