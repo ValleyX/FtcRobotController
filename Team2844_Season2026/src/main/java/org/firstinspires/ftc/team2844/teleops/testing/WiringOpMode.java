@@ -29,8 +29,8 @@ public class WiringOpMode extends CommandOpMode {
         /* --- Drive Motors --- */
         leftFront = hardwareMap.get(DcMotor.class, Constants.CHM0);
         leftBack = hardwareMap.get(DcMotor.class, Constants.CHM1);
-        rightFront = hardwareMap.get(DcMotor.class, Constants.CHM2);
-        rightBack = hardwareMap.get(DcMotor.class, Constants.CHM3);
+        rightBack = hardwareMap.get(DcMotor.class, Constants.CHM2);
+        rightFront = hardwareMap.get(DcMotor.class, Constants.CHM3);
 
         /* --- Intake/Transfer Motors --- */
         intake = hardwareMap.get(DcMotor.class, Constants.EHM0);

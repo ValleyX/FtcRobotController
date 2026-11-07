@@ -18,7 +18,7 @@ import org.firstinspires.ftc.team2844.helpers.Constants;
 import org.firstinspires.ftc.team2844.helpers.Subsystems;
 
 public class TeleOpContainer extends RobotContainer {
-    public enum Cycle {IDLE, INTAKE, PREPARE, SHOOT}
+    public enum Cycle {IDLE, INTAKE, PREPARE, SHOOT, OUTTAKE}
 
     Subsystems subsystems;
 
@@ -82,17 +82,22 @@ public class TeleOpContainer extends RobotContainer {
 
 
         Trigger readyToShoot = shootButton
-                        .and(subsystems.nectar::atVelocity)
-                        .and(subsystems.pollen::atVelocity)
+                        .and(() -> subsystems.nectar.atVelocity() ||
+                        subsystems.pollen.atVelocity())
                         .and(subsystems.turret::aimed);
 
         teleOpCycle = new StateMachine<>(Cycle.IDLE) //initial state
                 /*--- states ---*/
                 //?IDLE: close the gates then turn on the transfer
-                .onEnter(Cycle.IDLE, subsystems.transfer::closeGates)
+                .onEnter(Cycle.IDLE, () ->{
+                    subsystems.transfer.closeGates();
+                    defaultTurretCmd.setTrack(false);
+                })
                 .state(Cycle.IDLE, () -> {
-                    subsystems.intake.stopIntake();
-                    subsystems.transfer.transfer();
+                    if(!subsystems.intake.overfull()) {
+                        subsystems.intake.stopIntake();
+                        subsystems.transfer.transfer();
+                    }
                     subsystems.nectar.idleShoot();
                     subsystems.pollen.idleShoot();
                 })
@@ -102,7 +107,6 @@ public class TeleOpContainer extends RobotContainer {
                 //?PREPARE: turn off transfer, open gates, aim the turret to the target, spinup both shooters
                 .onEnter(Cycle.PREPARE, () -> {
                     subsystems.transfer.stop();
-                    subsystems.transfer.openGates();
                     subsystems.intake.stopIntake();
                 })
                 .state(Cycle.PREPARE, () -> {
@@ -112,18 +116,36 @@ public class TeleOpContainer extends RobotContainer {
                 })
                 //?SHOOT: transfers balls into shooter when at velocity(due to transition requirements)
                 .state(Cycle.SHOOT, () -> {
+                    if(subsystems.nectar.atVelocity()){
+                        subsystems.transfer.openNectarGate();
+                    } else {
+                        subsystems.transfer.closeNectarGate();
+                    }
+                    if(subsystems.pollen.atVelocity()){
+                        subsystems.transfer.openPollenGate();
+                    } else {
+                        subsystems.transfer.closePollenGate();
+                    }
                     subsystems.nectar.shoot();
                     subsystems.pollen.shoot();
                     defaultTurretCmd.setTrack(true);
                     subsystems.transfer.transfer();
                     subsystems.intake.intake();
                 })
-                .onExit(Cycle.SHOOT, () -> defaultTurretCmd.setTrack(false))
+
+                //?OUTTAKE: spits out the balls
+                // Reached by force state on button press
+                .state(Cycle.OUTTAKE, () ->{
+                    subsystems.transfer.spitTransfer();
+                    subsystems.intake.outtake();
+                })
 
                 /*--- transition buttons ---*/
+                //?Intake
                 //acts like an intake button with proper procedure
                 .transition(Cycle.IDLE, Cycle.INTAKE, intakeButton)
                 .transition(Cycle.INTAKE, Cycle.IDLE, intakeButton.negate())
+                //?Shooter
                 //Acts like a shoot button with proper procedure
                 .transition(Cycle.PREPARE, Cycle.SHOOT, readyToShoot)
                 .transition(Cycle.SHOOT, Cycle.PREPARE, readyToShoot.negate())
@@ -134,7 +156,6 @@ public class TeleOpContainer extends RobotContainer {
                 .transition(Cycle.IDLE, Cycle.PREPARE, subsystems.intake::full)
                 //Switches from shooting or preparing to idling when it is empty
                 .transition(Cycle.PREPARE, Cycle.IDLE, subsystems.intake::empty)
-                .transition(Cycle.SHOOT, Cycle.IDLE, subsystems.intake::empty)
 
                 /*--- fast tracks ---*/
                 //Fast track to shooting/intaking
@@ -218,7 +239,18 @@ public class TeleOpContainer extends RobotContainer {
     }
 
     public void configureIntake(){
+        outtakeButton.onTrue(new InstantCommand(() ->{
+            if(!teleOpCycle.isIn(Cycle.OUTTAKE)){
+                teleOpCycle.forceState(Cycle.OUTTAKE);
+            }
+        }));
 
+        outtakeButton.onFalse(new InstantCommand(()->{
+            if(teleOpCycle.isIn(Cycle.OUTTAKE)){
+                Cycle back = teleOpCycle.getPreviousState();
+                teleOpCycle.forceState((back == null || back == Cycle.OUTTAKE)? Cycle.IDLE: back);
+            }
+        }));
     }
 
     public void configureShooting(){

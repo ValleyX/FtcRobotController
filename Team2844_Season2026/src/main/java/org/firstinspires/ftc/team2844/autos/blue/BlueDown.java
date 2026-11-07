@@ -3,7 +3,7 @@ package org.firstinspires.ftc.team2844.autos.blue;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.team2844.autos.geometries.UpGeometry;
+import org.firstinspires.ftc.team2844.autos.geometries.DownGeometry;
 import org.firstinspires.ftc.team2844.autos.routines.DownRoutine;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 
@@ -11,7 +11,7 @@ import org.firstinspires.ftc.team2844.helpers.Constants;
 public class BlueDown extends DownRoutine {
     @Override
     public Pose startingPose() {
-        return UpGeometry.startingPose(field());
+        return DownGeometry.startingPose(field());
     }
 
     @Override

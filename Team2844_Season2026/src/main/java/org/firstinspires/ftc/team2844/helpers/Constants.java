@@ -10,20 +10,25 @@ public class Constants {
     /* ---------- VELOCITY PIDS ---------- */
     //TODO PUT REAL PIDS IN
     public static final double NP = 1.0;
-    public static final double NI = 1.0;
-    public static final double ND = 1.0;
+    public static final double NI = 0.0;
+    public static final double ND = 0.0;
     public static final double NS = 0.0;
     public static final double NV = 0.0;
     public static final PIDF NECTAR_PIDF = new PIDF(NP, NI, ND, NS, NV);
 
 
     public static final double PP = 1.0;
-    public static final double PI = 1.0;
-    public static final double PD = 1.0;
+    public static final double PI = 0.0;
+    public static final double PD = 0.0;
     public static final double PS = 0.0;
     public static final double PV = 0.0;
     public static final PIDF POLLEN_PIDF = new PIDF(PP, PI, PD, PS, PV);
 
+    /* ---------- MATH CONSTANTS ---------- */
+    /** Multiply to turn radians per second into rotations per minute, divide to get the opposite*/
+    public static final double RAD_PS_TO_RPM = 30.0 / Math.PI;
+    /** Multiply to turn meters to inches, and divide to get inches to meters*/
+    public static final double METERS_TO_INCHES = 39.3701;
 
     /* ---------- MISSING INFO ---------- */
     public static final double NO_HEADING = -999;
@@ -32,6 +37,8 @@ public class Constants {
     public static final double NO_LL = -999;
     public static final int NO_TARGET = -1;
     public static final int NO_ALLIANCE = -1;
+    public static final double TOO_SLOW = -999;
+    public static final double TOO_FAST = 999;
 
 
     /* ---------- COORDINATE DATA ---------- */
@@ -56,14 +63,16 @@ public class Constants {
     public static final double MAX_SERVO_RANGE = 355.0;
     public static final double TURRET_THRESHOLD_DEGREES = 3.0;
 
-    private static final double SERVO_TO_GEAR = 1.0; //TODO PUT REAL RATIOS IN
-    private static final double GEAR_TO_TURRET = 1.9; //TODO PUT REAL RATIOS IN
+    private static final double SERVO_TO_GEAR = 2.0;
+    private static final double GEAR_TO_TURRET = 176.0/90.0;
     private static final double TOTAL_RATIO = GEAR_TO_TURRET/SERVO_TO_GEAR;
     /**Divide the servo degrees by this number to get the turret degrees.
      * Or multiply turret degrees by this number to get the servo degrees
      */
-    public static final double DEGREES_PER_SERVO_PERCENT = 1/TOTAL_RATIO; //TODO PUT REAL RATIO IN
+    public static final double TURRET_DEGREES_TO_SERVO_DEGREES = TOTAL_RATIO;
 
+    /* ---------- SHOOTER CONSTANTS ---------- */
+    public static final double SHOOTER_RADIUS = 36.0/25.4;
 
     /* ---------- ID CONSTANTS ---------- */
     public static final int BLUE_AUDIENCE = 0;
@@ -113,9 +122,13 @@ public class Constants {
 
     // ?----- shooter and hood -----
     public static double VEL_THRESHOLD = 200;
-    public static double SHOOTER_IDLE = 1000;
+    public static double SHOOTER_IDLE = 800;
     public static double HOOD_DEFAULT = 0.5;
-    public static double MAX_HOOD = 0.8;
+    public static double MAX_HOOD = 45.0/270.0;
+    public static double MIN_HOOD = 0.0;
+    public static double MAX_HOOD_DEGREE = 90.0;
+    public static double MIN_HOOD_DEGREE = 60.0;
+    public static double EFFICIENCY = 0.85;
 
     public static void changeSide(int newSide){
         side = newSide;

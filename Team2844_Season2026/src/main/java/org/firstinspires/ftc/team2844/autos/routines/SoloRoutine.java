@@ -29,7 +29,8 @@ public abstract class SoloRoutine extends AutoBase {
             //-Go through the middle to the other side (to avoid hitting parking teammate)
             b.doInstant(()-> super.getTurretCmd().setLocked(true));
             b.follow(SoloGeometry.underpassFromGarden(f));
-            b.action(() -> Constants.changeSide(Constants.AUDIENCE_SIDE));
+            b.action(() ->
+                Constants.changeSide((Constants.side == Constants.AUDIENCE_SIDE)? Constants.BACK_SIDE: Constants.AUDIENCE_SIDE));
             b.doInstant(()-> super.getTurretCmd().setLocked(false));
 
             //!We assume that the hive has tipped from our first shot

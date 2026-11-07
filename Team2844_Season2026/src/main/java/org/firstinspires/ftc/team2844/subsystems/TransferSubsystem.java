@@ -62,7 +62,7 @@ public class TransferSubsystem extends FtcSubsystem {
 
     public void openPollenGate(){
         pollenGate.setPosition(Constants.OPEN_GATE);
-        pollenGateOpen = false;
+        pollenGateOpen = true;
     }
     public void closePollenGate(){
         pollenGate.setPosition(Constants.CLOSED_GATE);
@@ -99,7 +99,7 @@ public class TransferSubsystem extends FtcSubsystem {
 
     @Override
     public void periodic() {
-        if(ballCount > 4 && transferMotor.getPower() != 0.0){
+        if(ballCount > 4 && transferMotor.getPower() == 0.0){
             spitTransfer();
             overflowed = true;
         } else if(overflowed && !(ballCount > 4)){

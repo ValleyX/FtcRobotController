@@ -22,9 +22,7 @@ public class TurretSubsystem extends FtcSubsystem {
         //TODO REMEMBER TO PUT THE AXONS IN WITH 1.0 BEING FULLY LEFT AND 0.0 BEING FULLY RIGHT
         axon1 = hardwareMap.get(Servo.class, Constants.CHS4);
         axon2 = hardwareMap.get(Servo.class, Constants.CHS5);
-        axon2.setDirection(Servo.Direction.REVERSE);
         encoder1 = hardwareMap.get(AnalogInput.class, Constants.CHDD0);
-        //TODO CHECK WHAT ENCODER2 RETURNS WHEN THE AXON IS REVERSED
         encoder2 = hardwareMap.get(AnalogInput.class, Constants.CHDD1);
     }
 
@@ -35,7 +33,7 @@ public class TurretSubsystem extends FtcSubsystem {
      * */
     public double getAbsoluteDegrees(){
         //gets the average percent of rotation from the axons and puts it in -180 to 180 range.
-        return ((((encoder1.getVoltage()/encoder1.getMaxVoltage()) + (encoder2.getVoltage()/encoder2.getMaxVoltage()))/2.0)*360.0) - 180.0;
+        return (((((encoder1.getVoltage()/encoder1.getMaxVoltage()) + (encoder2.getVoltage()/encoder2.getMaxVoltage()))/2.0)*360.0) - (180.0))/Constants.TURRET_DEGREES_TO_SERVO_DEGREES;
     }
 
     /**Returns a value between -PI and PI based on the reading from the axon's encoders
@@ -92,7 +90,6 @@ public class TurretSubsystem extends FtcSubsystem {
     public double getRobotTargetRadians(double x, double y, double heading){
         double adjacent = Constants.targetX - x;
         double opposite = Constants.targetY - y;
-        adjacent = (adjacent != 0.0)? adjacent: 0.1;
 
         double temp = Math.atan2(opposite, adjacent);
         return getFieldCentricRadians(temp, heading);
@@ -124,7 +121,6 @@ public class TurretSubsystem extends FtcSubsystem {
     public double getFieldTargetRadians(){
         double adjacent = Constants.targetX - x;
         double opposite = Constants.targetY - y;
-        adjacent = (adjacent != 0.0)? adjacent: 0.1;
 
         return Math.atan2(opposite, adjacent);
     }
@@ -176,8 +172,12 @@ public class TurretSubsystem extends FtcSubsystem {
 
     public void aimToTx(){
         if(tx != Constants.NO_LL) {
-            setRelativeDegrees(tx);
+            setRelativeDegrees(getTx());
         }
+    }
+
+    public double getTx(){
+        return -tx;
     }
 
     /* ----- CHECKERS ----- */
@@ -185,8 +185,8 @@ public class TurretSubsystem extends FtcSubsystem {
      * Returns true if the turret is aimed at the AprilTag value or pinpoint value
      * */
     public boolean aimed(){
-        return (thresholded(getAbsoluteDegrees(), getFieldTargetDegrees())  ||
-                thresholded(getAbsoluteDegrees(), tx));
+        return (thresholded(getAbsoluteDegrees(), getRobotTargetDegrees())  ||
+                thresholded(getAbsoluteDegrees(), getTx()));
     }
 
 
@@ -203,10 +203,18 @@ public class TurretSubsystem extends FtcSubsystem {
      * @return a value from 0-1 meant to be fed into the axon servos
      * */
     private double convertDegreesToServo(double degrees) {
+        //make turret degrees from -180 to 180 and not 0 to 360
         double temp = normalizeTurretDegrees(degrees);
+        //clamps to the max and min rotations
+        temp = Math.max(Math.min(temp, Constants.MAX_ROTATION), Constants.MIN_ROTATION);
+
+        //Accounts for the gear ratio
+        temp *= Constants.TURRET_DEGREES_TO_SERVO_DEGREES;
+
+        //? Puts the degrees into the correct range and gets the percent of servo travel.
         //replace Constants.MAX_SERVO_RANGE with 360.0 if we want to scale the turret down instead of just having a dead-spot
-        temp = (Math.max(Math.min(temp, 180.0), -180.0) + 180.0) / Constants.MAX_SERVO_RANGE;
-        temp *= Constants.DEGREES_PER_SERVO_PERCENT;
+        temp = (temp + (Constants.MAX_SERVO_RANGE/2.0)) / Constants.MAX_SERVO_RANGE;
+        //clamps to 0-1
         return Math.max(Math.min(temp, 1.0), 0.0);
     }
 
@@ -227,8 +235,7 @@ public class TurretSubsystem extends FtcSubsystem {
      * @param desiredValue The value that you would like the currentValue to get close to reaching.
      * */
     private boolean thresholded(double currentValue, double desiredValue){
-        return (desiredValue - Constants.TURRET_THRESHOLD_DEGREES < currentValue &&
-                currentValue < desiredValue + Constants.TURRET_THRESHOLD_DEGREES);
+        return Math.abs(normalizeTurretDegrees(currentValue - desiredValue)) < Constants.TURRET_THRESHOLD_DEGREES;
     }
 
 
