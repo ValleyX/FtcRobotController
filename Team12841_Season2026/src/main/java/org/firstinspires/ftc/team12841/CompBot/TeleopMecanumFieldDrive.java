@@ -32,6 +32,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -50,9 +51,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
+@TeleOp(name = "Comp Bot Teleop", group = "Robot")
 //@Disabled
 public class TeleopMecanumFieldDrive extends OpMode {
+
     // This declares the seven motors needed
     DcMotor frontLeftDrive;
     DcMotor frontRightDrive;
@@ -61,11 +63,14 @@ public class TeleopMecanumFieldDrive extends OpMode {
     DcMotor intakeMotor;
     DcMotor feederMotor;
     DcMotor drumShooter;
+    DcMotor drumShooterTwo; //We are using two motors for the drum shooter so this acts as the right sided one
 
     // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
 
     double drumSpeed;
+    double intakeSpeed; // this holds a variable speed for tuning the system
+    double feederSpeed; // this holds a variable speed for tuning the system
 
     @Override
     public void init() {
@@ -73,16 +78,22 @@ public class TeleopMecanumFieldDrive extends OpMode {
         frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive"); //3
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");  //1
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");  //2
+        drumShooter = hardwareMap.get(DcMotor.class,"drum_Shooter");  //3 expansion
+        feederMotor = hardwareMap.get(DcMotor.class,"feeder_Motor");  //1 expansion
+        intakeMotor = hardwareMap.get(DcMotor.class,"intake_Motor");  //2 expansion
+        drumShooterTwo = hardwareMap.get(DcMotor.class,"drum_shooter_2"); //0 expansion
 
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
-        //backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        //frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        //left side motors are currently fowards and right side motors are currently reversed
+        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         intakeMotor.setDirection(DcMotor.Direction.FORWARD);
         feederMotor.setDirection(DcMotor.Direction.FORWARD);
-        drumShooter.setDirection(DcMotor.Direction.FORWARD);
+        drumShooter.setDirection(DcMotor.Direction.REVERSE);
+        drumShooterTwo.setDirection(DcMotor.Direction.REVERSE);
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these
@@ -90,9 +101,10 @@ public class TeleopMecanumFieldDrive extends OpMode {
         frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        feederMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        drumShooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        feederMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drumShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drumShooterTwo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // this keeps the motors from running when the button isn't pressed
         frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -100,22 +112,24 @@ public class TeleopMecanumFieldDrive extends OpMode {
         backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        feederMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+       // feederMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         imu = hardwareMap.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
-        //*************************CHECK THIS WHEN MOUNTED!!!!!!!!!!***************//
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
-        drumSpeed=0.3;
+        imu.resetYaw();
+        drumSpeed=0.43;
+        intakeSpeed=0.3;
+        feederSpeed=1;
     }
 
     @Override
@@ -124,7 +138,11 @@ public class TeleopMecanumFieldDrive extends OpMode {
         telemetry.addLine("Hold left bumper to drive in robot relative");
         telemetry.addLine("The left joystick sets the robot direction");
         telemetry.addLine("Moving the right joystick left and right turns the robot");
-        telemetry.addData("DrumSpeed %0.2f", drumSpeed);
+        telemetry.addData("DrumSpeed:", "%1.2f", drumSpeed);
+        telemetry.addData("drum motor speed", "%f", drumShooter.getPower());
+        telemetry.addData("intakeSpeed:", "%1.2f", intakeSpeed);
+        telemetry.addData("feederSpeed:", "%1.2f", feederSpeed);
+        telemetry.update();
         // If you press the A button, then you reset the Yaw to be zero from the way
         // the robot is currently pointing
         if (gamepad1.a) {
@@ -132,37 +150,66 @@ public class TeleopMecanumFieldDrive extends OpMode {
         }
         // If you press the left bumper, you get a drive from the point of view of the robot
         // (much like driving an RC vehicle)
-        if (gamepad1.left_bumper) {
-            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        //*************************************
+        // Forward would be 2 and 3 which are wrong. Left and right are strafe.
+        // rotate would be 1 and 0 which would be wrong
+        // 2 and 3 are wrong on one and 0 and 1 are wrong on the other (basically reverse two of them)
+        if (gamepad1.right_trigger_pressed) {
+            drive(-gamepad1.right_stick_y, gamepad1.right_stick_x, gamepad1.left_stick_x);
         } else {
-            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            driveFieldRelative(-gamepad1.right_stick_y, gamepad1.right_stick_x, gamepad1.left_stick_x);
         }
+
+
         // check intake button press.
-        if (gamepad1.leftBumperWasPressed()) {
-            intakeMotor.setPower(0.2); // set intake power to 20 percent
+        if (gamepad1.left_bumper) {
+            intakeMotor.setPower(intakeSpeed); // set intake power to 20 percent
         } else {
             intakeMotor.setPower(0.0); // set intake power to 0 percent
         }
 
-        if (gamepad1.rightBumperWasPressed()) {
+        //when right bumper is pressed, feeder and shooter turn on
+        //NOTES  40 to 45% seems to work if drum is at full speed
+        if (gamepad1.right_bumper) {
             drumShooter.setPower(drumSpeed); // set shooter power to 30 percent
-            feederMotor.setPower(0.5); // set feeder power to 50 percent and runs in unison with shooter
-        } else {
+            drumShooterTwo.setPower(drumSpeed);
+            feederMotor.setPower(feederSpeed);// set feeder power to 50 percent and runs in unison with shooter
+
+        } //else {
+        if (gamepad1.rightBumperWasReleased()){
             drumShooter.setPower(0.0); // set shooter power to 0 percent
             feederMotor.setPower(0.0); // set feeder power to 0 percent
+            drumShooterTwo.setPower(0.0);
         }
+
+        //need more power to feeder to extake, try 100%
         if (gamepad1.left_trigger_pressed) {
-            feederMotor.setPower(-0.15); // extakes the feeder in case the objects need to be removed
-            intakeMotor.setPower(-0.2); // extakes the intake in case the objects need to be removed
+            feederMotor.setPower(1.0); // extakes the feeder in case the objects need to be removed
+            intakeMotor.setPower(-0.75); // extakes the intake in case the objects need to be removed
         } else {
             feederMotor.setPower(0.0); // stops extaking
             intakeMotor.setPower(0.0); // stops extaking
         }
+        // adjust the speed for drum when up Dpad or Down Dpad was pressed
         if (gamepad1.dpadUpWasPressed()) {
-            drumSpeed = Math.min( (drumSpeed + 0.05), 1);
+            drumSpeed = Math.min( (drumSpeed + 0.05), 1); // Increases drum speed on click
         }
         if (gamepad1.dpadDownWasPressed()) {
-            drumSpeed = Math.max( (drumSpeed - 0.05), 0);
+            drumSpeed = Math.max( (drumSpeed - 0.05), 0); // decreases drum speed on click
+        }
+        // adjust the intake speed when left Dpad or Right Dpad are pressed
+        if (gamepad1.dpadLeftWasPressed()) {
+            intakeSpeed = Math.min( (intakeSpeed + 0.05), 1);
+        }
+        if (gamepad1.dpadRightWasPressed()) {
+            intakeSpeed = Math.max( (intakeSpeed - 0.05), 0);
+        }
+        // adjust the speed for feeder when X or B is pressed
+        if (gamepad1.xWasPressed()) {
+            feederSpeed = Math.min( (feederSpeed + 0.05), 1);
+        }
+        if (gamepad1.bWasPressed()) {
+            feederSpeed = Math.max((feederSpeed - 0.05), 0);
         }
     }
 
@@ -193,6 +240,10 @@ public class TeleopMecanumFieldDrive extends OpMode {
         double backRightPower = forward + right - rotate;
         double backLeftPower = forward - right + rotate;
 
+        /*double maxPowerFrontLeft = 1.0;
+        double maxPowerFrontRight = 1.0;
+        double maxPowerBackLeftPower = 1.0;
+        double maxPowerBackRightPower = 1.0;*/
         double maxPower = 1.0;
         double maxSpeed = 1.0;  // make this slower for outreaches
 
@@ -203,6 +254,11 @@ public class TeleopMecanumFieldDrive extends OpMode {
         maxPower = Math.max(maxPower, Math.abs(frontRightPower));
         maxPower = Math.max(maxPower, Math.abs(backRightPower));
         maxPower = Math.max(maxPower, Math.abs(backLeftPower));
+       /* maxPowerFrontLeft = Math.max(maxPowerFrontLeft, Math.abs(frontLeftPower));
+        maxPowerFrontRight = Math.max(maxPowerFrontRight, Math.abs(frontRightPower));
+        maxPowerBackLeftPower = Math.max(maxPowerBackLeftPower, Math.abs(backLeftPower));
+        maxPowerBackRightPower = Math.max(maxPowerBackRightPower, Math.abs(backRightPower));
+        */
 
         // We multiply by maxSpeed so that it can be set lower for outreaches
         // When a young child is driving the robot, we may not want to allow full
