@@ -29,20 +29,27 @@ public class ShootCmd implements Command {
 
     @Override
     public void initialize() {
-        transfer.openGates();
+        intake.stopIntake();
+        transfer.stop();
     }
 
     @Override
     public void execute() {
         nectar.shoot();
         pollen.shoot();
-        if(nectar.atVelocity() && pollen.atVelocity()){
-            transfer.transfer();
-            intake.intake();
+        if(nectar.atVelocity()){
+            transfer.openNectarGate();
         } else {
-            transfer.stop();
-            intake.stopIntake();
+            transfer.closeNectarGate();
         }
+
+        if(pollen.atVelocity()){
+            transfer.openPollenGate();
+        } else {
+            transfer.closePollenGate();
+        }
+        intake.intake();
+        transfer.transfer();
     }
 
     @Override

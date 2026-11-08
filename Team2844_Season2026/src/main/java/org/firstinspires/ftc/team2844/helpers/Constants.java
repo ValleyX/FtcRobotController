@@ -9,19 +9,19 @@ public class Constants {
 
     /* ---------- VELOCITY PIDS ---------- */
     //TODO PUT REAL PIDS IN
-    public static final double NP = 1.0;
+    public static final double NP = 20.0;
     public static final double NI = 0.0;
     public static final double ND = 0.0;
     public static final double NS = 0.0;
-    public static final double NV = 0.0;
+    public static final double NV = 6.0;
     public static final PIDF NECTAR_PIDF = new PIDF(NP, NI, ND, NS, NV);
 
 
-    public static final double PP = 1.0;
+    public static final double PP = 35.0;
     public static final double PI = 0.0;
-    public static final double PD = 0.0;
-    public static final double PS = 0.0;
-    public static final double PV = 0.0;
+    public static final double PD = 1.1;
+    public static final double PS = 15.0;
+    public static final double PV = 6.0;
     public static final PIDF POLLEN_PIDF = new PIDF(PP, PI, PD, PS, PV);
 
     /* ---------- MATH CONSTANTS ---------- */
@@ -58,10 +58,12 @@ public class Constants {
 
 
     /* ---------- TURRET CONSTANTS ---------- */
-    public static final double MAX_ROTATION = 180.0;
+    public static final double MAX_ROTATION = 135.0;
     public static final double MIN_ROTATION = -180.0;
-    public static final double MAX_SERVO_RANGE = 355.0;
+    public static final double MAX_SERVO_RANGE = 350.0;
     public static final double TURRET_THRESHOLD_DEGREES = 3.0;
+    public static final double MIN_ENCODER = 0.18;
+    public static final double MAX_ENCODER = 3.0;
 
     private static final double SERVO_TO_GEAR = 2.0;
     private static final double GEAR_TO_TURRET = 176.0/90.0;
@@ -69,10 +71,13 @@ public class Constants {
     /**Divide the servo degrees by this number to get the turret degrees.
      * Or multiply turret degrees by this number to get the servo degrees
      */
-    public static final double TURRET_DEGREES_TO_SERVO_DEGREES = TOTAL_RATIO;
+    //public static final double TURRET_DEGREES_TO_SERVO_DEGREES = TOTAL_RATIO;
 
-    /* ---------- SHOOTER CONSTANTS ---------- */
-    public static final double SHOOTER_RADIUS = 36.0/25.4;
+    /**Divide the turret degrees by this number to get the encoder degrees.
+     * Or multiply encoder degrees by this number to get turret degrees
+     */
+    //public static final double TURRET_TO_ENCODER = 40.0/176.0;
+
 
     /* ---------- ID CONSTANTS ---------- */
     public static final int BLUE_AUDIENCE = 0;
@@ -96,7 +101,7 @@ public class Constants {
     /* ---------- IRL ROBOT SIZES ---------- */
     //TODO PUT REAL WIDTH, LENGTH, AND HEIGHT
     public static final double ROBOT_WIDTH = 14.0;
-    public static final double ROBOT_LENGTH = 19.75;
+    public static final double ROBOT_LENGTH = 18.0;
     public static final double ROBOT_HEIGHT = 18.0;
     public static final double LL_HEIGHT = 15.0; //TODO get real height
 
@@ -105,16 +110,15 @@ public class Constants {
 
     // ?----- intake and transfer -----
     public static double INTAKE_SPEED = 1.0;
-    public static double TRANSFER_SPEED = 1.0;
+    public static double TRANSFER_SPEED = 0.4;
+    public static double FAST_TRANSFER = 1.0;
 
-    //TODO REAL GATE CLOSES
-    public static  double OPEN_GATE = 0.0;
-    public static  double CLOSED_GATE = 0.5;
+    public static  double OPEN_GATE = 0.13;
+    public static  double CLOSED_GATE = 0.0;
     //TODO, REAL EMPTY TIME
     public static final long EMPTY_TIME = 500;
 
-    //TODO Put real servo sets in
-    public static final double FLOWER_DOWN = 0.5;
+    public static final double FLOWER_DOWN = 0.84;
     public static final double FLOWER_UP = 0.0;
 
     // ?----- controller -----
@@ -122,13 +126,16 @@ public class Constants {
 
     // ?----- shooter and hood -----
     public static double VEL_THRESHOLD = 200;
+    /**MEASURED IN RPM, MUST BE CONVERTED TO TICKS PER SECOND FOR THE SHOOTER CMD*/
     public static double SHOOTER_IDLE = 800;
-    public static double HOOD_DEFAULT = 0.5;
-    public static double MAX_HOOD = 45.0/270.0;
+    public static double SHOOT_RPM = 4000;
+    public static double HOOD_DEFAULT = 0.0625;
+    public static double MAX_HOOD = 0.15;
     public static double MIN_HOOD = 0.0;
     public static double MAX_HOOD_DEGREE = 90.0;
     public static double MIN_HOOD_DEGREE = 60.0;
     public static double EFFICIENCY = 0.85;
+    public static final double SHOOTER_RADIUS = 36.0/25.4;
 
     public static void changeSide(int newSide){
         side = newSide;
@@ -174,8 +181,8 @@ public class Constants {
 
 
     /* ---------- PEDRO PATHING ---------- */
-    public static final double XPOD_OFFSET = 0.0;
-    public static final double YPOD_OFFSET = 0.0;
+    public static final double XPOD_OFFSET = -1.87;
+    public static final double YPOD_OFFSET = -7.0;
 
 
     /**
@@ -228,8 +235,13 @@ public class Constants {
     public static final String CHI2C2 = "";
     public static final String CHI2C3 = "";
 
-    public static final String CHDD0 = "encoder1";
-    public static final String CHDD1 = "encoder2";
+    public static final String CHAI0 = "";
+    public static final String CHAI1 = "";
+    public static final String CHAI2 = "";
+    public static final String CHAI3 = "";
+
+    public static final String CHDD0 = "";
+    public static final String CHDD1 = "";
     public static final String CHDD2 = "";
     public static final String CHDD3 = "";
     public static final String CHDD4 = "";
@@ -259,6 +271,11 @@ public class Constants {
     public static final String EHI2C2 = "";
     public static final String EHI2C3 = "";
 
+    public static final String EHAI0 = "encoder1";
+    public static final String EHAI1 = "encoder2";
+    public static final String EHAI2 = "absolute";
+    public static final String EHAI3 = "";
+
     public static final String EHDD0 = "n0";
     public static final String EHDD1 = "n1";
     public static final String EHDD2 = "n2";
@@ -280,7 +297,6 @@ public class Constants {
     public static final double INDIGO = 0.67;
     public static final double VIOLET = 0.72;
     public static final double WHITE = 1.00;
-
 
 
     //CLOCKWISE rotation is negative heading (approaching -180)

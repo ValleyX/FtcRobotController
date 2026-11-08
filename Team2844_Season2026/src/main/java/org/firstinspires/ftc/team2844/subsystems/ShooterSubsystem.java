@@ -26,34 +26,52 @@ public class ShooterSubsystem extends FtcSubsystem {
         this.motorName = config.motorName;
 
         shooter = new MotorEx(hardwareMap, motorName);
+        shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        shooter.setInverted(true);
         shooter.setRunMode(Motor.RunMode.VelocityControl);
         shooter.setVeloCoefficients(pidf.kP, pidf.kI, pidf.kD);
         shooter.setFeedforwardCoefficients(pidf.kS, pidf.kV);
 
         hood = hardwareMap.get(Servo.class, config.servoName);
+        hood.setDirection(Servo.Direction.REVERSE);
     }
 
+    /**
+     * Sets the shooter motor to a certain velocity in its possible range.
+     * Clips the velocity to the min or max if it is outside the range.
+     * @param vel Velocity measured in Ticks Per Second (TPS)
+     * */
     public void setVelocity(double vel){
+        vel = Math.max(Math.min(vel, 2800), 0.0);
         shooter.setVelocity(vel);
     }
 
+    /**@return the velocity of the shooter in TPS*/
     public double getVelocity(){
         return shooter.getVelocity();
     }
 
+    public double getRPM(){
+        return getAsRPM(getVelocity());
+    }
+
+    /**@return Current surface speed of the robot*/
     public double getShooterSurfaceSpeed(){
         return getShooterSurfaceSpeed(shooter.getVelocity());
     }
 
+    /**
+     * @param velocity Shooter Velocity in TPS
+     * @return Surface speed of the shooter
+     * */
     public double getShooterSurfaceSpeed(double velocity){
-        double RPM = velocity/shooter.getCPR();
+        double RPM = getAsRPM(velocity);
         //convert to radians per second
         double radsPerSec = RPM/Constants.RAD_PS_TO_RPM;
         //get the physical distance that one radian travels
         double inchesPerSec = Constants.SHOOTER_RADIUS*radsPerSec;
         //convert to feet
-        double feetPerSec = inchesPerSec/12.0;
-        return feetPerSec;
+        return inchesPerSec/12.0;
     }
 
     /**
@@ -65,17 +83,10 @@ public class ShooterSubsystem extends FtcSubsystem {
 
     /**
      * Returns exit velocity with Feet/Second accounting for efficiency
-     * @param velocity the velocity in Counts per rotation (shooter.getVelocity() works)
+     * @param velocity the velocity in TPS (shooter.getVelocity() works)
      * */
     public double getBallVelocity(double velocity){
         return getShooterSurfaceSpeed(velocity)*Constants.EFFICIENCY;
-    }
-
-    /***
-     * Uses the distance to find what the expected velocity
-     * */
-    public double getVelocityLinReg(double distance){
-        return distance; //TODO PUT LIN REG HERE
     }
 
     public void setHood(double pos){
@@ -113,8 +124,7 @@ public class ShooterSubsystem extends FtcSubsystem {
         //? It uses a constant velocity(which the ball is after it is launched) and decides what the best angle to shoot it at is based on how far and high the target is.
         double height = (Constants.CELL_HEIGHT-Constants.LL_HEIGHT)/12.0;
         //initial velocity of the ball squared.
-        double v = initialVelocity;
-        double v2 = v*v;
+        double v2 = initialVelocity*initialVelocity;
         double v4 = v2*v2;
         distance = distance/12.0;
         double d2 = distance*distance;
@@ -156,70 +166,63 @@ public class ShooterSubsystem extends FtcSubsystem {
         return hood.getPosition();
     }
 
-    /***
-     * Uses the distance to find what the expected hood pos
-     * */
-    public double getHoodLinReg(double distance){
-        return distance; //TODO PUT LIN REG HERE
-    }
-    public double getHoodLinReg(){
-        return distance; //TODO PUT LIN REG HERE
-    }
-
 
     /**
-     * Calculates and sets lin reg for velocity and hood position.
-     * Assumes -999 as invalid velocity and position
+     * Calculates and sets velocity and hood position.
+     * @param rpm Takes a value in rotations per minute
+     * @param degrees Takes a value between Min and Max hood angles (60-90), in degrees.
      * */
-    public void shoot(double velocity, double position){
-        double pos = (0.0<=position && position <= 1.0) ? position : Constants.HOOD_DEFAULT; // if pos is valid, use it; otherwise, use default
-        setVelocity(velocity);
-        setHood(pos);
+    public void shoot(double rpm, double degrees){
+        setVelocity(getAsTPS(rpm));
+        setHoodDegrees(degrees);
     }
 
     /**
-     * Calculates and sets lin reg for velocity and hood position.
+     * Calculates and sets velocity and hood position.
      * Local distance must be updated. [setDistance(...)]
      * Assumes -999 as invalid distance
      * */
     public void shoot(){
         if(distance != Constants.NO_DIS) {
-            double vel = Constants.SHOOTER_IDLE;
-            double hoodDegree = getExpectedHoodDegrees(getBallVelocity(vel));
+            double vel = Constants.SHOOT_RPM;
+            double hoodDegree = getExpectedHoodDegrees(getBallVelocity(getAsTPS(vel)));
             if (hoodDegree == Constants.TOO_SLOW) {
                 vel = getFasterVelocity(vel);
-                hoodDegree = getExpectedHoodDegrees(getBallVelocity(vel));
+                hoodDegree = getExpectedHoodDegrees(getBallVelocity(getAsTPS(vel)));
             } else if (hoodDegree == Constants.TOO_FAST) {
                 vel = getSlowerVelocity(vel);
-                hoodDegree = getExpectedHoodDegrees(getBallVelocity(vel));
+                hoodDegree = getExpectedHoodDegrees(getBallVelocity(getAsTPS(vel)));
             }
-            setVelocity(vel);
-            setHoodDegrees((hoodDegree != Constants.TOO_SLOW && hoodDegree != Constants.TOO_FAST)? hoodDegree : 0.0);
-            targetVelocity = vel;
+            setVelocity(getAsTPS(vel));
+            setHoodDegrees((hoodDegree != Constants.TOO_SLOW && hoodDegree != Constants.TOO_FAST)
+                    ? hoodDegree
+                    : 0.0);
+            targetVelocity = getAsTPS(vel);
         } else {
             idleShoot();
         }
     }
 
     public double getFasterVelocity(double velocity){
-        return 2700;
+        return Constants.SHOOT_RPM+200;
     }
 
     public double getSlowerVelocity(double velocity){
-        return 2000;
+        return Constants.SHOOT_RPM-200;
     }
 
     public void idleShoot(){
-        setVelocity(Constants.SHOOTER_IDLE);
+        setVelocity(getAsTPS(Constants.SHOOTER_IDLE));
         setHood(Constants.HOOD_DEFAULT);
     }
 
     /**
      * Tells you if you are close enough to the given velocity.
      * Assumes valid velocity
+     * MEASURES IN TPS, NOT RPM
      * */
-    public boolean atVelocity(double velocity){
-        return ((velocity-Constants.VEL_THRESHOLD < getVelocity()) && (getVelocity() < velocity+Constants.VEL_THRESHOLD));
+    public boolean atVelocity(double tps){
+        return ((tps-Constants.VEL_THRESHOLD < getVelocity()) && (getVelocity() < tps+Constants.VEL_THRESHOLD));
     }
 
     /**
@@ -227,7 +230,7 @@ public class ShooterSubsystem extends FtcSubsystem {
      * Assumes updated and valid distance
      * */
     public boolean atVelocity(){
-        return ((targetVelocity-Constants.VEL_THRESHOLD < getVelocity()) && (getVelocity() < targetVelocity+Constants.VEL_THRESHOLD));
+        return atVelocity(targetVelocity);
     }
 
     /**
@@ -240,11 +243,11 @@ public class ShooterSubsystem extends FtcSubsystem {
     }
 
     public double get2DDistance(){
-        return Math.sqrt(Math.pow(distance,2) - Math.pow(Constants.CELL_HEIGHT-Constants.LL_HEIGHT, 2));
+        return get2DDistance(distance);
     }
 
     public double get2DDistance(double distance){
-        return Math.sqrt(Math.pow(distance,2) - Math.pow(Constants.CELL_HEIGHT-Constants.LL_HEIGHT, 2));
+        return Math.sqrt(Math.max(0.0, Math.pow(distance,2) - Math.pow(Constants.CELL_HEIGHT-Constants.LL_HEIGHT, 2)));
     }
 
     /**

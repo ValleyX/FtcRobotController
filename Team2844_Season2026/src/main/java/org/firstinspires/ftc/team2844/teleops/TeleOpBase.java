@@ -60,6 +60,11 @@ public abstract class TeleOpBase extends CommandOpMode {
         updatePanelsField();
         subsystems.update();
         //Telemetry goes here
+        telemetryBus.put("State:         ", container.teleOpCycle.getState());
+        telemetryBus.put("Aimed at:      ",  subsystems.turret.getAbsoluteDegrees());
+        telemetryBus.put("Aimed at Zero: ", subsystems.turret.aimedAt(0.0));
+        telemetryBus.put("Field Centric Aim: ", subsystems.turret.getCurrentFieldCentricDegrees());
+
     }
 
     @Override

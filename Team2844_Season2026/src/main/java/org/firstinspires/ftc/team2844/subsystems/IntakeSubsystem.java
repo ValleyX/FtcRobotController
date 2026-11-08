@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team2844.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,8 +23,9 @@ public class IntakeSubsystem extends FtcSubsystem {
     public IntakeSubsystem(HardwareMap hardwareMap) {
         super(hardwareMap);
         intakeMotor = hardwareMap.get(DcMotor.class, Constants.EHM0);
-        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         flowerRamp = hardwareMap.get(Servo.class, Constants.EHS0);
 
@@ -39,7 +41,7 @@ public class IntakeSubsystem extends FtcSubsystem {
         p1 = hardwareMap.get(DigitalChannel.class, Constants.EHDD5);
         p2 = hardwareMap.get(DigitalChannel.class, Constants.EHDD6);
         p3 = hardwareMap.get(DigitalChannel.class, Constants.EHDD7);
-        pollen = new DigitalChannel[]{p0, p1, p2, p3};
+        pollen = new DigitalChannel[]{p0, p1, p2};
     }
 
     /**
@@ -125,12 +127,12 @@ public class IntakeSubsystem extends FtcSubsystem {
         }
 
         //counts the nectar switches once per loop instead of every time the method is called
-        nectarCount = 0;
+        /*nectarCount = 0;
         for(DigitalChannel n: nectar){ //for each limit switch
             if(n.getState()){
                 nectarCount++; //count how many are tripped
             }
-        }
+        }*/
 
         //counts the pollen switches once per loop instead of every time the method is called
         pollenCount = 0;

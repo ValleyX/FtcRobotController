@@ -10,7 +10,7 @@ import org.firstinspires.ftc.team2844.helpers.Constants;
 public class TurretSubsystem extends FtcSubsystem {
     private double heading, x, y;
     private double tx;
-    private final AnalogInput encoder1, encoder2;
+    private final AnalogInput encoder1, encoder2, absolute;
     private final Servo axon1, axon2;
     public TurretSubsystem(HardwareMap hardwareMap) {
         super(hardwareMap);
@@ -22,8 +22,9 @@ public class TurretSubsystem extends FtcSubsystem {
         //TODO REMEMBER TO PUT THE AXONS IN WITH 1.0 BEING FULLY LEFT AND 0.0 BEING FULLY RIGHT
         axon1 = hardwareMap.get(Servo.class, Constants.CHS4);
         axon2 = hardwareMap.get(Servo.class, Constants.CHS5);
-        encoder1 = hardwareMap.get(AnalogInput.class, Constants.CHDD0);
-        encoder2 = hardwareMap.get(AnalogInput.class, Constants.CHDD1);
+        encoder1 = hardwareMap.get(AnalogInput.class, Constants.EHAI0);
+        encoder2 = hardwareMap.get(AnalogInput.class, Constants.EHAI1);
+        absolute = hardwareMap.get(AnalogInput.class, Constants.EHAI2);
     }
 
     /* ----- GET DEGREES ----- */
@@ -32,8 +33,21 @@ public class TurretSubsystem extends FtcSubsystem {
      * Returns a value between -180 and 180 based on the reading from the axon's encoders
      * */
     public double getAbsoluteDegrees(){
+        /*return (((absolute.getVoltage()/absolute.getMaxVoltage())*360.0)
+                //?put that in a -180 to 180 range
+                - (180.0))
+                //?account for gear ratio and get the degrees of the turret
+                /Constants.TURRET_TO_ENCODER;
+         */
+
+
+        //! ENCODERS GIVES MAX ENCODER APPROACHING -180(FULLY RIGHT) AND MIN ENCODER APPROACHING 180(FULLY LEFT)
         //gets the average percent of rotation from the axons and puts it in -180 to 180 range.
-        return (((((encoder1.getVoltage()/encoder1.getMaxVoltage()) + (encoder2.getVoltage()/encoder2.getMaxVoltage()))/2.0)*360.0) - (180.0))/Constants.TURRET_DEGREES_TO_SERVO_DEGREES;
+        //?get the encoders, put it in a 0-360 range
+        double pos = ((encoder1.getVoltage()-Constants.MIN_ENCODER)/(Constants.MAX_ENCODER - Constants.MIN_ENCODER));
+        pos = Math.max(Math.min(pos,1.0), 0.0);
+        //?put that in a -180 to 135 range
+        return Constants.MAX_ROTATION + pos*(Constants.MIN_ROTATION-Constants.MAX_ROTATION);
     }
 
     /**Returns a value between -PI and PI based on the reading from the axon's encoders
@@ -47,7 +61,7 @@ public class TurretSubsystem extends FtcSubsystem {
     /**Returns the degrees of the turret relative to the field.
      * @param targetDegrees a degree between -180 and 180;
      * @param heading current heading of the robot between -180 and 180
-     * @return A degree between -180 and 180 that the turret should be set to in order to match the target field centric degree.
+     * @return A degree between -180 and 180 that the TURRET should be set to in order to match the target field centric degree.
      * */
     public double getFieldCentricDegrees(double targetDegrees, double heading){
         double temp = Math.max(Math.min(targetDegrees, 180), -180);
@@ -57,24 +71,28 @@ public class TurretSubsystem extends FtcSubsystem {
     }
     /**Returns the target degrees of the turret relative to the field.
      * @param degrees a target degree between -180 and 180
-     * @return A degree between -180 and 180 that the turret should be set to in order to match the target field centric degree.
+     * @return A degree between -180 and 180 that the TURRET should be set to in order to match the target field centric degree.
      * */
     public double getFieldCentricDegrees(double degrees){
         return getFieldCentricDegrees(degrees, heading);
+    }
+
+    public double getCurrentFieldCentricDegrees(){
+        return getFieldCentricDegrees(getAbsoluteDegrees(), heading);
     }
 
     //?FIELD CENTRIC RADIANS
     /**Returns the degrees of the turret relative to the field.
      * @param radians a degree between -PI and PI
      * @param heading current heading of the robot between -PI and PI
-     * @return A degree between -PI and PI that the turret should be set to in order to match the target field centric degree.
+     * @return A degree between -PI and PI that the TURRET should be set to in order to match the target field centric degree.
      * */
     public double getFieldCentricRadians(double radians, double heading){
         return Math.toRadians(getFieldCentricDegrees(Math.toDegrees(radians), Math.toDegrees(heading)));
     }
     /**Returns the degrees of the turret relative to the field.
      * @param radians a degree between -PI and PI
-     * @return A degree between -PI and PI that the turret should be set to in order to match the target field centric degree.
+     * @return A degree between -PI and PI that the TURRET should be set to in order to match the target field centric degree.
      * */
     public double getFieldCentricRadians(double radians){
         return Math.toRadians(getFieldCentricDegrees(Math.toDegrees(radians)));
@@ -85,7 +103,7 @@ public class TurretSubsystem extends FtcSubsystem {
      * @param x the x pose of the robot from 0-144
      * @param y the y pose of the robot from 0-144
      * @param heading the heading of the robot from -PI to PI
-     * @return What the relative heading of the turret should be set to in order to aim to the target.
+     * @return What the relative heading of the TURRET should be set to in order to aim to the target.
      * */
     public double getRobotTargetRadians(double x, double y, double heading){
         double adjacent = Constants.targetX - x;
@@ -99,12 +117,14 @@ public class TurretSubsystem extends FtcSubsystem {
      * @param x the x pose of the robot from 0-144
      * @param y the y pose of the robot from 0-144
      * @param heading the heading of the robot from -180 to 180
-     * @return What the relative heading of the turret should be set to in order to aim to the target.
+     * @return What the relative heading of the TURRET should be set to in order to aim to the target.
      * */
     public double getRobotTargetDegrees(double x, double y, double heading){
         return Math.toDegrees(getRobotTargetRadians(x, y, heading));
     }
-
+    /**
+     * @return What the relative heading of the TURRET should be set to in order to aim to the target.
+     * */
     public double getRobotTargetDegrees(){
         return getRobotTargetDegrees(x, y, heading);
     }
@@ -146,8 +166,7 @@ public class TurretSubsystem extends FtcSubsystem {
      * Sets the turrets relative to the robot heading
      * */
     public void setRelativeRadians(double radians){
-        axon1.setPosition(convertRadiansToServo(radians));
-        axon2.setPosition(convertRadiansToServo(radians));
+        setRelativeDegrees(Math.toDegrees(radians));
     }
 
     /**Sets the turret to a field centric degree based on Pedro pathing pose
@@ -162,8 +181,7 @@ public class TurretSubsystem extends FtcSubsystem {
      * @param radians The targeted degree from -PI to PI (zero facing blue)
      * */
     public void setFieldCentricRadians(double radians){
-        axon1.setPosition(convertRadiansToServo(getFieldCentricRadians(radians)));
-        axon2.setPosition(convertRadiansToServo(getFieldCentricRadians(radians)));
+        setFieldCentricDegrees(Math.toDegrees(radians));
     }
 
     public void aimToTarget(){
@@ -185,10 +203,13 @@ public class TurretSubsystem extends FtcSubsystem {
      * Returns true if the turret is aimed at the AprilTag value or pinpoint value
      * */
     public boolean aimed(){
-        return (thresholded(getAbsoluteDegrees(), getRobotTargetDegrees())  ||
-                thresholded(getAbsoluteDegrees(), getTx()));
+        return (aimedAt(getRobotTargetDegrees())  ||
+                aimedAt(getTx()));
     }
 
+    public boolean aimedAt(double degrees){
+        return thresholded(getAbsoluteDegrees(), degrees);
+    }
 
     /* ----- PRIVATE HELPERS ----- */
     /**Accepts values from -PI to PI but clamps it to the physical limits of the axons
@@ -205,15 +226,17 @@ public class TurretSubsystem extends FtcSubsystem {
     private double convertDegreesToServo(double degrees) {
         //make turret degrees from -180 to 180 and not 0 to 360
         double temp = normalizeTurretDegrees(degrees);
+        if(temp>Constants.MAX_ROTATION){
+            temp = (temp < (180.0 - (180.0 - Constants.MAX_ROTATION)/2.0))
+                    ? Constants.MAX_ROTATION
+                    : Constants.MIN_ROTATION;
+        }
         //clamps to the max and min rotations
         temp = Math.max(Math.min(temp, Constants.MAX_ROTATION), Constants.MIN_ROTATION);
 
-        //Accounts for the gear ratio
-        temp *= Constants.TURRET_DEGREES_TO_SERVO_DEGREES;
-
         //? Puts the degrees into the correct range and gets the percent of servo travel.
         //replace Constants.MAX_SERVO_RANGE with 360.0 if we want to scale the turret down instead of just having a dead-spot
-        temp = (temp + (Constants.MAX_SERVO_RANGE/2.0)) / Constants.MAX_SERVO_RANGE;
+        temp = (temp - Constants.MIN_ROTATION) / (Constants.MAX_ROTATION - Constants.MIN_ROTATION);
         //clamps to 0-1
         return Math.max(Math.min(temp, 1.0), 0.0);
     }

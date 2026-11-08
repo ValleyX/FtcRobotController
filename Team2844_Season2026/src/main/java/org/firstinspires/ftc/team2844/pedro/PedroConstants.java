@@ -74,7 +74,7 @@ public class PedroConstants {
             c.backRightName.set(Constants.CHM2);
 
             c.frontLeftDirection.set(DcMotorSimple.Direction.REVERSE);
-            c.frontRightDirection.set(DcMotorSimple.Direction.FORWARD);
+            c.frontRightDirection.set(DcMotorSimple.Direction.REVERSE);
             c.backLeftDirection.set(DcMotorSimple.Direction.REVERSE);
             c.backRightDirection.set(DcMotorSimple.Direction.FORWARD);
 
@@ -120,8 +120,8 @@ public class PedroConstants {
             // For non-goBILDA pods, drop podType and use the tuner's measured value:
             // c.ticksPerUnit.set(OptionalDouble.of(13.26291192));
 
-            c.xPodOffset.set(0.0);
-            c.yPodOffset.set(0.0);
+            c.xPodOffset.set(Constants.XPOD_OFFSET);
+            c.yPodOffset.set(Constants.YPOD_OFFSET);
 
             c.xPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
             c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);

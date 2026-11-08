@@ -28,6 +28,7 @@ public class TeleOpContainer extends RobotContainer {
 
     /*--- driver ---*/
     final Trigger shootButton;
+    final Trigger flowerRampButton;
     final Trigger intakeButton;
     final Trigger outtakeButton;
     final Trigger resetIMUButton;
@@ -65,6 +66,7 @@ public class TeleOpContainer extends RobotContainer {
         /* ---------- CONTROLLER BINDINGS ---------- */
         // ----- DRIVER ----- //
         this.shootButton = driver.rightBumper();
+        this.flowerRampButton = driver.leftBumper();
         this.intakeButton = driver.rightTriggerButton(0.05); //runs the intake
         this.outtakeButton = driver.leftTriggerButton(0.05); //runs the intake backwards
         this.resetIMUButton = driver.guide();
@@ -129,7 +131,7 @@ public class TeleOpContainer extends RobotContainer {
                     subsystems.nectar.shoot();
                     subsystems.pollen.shoot();
                     defaultTurretCmd.setTrack(true);
-                    subsystems.transfer.transfer();
+                    subsystems.transfer.fastTransfer();
                     subsystems.intake.intake();
                 })
 
@@ -251,6 +253,8 @@ public class TeleOpContainer extends RobotContainer {
                 teleOpCycle.forceState((back == null || back == Cycle.OUTTAKE)? Cycle.IDLE: back);
             }
         }));
+
+        //when(, )
     }
 
     public void configureShooting(){
@@ -279,6 +283,10 @@ public class TeleOpContainer extends RobotContainer {
 
     public void configureOperator(){
 
+    }
+
+    private Trigger when(TeleOpContainer.Cycle c, Trigger button){
+        return button.and(teleOpCycle.in(c));
     }
 
     public Command getStateMachine(){

@@ -40,22 +40,31 @@ public class DefaultTurretCmd implements Command {
 
     @Override
     public void execute() {
+        double targetDegrees;
+        boolean fieldCentric;
+
         if(manual){
-            if(relative) {
-                turret.setRelativeDegrees(degrees);
-            } else {
-                turret.setFieldCentricDegrees(degrees);
-            }
+            targetDegrees = degrees;
+            fieldCentric = relative;
         } else if(track && !locked){
-            if(!turret.aimed()) {
-                if (vision.valid()) {
-                    turret.aimToTx();
-                } else {
-                    turret.aimToTarget();
-                }
+            if (vision.valid()) {
+                targetDegrees = turret.getTx();
+                fieldCentric = false;
+            } else {
+                targetDegrees = turret.getRobotTargetDegrees();
+                fieldCentric = false;
             }
         } else {
-            turret.setRelativeDegrees(0.0);
+            targetDegrees = 0.0;
+            fieldCentric = false;
+        }
+
+        if(!turret.aimedAt(targetDegrees)){
+            if(fieldCentric){
+                turret.setFieldCentricDegrees(targetDegrees);
+            } else {
+                turret.setRelativeDegrees(targetDegrees);
+            }
         }
     }
 

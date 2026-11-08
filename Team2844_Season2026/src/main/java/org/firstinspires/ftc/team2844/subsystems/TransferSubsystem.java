@@ -29,6 +29,7 @@ public class TransferSubsystem extends FtcSubsystem {
     public void transfer(){
         transferMotor.setPower(Constants.TRANSFER_SPEED);
     }
+    public void fastTransfer(){transferMotor.setPower(Constants.FAST_TRANSFER);}
     public void transfer(double speed){transferMotor.setPower(speed);}
 
     public void stop(){

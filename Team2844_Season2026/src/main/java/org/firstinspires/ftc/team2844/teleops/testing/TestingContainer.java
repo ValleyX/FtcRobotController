@@ -18,7 +18,7 @@ import org.firstinspires.ftc.team2844.helpers.Subsystems;
 import org.firstinspires.ftc.team2844.subsystems.ShooterSubsystem;
 
 public class TestingContainer {
-    public enum Cycle {DRIVE, PIDF, LINREG, TURRET}
+    public enum Cycle {DRIVE, PIDF, SHOOTING, TURRET}
     boolean nextState = false;
     boolean previousState = false;
     double velocity, hoodPos;
@@ -53,8 +53,8 @@ public class TestingContainer {
         this.subsystems = subsystems;
         driver = gamepad1;
         operator = gamepad2;
-        velocity = Constants.SHOOTER_IDLE;
-        hoodPos = Constants.HOOD_DEFAULT;
+        velocity = Constants.SHOOT_RPM;
+        hoodPos = Constants.MIN_HOOD_DEGREE;
         currentShooter = subsystems.nectar;
         currentPIDF = 0;
 
@@ -68,7 +68,7 @@ public class TestingContainer {
         velocityMultiplier = 0;
         turretMultiplier = 0;
         pidfMultiplier = 0;
-        hoodArray = new double[]{0.01, 0.05, 0.1, 0.5};
+        hoodArray = new double[]{0.01, 0.1, 1, 5, 10};
         velocityArray = new double[]{10, 50, 100, 500};
         turretArray = new double[]{1.0, 5.0, 10.0, 50.0, 180.0};
         pidfArray = new double[]{0.005, 0.01, 0.05, 0.1, 0.5, 1.0, 5.0, 10.0, 50.0, 100.0, 1000.0};
@@ -109,15 +109,15 @@ public class TestingContainer {
                 })
 
                 //!LINREG State
-                .onEnter(Cycle.LINREG, ()-> {
+                .onEnter(Cycle.SHOOTING, ()-> {
                     subsystems.nectar.idleShoot();
                     subsystems.pollen.idleShoot();
                 })
-                .state(Cycle.LINREG, Commands.run(()-> {
+                .state(Cycle.SHOOTING, Commands.run(()-> {
                     subsystems.nectar.shoot(velocity, hoodPos);
                     subsystems.pollen.shoot(velocity, hoodPos);
                 }))
-                .onExit(Cycle.LINREG, ()-> {
+                .onExit(Cycle.SHOOTING, ()-> {
                     subsystems.nectar.shoot(0.0, 0.0);
                     subsystems.pollen.shoot(0.0, 0.0);
                 })
@@ -127,15 +127,15 @@ public class TestingContainer {
 
                 //?Transition forward
                 .transition(Cycle.DRIVE,  Cycle.PIDF, () -> nextState)
-                .transition(Cycle.PIDF, Cycle.LINREG, () -> nextState)
-                .transition(Cycle.LINREG, Cycle.TURRET, () -> nextState)
+                .transition(Cycle.PIDF, Cycle.SHOOTING, () -> nextState)
+                .transition(Cycle.SHOOTING, Cycle.TURRET, () -> nextState)
 
                 .onTransition((from, to) -> nextState = false)
 
                 //?Transition backward
                 .transition(Cycle.PIDF,  Cycle.DRIVE, () -> previousState)
-                .transition(Cycle.LINREG, Cycle.PIDF, () -> previousState)
-                .transition(Cycle.TURRET, Cycle.LINREG, () -> previousState)
+                .transition(Cycle.SHOOTING, Cycle.PIDF, () -> previousState)
+                .transition(Cycle.TURRET, Cycle.SHOOTING, () -> previousState)
 
                 .onTransition((from, to) -> previousState = false);
 
@@ -146,7 +146,7 @@ public class TestingContainer {
         configureDefaults();
         configureDRIVE();
         configurePIDF();
-        configureLINREG();
+        configureSHOOTING();
         configureTURRET();
     }
 
@@ -238,11 +238,11 @@ public class TestingContainer {
         })); //switch shooter subsystem
     }
 
-    public void configureLINREG(){
-        configureVelocity(Cycle.LINREG);
-        configureHood(Cycle.LINREG);
-        configureShooting(Cycle.LINREG);
-        configureMultipliers(Cycle.LINREG);
+    public void configureSHOOTING(){
+        configureVelocity(Cycle.SHOOTING);
+        configureHood(Cycle.SHOOTING);
+        configureShooting(Cycle.SHOOTING);
+        configureMultipliers(Cycle.SHOOTING);
     }
 
     public void configureMultipliers(Cycle state){
@@ -273,6 +273,7 @@ public class TestingContainer {
     public void configureHood(Cycle state){
         when(state, driver.dpadUp()).onTrue(new InstantCommand(()-> hoodPos +=hoodArray[hoodMultiplier]));
         when(state, driver.dpadDown()).onTrue(new InstantCommand(()-> hoodPos -=hoodArray[hoodMultiplier]));
+        when(state, driver.b().onTrue(new InstantCommand(() -> hoodPos = subsystems.nectar.getExpectedHoodDegrees())));
     }
 
     public void configureShooting(Cycle state){

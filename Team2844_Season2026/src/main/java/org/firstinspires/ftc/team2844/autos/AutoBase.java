@@ -28,7 +28,7 @@ public abstract class AutoBase extends CommandOpMode {
         SavedVars.reset();
         int target = alliance()+target();
         Constants.changeAlliance(alliance());
-        Constants.changeSide(target);
+        Constants.changeSide(target());
         subsystems = new Subsystems(hardwareMap, startingPose(), target);
 
         //Keeps the turret tracking the entire auto

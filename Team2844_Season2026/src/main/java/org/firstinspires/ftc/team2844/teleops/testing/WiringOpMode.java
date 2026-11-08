@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team2844.teleops.testing;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.vcs.valleylib.ftc.opmode.CommandOpMode;
@@ -32,6 +33,11 @@ public class WiringOpMode extends CommandOpMode {
         rightBack = hardwareMap.get(DcMotor.class, Constants.CHM2);
         rightFront = hardwareMap.get(DcMotor.class, Constants.CHM3);
 
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+
         /* --- Intake/Transfer Motors --- */
         intake = hardwareMap.get(DcMotor.class, Constants.EHM0);
         transfer = hardwareMap.get(DcMotor.class, Constants.EHM1);
@@ -52,8 +58,8 @@ public class WiringOpMode extends CommandOpMode {
         flower = hardwareMap.get(Servo.class, Constants.EHS0);
 
         /* --- Turret Encoders --- */
-        encoder1 = hardwareMap.get(AnalogInput.class, Constants.CHDD0);
-        encoder2 = hardwareMap.get(AnalogInput.class, Constants.CHDD1);
+        encoder1 = hardwareMap.get(AnalogInput.class, Constants.EHAI0);
+        encoder2 = hardwareMap.get(AnalogInput.class, Constants.EHAI1);
 
 
         /* --- Lights --- */
@@ -151,9 +157,9 @@ public class WiringOpMode extends CommandOpMode {
     /* ----- TEST MOTORS ----- */
     public void testMotors(){
         if (gamepad1.x){
-            intake.setPower(1.0);
+            intake.setPower(Constants.INTAKE_SPEED);
         } else if(gamepad1.a){
-            transfer.setPower(1.0);
+            transfer.setPower(Constants.TRANSFER_SPEED);
         } else if(gamepad1.b){
             nectar.setPower(1.0);
         } else if(gamepad1.y){
