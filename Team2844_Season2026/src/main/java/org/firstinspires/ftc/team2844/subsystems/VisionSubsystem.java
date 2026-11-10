@@ -47,7 +47,10 @@ public class VisionSubsystem extends FtcSubsystem {
     }
 
     public boolean valid(){
-        return (latestResult != null && latestResult.isValid());
+        return latestResult != null
+                && latestResult.isValid()
+                && !latestResult.getFiducialResults().isEmpty()
+                && latestResult.getStaleness() < 200;
     }
 
     @Override

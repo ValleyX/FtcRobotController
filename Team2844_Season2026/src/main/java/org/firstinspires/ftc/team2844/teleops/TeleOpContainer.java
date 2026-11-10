@@ -85,8 +85,7 @@ public class TeleOpContainer extends RobotContainer {
 
         Trigger readyToShoot = shootButton
                         .and(() -> subsystems.nectar.atVelocity() ||
-                        subsystems.pollen.atVelocity())
-                        .and(subsystems.turret::aimed);
+                        subsystems.pollen.atVelocity());
 
         teleOpCycle = new StateMachine<>(Cycle.IDLE) //initial state
                 /*--- states ---*/
@@ -254,7 +253,12 @@ public class TeleOpContainer extends RobotContainer {
             }
         }));
 
-        //when(, )
+        flowerRampButton.onTrue(Commands.runOnce(() -> {
+            if (subsystems.intake.isFlowerRampUp())
+                subsystems.intake.flowerRampDown();
+            else
+                subsystems.intake.flowerRampUp();
+        }));
     }
 
     public void configureShooting(){

@@ -22,7 +22,7 @@ public abstract class DownRoutine extends AutoBase {
             b.follow(DownGeometry.readyShoot(f));
 
             //! just spinUp till you can see the aprilTag(goal is up) then shoot
-            b.command(()-> {
+            b.doInstant(()-> {
                 subsystems.nectar.shoot();
                 subsystems.pollen.shoot();
             });

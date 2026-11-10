@@ -45,15 +45,10 @@ public class DefaultTurretCmd implements Command {
 
         if(manual){
             targetDegrees = degrees;
-            fieldCentric = relative;
+            fieldCentric = !relative;
         } else if(track && !locked){
-            if (vision.valid()) {
-                targetDegrees = turret.getTx();
-                fieldCentric = false;
-            } else {
-                targetDegrees = turret.getRobotTargetDegrees();
-                fieldCentric = false;
-            }
+            targetDegrees = turret.getRobotTargetDegrees();
+            fieldCentric = false;
         } else {
             targetDegrees = 0.0;
             fieldCentric = false;

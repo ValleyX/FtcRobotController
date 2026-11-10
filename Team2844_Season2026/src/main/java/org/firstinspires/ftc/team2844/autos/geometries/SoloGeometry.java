@@ -10,6 +10,9 @@ import org.firstinspires.ftc.team2844.autos.AutoPaths;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 
 public final class SoloGeometry {
+    private static double MID_X = 82.0;
+    private static double MID_Y = 112.0;
+    private static double MID_DIR = -90.0;
     private SoloGeometry(){}
 
     /* ----- Poses ----- */
@@ -19,7 +22,7 @@ public final class SoloGeometry {
     public static Pose intakeFromGarden(PoseFactory f){
         return f.of(144-(Constants.ROBOT_LENGTH/2.0),144-(Constants.ROBOT_WIDTH/2.0), 0.0);}
 
-    public static Pose throughMiddle(PoseFactory f){return f.of(82.0, 112.0, 90.0);}
+    public static Pose throughMiddle(PoseFactory f){return f.of(MID_X, MID_Y, 90.0);}
     public static Pose flippedShoot(PoseFactory f){return f.of(82.0, 24.0,45.0);}
 
     /* ----- Paths ----- */
@@ -30,8 +33,8 @@ public final class SoloGeometry {
     public static Path underpassFromGarden(PoseFactory f){
         Pose start = intakeFromGarden(f);
         Pose middle = throughMiddle(f);
-        Pose beforeMiddle = new Pose(middle.x() - 10*Math.cos(Math.toRadians(-90.0)), middle.y() - 25*Math.sin(Math.toRadians(-90.0)), middle.heading());
-        Pose afterMiddle =  new Pose(middle.x() + 5*Math.cos(Math.toRadians(-90.0)), middle.y() + 5*Math.sin(Math.toRadians(-90.0)), middle.heading());
+        Pose beforeMiddle = f.of( MID_X- 10*Math.cos(Math.toRadians(MID_DIR)), MID_Y- 25*Math.sin(Math.toRadians(MID_DIR)), MID_DIR);
+        Pose afterMiddle =  f.of( MID_X+ 5*Math.cos(Math.toRadians(MID_DIR)),  MID_Y+ 5*Math.sin(Math.toRadians(MID_DIR)), MID_DIR);
         Pose end = flippedShoot(f);
         return Paths.path(
                     Paths.curve(start, beforeMiddle, middle),

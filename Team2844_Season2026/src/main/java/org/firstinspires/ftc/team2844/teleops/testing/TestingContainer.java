@@ -273,7 +273,7 @@ public class TestingContainer {
     public void configureHood(Cycle state){
         when(state, driver.dpadUp()).onTrue(new InstantCommand(()-> hoodPos +=hoodArray[hoodMultiplier]));
         when(state, driver.dpadDown()).onTrue(new InstantCommand(()-> hoodPos -=hoodArray[hoodMultiplier]));
-        when(state, driver.b().onTrue(new InstantCommand(() -> hoodPos = subsystems.nectar.getExpectedHoodDegrees())));
+        when(state, driver.b()).onTrue(new InstantCommand(() -> hoodPos = subsystems.nectar.getExpectedHoodDegrees()));
     }
 
     public void configureShooting(Cycle state){

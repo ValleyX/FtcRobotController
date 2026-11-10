@@ -44,10 +44,23 @@ public class TurretSubsystem extends FtcSubsystem {
         //! ENCODERS GIVES MAX ENCODER APPROACHING -180(FULLY RIGHT) AND MIN ENCODER APPROACHING 180(FULLY LEFT)
         //gets the average percent of rotation from the axons and puts it in -180 to 180 range.
         //?get the encoders, put it in a 0-360 range
-        double pos = ((encoder1.getVoltage()-Constants.MIN_ENCODER)/(Constants.MAX_ENCODER - Constants.MIN_ENCODER));
+        double pos = ((encoder2.getVoltage()-Constants.MIN_ENCODER)/(Constants.MAX_ENCODER - Constants.MIN_ENCODER));
         pos = Math.max(Math.min(pos,1.0), 0.0);
         //?put that in a -180 to 135 range
         return Constants.MAX_ROTATION + pos*(Constants.MIN_ROTATION-Constants.MAX_ROTATION);
+    }
+
+    /**Just returns axon1 position since they are always set to the same thing*/
+    public double axonValues(){
+        return axon1.getPosition();
+    }
+
+    public double getEncoder1Value(){
+        return encoder1.getVoltage();
+    }
+
+    public double getEncoder2Value(){
+        return encoder2.getVoltage();
     }
 
     /**Returns a value between -PI and PI based on the reading from the axon's encoders
@@ -120,7 +133,7 @@ public class TurretSubsystem extends FtcSubsystem {
      * @return What the relative heading of the TURRET should be set to in order to aim to the target.
      * */
     public double getRobotTargetDegrees(double x, double y, double heading){
-        return Math.toDegrees(getRobotTargetRadians(x, y, heading));
+        return Math.toDegrees(getRobotTargetRadians(x, y, Math.toRadians(heading)));
     }
     /**
      * @return What the relative heading of the TURRET should be set to in order to aim to the target.
@@ -264,7 +277,7 @@ public class TurretSubsystem extends FtcSubsystem {
 
     /* ----- NEEDED UPDATERS ----- */
     public void setHeading(double degrees){
-        heading = degrees;
+        heading = normalizeTurretDegrees(degrees+180.0);
     }
 
     public void setX(double x){

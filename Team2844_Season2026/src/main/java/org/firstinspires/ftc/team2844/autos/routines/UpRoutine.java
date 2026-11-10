@@ -29,7 +29,7 @@ public abstract class UpRoutine extends AutoBase {
             b.follow(UpGeometry.readyShoot1(f));
 
             //!Spin up the shooters
-            b.command(()-> {
+            b.doInstant(()-> {
                 subsystems.nectar.shoot();
                 subsystems.pollen.shoot();
             });

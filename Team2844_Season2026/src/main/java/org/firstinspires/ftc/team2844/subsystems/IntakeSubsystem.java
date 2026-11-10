@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class IntakeSubsystem extends FtcSubsystem {
     private final DcMotor intakeMotor;
     private final Servo flowerRamp;
+    private boolean flowerUp;
 
     private final DigitalChannel[] nectar, pollen;
     private final ElapsedTime emptyFor = new ElapsedTime();
@@ -23,11 +24,12 @@ public class IntakeSubsystem extends FtcSubsystem {
     public IntakeSubsystem(HardwareMap hardwareMap) {
         super(hardwareMap);
         intakeMotor = hardwareMap.get(DcMotor.class, Constants.EHM0);
-        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         flowerRamp = hardwareMap.get(Servo.class, Constants.EHS0);
+        flowerUp = true;
 
 
         final DigitalChannel n0, n1, n2, n3, p0, p1, p2, p3;
@@ -36,12 +38,18 @@ public class IntakeSubsystem extends FtcSubsystem {
         n2 = hardwareMap.get(DigitalChannel.class, Constants.EHDD2);
         n3 = hardwareMap.get(DigitalChannel.class, Constants.EHDD3);
         nectar = new DigitalChannel[]{n0, n1, n2, n3};
+        for (DigitalChannel n : nectar){
+            n.setMode(DigitalChannel.Mode.INPUT);
+        }
 
         p0 = hardwareMap.get(DigitalChannel.class, Constants.EHDD4);
         p1 = hardwareMap.get(DigitalChannel.class, Constants.EHDD5);
         p2 = hardwareMap.get(DigitalChannel.class, Constants.EHDD6);
         p3 = hardwareMap.get(DigitalChannel.class, Constants.EHDD7);
         pollen = new DigitalChannel[]{p0, p1, p2};
+        for (DigitalChannel p : pollen){
+            p.setMode(DigitalChannel.Mode.INPUT);
+        }
     }
 
     /**
@@ -68,10 +76,15 @@ public class IntakeSubsystem extends FtcSubsystem {
 
     public void flowerRampDown(){
         flowerRamp.setPosition(Constants.FLOWER_DOWN);
+        flowerUp = false;
     }
 
     public void flowerRampUp(){
         flowerRamp.setPosition(Constants.FLOWER_UP);
+        flowerUp = true;
+    }
+    public boolean isFlowerRampUp(){
+        return flowerUp;
     }
 
     /**

@@ -73,8 +73,8 @@ public class Subsystems {
 
     public void update(){
         //?Feed the distance to the shooters
-        nectar.setDistance(distance());
-        pollen.setDistance(distance());
+        nectar.setDistance(drive.getDistance());
+        pollen.setDistance(drive.getDistance());
 
         //?Give the turret what it needs for the math and limelight integration
         turret.setPose(drive.getPose().x(), drive.getPose().y(), drive.getNormalHeadingDegrees());

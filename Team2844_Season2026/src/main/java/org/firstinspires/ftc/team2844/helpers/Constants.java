@@ -9,19 +9,19 @@ public class Constants {
 
     /* ---------- VELOCITY PIDS ---------- */
     //TODO PUT REAL PIDS IN
-    public static final double NP = 20.0;
+    public static final double NP = 11.3;
     public static final double NI = 0.0;
     public static final double ND = 0.0;
     public static final double NS = 0.0;
-    public static final double NV = 6.0;
+    public static final double NV = 1.5;
     public static final PIDF NECTAR_PIDF = new PIDF(NP, NI, ND, NS, NV);
 
 
-    public static final double PP = 35.0;
+    public static final double PP = 11.3;
     public static final double PI = 0.0;
-    public static final double PD = 1.1;
-    public static final double PS = 15.0;
-    public static final double PV = 6.0;
+    public static final double PD = 0.0;
+    public static final double PS = 0.0;
+    public static final double PV = 1.5;
     public static final PIDF POLLEN_PIDF = new PIDF(PP, PI, PD, PS, PV);
 
     /* ---------- MATH CONSTANTS ---------- */
@@ -58,10 +58,10 @@ public class Constants {
 
 
     /* ---------- TURRET CONSTANTS ---------- */
-    public static final double MAX_ROTATION = 135.0;
+    public static final double MAX_ROTATION = 148.0;
     public static final double MIN_ROTATION = -180.0;
     public static final double MAX_SERVO_RANGE = 350.0;
-    public static final double TURRET_THRESHOLD_DEGREES = 3.0;
+    public static double TURRET_THRESHOLD_DEGREES = 1.0;
     public static final double MIN_ENCODER = 0.18;
     public static final double MAX_ENCODER = 3.0;
 
@@ -110,7 +110,7 @@ public class Constants {
 
     // ?----- intake and transfer -----
     public static double INTAKE_SPEED = 1.0;
-    public static double TRANSFER_SPEED = 0.4;
+    public static double TRANSFER_SPEED = 0.6;
     public static double FAST_TRANSFER = 1.0;
 
     public static  double OPEN_GATE = 0.13;
@@ -118,14 +118,14 @@ public class Constants {
     //TODO, REAL EMPTY TIME
     public static final long EMPTY_TIME = 500;
 
-    public static final double FLOWER_DOWN = 0.84;
-    public static final double FLOWER_UP = 0.0;
+    public static final double FLOWER_DOWN = 0.0;
+    public static final double FLOWER_UP = 0.84;
 
     // ?----- controller -----
     public static double STICK_DEADBAND = 0.05;
 
     // ?----- shooter and hood -----
-    public static double VEL_THRESHOLD = 200;
+    public static double VEL_RPM_THRESHOLD = 200;
     /**MEASURED IN RPM, MUST BE CONVERTED TO TICKS PER SECOND FOR THE SHOOTER CMD*/
     public static double SHOOTER_IDLE = 800;
     public static double SHOOT_RPM = 4000;

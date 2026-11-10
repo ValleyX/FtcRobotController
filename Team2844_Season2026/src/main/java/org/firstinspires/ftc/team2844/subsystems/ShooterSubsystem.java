@@ -31,9 +31,9 @@ public class ShooterSubsystem extends FtcSubsystem {
         shooter.setRunMode(Motor.RunMode.VelocityControl);
         shooter.setVeloCoefficients(pidf.kP, pidf.kI, pidf.kD);
         shooter.setFeedforwardCoefficients(pidf.kS, pidf.kV);
+        shooter.setBuffer(1.0);
 
         hood = hardwareMap.get(Servo.class, config.servoName);
-        hood.setDirection(Servo.Direction.REVERSE);
     }
 
     /**
@@ -96,7 +96,7 @@ public class ShooterSubsystem extends FtcSubsystem {
     public void setHoodDegrees(double degrees){
         double temp = degrees;
         temp = Math.min(Math.max(temp, Constants.MIN_HOOD_DEGREE), Constants.MAX_HOOD_DEGREE);
-        temp = (Constants.MAX_HOOD_DEGREE - temp)/(Constants.MAX_HOOD_DEGREE - Constants.MIN_HOOD_DEGREE);
+        temp = (temp - Constants.MIN_HOOD_DEGREE)/(Constants.MAX_HOOD_DEGREE - Constants.MIN_HOOD_DEGREE);
         temp *= Constants.MAX_HOOD;
 
         hood.setPosition(Math.max(Math.min(temp, Constants.MAX_HOOD), Constants.MIN_HOOD));
@@ -104,7 +104,7 @@ public class ShooterSubsystem extends FtcSubsystem {
 
     public double getHoodDegrees(double pos){
         double percent = pos/Constants.MAX_HOOD;
-        return Constants.MAX_HOOD_DEGREE -(percent*(Constants.MAX_HOOD_DEGREE-Constants.MIN_HOOD_DEGREE));
+        return Constants.MIN_HOOD_DEGREE + (percent*(Constants.MAX_HOOD_DEGREE - Constants.MIN_HOOD_DEGREE));
     }
 
     public double getCurrentHoodDegrees(){
@@ -185,18 +185,18 @@ public class ShooterSubsystem extends FtcSubsystem {
     public void shoot(){
         if(distance != Constants.NO_DIS) {
             double vel = Constants.SHOOT_RPM;
-            double hoodDegree = getExpectedHoodDegrees(getBallVelocity(getAsTPS(vel)));
-            if (hoodDegree == Constants.TOO_SLOW) {
+            double hoodDegree = getExpectedHoodDegrees();
+            /*if (hoodDegree == Constants.TOO_SLOW) {
                 vel = getFasterVelocity(vel);
                 hoodDegree = getExpectedHoodDegrees(getBallVelocity(getAsTPS(vel)));
             } else if (hoodDegree == Constants.TOO_FAST) {
                 vel = getSlowerVelocity(vel);
                 hoodDegree = getExpectedHoodDegrees(getBallVelocity(getAsTPS(vel)));
-            }
+            }*/
             setVelocity(getAsTPS(vel));
             setHoodDegrees((hoodDegree != Constants.TOO_SLOW && hoodDegree != Constants.TOO_FAST)
                     ? hoodDegree
-                    : 0.0);
+                    : Constants.MIN_HOOD_DEGREE);
             targetVelocity = getAsTPS(vel);
         } else {
             idleShoot();
@@ -222,7 +222,7 @@ public class ShooterSubsystem extends FtcSubsystem {
      * MEASURES IN TPS, NOT RPM
      * */
     public boolean atVelocity(double tps){
-        return ((tps-Constants.VEL_THRESHOLD < getVelocity()) && (getVelocity() < tps+Constants.VEL_THRESHOLD));
+        return ((tps-getAsTPS(Constants.VEL_RPM_THRESHOLD) < getVelocity()) && (getVelocity() < tps+getAsTPS(Constants.VEL_RPM_THRESHOLD)));
     }
 
     /**
@@ -248,6 +248,10 @@ public class ShooterSubsystem extends FtcSubsystem {
 
     public double get2DDistance(double distance){
         return Math.sqrt(Math.max(0.0, Math.pow(distance,2) - Math.pow(Constants.CELL_HEIGHT-Constants.LL_HEIGHT, 2)));
+    }
+
+    public double getPower(){
+        return shooter.get();
     }
 
     /**
