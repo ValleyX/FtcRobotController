@@ -58,7 +58,7 @@ public class Constants {
 
 
     /* ---------- TURRET CONSTANTS ---------- */
-    public static final double MAX_ROTATION = 148.0;
+    public static final double MAX_ROTATION = 152.96337;
     public static final double MIN_ROTATION = -180.0;
     public static final double MAX_SERVO_RANGE = 350.0;
     public static double TURRET_THRESHOLD_DEGREES = 1.0;

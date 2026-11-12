@@ -232,7 +232,7 @@ public class TurretSubsystem extends FtcSubsystem {
     private double convertRadiansToServo(double radians){
         return convertDegreesToServo(Math.toDegrees(radians));
     }
-    /**Accepts values from -180 to 180 but clamps it to the physical limits of the axons(more like -180 to 175)
+    /**Accepts values from -180 to 180 but clamps it to the physical limits of the axons(more like -180 to 148)
      * Returns a value from 0-1 meant to be fed into the axon servos.
      * @return a value from 0-1 meant to be fed into the axon servos
      * */

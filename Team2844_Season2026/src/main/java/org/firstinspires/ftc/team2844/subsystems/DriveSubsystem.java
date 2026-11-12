@@ -103,12 +103,12 @@ public class DriveSubsystem extends PedroSubsystem {
 
     /**
      * Zeroes the heading in place, keeping the current x/y.
-     *
-     * <p>Stands in for the old {@code imu.resetYaw()} -- the driver's "my
-     * field-centric is crooked" button.
      */
     public void resetHeading() {
-        follower.setHeading(0.0);
+        follower.setHeading((Constants.alliance == Constants.BLUE_ALLIANCE)
+                ? Math.PI
+                : 0.0
+        );
     }
 
     /**

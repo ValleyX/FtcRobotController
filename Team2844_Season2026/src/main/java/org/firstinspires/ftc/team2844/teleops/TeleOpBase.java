@@ -25,7 +25,7 @@ public abstract class TeleOpBase extends CommandOpMode {
         int target = (Constants.side != Constants.NO_TARGET)? Constants.side+alliance(): alliance();
         Constants.changeTarget(target);
         resetPose = (Constants.alliance == Constants.BLUE_ALLIANCE)
-                ?new Pose(144.0-(Constants.ROBOT_LENGTH/2.0), Constants.ROBOT_WIDTH/2.0,180.0)
+                ?new Pose(144.0-(Constants.ROBOT_LENGTH/2.0), Constants.ROBOT_WIDTH/2.0,Math.PI)
                 :new Pose(Constants.ROBOT_LENGTH/2.0, (144-Constants.ROBOT_WIDTH/2.0), 0.0);
 
 

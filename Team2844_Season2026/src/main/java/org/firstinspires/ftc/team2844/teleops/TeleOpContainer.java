@@ -57,8 +57,8 @@ public class TeleOpContainer extends RobotContainer {
         factory = new CommandFactory(subsystems);
         defaultTurretCmd = new DefaultTurretCmd(subsystems.turret, subsystems.vision);
         resetPose = (Constants.alliance == Constants.BLUE_ALLIANCE)
-                ?new Pose(144.0-(Constants.ROBOT_LENGTH/2.0), Constants.ROBOT_WIDTH/2.0,180.0)
-                :new Pose(Constants.ROBOT_LENGTH/2.0, (144-Constants.ROBOT_WIDTH/2.0), 0.0);
+                ?new Pose(144.0-(Constants.ROBOT_LENGTH/2.0), Constants.ROBOT_WIDTH/2.0, Math.toRadians(180.0))
+                :new Pose(Constants.ROBOT_LENGTH/2.0, (144-Constants.ROBOT_WIDTH/2.0), Math.toRadians(0.0));
 
         this.driver = CommandGamepad.forLogitechF310(gamepad1);
         this.operator = CommandGamepad.forLogitechF310(gamepad2);
