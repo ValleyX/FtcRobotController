@@ -1,0 +1,63 @@
+package org.firstinspires.ftc.team2844simple.subsystems;
+
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.vcs.valleylib.ftc.hardware.FtcSubsystem;
+
+import org.firstinspires.ftc.team2844simple.helpers.Constants;
+
+public class VisionSubsystem extends FtcSubsystem {
+    private final Limelight3A limelight;
+    private LLResult latestResult;
+    private int pipeline;
+    public VisionSubsystem(HardwareMap hardwareMap) {
+        super(hardwareMap);
+        limelight = hardwareMap.get(Limelight3A.class, Constants.CHLL);
+        limelight.start();
+        latestResult = limelight.getLatestResult();
+    }
+
+    public void setPipeline(int pipeline){
+        this.pipeline = pipeline;
+        limelight.pipelineSwitch(pipeline);
+    }
+
+    public int getPipeline(){
+        return pipeline;
+    }
+
+    public double getDistance(){
+        double dis = (valid())
+                ? latestResult.getBotposeAvgDist()*Constants.METERS_TO_INCHES //valid result returns avg distance(doesn't use megatags)
+                : Constants.NO_LL; //null returns -999 to avoid runtime errors
+
+        return (dis != 0.0)
+                ? dis
+                : Constants.NO_LL;
+    }
+
+    public double getTx(){
+        double tx = (valid())
+                ? latestResult.getTx()
+                : Constants.NO_LL; //null returns -999 to avoid runtime errors
+        return (tx != 0.0)
+                ? tx
+                : Constants.NO_LL;
+    }
+
+    public boolean valid(){
+        return latestResult != null
+                && latestResult.isValid()
+                && !latestResult.getFiducialResults().isEmpty()
+                && latestResult.getStaleness() < 200;
+    }
+
+    @Override
+    public void periodic() {
+        if(getPipeline() != Constants.target){
+            setPipeline(Constants.target);
+        }
+        latestResult = limelight.getLatestResult();
+    }
+}

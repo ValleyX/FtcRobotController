@@ -2,12 +2,14 @@ package org.firstinspires.ftc.team2844.autos.blue;
 
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.team2844.autos.geometries.UpGeometry;
 import org.firstinspires.ftc.team2844.autos.routines.UpRoutine;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 
 @Autonomous(name = "Blue Up", group = "Blue")
+@Disabled
 public class BlueUp extends UpRoutine {
 
     @Override

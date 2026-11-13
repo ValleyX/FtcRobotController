@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team2844.teleops.testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -11,6 +12,7 @@ import com.vcs.valleylib.ftc.opmode.CommandOpMode;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 
 @TeleOp(name = "Wiring OpMode")
+@Disabled
 public class WiringOpMode extends CommandOpMode {
     DcMotor leftFront, leftBack, rightFront, rightBack;
     DcMotor nectar, pollen;

@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.team2844.helpers;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.bylazar.configurables.annotations.Configurable;
 
-@Config
-@Configurable
 public class Constants {
 
     /* ---------- VELOCITY PIDS ---------- */
@@ -47,13 +43,13 @@ public class Constants {
 
     public static final double CELL_HEIGHT = 53.5;
 
-    public static final double BLUE_AUDIENCE_X = 89.0;
+    public static final double BLUE_AUDIENCE_X = 84.75;
     public static final double BLUE_AUDIENCE_Y = 53.0;
-    public static final double BLUE_BACK_X = 89.0;
+    public static final double BLUE_BACK_X = 84.75;
     public static final double BLUE_BACK_Y = 91.0;
-    public static final double RED_AUDIENCE_X = 55.0;
+    public static final double RED_AUDIENCE_X = 59.25;
     public static final double RED_AUDIENCE_Y = 53.0;
-    public static final double RED_BACK_X = 55.0;
+    public static final double RED_BACK_X = 59.25;
     public static final double RED_BACK_Y = 91.0;
 
 
