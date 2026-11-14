@@ -18,17 +18,12 @@ public abstract class DownRoutine extends AutoBase {
     protected Command routine() {
         PoseFactory f = field();
         return PedroAutoDsl.auto(subsystems.drive, b -> {
-            //-line up in front of the flower with limelight facing the goal
-            b.follow(DownGeometry.readyShoot(f));
-
             //! just spinUp till you can see the aprilTag(goal is up) then shoot
             b.doInstant(()-> {
                 subsystems.pollen.shoot();
             });
             b.waitFor(15.0);
-            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer));
-
-            //TODO add statemachine to pickup blobs
+            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer, 8000));
         });
     }
 }

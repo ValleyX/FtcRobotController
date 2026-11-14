@@ -190,7 +190,7 @@ public class TeleOpContainer extends RobotContainer {
 
         parkButton.whileTrue(
                 new GoToCmd(subsystems.drive,
-                        () ->AutoPaths.routeToPark(AutoPaths.getField(), subsystems.drive.getPose()), 0.8)
+                        () ->AutoPaths.routeToPark(AutoPaths.getField(), subsystems.drive.getPose()), 1.0)
                         .andThen(Commands.run(() -> {}, subsystems.drive))
         );
     }
@@ -225,7 +225,7 @@ public class TeleOpContainer extends RobotContainer {
                         () -> -driver.leftX()));
         new Trigger(this::isShootTracking).whileTrue(
                 new TurnToCmd(subsystems.drive,
-                        subsystems.drive.getHeadingErrorToTarget()
+                        subsystems.drive::getTargetHeadingRadians
                 )
         );
     }

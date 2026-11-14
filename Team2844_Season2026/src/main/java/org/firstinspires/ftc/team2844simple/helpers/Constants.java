@@ -9,11 +9,11 @@ public class Constants {
 
     /* ---------- VELOCITY PIDS ---------- */
     //TODO PUT REAL PIDS IN
-    public static final double PP = 11.3;
+    public static final double PP = 7.5;
     public static final double PI = 0.0;
     public static final double PD = 0.0;
     public static final double PS = 0.0;
-    public static final double PV = 1.5;
+    public static final double PV = 1.0;
     public static final PIDF POLLEN_PIDF = new PIDF(PP, PI, PD, PS, PV);
 
     /* ---------- MATH CONSTANTS ---------- */
@@ -39,14 +39,14 @@ public class Constants {
 
     public static final double CELL_HEIGHT = 53.5;
 
-    public static final double BLUE_AUDIENCE_X = 84.75;
-    public static final double BLUE_AUDIENCE_Y = 53.0;
-    public static final double BLUE_BACK_X = 84.75;
-    public static final double BLUE_BACK_Y = 91.0;
-    public static final double RED_AUDIENCE_X = 59.25;
-    public static final double RED_AUDIENCE_Y = 53.0;
-    public static final double RED_BACK_X = 59.25;
-    public static final double RED_BACK_Y = 91.0;
+    public static final double BLUE_AUDIENCE_X = 84.0;
+    public static final double BLUE_AUDIENCE_Y = 66.0;
+    public static final double BLUE_BACK_X = 84.0;
+    public static final double BLUE_BACK_Y = 78.0;
+    public static final double RED_AUDIENCE_X = 60.0;
+    public static final double RED_AUDIENCE_Y = 66.0;
+    public static final double RED_BACK_X = 60.0;
+    public static final double RED_BACK_Y = 78.0;
 
 
     /* ---------- ID CONSTANTS ---------- */
@@ -70,9 +70,9 @@ public class Constants {
 
     /* ---------- IRL ROBOT SIZES ---------- */
     //TODO PUT REAL WIDTH, LENGTH, AND HEIGHT
-    public static final double ROBOT_WIDTH = 14.0;
-    public static final double ROBOT_LENGTH = 18.0;
-    public static final double ROBOT_HEIGHT = 18.0;
+    public static final double ROBOT_WIDTH = 15.875;
+    public static final double ROBOT_LENGTH = 15.875;
+    public static final double ROBOT_HEIGHT = 13.0;
     public static final double LL_HEIGHT = 15.0; //TODO get real height
 
 
@@ -84,8 +84,7 @@ public class Constants {
     public static double FAST_TRANSFER = 1.0;
 
     public static  double OPEN_GATE = 0.80;
-    public static  double CLOSED_GATE = 0.58;
-    //TODO, REAL EMPTY TIME
+    public static  double CLOSED_GATE = 0.5;
     public static final long EMPTY_TIME = 500;
 
     // ?----- controller -----
@@ -108,7 +107,7 @@ public class Constants {
     public static double VEL_RPM_THRESHOLD = 200;
     /**MEASURED IN RPM, MUST BE CONVERTED TO TICKS PER SECOND FOR THE SHOOTER CMD*/
     public static double SHOOTER_IDLE = 800;
-    public static double SHOOT_RPM = 2500;
+    public static double SHOOT_RPM = 3200;
     public static double EFFICIENCY = 0.85;
     public static final double SHOOTER_RADIUS = 36.0/25.4;
 

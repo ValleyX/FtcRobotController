@@ -20,7 +20,7 @@ public abstract class SoloRoutine extends AutoBase {
         PoseFactory f = field();
         return PedroAutoDsl.auto(subsystems.drive, b -> {
             //!Shoot preloaded immediately
-            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer));
+            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer, 4000));
 
             //?Grab from the garden
             b.command(subsystems.drive.follow(SoloGeometry.toGarden(f))
@@ -32,20 +32,7 @@ public abstract class SoloRoutine extends AutoBase {
                 Constants.changeSide((Constants.side == Constants.AUDIENCE_SIDE)? Constants.BACK_SIDE: Constants.AUDIENCE_SIDE));
 
             //!We assume that the hive has tipped from our first shot
-            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer));
-
-            //?Intake from the flowers (might have overcomplicated it)
-            b.command(
-                    subsystems.drive.follow(SoloGeometry.pickupXFlower(f))
-                            .deadlineWith(CommandFactory.intakeAndTransfer(subsystems.intake, subsystems.transfer))
-            );
-            b.command(
-                    subsystems.drive.follow(SoloGeometry.shootAgain(f))
-            );
-
-            //!Shoot the pollen collected from the flowers
-            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer));
-            //TODO add blob detection and state machine to keep shooting
+            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer, 4000));
         });
     }
 }

@@ -64,6 +64,7 @@ public abstract class TeleOpBase extends CommandOpMode {
         subsystems.update();
         //Telemetry goes here
         telemetryBus.put("State         ", container.teleOpCycle.getState());
+        telemetryBus.put("Target", Constants.target);
         telemetryBus.put("RPM ", subsystems.pollen.getRPM());
         telemetryBus.put("At Velocity ", subsystems.pollen.atVelocity());
         telemetryBus.put("Heading in degrees", subsystems.drive.getHeadingDegrees());
@@ -83,6 +84,7 @@ public abstract class TeleOpBase extends CommandOpMode {
         field.moveCursor(p.x(), p.y());
         field.setCursorHeading(p.heading());
         field.circle(7.0);
+        field.line(p.x() + 7.0 * Math.cos(p.heading()), p.y() + 7.0 * Math.sin(p.heading()));
         field.update();
     }
 

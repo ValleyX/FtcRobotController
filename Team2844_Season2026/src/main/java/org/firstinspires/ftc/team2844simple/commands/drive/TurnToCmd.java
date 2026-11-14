@@ -7,11 +7,17 @@ import org.firstinspires.ftc.team2844simple.subsystems.DriveSubsystem;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.DoubleSupplier;
 
 public class TurnToCmd implements Command {
     private final DriveSubsystem drive;
-    private final double radians;
+    private final DoubleSupplier radians;
     public TurnToCmd(DriveSubsystem drive, double radians){
+        this.drive = drive;
+        this.radians = ()->radians;
+    }
+
+    public TurnToCmd(DriveSubsystem drive, DoubleSupplier radians){
         this.drive = drive;
         this.radians = radians;
     }
@@ -23,7 +29,7 @@ public class TurnToCmd implements Command {
 
     @Override
     public void initialize() {
-        drive.turnTo(radians);
+        drive.turnTo(radians.getAsDouble());
     }
 
     @Override

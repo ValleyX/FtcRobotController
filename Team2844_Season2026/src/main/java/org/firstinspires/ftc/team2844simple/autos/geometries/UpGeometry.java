@@ -14,7 +14,11 @@ public final class UpGeometry {
 
     /* ----- Poses ----- */
     public static Pose startingPose(PoseFactory f){
-        return f.of(72.0+(Constants.ROBOT_LENGTH/2.0), 144-(Constants.ROBOT_WIDTH/2.0), 0.0);}
+        return f.of(72.0+(Constants.ROBOT_LENGTH/2.0), 144-(Constants.ROBOT_WIDTH/2.0), -90.0);}
+
+    public static Pose middleGarden(PoseFactory f){
+        return f.of(108.0, 120.0, 0.0);
+    }
 
     public static Pose intakeFromGarden(PoseFactory f){
         return f.of(144-(Constants.ROBOT_LENGTH/2.0),144-(Constants.ROBOT_WIDTH/2.0), 0.0);}
@@ -25,12 +29,17 @@ public final class UpGeometry {
 
     /* ----- Paths ----- */
     public static Path toGarden(PoseFactory f){
-        return AutoPaths.curveLinearHeading(startingPose(f), intakeFromGarden(f));
+        return Paths.curve(startingPose(f), middleGarden(f), intakeFromGarden(f))
+                .heading(Interpolator.piecewise()
+                        .until(0.2, Interpolator.constant(startingPose(f)))
+                        .until(0.8, Interpolator.linear(startingPose(f), intakeFromGarden(f)))
+                        .until(1.0, Interpolator.constant(intakeFromGarden(f)))
+                );
     }
 
     public static Path readyShoot(PoseFactory f, Pose start){
         Pose end = readyToShoot(f);
-        return Paths.curve(start, end)
+        return Paths.line(start, end)
                 .heading(Interpolator.piecewise()
                         .until(0.2, Interpolator.constant(start))
                         .until(0.8, Interpolator.linear(start, end))
@@ -46,6 +55,6 @@ public final class UpGeometry {
     }
 
     public static Path pickupYFlower(PoseFactory f){
-        return Paths.curve(readyToShoot(f), AutoPaths.yFlower(f)).linear(readyToShoot(f), AutoPaths.yFlower(f), 0.6);
+        return Paths.line(readyToShoot(f), AutoPaths.yFlower(f)).linear(readyToShoot(f), AutoPaths.yFlower(f), 0.6);
     }
 }

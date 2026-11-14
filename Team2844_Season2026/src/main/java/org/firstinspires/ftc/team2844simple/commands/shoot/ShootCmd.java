@@ -16,13 +16,15 @@ public class ShootCmd implements Command {
     ShooterSubsystem pollen;
     TransferSubsystem transfer;
     IntakeSubsystem intake;
+    double timeout;
 
     ElapsedTime time;
 
-    public ShootCmd(IntakeSubsystem intake, ShooterSubsystem pollen, TransferSubsystem transfer){
+    public ShootCmd(IntakeSubsystem intake, ShooterSubsystem pollen, TransferSubsystem transfer, double timeout){
         this.intake = intake;
         this.pollen = pollen;
         this.transfer = transfer;
+        this.timeout = timeout;
         time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     }
 
@@ -45,15 +47,17 @@ public class ShootCmd implements Command {
             transfer.openTransferGates();
         } else {
             transfer.closeTransferGates();
-            time.reset();
         }
-        intake.intake();
+
+        if(time.time()>timeout/2.0) {
+            intake.intake();
+        }
         transfer.transfer();
     }
 
     @Override
     public boolean isFinished() {
-        return time.time()>= Constants.EMPTY_TIME;
+        return time.time()>= timeout;
     }
 
     @Override

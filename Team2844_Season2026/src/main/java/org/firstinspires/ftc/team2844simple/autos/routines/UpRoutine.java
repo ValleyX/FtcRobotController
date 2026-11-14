@@ -19,7 +19,7 @@ public abstract class UpRoutine extends AutoBase {
         PoseFactory f = field();
         return PedroAutoDsl.auto(subsystems.drive, b -> {
             //!Shoot preloaded
-            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer));
+            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer, 4000));
 
             //?Intake from the garden
             b.command(subsystems.drive.follow(UpGeometry.toGarden(f))
@@ -33,22 +33,8 @@ public abstract class UpRoutine extends AutoBase {
                 subsystems.pollen.shoot();
             });
             //!Wait for alliance to tip, then shoot
-            b.command(Commands.waitUntil(subsystems.vision::valid));
-            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer));
-
-            //?Intake from the flower on the alliance side wall
-            b.command(
-                    subsystems.drive.follow(UpGeometry.pickupYFlower(f))
-                            .deadlineWith(CommandFactory.intakeAndTransfer(subsystems.intake, subsystems.transfer))
-                    );
-            //- get back in position
-            b.command(
-                    subsystems.drive.follow(UpGeometry.readyShoot2(f))
-            );
-
-            //!Shoot again and hopefully tip
-            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer));
-            //TODO add blob detection and state machine to keep shooting
+            b.command(Commands.waitSeconds(0.0));
+            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer, 4000));
         });
     }
 }

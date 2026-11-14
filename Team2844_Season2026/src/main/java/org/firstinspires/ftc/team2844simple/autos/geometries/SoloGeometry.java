@@ -17,7 +17,7 @@ public final class SoloGeometry {
 
     /* ----- Poses ----- */
     public static Pose startingPose(PoseFactory f){
-        return f.of(72.0+(Constants.ROBOT_LENGTH/2.0), 144-(Constants.ROBOT_WIDTH/2.0), 0.0);}
+        return f.of(72.0+(Constants.ROBOT_LENGTH/2.0), 144-(Constants.ROBOT_WIDTH/2.0), -90.0);}
 
     public static Pose intakeFromGarden(PoseFactory f){
         return f.of(144-(Constants.ROBOT_LENGTH/2.0),144-(Constants.ROBOT_WIDTH/2.0), 0.0);}
@@ -27,7 +27,7 @@ public final class SoloGeometry {
 
     /* ----- Paths ----- */
     public static Path toGarden(PoseFactory f){
-        return AutoPaths.curveLinearHeading(startingPose(f), intakeFromGarden(f));
+        return AutoPaths.lineLinearHeading(startingPose(f), intakeFromGarden(f));
     }
 
     public static Path underpassFromGarden(PoseFactory f){
@@ -46,13 +46,13 @@ public final class SoloGeometry {
     }
 
     public static Path pickupXFlower(PoseFactory f){
-        return Paths.curve(flippedShoot(f), AutoPaths.xFlower(f)).linear(flippedShoot(f), AutoPaths.xFlower(f), 0.6);
+        return Paths.line(flippedShoot(f), AutoPaths.xFlower(f)).linear(flippedShoot(f), AutoPaths.xFlower(f), 0.6);
     }
 
     public static Path shootAgain(PoseFactory f){
         Pose start = AutoPaths.xFlower(f);
         Pose end = flippedShoot(f);
-        return Paths.curve(start, end)
+        return Paths.line(start, end)
                 .heading(Interpolator.piecewise()
                         .until(0.3, Interpolator.constant(start))
                         .until(1.0, Interpolator.linear(start, end)));

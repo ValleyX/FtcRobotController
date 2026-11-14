@@ -156,27 +156,27 @@ public class PedroConstants {
      */
     public static ForesightConfig foresightConfig = new ForesightConfig(
             c -> {
-                Controller primaryTranslationalForward = Controller.proportional(0.3325636963524714);
-                Controller secondaryTranslationalForward = Controller.proportional(0.12287339953661094);
-                Controller primaryTranslationalLateral = Controller.proportional(0.49465256273325403);
-                Controller secondaryTranslationalLateral = Controller.proportional(0.18276090457003352);
+                Controller primaryTranslationalForward = Controller.proportional(0.36670544676036154);
+                Controller secondaryTranslationalForward = Controller.proportional(0.13548786402795368);
+                Controller primaryTranslationalLateral = Controller.proportional(0.5350313538722804);
+                Controller secondaryTranslationalLateral = Controller.proportional(0.19767978895473337);
 
                 c.forwardTranslational.set(Controller.piecewise(secondaryTranslationalForward).put(2.5, primaryTranslationalForward));
                 c.strafeTranslational.set(Controller.piecewise(secondaryTranslationalLateral).put(2.5, primaryTranslationalLateral));
 
-                c.coast.set(Controller.proportionalFeedforward(0.01212441683912482));
-                c.brake.set(Controller.proportionalFeedforward(0.010305754313256097));
+                c.coast.set(Controller.proportionalFeedforward(0.012616227872296808));
+                c.brake.set(Controller.proportionalFeedforward(0.010723793691452287));
 
-                c.headingFeedback.set(Controller.proportional(5.270751756737832));
-                c.headingBrakeCoefficients.set(Vector2D.cartesian(0.04129703863877431, 0.008855873607745908));
+                c.headingFeedback.set(Controller.proportional(5.808852251226541));
+                c.headingBrakeCoefficients.set(Vector2D.cartesian(0.005282496434528195, 0.016503705236695542));
 
-                c.linearBrakeCoefficients.set(Matrix.diag(0.10075523736355244, 0.06577997545572918));
-                c.quadraticBrakeCoefficients.set(Matrix.diag(0.001432174834016186, 0.0016452493919107847));
+                c.linearBrakeCoefficients.set(Matrix.diag(0.0931184850920674, 0.0514445136998284));
+                c.quadraticBrakeCoefficients.set(Matrix.diag(0.0016512558540718858, 0.001961204512453277));
 
-                c.maxAchievableForwardVelocity.set(80.73261695575201);
-                c.maxAchievableStrafeVelocity.set(63.54082326527928);
-                c.naturalForwardDeceleration.set(28.72698218244437);
-                c.naturalStrafeDeceleration.set(65.65316760791987);
+                c.maxAchievableForwardVelocity.set(74.45396136914442);
+                c.maxAchievableStrafeVelocity.set(58.21419970572716);
+                c.naturalForwardDeceleration.set(30.465046843534118);
+                c.naturalStrafeDeceleration.set(67.85154828225762);
             }
     );
 

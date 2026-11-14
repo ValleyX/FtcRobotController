@@ -16,7 +16,7 @@ public final class DownGeometry {
     private DownGeometry(){}
 
     /* ----- Poses ----- */
-    public static Pose startingPose(PoseFactory f){return f.of(72.0+(Constants.ROBOT_WIDTH/2.0), (Constants.ROBOT_LENGTH/2.0),-90.0);}
+    public static Pose startingPose(PoseFactory f){return f.of(72.0+(Constants.ROBOT_WIDTH/2.0), (Constants.ROBOT_LENGTH/2.0),90.0);}
     public static Pose readyPickup(PoseFactory f){return f.of(96.0,18.0,-90.0);}
     public static Pose shoot(PoseFactory f){return f.of( 96.0, 18.0, 90.0);}
 
@@ -29,7 +29,7 @@ public final class DownGeometry {
     public static Path readyShoot(PoseFactory f){
         Pose start = startingPose(f);
         Pose end =   shoot(f);
-        return Paths.curve(start, end)
+        return Paths.line(start, end)
                 .heading(Interpolator.piecewise()
                         .until(0.2, Interpolator.constant(start))
                         .until(1.0, Interpolator.linear(start, end)));
@@ -42,7 +42,7 @@ public final class DownGeometry {
     public static Path backToShoot(PoseFactory f){
         Pose start = AutoPaths.xFlower(f);
         Pose end =   shoot(f);
-        return Paths.curve(start, end)
+        return Paths.line(start, end)
                 .heading(Interpolator.piecewise()
                         .until(0.5, Interpolator.constant(start))
                         .until(1.0, Interpolator.linear(start, end)));
