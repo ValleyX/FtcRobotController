@@ -25,17 +25,7 @@ public abstract class DownRoutine extends AutoBase {
             b.doInstant(()-> {
                 subsystems.pollen.shoot();
             });
-            b.command(Commands.waitUntil(subsystems.vision::valid));
-            b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer));
-
-            //? Intake from flower
-            b.command(DownGeometry.turnToFlower(subsystems.drive));
-            b.command(
-                    subsystems.drive.follow(DownGeometry.pickupXFlower(f))
-                            .deadlineWith(CommandFactory.intakeAndTransfer(subsystems.intake, subsystems.transfer)));
-
-            //! Shoot again
-            b.follow(DownGeometry.backToShoot(f));
+            b.waitFor(15.0);
             b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer));
 
             //TODO add statemachine to pickup blobs

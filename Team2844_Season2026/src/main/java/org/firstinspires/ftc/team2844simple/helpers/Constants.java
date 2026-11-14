@@ -83,8 +83,8 @@ public class Constants {
     public static double TRANSFER_SPEED = 0.6;
     public static double FAST_TRANSFER = 1.0;
 
-    public static  double OPEN_GATE = 0.13;
-    public static  double CLOSED_GATE = 0.0;
+    public static  double OPEN_GATE = 0.80;
+    public static  double CLOSED_GATE = 0.58;
     //TODO, REAL EMPTY TIME
     public static final long EMPTY_TIME = 500;
 
@@ -108,7 +108,7 @@ public class Constants {
     public static double VEL_RPM_THRESHOLD = 200;
     /**MEASURED IN RPM, MUST BE CONVERTED TO TICKS PER SECOND FOR THE SHOOTER CMD*/
     public static double SHOOTER_IDLE = 800;
-    public static double SHOOT_RPM = 4000;
+    public static double SHOOT_RPM = 2500;
     public static double EFFICIENCY = 0.85;
     public static final double SHOOTER_RADIUS = 36.0/25.4;
 
@@ -156,8 +156,8 @@ public class Constants {
 
 
     /* ---------- PEDRO PATHING ---------- */
-    public static final double XPOD_OFFSET = -1.87;
-    public static final double YPOD_OFFSET = -7.0;
+    public static final double XPOD_OFFSET = -0.4321152018749808;
+    public static final double YPOD_OFFSET = 0.7009387579489882;
 
 
     /**
@@ -194,11 +194,11 @@ public class Constants {
     public static final String CHM3 = "rightFront";
 
 
-    public static final String CHS0 = "";
+    public static final String CHS0 = "gate1";
     public static final String CHS1 = "";
 //    public static final String CHS2 = "gate";
     public static final String CHS2 = "";
-    public static final String CHS3 = "pollenGate";
+    public static final String CHS3 = "";
     public static final String CHS4 = "";
     public static final String CHS5 = "";
 
@@ -231,12 +231,12 @@ public class Constants {
     public static final String EHM3 = "pollenShooter";
 
 
-    public static final String EHS0 = "";
+    public static final String EHS0 = "gate2";
     public static final String EHS1 = "";
     public static final String EHS2 = "";
-    public static final String EHS3 = "light0";
-    public static final String EHS4 = "light1";
-    public static final String EHS5 = "light2";
+    public static final String EHS3 = "";
+    public static final String EHS4 = "";
+    public static final String EHS5 = "";
 
     public static final String EHI2C0 = "";
     public static final String EHI2C1 = "";

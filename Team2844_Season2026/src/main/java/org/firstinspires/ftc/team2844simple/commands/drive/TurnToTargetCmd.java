@@ -6,6 +6,7 @@ import com.vcs.valleylib.core.subsystem.Subsystem;
 
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.subsystems.DriveSubsystem;
+import org.firstinspires.ftc.team2844simple.subsystems.VisionSubsystem;
 
 import java.util.Collections;
 import java.util.Set;
@@ -13,7 +14,9 @@ import java.util.function.DoubleSupplier;
 
 /**
  * Field-centric driving where the driver keeps control of translation and the robot turns itself
- * so its front (the shooter) faces the current target, Constants.targetX / targetY.
+ * so its front (the shooter) faces the current target.
+ *
+ * <p>Uses Limelight tx if valid (not null / -999); otherwise falls back to Odometry (Constants.targetX / targetY).
  *
  * <p>Unlike {@link TurnToCmd}, this does not use a Pedro hold, so x/y are never locked. It runs
  * until it is interrupted, then the drive's default command takes back over.
@@ -23,19 +26,27 @@ import java.util.function.DoubleSupplier;
  */
 public class TurnToTargetCmd implements Command {
     private final DriveSubsystem drive;
+    private final VisionSubsystem vision;
     private final DoubleSupplier forward, strafe;
     private final ElapsedTime timer = new ElapsedTime();
     private double lastError;
     private boolean firstLoop;
 
+    public TurnToTargetCmd(DriveSubsystem drive, VisionSubsystem vision, DoubleSupplier forward, DoubleSupplier strafe) {
+        this.drive = drive;
+        this.vision = vision;
+        this.forward = forward;
+        this.strafe = strafe;
+    }
+
     /**
+     * Overloaded constructor without VisionSubsystem (uses Odometry only).
+     *
      * @param forward driver forward input, +1 drives away from the driver station wall (same as the default drive command)
      * @param strafe  driver strafe input, +1 drives to the left (same as the default drive command)
      */
-    public TurnToTargetCmd(DriveSubsystem drive, DoubleSupplier forward, DoubleSupplier strafe){
-        this.drive = drive;
-        this.forward = forward;
-        this.strafe = strafe;
+    public TurnToTargetCmd(DriveSubsystem drive, DoubleSupplier forward, DoubleSupplier strafe) {
+        this(drive, null, forward, strafe);
     }
 
     @Override
@@ -52,21 +63,32 @@ public class TurnToTargetCmd implements Command {
     @Override
     public void execute() {
         double turn = 0.0;
+        double error = Double.NaN;
 
-        if(drive.hasTarget()) {
-            double error = drive.getHeadingErrorToTarget();
+        if (vision != null) {
+            double tx = vision.getTx();
+            if (tx != Constants.NO_LL) {
+                error = Math.toRadians(-tx);
+            }
+        }
+
+        if (Double.isNaN(error) && drive.hasTarget()) {
+            error = drive.getHeadingErrorToTarget();
+        }
+
+        if (!Double.isNaN(error)) {
             double dt = timer.seconds();
             timer.reset();
 
             double derivative = 0.0;
-            if(!firstLoop && dt > 0.0){
+            if (!firstLoop && dt > 0.0) {
                 derivative = wrap(error - lastError) / dt;
             }
             lastError = error;
             firstLoop = false;
 
             turn = Constants.AIM_KP * error + Constants.AIM_KD * derivative;
-            if(Math.abs(error) > Math.toRadians(Constants.AIM_TOLERANCE_DEG)){
+            if (Math.abs(error) > Math.toRadians(Constants.AIM_TOLERANCE_DEG)) {
                 turn += Math.copySign(Constants.AIM_KS, error);
             }
             turn = Math.max(-Constants.AIM_MAX_TURN, Math.min(Constants.AIM_MAX_TURN, turn));
@@ -86,10 +108,10 @@ public class TurnToTargetCmd implements Command {
     public void end(boolean interrupted) {}
 
     /** Keeps an angle difference in -PI to PI so the error jumping across +/-180 does not spike the D term. */
-    private static double wrap(double radians){
+    private static double wrap(double radians) {
         double temp = radians;
-        while (temp > Math.PI) temp -= 2*Math.PI;
-        while (temp < -Math.PI) temp += 2*Math.PI;
+        while (temp > Math.PI) temp -= 2 * Math.PI;
+        while (temp < -Math.PI) temp += 2 * Math.PI;
         return temp;
     }
 }

@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.team2844simple.commands.shoot;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vcs.valleylib.core.command.Command;
 import com.vcs.valleylib.core.subsystem.Subsystem;
 
+import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844simple.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.team2844simple.subsystems.TransferSubsystem;
@@ -15,10 +17,13 @@ public class ShootCmd implements Command {
     TransferSubsystem transfer;
     IntakeSubsystem intake;
 
+    ElapsedTime time;
+
     public ShootCmd(IntakeSubsystem intake, ShooterSubsystem pollen, TransferSubsystem transfer){
         this.intake = intake;
         this.pollen = pollen;
         this.transfer = transfer;
+        time = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     }
 
     @Override
@@ -30,15 +35,17 @@ public class ShootCmd implements Command {
     public void initialize() {
         intake.stopIntake();
         transfer.stop();
+        time.reset();
     }
 
     @Override
     public void execute() {
         pollen.shoot();
         if(pollen.atVelocity()){
-            transfer.openPollenGate();
+            transfer.openTransferGates();
         } else {
-            transfer.closePollenGate();
+            transfer.closeTransferGates();
+            time.reset();
         }
         intake.intake();
         transfer.transfer();
@@ -46,7 +53,7 @@ public class ShootCmd implements Command {
 
     @Override
     public boolean isFinished() {
-        return intake.empty();
+        return time.time()>= Constants.EMPTY_TIME;
     }
 
     @Override

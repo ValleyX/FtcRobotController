@@ -33,7 +33,7 @@ public class TransferCmd implements Command {
 
     @Override
     public boolean isFinished() {
-        return transfer.full();
+        return false;
     }
 
     @Override

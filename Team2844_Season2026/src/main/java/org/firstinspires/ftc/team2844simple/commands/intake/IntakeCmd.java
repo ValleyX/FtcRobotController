@@ -32,7 +32,7 @@ public class IntakeCmd implements Command {
 
     @Override
     public boolean isFinished() {
-        return intake.full();
+        return false;
     }
 
     @Override

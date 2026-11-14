@@ -19,12 +19,13 @@ public class Subsystems {
     public final ShooterSubsystem pollen;
     public final TransferSubsystem transfer;
     public final VisionSubsystem vision;
+    public List<LynxModule> allHubs;
 
     Constants.ShooterConfig pollenConfig;
 
     public Subsystems(HardwareMap hardwareMap, Pose startingPose, int pipeline){
 
-        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+        allHubs = hardwareMap.getAll(LynxModule.class);
         for(LynxModule hubs : allHubs){
             hubs.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
@@ -60,9 +61,6 @@ public class Subsystems {
     public void update(){
         //?Feed the distance to the shooters
         pollen.setDistance(drive.getDistance());
-
-        //? Let the transfer know how many balls are counted
-        transfer.setBallCount(intake.ballCount());
     }
 
 }

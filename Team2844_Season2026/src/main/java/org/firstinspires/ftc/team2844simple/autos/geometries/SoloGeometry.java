@@ -23,7 +23,7 @@ public final class SoloGeometry {
         return f.of(144-(Constants.ROBOT_LENGTH/2.0),144-(Constants.ROBOT_WIDTH/2.0), 0.0);}
 
     public static Pose throughMiddle(PoseFactory f){return f.of(MID_X, MID_Y, 90.0);}
-    public static Pose flippedShoot(PoseFactory f){return f.of(82.0, 24.0,45.0);}
+    public static Pose flippedShoot(PoseFactory f){return f.of(82.0, 24.0,90.0);}
 
     /* ----- Paths ----- */
     public static Path toGarden(PoseFactory f){

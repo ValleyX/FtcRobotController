@@ -37,7 +37,7 @@ import org.firstinspires.ftc.team2844simple.helpers.Constants;
  *   <li><b>Pinpoint Tuner</b> — pod type, pod directions, and the two pod
  *       offsets. Emits {@link #localizerConfig()}.</li>
  *   <li><b>Foresight Tuner</b> — velocities, decelerations, braking model and the
- *       controller gains. Emits {@link #foresightConfig()}. Run this last: it
+ *       controller gains. Emits {@link #foresightConfig}. Run this last: it
  *       drives the robot and needs the first two to be correct already.</li>
  *   <li><b>Tests</b> — hold, line, curve, interpolation, localization and raw
  *       driving checks. Run these before trusting an auto.</li>
@@ -76,7 +76,7 @@ public class PedroConstants {
             c.frontLeftDirection.set(DcMotorSimple.Direction.REVERSE);
             c.frontRightDirection.set(DcMotorSimple.Direction.REVERSE);
             c.backLeftDirection.set(DcMotorSimple.Direction.REVERSE);
-            c.backRightDirection.set(DcMotorSimple.Direction.FORWARD);
+            c.backRightDirection.set(DcMotorSimple.Direction.REVERSE);
 
             // Brake in manual/teleop mode so the robot stops when the sticks do.
             c.manualBrakeMode.set(true);
@@ -124,7 +124,7 @@ public class PedroConstants {
             c.yPodOffset.set(Constants.YPOD_OFFSET);
 
             c.xPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
-            c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
+            c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
             c.offsetUnits.set(DistanceUnit.INCH);
             c.globalDistanceUnit.set(DistanceUnit.INCH);
@@ -134,7 +134,6 @@ public class PedroConstants {
     /* ===================== Following algorithm ===================== */
 
     /**
-     * TODO replace with the output of the <b>Foresight Tuner</b>.
      *
      * <p>Structured the way the tuner emits it: piecewise translational
      * controllers that switch from a secondary to a primary gain at 2.5 inches of
@@ -155,40 +154,31 @@ public class PedroConstants {
      * translational controllers then clean up. The tuner replaces them with
      * measured ones.
      */
-    public static ForesightConfig foresightConfig() {
-        final double forwardVelocity = 81.34056;
-        final double strafeVelocity = 65.43028;
-        final double forwardDeceleration = 34.62719;
-        final double strafeDeceleration = 78.15554;
+    public static ForesightConfig foresightConfig = new ForesightConfig(
+            c -> {
+                Controller primaryTranslationalForward = Controller.proportional(0.3325636963524714);
+                Controller secondaryTranslationalForward = Controller.proportional(0.12287339953661094);
+                Controller primaryTranslationalLateral = Controller.proportional(0.49465256273325403);
+                Controller secondaryTranslationalLateral = Controller.proportional(0.18276090457003352);
 
-        return new ForesightConfig(c -> {
-            Controller primaryTranslationalForward = Controller.proportional(0.1);
-            Controller secondaryTranslationalForward = Controller.proportional(0.1);
-            Controller primaryTranslationalLateral = Controller.proportional(0.1);
-            Controller secondaryTranslationalLateral = Controller.proportional(0.1);
+                c.forwardTranslational.set(Controller.piecewise(secondaryTranslationalForward).put(2.5, primaryTranslationalForward));
+                c.strafeTranslational.set(Controller.piecewise(secondaryTranslationalLateral).put(2.5, primaryTranslationalLateral));
 
-            c.forwardTranslational.set(Controller.piecewise(secondaryTranslationalForward)
-                    .put(2.5, primaryTranslationalForward));
-            c.strafeTranslational.set(Controller.piecewise(secondaryTranslationalLateral)
-                    .put(2.5, primaryTranslationalLateral));
+                c.coast.set(Controller.proportionalFeedforward(0.01212441683912482));
+                c.brake.set(Controller.proportionalFeedforward(0.010305754313256097));
 
-            c.coast.set(Controller.proportionalFeedforward(0.015));
-            c.brake.set(Controller.proportionalFeedforward(0.015));
+                c.headingFeedback.set(Controller.proportional(5.270751756737832));
+                c.headingBrakeCoefficients.set(Vector2D.cartesian(0.04129703863877431, 0.008855873607745908));
 
-            c.headingFeedback.set(Controller.proportional(1.0));
-            c.headingBrakeCoefficients.set(Vector2D.cartesian(0.0, 0.0));
+                c.linearBrakeCoefficients.set(Matrix.diag(0.10075523736355244, 0.06577997545572918));
+                c.quadraticBrakeCoefficients.set(Matrix.diag(0.001432174834016186, 0.0016452493919107847));
 
-            c.linearBrakeCoefficients.set(Matrix.diag(0.0, 0.0));
-            c.quadraticBrakeCoefficients.set(Matrix.diag(
-                    1.0 / (2.0 * forwardDeceleration),
-                    1.0 / (2.0 * strafeDeceleration)));
-
-            c.maxAchievableForwardVelocity.set(forwardVelocity);
-            c.maxAchievableStrafeVelocity.set(strafeVelocity);
-            c.naturalForwardDeceleration.set(forwardDeceleration);
-            c.naturalStrafeDeceleration.set(strafeDeceleration);
-        });
-    }
+                c.maxAchievableForwardVelocity.set(80.73261695575201);
+                c.maxAchievableStrafeVelocity.set(63.54082326527928);
+                c.naturalForwardDeceleration.set(28.72698218244437);
+                c.naturalStrafeDeceleration.set(65.65316760791987);
+            }
+    );
 
     /* ===================== Follower ===================== */
 
@@ -210,7 +200,7 @@ public class PedroConstants {
     }
 
     public static Algorithm createAlgorithm() {
-        return new Foresight(foresightConfig());
+        return new Foresight(foresightConfig);
     }
 
     /**

@@ -7,6 +7,7 @@ import com.vcs.valleylib.ftc.hardware.FtcSubsystem;
 import com.vcs.valleylib.ftc.hardware.Motor;
 import com.vcs.valleylib.ftc.hardware.MotorEx;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.helpers.PIDF;
 
@@ -25,7 +26,7 @@ public class ShooterSubsystem extends FtcSubsystem {
 
         shooter = new MotorEx(hardwareMap, motorName);
         shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        shooter.setInverted(true);
+        shooter.setInverted(false);
         shooter.setRunMode(Motor.RunMode.VelocityControl);
         shooter.setVeloCoefficients(pidf.kP, pidf.kI, pidf.kD);
         shooter.setFeedforwardCoefficients(pidf.kS, pidf.kV);
@@ -70,6 +71,10 @@ public class ShooterSubsystem extends FtcSubsystem {
         return inchesPerSec/12.0;
     }
 
+    public double getCurrent(){
+        return shooter.motorEx.getCurrent(CurrentUnit.MILLIAMPS);
+    }
+
     /**
      * Returns exit velocity with Feet/Second accounting for efficiency
      * */
@@ -100,12 +105,16 @@ public class ShooterSubsystem extends FtcSubsystem {
      * */
     public void shoot(){
         if(distance != Constants.NO_DIS) {
-            double vel = Constants.SHOOT_RPM;
-            setVelocity(getAsTPS(vel));
-            targetVelocity = getAsTPS(vel);
+            double vel = getAsTPS(getLinReg());
+            setVelocity(vel);
+            targetVelocity = vel;
         } else {
             idleShoot();
         }
+    }
+
+    public double getLinReg(){
+        return Constants.SHOOT_RPM;
     }
 
     public double getFasterVelocity(double velocity){

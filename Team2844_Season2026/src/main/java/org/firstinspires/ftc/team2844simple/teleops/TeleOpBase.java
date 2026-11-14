@@ -66,6 +66,7 @@ public abstract class TeleOpBase extends CommandOpMode {
         telemetryBus.put("State         ", container.teleOpCycle.getState());
         telemetryBus.put("RPM ", subsystems.pollen.getRPM());
         telemetryBus.put("At Velocity ", subsystems.pollen.atVelocity());
+        telemetryBus.put("Heading in degrees", subsystems.drive.getHeadingDegrees());
         telemetryBus.put("Tracking ", container.isTracking());
         telemetryBus.put("Aim Error deg ", Math.toDegrees(subsystems.drive.getHeadingErrorToTarget()));
     }

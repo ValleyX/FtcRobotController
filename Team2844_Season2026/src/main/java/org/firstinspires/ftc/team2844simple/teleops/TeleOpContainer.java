@@ -13,6 +13,7 @@ import com.vcs.valleylib.ftc.input.Trigger;
 import org.firstinspires.ftc.team2844simple.autos.AutoPaths;
 import org.firstinspires.ftc.team2844simple.commands.CommandFactory;
 import org.firstinspires.ftc.team2844simple.commands.drive.GoToCmd;
+import org.firstinspires.ftc.team2844simple.commands.drive.TurnToCmd;
 import org.firstinspires.ftc.team2844simple.commands.drive.TurnToTargetCmd;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.helpers.Subsystems;
@@ -84,10 +85,8 @@ public class TeleOpContainer extends RobotContainer {
                 .onEnter(Cycle.IDLE,
                     subsystems.transfer::closeGates)
                 .state(Cycle.IDLE, () -> {
-                    if(!subsystems.intake.overfull()) {
-                        subsystems.intake.stopIntake();
-                        subsystems.transfer.transfer();
-                    }
+                    subsystems.intake.stopIntake();
+                    subsystems.transfer.transfer();
                     subsystems.pollen.idleShoot();
                 })
                 //?INTAKE: turn on the intake
@@ -104,9 +103,9 @@ public class TeleOpContainer extends RobotContainer {
                 //?SHOOT: transfers balls into shooter when at velocity(due to transition requirements)
                 .state(Cycle.SHOOT, () -> {
                     if(subsystems.pollen.atVelocity()){
-                        subsystems.transfer.openPollenGate();
+                        subsystems.transfer.openTransferGates();
                     } else {
-                        subsystems.transfer.closePollenGate();
+                        subsystems.transfer.closeTransferGates();
                     }
                     subsystems.pollen.shoot();
                     subsystems.transfer.fastTransfer();
@@ -130,17 +129,10 @@ public class TeleOpContainer extends RobotContainer {
                 .transition(Cycle.PREPARE, Cycle.SHOOT, readyToShoot)
                 .transition(Cycle.SHOOT, Cycle.PREPARE, readyToShoot.negate())
 
-                /*--- auto transitions ---*/
-                //Switches from idling or intaking to preparing for the shooter when it has 4 balls
-                .transition(Cycle.INTAKE, Cycle.PREPARE, subsystems.intake::full)
-                .transition(Cycle.IDLE, Cycle.PREPARE, subsystems.intake::full)
-                //Switches from shooting or preparing to idling when it is empty
-                .transition(Cycle.PREPARE, Cycle.IDLE, subsystems.intake::empty)
-
                 /*--- fast tracks ---*/
                 //Fast track to shooting/intaking
-                .transition(Cycle.IDLE, Cycle.PREPARE, shootButton.and(() -> !subsystems.intake.empty()))
-                .transition(Cycle.PREPARE, Cycle.IDLE, intakeButton.and(() -> !subsystems.intake.full()));
+                .transition(Cycle.IDLE, Cycle.PREPARE, shootButton)
+                .transition(Cycle.PREPARE, Cycle.IDLE, intakeButton);
 
         configureBindings();
     }
@@ -228,11 +220,19 @@ public class TeleOpContainer extends RobotContainer {
         //while tracking is allowed and the robot is preparing to shoot or shooting, the driver
         //keeps translation and the robot turns itself to face the target
         new Trigger(this::isTracking).whileTrue(
-                new TurnToTargetCmd(subsystems.drive,
+                new TurnToTargetCmd(subsystems.drive, subsystems.vision,
                         () -> -driver.leftY(),
                         () -> -driver.leftX()));
+        new Trigger(this::isShootTracking).whileTrue(
+                new TurnToCmd(subsystems.drive,
+                        subsystems.drive.getHeadingErrorToTarget()
+                )
+        );
     }
 
+    public boolean isShootTracking(){
+        return !trackDisabled && teleOpCycle.isIn(Cycle.SHOOT);
+    }
     /**
      * True when the robot should be turning itself to the target: gamepad 1 has tracking toggled on,
      * gamepad 2 has not toggled the kill switch, and the state machine is preparing to shoot or shooting.
@@ -240,7 +240,7 @@ public class TeleOpContainer extends RobotContainer {
     public boolean isTracking(){
         return trackEnabled
                 && !trackDisabled
-                && (teleOpCycle.isIn(Cycle.PREPARE) || teleOpCycle.isIn(Cycle.SHOOT));
+                && (teleOpCycle.isIn(Cycle.PREPARE));
     }
 
     public void configureOperator(){
