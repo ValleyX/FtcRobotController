@@ -88,7 +88,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  *  Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Simple Park", group="Robot")
+@Autonomous(name="Simple Park Close Field", group="Robot")
 //@Disabled
 public class CompBot_Auto_Single_Park extends LinearOpMode {
     RobotHardware robot = new RobotHardware(this);
@@ -99,7 +99,7 @@ public class CompBot_Auto_Single_Park extends LinearOpMode {
 
         //This initializes the motors
         robot.init();
-
+        waitForStart();
 
         // Step through each leg of the path,
         // Notes:   Reverse movement is obtained by setting a negative distance (not speed)
@@ -111,8 +111,10 @@ public class CompBot_Auto_Single_Park extends LinearOpMode {
          * drive forward and pivot to face away from the parking spot
          * Reverse until you are in the parking spot facing towards the rest of the field
         *************************************************************************************/
-        robot.driveStraight(robot.DRIVE_SPEED, 24.0,0.0);
-        robot.turnToHeading(robot.TURN_SPEED,-90.0);
+        robot.driveStraight(robot.DRIVE_SPEED, 25.5,0.0);
+        robot.turnToHeading(robot.TURN_SPEED,90.0);
+        robot.driveStraight(robot.DRIVE_SPEED, -22.5,0.0);
+
         /*driveStraight(DRIVE_SPEED, 36.0, 0.0);// Drive Forward to be parrel to parking spot"
         turnToHeading( TURN_SPEED,90.0); // Left is positive and right is negative
         driveStraight(DRIVE_SPEED, -32.0, 90.0);/*

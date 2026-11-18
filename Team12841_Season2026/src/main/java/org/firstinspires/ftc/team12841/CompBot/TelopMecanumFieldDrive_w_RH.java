@@ -126,6 +126,7 @@ public class TelopMecanumFieldDrive_w_RH extends LinearOpMode {
             }
 
             //NOTES  40 to 45% seems to work if drum is at full speed
+            //This was commented out to have the drum on all the time.
 //            if (gamepad1.right_bumper) {
 //                robot.setDrumSpeedPower(drumSpeed); //drum spins when we hit right bumper
 //
