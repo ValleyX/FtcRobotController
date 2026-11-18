@@ -6,6 +6,7 @@ import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
+import org.firstinspires.ftc.team2844simple.pedro.PedroConstants;
 
 import java.util.function.Supplier;
 
@@ -56,37 +57,26 @@ public final class AutoPaths {
     }
 
     public static Path routeToPark(PoseFactory f, Pose from, int alliance){
-        Pose p = f.of(from.x(), from.y(), from.heading());
+        Pose p = from;
         Pose correctX;
         Pose correctY;
         if(inMiddle(from, alliance)){
-            correctX = f.of(84.0, from.y(), -90.0);
+            correctX = f.of(72.0+(Constants.ROBOT_WIDTH/2.0), 0.0, 0.0).withY(from.y());
             correctY = f.of(84.0, 24.0, 0.0);
-            return Paths.path(lineLinearHeading(p, correctX),lineLinearHeading(correctX, correctY), lineLinearHeading(correctY, park(f)));
+            return Paths.path(lineLinearHeading(p, correctX).with(PedroConstants.foresightConfig.maxPathSpeed.at(0.75)),Paths.line(correctX, correctY).constant(correctX), lineLinearHeading(correctY, park(f)));
         } else {
-            correctX = f.of(120.0, from.y(), -90.0);
+            correctX = f.of(120.0, 0.0, 0.0).withY(from.y());
             correctY = f.of(120.0, 24.0, 0.0);
-            return Paths.path(lineLinearHeading(p, correctX), lineLinearHeading(correctX, correctY), lineLinearHeading(correctY, park(f)));
+            return Paths.path(lineLinearHeading(p, correctX).with(PedroConstants.foresightConfig.maxPathSpeed.at(0.75)), Paths.line(correctX, correctY).constant(correctX), lineLinearHeading(correctY, park(f)));
         }
     }
 
     public static Path routeToPark(PoseFactory f, Supplier<Pose> from, int alliance) {
-        Pose p = normalized(from.get(), alliance);
-        Pose correctX;
-        Pose correctY;
-        if (inMiddle(from.get(), alliance)) {
-            correctX = f.of(84.0, from.get().y(), -90.0);
-            correctY = f.of(84.0, 24.0, 0.0);
-            return Paths.path(lineLinearHeading(p, correctX),lineLinearHeading(correctX, correctY), lineLinearHeading(correctY, park(f)));
-        } else {
-            correctX = f.of(120.0, from.get().y(), -90.0);
-            correctY = f.of(120.0, 24.0, 0.0);
-            return Paths.path(lineLinearHeading(p, correctX),lineLinearHeading(correctX, correctY), lineLinearHeading(correctY, park(f)));
-        }
+        return routeToPark(f, from.get(), alliance);
     }
 
     private static boolean inMiddle(Pose pose, double alliance){
-        return (pose.x() < 96.0 && alliance == Constants.BLUE_ALLIANCE) || (pose.x() > 96.0 && alliance == Constants.RED_ALLIANCE);
+        return (pose.x() < 96.0 && alliance == Constants.BLUE_ALLIANCE) || (pose.x() > 48.0 && alliance == Constants.RED_ALLIANCE);
     }
 
     private static boolean inMiddle(Pose pose){

@@ -17,19 +17,22 @@ public final class UpGeometry {
         return f.of(72.0+(Constants.ROBOT_LENGTH/2.0), 144-(Constants.ROBOT_WIDTH/2.0), -90.0);}
 
     public static Pose middleGarden(PoseFactory f){
-        return f.of(108.0, 120.0, 0.0);
+        return f.of(90, 110.0, 0.0);
+    }
+    public static Pose laterGarden(PoseFactory f){
+        return f.of(120, 144-(Constants.ROBOT_WIDTH/2.0), 0.0);
     }
 
     public static Pose intakeFromGarden(PoseFactory f){
-        return f.of(144-(Constants.ROBOT_LENGTH/2.0),144-(Constants.ROBOT_WIDTH/2.0), 0.0);}
+        return f.of(140-(Constants.ROBOT_LENGTH/2.0),144-(Constants.ROBOT_WIDTH/2.0), 0.0);}
 
     public static Pose readyToShoot(PoseFactory f){
-        return f.of(96.0, 108.0, -90.0);
+        return f.of(90.0, 126.0, -90.0);
     }
 
     /* ----- Paths ----- */
     public static Path toGarden(PoseFactory f){
-        return Paths.curve(startingPose(f), middleGarden(f), intakeFromGarden(f))
+        return Paths.curve(startingPose(f), middleGarden(f), laterGarden(f), intakeFromGarden(f))
                 .heading(Interpolator.piecewise()
                         .until(0.2, Interpolator.constant(startingPose(f)))
                         .until(0.8, Interpolator.linear(startingPose(f), intakeFromGarden(f)))

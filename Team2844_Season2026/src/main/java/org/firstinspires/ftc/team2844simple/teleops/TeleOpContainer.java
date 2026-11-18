@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team2844simple.teleops;
 
+import com.pedropathing.api.Paths;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.vcs.valleylib.core.command.Command;
@@ -18,6 +19,8 @@ import org.firstinspires.ftc.team2844simple.commands.drive.TurnToTargetCmd;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.helpers.Subsystems;
 
+import java.util.function.Supplier;
+
 public class TeleOpContainer extends RobotContainer {
     public enum Cycle {IDLE, INTAKE, PREPARE, SHOOT, OUTTAKE}
 
@@ -35,6 +38,7 @@ public class TeleOpContainer extends RobotContainer {
     final Trigger resetPoseButton;
     final Trigger parkButton;
     final Trigger trackToggleButton;
+    final Trigger goToButton;
 
     /*--- operator/oh crap ---*/
     final Trigger trackDisableButton;
@@ -50,6 +54,8 @@ public class TeleOpContainer extends RobotContainer {
     CommandFactory factory;
 
     final Pose resetPose;
+    final Pose shootPose;
+    Supplier<Pose> currentPose;
 
     public TeleOpContainer(Subsystems subsystems, Gamepad gamepad1, Gamepad gamepad2) {
         this.subsystems = subsystems;
@@ -58,6 +64,11 @@ public class TeleOpContainer extends RobotContainer {
                 ?new Pose(144.0-(Constants.ROBOT_LENGTH/2.0), Constants.ROBOT_WIDTH/2.0, Math.toRadians(180.0))
                 :new Pose(Constants.ROBOT_LENGTH/2.0, (144-Constants.ROBOT_WIDTH/2.0), Math.toRadians(0.0));
 
+        shootPose = (Constants.alliance == Constants.BLUE_ALLIANCE)
+                ?new Pose(0.0,0.0,0.0)
+                :new Pose(0.0,0.0,0.0);
+
+        currentPose = subsystems.drive::getPose;
         this.driver = CommandGamepad.forLogitechF310(gamepad1);
         this.operator = CommandGamepad.forLogitechF310(gamepad2);
 
@@ -70,6 +81,7 @@ public class TeleOpContainer extends RobotContainer {
         this.resetPoseButton = driver.start();
         this.parkButton = driver.dpadDown();
         this.trackToggleButton = driver.leftBumper(); //toggles turning to the target while shooting
+        this.goToButton = driver.a();
 
         // ----- OPERATOR ----- //
         this.trackDisableButton = operator.rightBumper(); //toggles a kill switch that keeps target tracking off
@@ -190,7 +202,7 @@ public class TeleOpContainer extends RobotContainer {
 
         parkButton.whileTrue(
                 new GoToCmd(subsystems.drive,
-                        () ->AutoPaths.routeToPark(AutoPaths.getField(), subsystems.drive.getPose()), 1.0)
+                        () ->AutoPaths.routeToPark(AutoPaths.getField(), currentPose, Constants.alliance), 1.0)
                         .andThen(Commands.run(() -> {}, subsystems.drive))
         );
     }
@@ -213,9 +225,9 @@ public class TeleOpContainer extends RobotContainer {
     public void configureShooting(){
         //?Turn to target while driving
         //gamepad 1 toggles tracking on and off
-        trackToggleButton.onTrue(new InstantCommand(() -> trackEnabled = !trackEnabled));
+        trackToggleButton.onTrue(Commands.runOnce(() -> trackEnabled = !trackEnabled));
         //gamepad 2 toggles a kill switch that keeps tracking off
-        trackDisableButton.onTrue(new InstantCommand(() -> trackDisabled = !trackDisabled));
+        trackDisableButton.onTrue(Commands.runOnce(() -> trackDisabled = !trackDisabled));
 
         //while tracking is allowed and the robot is preparing to shoot or shooting, the driver
         //keeps translation and the robot turns itself to face the target
@@ -228,10 +240,19 @@ public class TeleOpContainer extends RobotContainer {
                         subsystems.drive::getTargetHeadingRadians
                 )
         );
+
+//        goToButton.whileTrue(
+//                new GoToCmd(subsystems.drive,
+//                        () -> Paths.line(currentPose.get(), shootPose).linear(currentPose.get(), shootPose), 1.0)
+//                        .andThen(Commands.run(() -> {}, subsystems.drive))
+//        );
     }
 
     public boolean isShootTracking(){
-        return !trackDisabled && teleOpCycle.isIn(Cycle.SHOOT);
+        //turns while the shooter spins up (PREPARE with the shoot button still held) and while shooting
+        return !trackDisabled
+                && (teleOpCycle.isIn(Cycle.SHOOT)
+                    || (teleOpCycle.isIn(Cycle.PREPARE) && shootButton.getAsBoolean()));
     }
     /**
      * True when the robot should be turning itself to the target: gamepad 1 has tracking toggled on,
@@ -239,8 +260,7 @@ public class TeleOpContainer extends RobotContainer {
      */
     public boolean isTracking(){
         return trackEnabled
-                && !trackDisabled
-                && (teleOpCycle.isIn(Cycle.PREPARE));
+                && !trackDisabled;
     }
 
     public void configureOperator(){

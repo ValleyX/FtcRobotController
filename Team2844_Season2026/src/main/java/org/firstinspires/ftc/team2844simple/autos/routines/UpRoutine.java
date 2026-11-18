@@ -23,7 +23,8 @@ public abstract class UpRoutine extends AutoBase {
 
             //?Intake from the garden
             b.command(subsystems.drive.follow(UpGeometry.toGarden(f))
-                    .deadlineWith(CommandFactory.intakeAndTransfer(subsystems.intake, subsystems.transfer)));
+                    .deadlineWith(CommandFactory.intakeAndTransfer(subsystems.intake, subsystems.transfer))
+                    .withTimeout(6));
 
             //- Go back and wait for alliance to tip again
             b.follow(UpGeometry.readyShoot1(f));

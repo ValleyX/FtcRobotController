@@ -2,12 +2,9 @@ package org.firstinspires.ftc.team2844simple.autos.routines;
 
 import com.pedropathing.api.PoseFactory;
 import com.vcs.valleylib.core.command.Command;
-import com.vcs.valleylib.core.command.Commands;
 import com.vcs.valleylib.ftc.pedro.PedroAutoDsl;
 
 import org.firstinspires.ftc.team2844simple.autos.AutoBase;
-import org.firstinspires.ftc.team2844simple.autos.geometries.DownGeometry;
-import org.firstinspires.ftc.team2844simple.commands.CommandFactory;
 import org.firstinspires.ftc.team2844simple.commands.shoot.ShootCmd;
 
 public abstract class DownRoutine extends AutoBase {

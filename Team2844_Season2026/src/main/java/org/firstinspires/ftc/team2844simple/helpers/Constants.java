@@ -39,14 +39,14 @@ public class Constants {
 
     public static final double CELL_HEIGHT = 53.5;
 
-    public static final double BLUE_AUDIENCE_X = 84.0;
-    public static final double BLUE_AUDIENCE_Y = 66.0;
-    public static final double BLUE_BACK_X = 84.0;
-    public static final double BLUE_BACK_Y = 78.0;
-    public static final double RED_AUDIENCE_X = 60.0;
-    public static final double RED_AUDIENCE_Y = 66.0;
-    public static final double RED_BACK_X = 60.0;
-    public static final double RED_BACK_Y = 78.0;
+    public static double BLUE_AUDIENCE_X = 84.0;
+    public static double BLUE_AUDIENCE_Y = 53.0;
+    public static double BLUE_BACK_X = 84.0;
+    public static double BLUE_BACK_Y = 91.0;
+    public static double RED_AUDIENCE_X = 60.0;
+    public static double RED_AUDIENCE_Y = 53.0;
+    public static double RED_BACK_X = 60.0;
+    public static double RED_BACK_Y = 91.0;
 
 
     /* ---------- ID CONSTANTS ---------- */
@@ -104,10 +104,10 @@ public class Constants {
     public static double AIM_TOLERANCE_DEG = 1.0;
 
     // ?----- shooter -----
-    public static double VEL_RPM_THRESHOLD = 200;
+    public static double VEL_RPM_THRESHOLD = 150;
     /**MEASURED IN RPM, MUST BE CONVERTED TO TICKS PER SECOND FOR THE SHOOTER CMD*/
     public static double SHOOTER_IDLE = 800;
-    public static double SHOOT_RPM = 3200;
+    public static double SHOOT_RPM = 3225;
     public static double EFFICIENCY = 0.85;
     public static final double SHOOTER_RADIUS = 36.0/25.4;
 

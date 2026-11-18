@@ -24,7 +24,8 @@ public abstract class SoloRoutine extends AutoBase {
 
             //?Grab from the garden
             b.command(subsystems.drive.follow(SoloGeometry.toGarden(f))
-                    .deadlineWith(CommandFactory.intakeAndTransfer(subsystems.intake, subsystems.transfer)));
+                    .deadlineWith(CommandFactory.intakeAndTransfer(subsystems.intake, subsystems.transfer))
+                    .withTimeout(6));
 
             //-Go through the middle to the other side (to avoid hitting parking teammate)
             b.follow(SoloGeometry.underpassFromGarden(f));
