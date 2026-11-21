@@ -1,0 +1,234 @@
+{
+  "kind": "valleyvis-project",
+  "version": 1,
+  "project": {
+    "version": 1,
+    "name": "SimpleSoloConcept",
+    "className": "UpVisRoutine",
+    "opModeName": "Vis Up",
+    "blueTarget": "Constants.BACK_SIDE",
+    "redTarget": "Constants.AUDIENCE_SIDE",
+    "start": {
+      "name": "start",
+      "x": "72+L/2",
+      "y": "144-W/2",
+      "h": -90
+    },
+    "steps": [
+      {
+        "id": "u1",
+        "type": "action",
+        "label": "Shoot preloaded",
+        "cmds": [
+          {
+            "lib": "shoot",
+            "params": {
+              "timeoutMs": 4000
+            }
+          }
+        ],
+        "timeout": null
+      },
+      {
+        "id": "step-mwla0siy-2",
+        "type": "path",
+        "name": "gardenIntake",
+        "endName": "gardenIn",
+        "segments": [
+          {
+            "type": "curve",
+            "controls": [
+              {
+                "x": 84,
+                "y": 131
+              }
+            ],
+            "end": {
+              "x": 132,
+              "y": 132
+            }
+          }
+        ],
+        "endH": 45,
+        "heading": {
+          "mode": "linear",
+          "endT": 1,
+          "long": false
+        },
+        "maxSpeed": null,
+        "timeout": null,
+        "during": [
+          {
+            "lib": "intakeTransfer",
+            "params": {}
+          }
+        ],
+        "markers": []
+      },
+      {
+        "id": "step-mwmt2z60-h",
+        "type": "path",
+        "name": "gardenTurn",
+        "endName": "garden",
+        "segments": [
+          {
+            "type": "line",
+            "controls": [],
+            "end": {
+              "x": 135.5,
+              "y": 135.5
+            }
+          }
+        ],
+        "endH": 0,
+        "heading": {
+          "mode": "linear",
+          "endT": 1,
+          "long": false
+        },
+        "maxSpeed": 0.5,
+        "timeout": 2,
+        "during": [
+          {
+            "lib": "intakeTransfer",
+            "params": {}
+          }
+        ],
+        "markers": []
+      },
+      {
+        "id": "step-mwlakpgc-a",
+        "type": "path",
+        "name": "intakeFromTip",
+        "endName": "cellAlign",
+        "segments": [
+          {
+            "type": "line",
+            "controls": [
+              {
+                "x": 123,
+                "y": 133.5
+              }
+            ],
+            "end": {
+              "x": 83,
+              "y": 111.5
+            }
+          }
+        ],
+        "endH": -150,
+        "heading": {
+          "mode": "linear",
+          "endT": 0.4,
+          "long": false
+        },
+        "maxSpeed": null,
+        "timeout": null,
+        "during": [
+          {
+            "lib": "intakeTransfer",
+            "params": {}
+          }
+        ],
+        "markers": []
+      },
+      {
+        "id": "step-mwmqc88q-f",
+        "type": "path",
+        "name": "underHive",
+        "endName": "audienceShootPrep",
+        "segments": [
+          {
+            "type": "line",
+            "controls": [],
+            "end": {
+              "x": 83,
+              "y": 46
+            }
+          }
+        ],
+        "endH": -180,
+        "heading": {
+          "mode": "linear",
+          "endT": 0.2,
+          "long": false
+        },
+        "maxSpeed": null,
+        "timeout": null,
+        "during": [],
+        "markers": []
+      },
+      {
+        "id": "step-mwmqehb2-g",
+        "type": "path",
+        "name": "shoot2",
+        "endName": "shoot2Pose",
+        "segments": [
+          {
+            "type": "line",
+            "controls": [],
+            "end": {
+              "x": 105,
+              "y": 15
+            }
+          }
+        ],
+        "endH": 120,
+        "heading": {
+          "mode": "linear",
+          "endT": 1,
+          "long": false
+        },
+        "maxSpeed": null,
+        "timeout": null,
+        "during": [
+          {
+            "lib": "spinUp",
+            "params": {}
+          }
+        ],
+        "markers": []
+      },
+      {
+        "id": "step-mwlau1g5-e",
+        "type": "action",
+        "label": "shoot2",
+        "cmds": [
+          {
+            "lib": "shoot",
+            "params": {
+              "timeoutMs": 3750
+            }
+          }
+        ],
+        "timeout": null
+      }
+    ],
+    "zones": [
+      {
+        "id": "hive-leg-audience",
+        "name": "Hive frame leg (x≈48)",
+        "clearance": 2,
+        "enabled": true,
+        "mirror": false,
+        "shape": "rect",
+        "x": 47.3,
+        "y": 52.5,
+        "w": 1.5,
+        "h": 39
+      },
+      {
+        "id": "hive-leg-back",
+        "name": "Hive frame leg (x≈96)",
+        "clearance": 2,
+        "enabled": true,
+        "mirror": false,
+        "shape": "rect",
+        "x": 95.2,
+        "y": 52.5,
+        "w": 1.5,
+        "h": 39
+      }
+    ]
+  }
+}

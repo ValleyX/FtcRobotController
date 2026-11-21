@@ -1,0 +1,94 @@
+{
+  "kind": "valleyvis-project",
+  "version": 1,
+  "project": {
+    "version": 1,
+    "name": "SimpleDownConcept",
+    "className": "DownVisRoutine",
+    "opModeName": "Vis Down",
+    "blueTarget": "Constants.AUDIENCE_SIDE",
+    "redTarget": "Constants.BACK_SIDE",
+    "start": {
+      "name": "start",
+      "x": "72+W/2",
+      "y": "L/2",
+      "h": 90
+    },
+    "steps": [
+      {
+        "id": "step-mwmted7x-n",
+        "type": "wait",
+        "seconds": 20
+      },
+      {
+        "id": "step-mwmtenmm-o",
+        "type": "action",
+        "label": "",
+        "cmds": [
+          {
+            "lib": "shoot",
+            "params": {}
+          }
+        ],
+        "timeout": null
+      },
+      {
+        "id": "step-mwmtf5qs-p",
+        "type": "path",
+        "name": "toParkAlign",
+        "endName": "parkAlign",
+        "segments": [
+          {
+            "type": "curve",
+            "controls": [
+              {
+                "x": 78.5,
+                "y": 29
+              }
+            ],
+            "end": {
+              "x": 128,
+              "y": 24
+            }
+          }
+        ],
+        "endH": 180,
+        "heading": {
+          "mode": "linear",
+          "endT": 1,
+          "long": false
+        },
+        "maxSpeed": null,
+        "timeout": null,
+        "during": [],
+        "markers": []
+      }
+    ],
+    "zones": [
+      {
+        "id": "hive-leg-audience",
+        "name": "Hive frame leg (x≈48)",
+        "clearance": 2,
+        "enabled": true,
+        "mirror": false,
+        "shape": "rect",
+        "x": 47.3,
+        "y": 52.5,
+        "w": 1.5,
+        "h": 39
+      },
+      {
+        "id": "hive-leg-back",
+        "name": "Hive frame leg (x≈96)",
+        "clearance": 2,
+        "enabled": true,
+        "mirror": false,
+        "shape": "rect",
+        "x": 95.2,
+        "y": 52.5,
+        "w": 1.5,
+        "h": 39
+      }
+    ]
+  }
+}

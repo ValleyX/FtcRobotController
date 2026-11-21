@@ -1,0 +1,203 @@
+{
+  "kind": "valleyvis-project",
+  "version": 1,
+  "project": {
+    "version": 1,
+    "name": "SimpleUpConcept",
+    "className": "UpVisRoutine",
+    "opModeName": "Vis Up",
+    "blueTarget": "Constants.BACK_SIDE",
+    "redTarget": "Constants.AUDIENCE_SIDE",
+    "start": {
+      "name": "start",
+      "x": "72+L/2",
+      "y": "144-W/2",
+      "h": -90
+    },
+    "steps": [
+      {
+        "id": "u1",
+        "type": "action",
+        "label": "Shoot preloaded",
+        "cmds": [
+          {
+            "lib": "shoot",
+            "params": {
+              "timeoutMs": 4000
+            }
+          }
+        ],
+        "timeout": null
+      },
+      {
+        "id": "step-mwmt811f-i",
+        "type": "path",
+        "name": "gardenAlign",
+        "endName": "aligned",
+        "segments": [
+          {
+            "type": "curve",
+            "controls": [
+              {
+                "x": 90,
+                "y": 125.5
+              }
+            ],
+            "end": {
+              "x": 130,
+              "y": 132.5
+            }
+          }
+        ],
+        "endH": 45,
+        "heading": {
+          "mode": "linear",
+          "long": false,
+          "endT": 1
+        },
+        "maxSpeed": null,
+        "timeout": null,
+        "during": [],
+        "markers": []
+      },
+      {
+        "id": "step-mwmt8yjr-j",
+        "type": "path",
+        "name": "gardenIntake",
+        "endName": "garden",
+        "segments": [
+          {
+            "type": "line",
+            "controls": [],
+            "end": {
+              "x": 135,
+              "y": 135
+            }
+          }
+        ],
+        "endH": 0,
+        "heading": {
+          "mode": "linear",
+          "long": false,
+          "endT": 1
+        },
+        "maxSpeed": 0.5,
+        "timeout": 3,
+        "during": [
+          {
+            "lib": "intakeTransfer",
+            "params": {}
+          }
+        ],
+        "markers": []
+      },
+      {
+        "id": "step-mwmtb05f-k",
+        "type": "path",
+        "name": "toShoot2",
+        "endName": "shoot2",
+        "segments": [
+          {
+            "type": "line",
+            "controls": [],
+            "end": {
+              "x": 95.5,
+              "y": 128
+            }
+          }
+        ],
+        "endH": -110,
+        "heading": {
+          "mode": "linear",
+          "long": false,
+          "endT": 1
+        },
+        "maxSpeed": null,
+        "timeout": null,
+        "during": [],
+        "markers": [
+          {
+            "id": "mk-mwmtccup-l",
+            "at": 0.28,
+            "cmd": {
+              "lib": "spinUp",
+              "params": {}
+            }
+          }
+        ]
+      },
+      {
+        "id": "step-mwmtcjk8-m",
+        "type": "action",
+        "label": "",
+        "cmds": [
+          {
+            "lib": "shoot",
+            "params": {}
+          }
+        ],
+        "timeout": null
+      },
+      {
+        "id": "step-mwmtrs79-r",
+        "type": "path",
+        "name": "toPark",
+        "endName": "parkAlign",
+        "segments": [
+          {
+            "type": "line",
+            "controls": [],
+            "end": {
+              "x": 84,
+              "y": 102.5
+            }
+          },
+          {
+            "type": "line",
+            "controls": [],
+            "end": {
+              "x": 84,
+              "y": 24
+            }
+          }
+        ],
+        "endH": -90,
+        "heading": {
+          "mode": "linear",
+          "endT": 0.3,
+          "long": false
+        },
+        "maxSpeed": null,
+        "timeout": null,
+        "during": [],
+        "markers": []
+      }
+    ],
+    "zones": [
+      {
+        "id": "hive-leg-audience",
+        "name": "Hive frame leg (x≈48)",
+        "clearance": 2,
+        "enabled": true,
+        "mirror": false,
+        "shape": "rect",
+        "x": 47.3,
+        "y": 52.5,
+        "w": 1.5,
+        "h": 39
+      },
+      {
+        "id": "hive-leg-back",
+        "name": "Hive frame leg (x≈96)",
+        "clearance": 2,
+        "enabled": true,
+        "mirror": false,
+        "shape": "rect",
+        "x": 95.2,
+        "y": 52.5,
+        "w": 1.5,
+        "h": 39
+      }
+    ]
+  }
+}
