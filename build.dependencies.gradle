@@ -50,9 +50,9 @@ dependencies {
     // platform-agnostic 'core' plus 'revhub' for the REV/FTC hardware bindings.
     // 3.0.1 is the newest release -- there is no 3.1 -- and it is what
     // valleyLib 2.0.0 is built against.
-    implementation 'com.pedropathing:core:3.0.1'
+    implementation 'com.pedropathing:core:3.0.2'
     implementation 'com.pedropathing:revhub:3.0.1'
-    implementation 'com.pedropathing:tuning:1.0.1'
+    implementation 'com.pedropathing:tuning:1.0.3'
     // com.pedropathing:telemetry dropped: nothing imports it, and Panels below
     // provides the telemetry valleyLib's CommandOpMode actually uses.
     /*
