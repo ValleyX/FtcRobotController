@@ -50,7 +50,7 @@ public abstract class AutoBase extends CommandOpMode {
                         turretCmd.setTrack(false);
                     })
                     .andThen(new GoToCmd(subsystems.drive,
-                            ()->AutoPaths.routeToPark(field(), subsystems.drive.getPose())).withTimeout(4.75))
+                            ()->subsystems.drive.autoRoute(subsystems.drive.getPose(), AutoPaths.park(field()))).withTimeout(4.75))
                     .finallyDo(this::handOffToTeleop)
         );
     }

@@ -119,7 +119,6 @@ public abstract class TestingTeleOp extends CommandOpMode {
                 telemetryBus.put("Nectar Hood        .", subsystems.nectar.getCurrentHoodDegrees());
                 telemetryBus.put("Pollen Hood        .", subsystems.pollen.getCurrentHoodDegrees());
                 telemetryBus.put("--------------------.", "-");
-                telemetryBus.put("Average Distance   .", subsystems.distance());
                 telemetryBus.put("Limelight Distance .", subsystems.vision.getDistance());
                 telemetryBus.put("Pinpoint Distance  .", subsystems.drive.getDistance());
 

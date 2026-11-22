@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.team2844.commands;
 
+import com.pedropathing.api.Paths;
+import com.pedropathing.math.Pose;
 import com.vcs.valleylib.core.command.Command;
 import com.vcs.valleylib.core.command.decorators.ParallelCommandGroup;
+import com.vcs.valleylib.core.command.decorators.SequentialCommandGroup;
 
 import org.firstinspires.ftc.team2844.commands.intake.IntakeCmd;
 import org.firstinspires.ftc.team2844.commands.transfer.TransferCmd;
@@ -13,6 +16,7 @@ import org.firstinspires.ftc.team2844.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.TransferSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.TurretSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.VisionSubsystem;
+import org.firstinspires.ftc.team2844simple.commands.drive.GoToCmd;
 
 public class CommandFactory {
     DriveSubsystem drive;
@@ -46,6 +50,12 @@ public class CommandFactory {
         return new ParallelCommandGroup(
                 new IntakeCmd(intake),
                 new TransferCmd(transfer)
+        );
+    }
+
+    public Command autoPark(Pose currentPose){
+        return new SequentialCommandGroup(
+
         );
     }
 

@@ -234,7 +234,7 @@ public class TeleOpContainer extends RobotContainer {
 
         parkButton.whileTrue(
                 new GoToCmd(subsystems.drive,
-                        () ->AutoPaths.routeToPark(AutoPaths.getField(), subsystems.drive.getPose()), 0.8)
+                        () ->subsystems.drive.autoRoute(subsystems.drive.getPose(), AutoPaths.park(AutoPaths.getField())), 1.0)
                         .andThen(Commands.run(() -> {}, subsystems.drive))
         );
     }
