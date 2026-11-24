@@ -10,6 +10,7 @@ import com.vcs.valleylib.core.scheduler.CommandScheduler;
 import com.vcs.valleylib.ftc.opmode.CommandOpMode;
 
 import org.firstinspires.ftc.team2844simple.commands.drive.GoToCmd;
+import org.firstinspires.ftc.team2844simple.commands.drive.TurnToCmd;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.helpers.SavedVars;
 import org.firstinspires.ftc.team2844simple.helpers.Subsystems;
@@ -41,7 +42,7 @@ public abstract class AutoBase extends CommandOpMode {
     @Override
     protected void onStart() {
         CommandScheduler.getInstance().schedule(
-            routine().withTimeout(20.0)
+            routine().withTimeout(25.0)
                     .andThen(Commands.runOnce(() -> {
                         subsystems.pollen.idleShoot();
                         subsystems.intake.stopIntake();
@@ -49,12 +50,14 @@ public abstract class AutoBase extends CommandOpMode {
                         subsystems.transfer.closeGates();
                     }))
                     .andThen(new GoToCmd(subsystems.drive,
-                            ()->AutoPaths.routeToPark(field(), ()->subsystems.drive.getPose(), alliance())).withTimeout(9.75))
+                            ()->subsystems.drive.autoRoute(subsystems.drive.getPose(), AutoPaths.park(field())))
+                            .andThen(new TurnToCmd(subsystems.drive, (alliance() == Constants.BLUE_ALLIANCE)? Math.PI: 0.0)).withTimeout(4.75))
                     .finallyDo(this::handOffToTeleop)
         );
     }
 
     protected void handOffToTeleop(){
+        subsystems.drive.getFollower().update();
         Pose end = subsystems.drive.getPose();
         SavedVars.startingX = end.x();
         SavedVars.startingY = end.y();

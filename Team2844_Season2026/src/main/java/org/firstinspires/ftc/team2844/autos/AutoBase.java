@@ -52,12 +52,13 @@ public abstract class AutoBase extends CommandOpMode {
                     })
                     .andThen(new GoToCmd(subsystems.drive,
                             ()->subsystems.drive.autoRoute(subsystems.drive.getPose(), AutoPaths.park(field())))
-                            .andThen(new TurnToCmd(subsystems.drive, (alliance() == Constants.BLUE_ALLIANCE)? 180.0: 0.0)).withTimeout(4.75))
+                            .andThen(new TurnToCmd(subsystems.drive, (alliance() == Constants.BLUE_ALLIANCE)? Math.PI: 0.0)).withTimeout(4.75))
                     .finallyDo(this::handOffToTeleop)
         );
     }
 
     protected void handOffToTeleop(){
+        subsystems.drive.getFollower().update();
         Pose end = subsystems.drive.getPose();
         SavedVars.startingX = end.x();
         SavedVars.startingY = end.y();

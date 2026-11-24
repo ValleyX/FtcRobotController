@@ -31,7 +31,7 @@ public final class AutoPaths {
 
 
     /* ----- Pose ----- */
-    public static Pose park(PoseFactory f){return f.of( 144 - (Constants.ROBOT_LENGTH/2.0), 24.0, 180.0);}
+    public static Pose park(PoseFactory f){return f.of( 134 - (Constants.ROBOT_LENGTH/2.0), 47 + (Constants.ROBOT_WIDTH/2.0), 180.0);}
     public static Pose xFlower(PoseFactory f){return f.of(96.0, (Constants.ROBOT_LENGTH/2.0), -90.0);}
     public static Pose yFlower(PoseFactory f){return f.of(144-(Constants.ROBOT_LENGTH/2.0), 96.0, 0.0);}
 

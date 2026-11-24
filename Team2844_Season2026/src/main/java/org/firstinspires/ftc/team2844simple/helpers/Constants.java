@@ -2,6 +2,9 @@ package org.firstinspires.ftc.team2844simple.helpers;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.math.Pose;
+
+import org.firstinspires.ftc.team2844.helpers.collision.CollisionBox;
 
 @Config
 @Configurable
@@ -157,6 +160,115 @@ public class Constants {
     /* ---------- PEDRO PATHING ---------- */
     public static final double XPOD_OFFSET = -0.4321152018749808;
     public static final double YPOD_OFFSET = 0.7009387579489882;
+
+    /* ---------- AUTO DRIVING ---------- */
+    public static final double SAFETY_MARGIN = 1.5;
+    public static final double MAX_CURVE_DIS = 18.0;
+    public static final int DEFAULT_DEPTH = 8;
+
+    // Corners go counterclockwise.
+    public static final CollisionBox BLUE_HIVE_COLLISION = new CollisionBox(
+            new Pose(94.73, 52.525),
+            new Pose(96.73, 52.525),
+            new Pose(96.73, 91.475),
+            new Pose(94.73, 91.475)
+    );
+
+    public static final CollisionBox RED_HIVE_COLLISION = new CollisionBox(
+            new Pose(47.27, 52.525),
+            new Pose(49.27, 52.525),
+            new Pose(49.27, 91.475),
+            new Pose(47.27, 91.475)
+    );
+
+    //blue y flower: blue alliance wall, centered at y = 96
+    public static final CollisionBox BLUE_YFLOWER_COLLISION = new CollisionBox(
+            new Pose(139.0, 93.0),
+            new Pose(144.0, 93.0),
+            new Pose(144.0, 99.0),
+            new Pose(139.0, 99.0)
+    );
+
+    //blue x flower: audience wall, centered at x = 96
+    public static final CollisionBox BLUE_XFLOWER_COLLISION = new CollisionBox(
+            new Pose(93.0, 0.0),
+            new Pose(99.0, 0.0),
+            new Pose(99.0, 5.0),
+            new Pose(93.0, 5.0)
+    );
+
+    //red y flower: red alliance wall, centered at y = 48
+    public static final CollisionBox RED_YFLOWER_COLLISION = new CollisionBox(
+            new Pose(0.0, 45.0),
+            new Pose(5.0, 45.0),
+            new Pose(5.0, 51.0),
+            new Pose(0.0, 51.0)
+    );
+
+    //red x flower: back wall, centered at x = 48
+    public static final CollisionBox RED_XFLOWER_COLLISION = new CollisionBox(
+            new Pose(45.0, 139.0),
+            new Pose(51.0, 139.0),
+            new Pose(51.0, 144.0),
+            new Pose(45.0, 144.0)
+    );
+
+    public static final CollisionBox[] COLLISIONS = new CollisionBox[]{
+            BLUE_HIVE_COLLISION,
+            BLUE_XFLOWER_COLLISION,
+            BLUE_YFLOWER_COLLISION,
+            RED_HIVE_COLLISION,
+            RED_XFLOWER_COLLISION,
+            RED_YFLOWER_COLLISION
+    };
+
+    public static final double FIELD_SIZE = 144.0;
+    /**Extra room added to the safe corners so lines between them don't count as touching.*/
+    public static final double WAYPOINT_EPSILON = 0.5;
+    /**How far the safe corners are pushed out from each obstacle: the reach of the robot box
+     * (with safety margin) from its center at any heading, plus WAYPOINT_EPSILON.*/
+    public static final double SAFE_OFFSET = Math.hypot(
+            ROBOT_LENGTH / 2.0 + SAFETY_MARGIN,
+            ROBOT_WIDTH / 2.0 + SAFETY_MARGIN) + WAYPOINT_EPSILON;
+
+    /**
+     * Waypoints for driving around each obstacle. SAFE_COLLISIONS[j] goes with COLLISIONS[j].
+     * <p>Each corner is pushed SAFE_OFFSET out in both x and y. Corners the robot can't reach
+     * (closer than SAFE_OFFSET to a wall) are left out, so a flower against a wall only has 2.
+     * <p>Only use these as places to aim for. Collision checks should still use COLLISIONS.
+     */
+    public static final CollisionBox[] SAFE_COLLISIONS = makeSafeCollisions(COLLISIONS);
+
+    /**Builds SAFE_COLLISIONS. Only works for axis-aligned boxes.*/
+    private static CollisionBox[] makeSafeCollisions(CollisionBox[] boxes){
+        CollisionBox[] safe = new CollisionBox[boxes.length];
+        for(int j = 0; j < boxes.length; j++){
+            Pose[] corners = boxes[j].getCorners();
+
+            //center of the box, used to tell which way is "out" for each corner
+            double centerX = 0.0;
+            double centerY = 0.0;
+            for(Pose c : corners){
+                centerX += c.x();
+                centerY += c.y();
+            }
+            centerX /= corners.length;
+            centerY /= corners.length;
+
+            java.util.List<Pose> safeCorners = new java.util.ArrayList<>();
+            for(Pose c : corners){
+                double x = c.x() + SAFE_OFFSET * Math.signum(c.x() - centerX);
+                double y = c.y() + SAFE_OFFSET * Math.signum(c.y() - centerY);
+                boolean reachable = x >= SAFE_OFFSET && x <= FIELD_SIZE - SAFE_OFFSET
+                        && y >= SAFE_OFFSET && y <= FIELD_SIZE - SAFE_OFFSET;
+                if(reachable){
+                    safeCorners.add(new Pose(x, y));
+                }
+            }
+            safe[j] = new CollisionBox(safeCorners.toArray(new Pose[0]));
+        }
+        return safe;
+    }
 
 
     /**

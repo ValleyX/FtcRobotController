@@ -55,7 +55,6 @@ public class TeleOpContainer extends RobotContainer {
 
     final Pose resetPose;
     final Pose shootPose;
-    Supplier<Pose> currentPose;
 
     public TeleOpContainer(Subsystems subsystems, Gamepad gamepad1, Gamepad gamepad2) {
         this.subsystems = subsystems;
@@ -68,7 +67,6 @@ public class TeleOpContainer extends RobotContainer {
                 ?new Pose(0.0,0.0,0.0)
                 :new Pose(0.0,0.0,0.0);
 
-        currentPose = subsystems.drive::getPose;
         this.driver = CommandGamepad.forLogitechF310(gamepad1);
         this.operator = CommandGamepad.forLogitechF310(gamepad2);
 
@@ -202,7 +200,7 @@ public class TeleOpContainer extends RobotContainer {
 
         parkButton.whileTrue(
                 new GoToCmd(subsystems.drive,
-                        () ->AutoPaths.routeToPark(AutoPaths.getField(), currentPose, Constants.alliance), 1.0)
+                        () ->subsystems.drive.autoRoute(subsystems.drive.getPose(), AutoPaths.park(AutoPaths.getField())), 1.0)
                         .andThen(Commands.run(() -> {}, subsystems.drive))
         );
     }
