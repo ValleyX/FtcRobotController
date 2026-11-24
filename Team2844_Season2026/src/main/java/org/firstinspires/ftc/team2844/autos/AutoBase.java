@@ -7,6 +7,7 @@ import com.vcs.valleylib.core.scheduler.CommandScheduler;
 import com.vcs.valleylib.ftc.opmode.CommandOpMode;
 
 import org.firstinspires.ftc.team2844.commands.drive.GoToCmd;
+import org.firstinspires.ftc.team2844.commands.drive.TurnToCmd;
 import org.firstinspires.ftc.team2844.commands.turret.DefaultTurretCmd;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 import org.firstinspires.ftc.team2844.helpers.SavedVars;
@@ -50,7 +51,8 @@ public abstract class AutoBase extends CommandOpMode {
                         turretCmd.setTrack(false);
                     })
                     .andThen(new GoToCmd(subsystems.drive,
-                            ()->subsystems.drive.autoRoute(subsystems.drive.getPose(), AutoPaths.park(field()))).withTimeout(4.75))
+                            ()->subsystems.drive.autoRoute(subsystems.drive.getPose(), AutoPaths.park(field())))
+                            .andThen(new TurnToCmd(subsystems.drive, (alliance() == Constants.BLUE_ALLIANCE)? 180.0: 0.0)).withTimeout(4.75))
                     .finallyDo(this::handOffToTeleop)
         );
     }

@@ -154,7 +154,7 @@ public class ShooterSubsystem extends FtcSubsystem {
     }
 
     public double getExpectedHoodDegrees(double initialVelocity){
-        return getExpectedHoodDegrees(initialVelocity, get2DDistance());
+        return getExpectedHoodDegrees(initialVelocity, getDistance());
     }
     public double getExpectedHoodDegrees(){
         return getExpectedHoodDegrees(getBallVelocity());
@@ -242,12 +242,8 @@ public class ShooterSubsystem extends FtcSubsystem {
         distance = dis;
     }
 
-    public double get2DDistance(){
-        return get2DDistance(distance);
-    }
-
-    public double get2DDistance(double distance){
-        return Math.sqrt(Math.max(0.0, Math.pow(distance,2) - Math.pow(Constants.CELL_HEIGHT-Constants.LL_HEIGHT, 2)));
+    public double getDistance(){
+        return distance;
     }
 
     public double getPower(){

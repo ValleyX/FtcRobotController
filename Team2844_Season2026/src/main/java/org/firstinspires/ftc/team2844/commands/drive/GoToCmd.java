@@ -34,7 +34,8 @@ public class GoToCmd implements Command {
     @Override
     public void initialize() {
         Path p = path.get();
-        drive.getFollower().follow(drive.withSpeedLimit(p, maxSpeed));
+        if(p != null)
+            drive.getFollower().follow(drive.withSpeedLimit(p, maxSpeed));
     }
 
     @Override

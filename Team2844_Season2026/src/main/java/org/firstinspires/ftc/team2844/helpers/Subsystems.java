@@ -65,6 +65,7 @@ public class Subsystems {
         //?Give the turret what it needs for the math and limelight integration
         turret.setPose(drive.getPose().x(), drive.getPose().y(), drive.getNormalHeadingDegrees());
         turret.setTx(vision.getTx());
+        turret.setVelocities(drive.getXVelocity(), drive.getYVelocity(), drive.getAngularVelocity());
 
         //? Let the transfer know how many balls are counted
         transfer.setBallCount(intake.ballCount());

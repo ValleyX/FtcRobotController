@@ -9,6 +9,7 @@ import org.firstinspires.ftc.team2844.helpers.Constants;
 
 public class TurretSubsystem extends FtcSubsystem {
     private double heading, x, y;
+    private double vx, vy, omega;
     private double tx;
     private final AnalogInput encoder1, encoder2, absolute;
     private final Servo axon1, axon2;
@@ -18,6 +19,9 @@ public class TurretSubsystem extends FtcSubsystem {
         x = 0;
         y = 0;
         tx = 0;
+        vx = 0;
+        vy = 0;
+        omega = 0;
 
         //TODO REMEMBER TO PUT THE AXONS IN WITH 1.0 BEING FULLY LEFT AND 0.0 BEING FULLY RIGHT
         axon1 = hardwareMap.get(Servo.class, Constants.CHS4);
@@ -293,7 +297,11 @@ public class TurretSubsystem extends FtcSubsystem {
         setY(y);
         setHeading(degrees);
     }
-
+    public void setVelocities(double vx, double vy, double omega){
+        this.vx = vx;
+        this.vy = vy;
+        this.omega = omega;
+    }
     public void setTx(double tx){
         this.tx = tx;
     }

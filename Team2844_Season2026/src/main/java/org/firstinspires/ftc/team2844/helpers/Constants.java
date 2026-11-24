@@ -186,8 +186,8 @@ public class Constants {
     public static final double YPOD_OFFSET = -7.0;
 
     /* ---------- AUTO DRIVING ---------- */
-    public static final double SAFETY_MARGIN = 3.0;
-    public static final double MAX_CURVE_DIS = 15.0;
+    public static final double SAFETY_MARGIN = 1.5;
+    public static final double MAX_CURVE_DIS = 18.0;
     public static final int DEFAULT_DEPTH = 8;
 
     // Corners go counterclockwise.

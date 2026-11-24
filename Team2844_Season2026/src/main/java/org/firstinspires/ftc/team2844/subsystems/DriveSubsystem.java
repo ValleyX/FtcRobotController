@@ -77,6 +77,16 @@ public class DriveSubsystem extends PedroSubsystem {
         return Math.sqrt(Math.pow(pose.x() - Constants.targetX, 2) + Math.pow(pose.y() - Constants.targetY, 2));
     }
 
+    /**
+     * Calculates the 2d distance from the bot to the spot below the cell of the alliance's color while correcting for the current robot velocity.
+     * Assumes Constants.changeTarget() has been updated recently and odometry tracking is accurate
+     * */
+//    public double getVirtualDistance(){
+//        Pose pose = follower.pose();
+//        return Math.sqrt(Math.pow(pose.x() - (Constants.targetX + ), 2) + Math.pow(pose.y() - (Constants.targetY + ), 2));
+//    }
+
+
     /* ---------- Automatic Pathing ---------- */
 
     private List<Pose> routeAroundCollision(Pose startPose, Pose endPose, int depth){
@@ -271,6 +281,21 @@ public class DriveSubsystem extends PedroSubsystem {
     /**Returns a value -PI to PI*/
     public double getNormalHeadingRadians(){
         return normalizeRadians(getHeadingRadians());
+    }
+
+    /**Field Relative velocity*/
+    public double getXVelocity(){
+        return follower.velocity().vx;
+    }
+
+    /**Field Relative velocity*/
+    public double getYVelocity(){
+        return follower.velocity().vy;
+    }
+
+    /**Angular Velocity*/
+    public double getAngularVelocity(){
+        return follower.velocity().omega;
     }
 
     /**
