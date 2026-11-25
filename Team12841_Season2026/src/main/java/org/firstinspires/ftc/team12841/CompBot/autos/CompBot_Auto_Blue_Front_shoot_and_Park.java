@@ -27,18 +27,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.team12841.CompBot;
+package org.firstinspires.ftc.team12841.CompBot.autos;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+import org.firstinspires.ftc.team12841.CompBot.RobotHardware;
 
 /*
  *  This OpMode illustrates the concept of driving an autonomous path based on Gyro (IMU) heading and encoder counts.
@@ -88,59 +82,36 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  *  Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Simple Park Far Field", group="Robot")
+@Autonomous(name="Straight On Shoot and Park", group="Robot")
 //@Disabled
-public class CompBot_Auto_Single_Park_Far extends LinearOpMode {
-    RobotHardware robot = new RobotHardware(this);
-
+public class CompBot_Auto_Blue_Front_shoot_and_Park extends LinearOpMode {
+    RobotHardware robot = new RobotHardware(this, false);
 
     @Override
     public void runOpMode() {
-
-        //This initializes the motors
         robot.init();
         waitForStart();
 
-        // Step through each leg of the path,
-        // Notes:   Reverse movement is obtained by setting a negative distance (not speed)
-        //          holdHeading() is used after turns to let the heading stabilize
-        //          Add a sleep(2000) after any step to keep the telemetry data visible for review
         /*********************************************************************************
          * put all autonomous code in the following section
-         * start close to the parking spot
-         * drive forward and pivot to face away from the parking spot
-         * Reverse until you are in the parking spot facing towards the rest of the field
+         * start at audience and look at hive to shoot pollen
+         * after that go and park to gain 5 points
+         * already starting with 4 pollen
          *************************************************************************************/
-        robot.driveStraight(robot.DRIVE_SPEED, 113,0.0);
-        robot.turnToHeading(robot.TURN_SPEED,-90.0);
-        robot.driveStraight(robot.DRIVE_SPEED, -22.5,0.0);
+        robot.setDrumSpeedPower(.51);
+        sleep(5000);
+        robot.setFeederMotorPower(1);
+        sleep(5000);
+        robot.setDrumSpeedPower(0);
+        robot.setFeederMotorPower(0);
+        robot.driveStraight(robot.DRIVE_SPEED, 114.0, 0.0);// Drive Forward to be parrel to parking spot"
+        robot.turnToHeading(robot.TURN_SPEED, -90.0);
+        robot.driveStraight(robot.DRIVE_SPEED, -46, -90.0);
 
-        /*driveStraight(DRIVE_SPEED, 36.0, 0.0);// Drive Forward to be parrel to parking spot"
-        turnToHeading( TURN_SPEED,90.0); // Left is positive and right is negative
-        driveStraight(DRIVE_SPEED, -32.0, 90.0);/*
-        //turnToHeading( TURN_SPEED, 90.0);               // Turn  CW to -45 Degrees
-        //holdHeading( TURN_SPEED, -45.0, 0.5);   // Hold -45 Deg heading for a 1/2 second
 
-        //driveStraight(DRIVE_SPEED, 24.0, 90.0);  // Drive Forward 17" at -45 degrees (12"x and 12"y)
-        //turnToHeading( TURN_SPEED,  90.0);               // Turn  CCW  to  45 Degrees
-        //holdHeading( TURN_SPEED,  45.0, 0.5);    // Hold  45 Deg heading for a 1/2 second
-
-       /* driveStraight(DRIVE_SPEED, 17.0, 45.0);  // Drive Forward 17" at 45 degrees (-12"x and 12"y)
-        turnToHeading( TURN_SPEED,   0.0);               // Turn  CW  to 0 Degrees
-        holdHeading( TURN_SPEED,   0.0, 1.0);    // Hold  0 Deg heading for 1 second
-
-        driveStraight(DRIVE_SPEED,-48.0, 0.0);    // Drive in Reverse 48" (should return to approx. staring position)
-*/
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);  // Pause to display last telemetry message.
     }
-
-//    /*
-//     * ====================================================================================================
-//     * Driving "Helper" functions are below this line.
-//     * These provide the high and low level methods that handle driving straight and turning.
-//     * ====================================================================================================
-//     */
 
 }
