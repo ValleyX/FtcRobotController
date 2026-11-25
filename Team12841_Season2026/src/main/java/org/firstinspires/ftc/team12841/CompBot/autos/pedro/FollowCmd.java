@@ -15,6 +15,7 @@ public class FollowCmd implements Command {
     }
     @Override
     public void execute() {
+        robot.updatePose();
         robot.getFollower().follow(path);
     }
 

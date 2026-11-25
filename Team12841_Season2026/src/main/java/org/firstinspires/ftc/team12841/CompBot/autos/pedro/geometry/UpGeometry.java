@@ -12,14 +12,14 @@ public class UpGeometry {
 
     public static Pose startingPose(PoseFactory f){
         //This starting pose is against the wall right on the line.
-        return f.of(72.0+(Constants.ROBOT_LENGTH/2.0), 144-(Constants.ROBOT_WIDTH/2.0), -90.0);}
+        return f.of(72.0+(Constants.ROBOT_WIDTH/2.0), 144-(Constants.ROBOT_LENGTH/2.0), -90.0);}
 
     public static Pose parkPose(PoseFactory f){
         return f.of(134.0, 48.0, 180.0);
     }
 
     public static Pose parkControlPoint(PoseFactory f){
-        return f.of(144.0, 130.0, 0.0);
+        return f.of(130.0, 130.0, 0.0);
     }
 
     public static Path getPath(PoseFactory f){
