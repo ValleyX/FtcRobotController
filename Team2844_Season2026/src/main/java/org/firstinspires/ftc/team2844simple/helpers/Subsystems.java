@@ -4,6 +4,7 @@ import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.team2844global.ShooterConfig;
 import org.firstinspires.ftc.team2844simple.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844simple.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.team2844simple.subsystems.ShooterSubsystem;
@@ -21,7 +22,7 @@ public class Subsystems {
     public final VisionSubsystem vision;
     public List<LynxModule> allHubs;
 
-    Constants.ShooterConfig pollenConfig;
+    ShooterConfig pollenConfig;
 
     public Subsystems(HardwareMap hardwareMap, Pose startingPose, int pipeline){
 
@@ -30,8 +31,9 @@ public class Subsystems {
             hubs.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        pollenConfig = new Constants.ShooterConfig(
+        pollenConfig = new ShooterConfig(
                 Constants.EHM3,
+                "",
                 Constants.POLLEN_PIDF
         );
 

@@ -8,8 +8,9 @@ import com.vcs.valleylib.ftc.hardware.Motor;
 import com.vcs.valleylib.ftc.hardware.MotorEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.team2844global.PIDF;
+import org.firstinspires.ftc.team2844global.ShooterConfig;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
-import org.firstinspires.ftc.team2844simple.helpers.PIDF;
 
 public class ShooterSubsystem extends FtcSubsystem {
     MotorEx shooter;
@@ -18,7 +19,7 @@ public class ShooterSubsystem extends FtcSubsystem {
     private final String motorName;
 
     private double targetVelocity;
-    public ShooterSubsystem(HardwareMap hardwareMap, Constants.ShooterConfig config){
+    public ShooterSubsystem(HardwareMap hardwareMap, ShooterConfig config){
         super(hardwareMap);
 
         pidf = new PIDF(config.kP,config.kI,config.kD,config.kS,config.kV );

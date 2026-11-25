@@ -11,6 +11,7 @@ import org.firstinspires.ftc.team2844.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.TransferSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.TurretSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.VisionSubsystem;
+import org.firstinspires.ftc.team2844global.ShooterConfig;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class Subsystems {
     public final TurretSubsystem turret;
     public final VisionSubsystem vision;
 
-    Constants.ShooterConfig nectarConfig, pollenConfig;
+    ShooterConfig nectarConfig, pollenConfig;
 
     public Subsystems(HardwareMap hardwareMap, Pose startingPose, int pipeline){
 
@@ -34,12 +35,12 @@ public class Subsystems {
             hubs.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        nectarConfig = new Constants.ShooterConfig(
+        nectarConfig = new ShooterConfig(
                 Constants.EHM2,
                 Constants.CHS0,
                 Constants.NECTAR_PIDF
         );
-        pollenConfig = new Constants.ShooterConfig(
+        pollenConfig = new ShooterConfig(
                 Constants.EHM3,
                 Constants.CHS1,
                 Constants.POLLEN_PIDF

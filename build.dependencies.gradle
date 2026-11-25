@@ -10,8 +10,10 @@
  * which means a FATAL EXCEPTION before the app finishes starting: the Control Hub
  * installs the APK fine and then never comes up.
  *
- * jspecify arrives transitively through androidx.appcompat:appcompat:1.8.0 (pulled
- * up from the SDK's stock 1.2.0 by com.bylazar:panels).
+ * Nothing in the current dependency graph pulls jspecify in (checked with
+ * appcompat at 1.2.0 and Panels 1.0.20), so this exclude is a guard. Newer
+ * androidx libraries do depend on jspecify, and a future version bump could bring
+ * it back without anyone noticing until the hub stops booting. Keep it.
  *
  * Excluding it is safe. ART silently ignores an annotation whose class is missing
  * entirely; it only throws when the annotation class IS present and references a
@@ -24,16 +26,25 @@ configurations.configureEach {
 
 dependencies {
     /*
-     * This block used to be duplicated: the whole FTC SDK list appeared twice,
-     * once ending in androidx.appcompat:appcompat:1.2.0 and once in 1.8.0.
-     * Gradle papered over that by conflict-resolving to 1.8.0 until Panels 1.0.18
-     * (panels core 1.0.7) started publishing a strict constraint, at which point
-     * the two became "multiple version constraints with conflicting requirements"
-     * and resolution failed outright.
+     * Keep one declaration of each. This block used to list the whole FTC SDK
+     * twice, once with appcompat 1.2.0 and once with 1.8.0. That broke when
+     * Panels started publishing a strict appcompat pin (see the Panels note
+     * below).
      *
-     * Keep one declaration of each. appcompat stays at 1.8.0, which is what was
-     * resolving in practice and what Panels' material dependency needs -- the
-     * SDK's own stock pin is 1.2.0 and is too old for it.
+     * appcompat is 1.2.0, the FTC SDK's own stock version. It has to be exactly
+     * that: panels core strictly pins it, so any other version here fails to
+     * resolve. SDK 12, including FtcRobotControllerActivity, compiles fine on it.
+     *
+     * annotation 1.9.1 is only here to prevent a duplicate-class failure at APK
+     * build time. valleyLib depends on androidx.annotation:annotation-jvm:1.9.1,
+     * while the SDK libraries pull the old single-jar
+     * androidx.annotation:annotation (1.2.0 on its own). Both jars contain the
+     * androidx.annotation.* classes, so checkDebugDuplicateClasses fails. From
+     * 1.7 onward, androidx.annotation:annotation is a multiplatform module whose
+     * Android code lives in annotation-jvm, so asking for 1.9.1 folds both
+     * requests onto the one annotation-jvm 1.9.1 jar. Panels does not pin
+     * annotation, so there is no conflict with it. Remove this line only if
+     * valleyLib stops depending on annotation-jvm.
      */
     // Gradle Base Stuff
     implementation 'org.firstinspires.ftc:Inspection:12.0.0'
@@ -45,11 +56,13 @@ dependencies {
     implementation 'org.firstinspires.ftc:Hardware:12.0.0'
     implementation 'org.firstinspires.ftc:FtcCommon:12.0.0'
     implementation 'org.firstinspires.ftc:Vision:12.0.0'
-    implementation 'androidx.appcompat:appcompat:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.annotation:annotation:1.9.1'
     // Pedro Pathing 3. Pedro 3 split the old single 'ftc' artifact into a
     // platform-agnostic 'core' plus 'revhub' for the REV/FTC hardware bindings.
-    // 3.0.1 is the newest release -- there is no 3.1 -- and it is what
-    // valleyLib 2.0.0 is built against.
+    // valleyLib 2.0.0 is built against core 3.0.1 and revhub 3.0.1. core is on
+    // the 3.0.2 patch release here; valleyLib and revhub both ask for core 3.0.1
+    // and Gradle upgrades them to 3.0.2. revhub itself stays at 3.0.1.
     implementation 'com.pedropathing:core:3.0.2'
     implementation 'com.pedropathing:revhub:3.0.1'
     implementation 'com.pedropathing:tuning:1.0.3'
@@ -57,30 +70,25 @@ dependencies {
     // provides the telemetry valleyLib's CommandOpMode actually uses.
     /*
      * Panels. fullpanels is the convenience bundle: panels core plus every plugin
-     * (telemetry, field, graph, gamepad, opmodecontrol, ...).
+     * (telemetry, field, graph, gamepad, opmodecontrol, limelightproxy, ...).
      *
-     * PINNED AT 1.0.15 ON PURPOSE -- DO NOT BUMP WITHOUT RE-TESTING.
+     * DO NOT BUMP WITHOUT RE-TESTING.
      *
-     * 1.0.18 is the newest release, but 1.0.16+ pull panels core 1.0.7, whose
-     * Gradle module metadata declares:
+     * 1.0.16 and later pull panels core 1.0.7+ (1.0.20 brings core 1.0.9 and
+     * field 1.0.10), whose Gradle module metadata declares:
      *
      *     "group": "androidx.appcompat", "module": "appcompat",
      *     "version": { "strictly": "1.2.0" }
      *
-     * A `strictly` pin cannot be conflict-resolved, so it collides with the
-     * appcompat 1.8.0 above and resolution fails outright. Dropping our 1.8.0 to
-     * satisfy it does not work either: FTC SDK 12's own FtcRobotControllerActivity
-     * then fails to compile (androidx.annotation.NonNull goes missing). Forcing
-     * 1.8.0 over the strict pin would mean running Panels against an appcompat it
-     * explicitly pinned away from, which is not worth the runtime risk.
-     *
-     * 1.0.15 is the newest version that resolves cleanly with SDK 12. It brings
-     * panels core 1.0.6 and field 1.0.9, which has the same PanelsField /
-     * FieldManager API as 1.0.10.
+     * A `strictly` pin cannot be conflict-resolved. That is why appcompat above is
+     * exactly 1.2.0: with 1.8.0 there, resolution fails with "multiple version
+     * constraints with conflicting requirements", which shows up as appcompat
+     * 1.2.0 "failing to resolve". Do not force a newer appcompat over the pin --
+     * that would run Panels against a version it explicitly pinned away from.
      *
      * This is the single place Panels is declared. Do not also declare it in a
      * module build.gradle -- it drifted out of sync that way once already.
      */
-    implementation 'com.bylazar:fullpanels:1.0.15'
+    implementation 'com.bylazar:fullpanels:1.0.20'
 }
 

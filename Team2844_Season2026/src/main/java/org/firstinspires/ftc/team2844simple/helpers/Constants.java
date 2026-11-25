@@ -5,6 +5,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.math.Pose;
 
 import org.firstinspires.ftc.team2844.helpers.collision.CollisionBox;
+import org.firstinspires.ftc.team2844global.PIDF;
 
 @Config
 @Configurable
@@ -268,32 +269,6 @@ public class Constants {
             safe[j] = new CollisionBox(safeCorners.toArray(new Pose[0]));
         }
         return safe;
-    }
-
-
-    /**
-     * This is a Config class for the turrets so that all the values can be stored in one parameter.
-     * */
-    public static class ShooterConfig{
-        public final double kP, kI, kD, kS, kV;
-        public final String motorName;
-        public ShooterConfig(String motorName, double kP, double kI, double kD, double kS, double kV){
-            this.motorName = motorName;
-            this.kP = kP;
-            this.kI = kI;
-            this.kD = kD;
-            this.kS = kS;
-            this.kV = kV;
-        }
-
-        public ShooterConfig(String motorName, PIDF pidf){
-            this.motorName = motorName;
-            this.kP = pidf.kP;
-            this.kI = pidf.kI;
-            this.kD = pidf.kD;
-            this.kS = pidf.kS;
-            this.kV = pidf.kV;
-        }
     }
 
 

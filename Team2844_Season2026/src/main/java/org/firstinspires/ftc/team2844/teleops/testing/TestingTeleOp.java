@@ -8,7 +8,7 @@ import com.vcs.valleylib.ftc.input.CommandGamepad;
 import com.vcs.valleylib.ftc.opmode.CommandOpMode;
 
 import org.firstinspires.ftc.team2844.helpers.Constants;
-import org.firstinspires.ftc.team2844.helpers.PIDF;
+import org.firstinspires.ftc.team2844global.PIDF;
 import org.firstinspires.ftc.team2844.helpers.SavedVars;
 import org.firstinspires.ftc.team2844.helpers.Subsystems;
 

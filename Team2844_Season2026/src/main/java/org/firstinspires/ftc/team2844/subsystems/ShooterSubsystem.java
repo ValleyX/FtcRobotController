@@ -9,7 +9,8 @@ import com.vcs.valleylib.ftc.hardware.Motor;
 import com.vcs.valleylib.ftc.hardware.MotorEx;
 
 import org.firstinspires.ftc.team2844.helpers.Constants;
-import org.firstinspires.ftc.team2844.helpers.PIDF;
+import org.firstinspires.ftc.team2844global.PIDF;
+import org.firstinspires.ftc.team2844global.ShooterConfig;
 
 public class ShooterSubsystem extends FtcSubsystem {
     MotorEx shooter;
@@ -19,7 +20,7 @@ public class ShooterSubsystem extends FtcSubsystem {
     private final String motorName;
 
     private double targetVelocity;
-    public ShooterSubsystem(HardwareMap hardwareMap, Constants.ShooterConfig config){
+    public ShooterSubsystem(HardwareMap hardwareMap, ShooterConfig config){
         super(hardwareMap);
 
         pidf = new PIDF(config.kP,config.kI,config.kD,config.kS,config.kV );

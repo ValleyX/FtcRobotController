@@ -108,11 +108,14 @@ dependencies {
     // 0.5.1 has no Limelight proxy at all, so there is nothing to collide with.
     // It is also what Team2844_Season2025 has been running on these hubs.
     //
-    // If you ever want 0.6.0's proxy instead, keep 0.6.0 and drop Panels' copy:
-    //     implementation('com.bylazar:fullpanels:1.0.15') {
+    // If you ever want 0.6.0's proxy instead, keep 0.6.0 and drop Panels' copy
+    // for this module (Panels itself is declared in build.dependencies.gradle,
+    // so the exclude has to cover the whole configuration, not one declaration):
+    //     configurations.configureEach {
     //         exclude group: 'com.bylazar', module: 'limelightproxy'
     //     }
-    // Untested, and 0.6.0 also drags com.acmerobotics.dashboard:core up to
-    // 0.6.0 underneath com.bylazar:panels:1.0.6, which was built against 0.4.7.
+    // Untested. (Panels core 1.0.9, which fullpanels 1.0.20 uses, does not
+    // depend on dashboard:core, so 0.6.0 no longer drags anything up underneath
+    // Panels.)
     implementation 'com.acmerobotics.dashboard:dashboard:0.5.1'
 }

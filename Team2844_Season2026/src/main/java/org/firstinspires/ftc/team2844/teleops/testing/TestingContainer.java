@@ -13,7 +13,7 @@ import org.firstinspires.ftc.team2844.autos.AutoPaths;
 import org.firstinspires.ftc.team2844.commands.drive.GoToCmd;
 import org.firstinspires.ftc.team2844.commands.turret.DefaultTurretCmd;
 import org.firstinspires.ftc.team2844.helpers.Constants;
-import org.firstinspires.ftc.team2844.helpers.PIDF;
+import org.firstinspires.ftc.team2844global.PIDF;
 import org.firstinspires.ftc.team2844.helpers.Subsystems;
 import org.firstinspires.ftc.team2844.subsystems.ShooterSubsystem;
 
