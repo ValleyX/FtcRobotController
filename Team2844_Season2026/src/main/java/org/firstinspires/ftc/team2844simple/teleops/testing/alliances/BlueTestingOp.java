@@ -4,11 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.teleops.testing.TestingTeleOp;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
 
 @TeleOp(name = "Simple Blue Testing Op")
 public class BlueTestingOp extends TestingTeleOp {
     @Override
     protected int alliance() {
-        return Constants.BLUE_ALLIANCE;
+        return GlobalConstants.BLUE_ALLIANCE;
     }
 }

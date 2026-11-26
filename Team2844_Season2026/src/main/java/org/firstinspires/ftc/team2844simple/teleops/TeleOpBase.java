@@ -9,22 +9,24 @@ import com.vcs.valleylib.ftc.opmode.CommandOpMode;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.helpers.SavedVars;
 import org.firstinspires.ftc.team2844simple.helpers.Subsystems;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 public abstract class TeleOpBase extends CommandOpMode {
     protected Subsystems subsystems;
     public Pose startPose;
     public Pose resetPose;
     protected TeleOpContainer container;
-    /**Constants.changeAlliance(alliance) MUST BE CALLED AS THE FIRST LINE OF TELEOP BECAUSE IT AFFECTS SETUP LOGIC*/
+    /**MatchInfo.changeAlliance(alliance) MUST BE CALLED AS THE FIRST LINE OF TELEOP BECAUSE IT AFFECTS SETUP LOGIC*/
     public abstract int alliance();
     FieldManager field;
 
     @Override
     protected void initialize() {
-        Constants.changeAlliance(alliance());
-        int target = (Constants.side != Constants.NO_TARGET)? Constants.side+alliance(): alliance();
-        Constants.changeTarget(target);
-        resetPose = (Constants.alliance == Constants.BLUE_ALLIANCE)
+        MatchInfo.changeAlliance(alliance());
+        int target = (MatchInfo.side != GlobalConstants.NO_TARGET)? MatchInfo.side+alliance(): alliance();
+        MatchInfo.changeTarget(target);
+        resetPose = (MatchInfo.alliance == GlobalConstants.BLUE_ALLIANCE)
                 ?new Pose(144.0-(Constants.ROBOT_LENGTH/2.0), Constants.ROBOT_WIDTH/2.0, Math.toRadians(180.0))
                 :new Pose(Constants.ROBOT_LENGTH/2.0, (144-Constants.ROBOT_WIDTH/2.0), 0.0);
 
@@ -64,7 +66,7 @@ public abstract class TeleOpBase extends CommandOpMode {
         subsystems.update();
         //Telemetry goes here
         telemetryBus.put("State         ", container.teleOpCycle.getState());
-        telemetryBus.put("Target", Constants.target);
+        telemetryBus.put("Target", MatchInfo.target);
         telemetryBus.put("RPM ", subsystems.pollen.getRPM());
         telemetryBus.put("At Velocity ", subsystems.pollen.atVelocity());
         telemetryBus.put("Heading in degrees", subsystems.drive.getHeadingDegrees());

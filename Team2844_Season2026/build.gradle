@@ -22,6 +22,15 @@ android {
 //        noCompress 'tflite'
 //    }
 
+    // Show what the tests in src/test print (the recognition test reports) when they run from the command line.
+    testOptions {
+        unitTests.all {
+            testLogging {
+                showStandardStreams = true
+            }
+        }
+    }
+
     packagingOptions {
 //        jniLibs {
 //            pickFirsts += ['**/*.so']
@@ -118,4 +127,7 @@ dependencies {
     // depend on dashboard:core, so 0.6.0 no longer drags anything up underneath
     // Panels.)
     implementation 'com.acmerobotics.dashboard:dashboard:0.5.1'
+
+    // JUnit for the desktop tests in src/test (HuskyLens ball recognition). Test-only: it never goes on the robot.
+    testImplementation 'junit:junit:4.13.2'
 }

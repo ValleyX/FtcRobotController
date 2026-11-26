@@ -7,6 +7,8 @@ import com.vcs.valleylib.core.subsystem.Subsystem;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.team2844simple.subsystems.VisionSubsystem;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 import java.util.Collections;
 import java.util.Set;
@@ -16,7 +18,7 @@ import java.util.function.DoubleSupplier;
  * Field-centric driving where the driver keeps control of translation and the robot turns itself
  * so its front (the shooter) faces the current target.
  *
- * <p>Uses Limelight tx if valid (not null / -999); otherwise falls back to Odometry (Constants.targetX / targetY).
+ * <p>Uses Limelight tx if valid (not null / -999); otherwise falls back to Odometry (MatchInfo.targetX / targetY).
  *
  * <p>Unlike {@link TurnToCmd}, this does not use a Pedro hold, so x/y are never locked. It runs
  * until it is interrupted, then the drive's default command takes back over.
@@ -67,7 +69,7 @@ public class TurnToTargetCmd implements Command {
 
         if (vision != null) {
             double tx = vision.getTx();
-            if (tx != Constants.NO_LL) {
+            if (tx != GlobalConstants.NO_LL) {
                 error = Math.toRadians(-tx);
             }
         }

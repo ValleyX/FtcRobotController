@@ -6,12 +6,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.vcs.valleylib.ftc.hardware.FtcSubsystem;
 
 import org.firstinspires.ftc.team2844.helpers.Constants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
-public class VisionSubsystem extends FtcSubsystem {
+public class LimelightSubsystem extends FtcSubsystem {
     private final Limelight3A limelight;
     private LLResult latestResult;
     private int pipeline;
-    public VisionSubsystem(HardwareMap hardwareMap) {
+    public LimelightSubsystem(HardwareMap hardwareMap) {
         super(hardwareMap);
         limelight = hardwareMap.get(Limelight3A.class, Constants.CHLL);
         limelight.start();
@@ -29,21 +31,21 @@ public class VisionSubsystem extends FtcSubsystem {
 
     public double getDistance(){
         double dis = (valid())
-                ? latestResult.getBotposeAvgDist()*Constants.METERS_TO_INCHES //valid result returns avg distance(doesn't use megatags)
-                : Constants.NO_LL; //null returns -999 to avoid runtime errors
+                ? latestResult.getBotposeAvgDist()*GlobalConstants.METERS_TO_INCHES //valid result returns avg distance(doesn't use megatags)
+                : GlobalConstants.NO_LL; //null returns -999 to avoid runtime errors
 
         return (dis != 0.0)
                 ? dis
-                : Constants.NO_LL;
+                : GlobalConstants.NO_LL;
     }
 
     public double getTx(){
         double tx = (valid())
                 ? latestResult.getTx()
-                : Constants.NO_LL; //null returns -999 to avoid runtime errors
+                : GlobalConstants.NO_LL; //null returns -999 to avoid runtime errors
         return (tx != 0.0)
                 ? tx
-                : Constants.NO_LL;
+                : GlobalConstants.NO_LL;
     }
 
     public boolean valid(){
@@ -55,8 +57,8 @@ public class VisionSubsystem extends FtcSubsystem {
 
     @Override
     public void periodic() {
-        if(getPipeline() != Constants.target){
-            setPipeline(Constants.target);
+        if(getPipeline() != MatchInfo.target){
+            setPipeline(MatchInfo.target);
         }
         latestResult = limelight.getLatestResult();
     }

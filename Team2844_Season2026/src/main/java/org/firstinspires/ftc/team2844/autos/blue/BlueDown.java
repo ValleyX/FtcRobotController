@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.firstinspires.ftc.team2844.autos.geometries.DownGeometry;
 import org.firstinspires.ftc.team2844.autos.routines.DownRoutine;
 import org.firstinspires.ftc.team2844.helpers.Constants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
 
 @Autonomous(name = "Blue Down", group = "Blue")
 @Disabled
@@ -18,11 +19,11 @@ public class BlueDown extends DownRoutine {
 
     @Override
     public int alliance() {
-        return Constants.BLUE_ALLIANCE;
+        return GlobalConstants.BLUE_ALLIANCE;
     }
 
     @Override
     public int target() {
-        return Constants.AUDIENCE_SIDE;
+        return GlobalConstants.AUDIENCE_SIDE;
     }
 }

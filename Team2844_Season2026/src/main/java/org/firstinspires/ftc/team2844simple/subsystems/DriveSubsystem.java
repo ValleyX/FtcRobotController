@@ -8,9 +8,11 @@ import com.pedropathing.utils.Angle;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.vcs.valleylib.ftc.pedro.PedroSubsystem;
 
-import org.firstinspires.ftc.team2844.helpers.collision.CollisionBox;
+import org.firstinspires.ftc.team2844global.collision.CollisionBox;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.pedro.PedroConstants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +78,7 @@ public class DriveSubsystem extends PedroSubsystem {
 
     /** Field-centric offset so each alliance's driver pushes "forward" away from their own wall. */
     private double allianceHeadingOffset() {
-        return Constants.alliance == Constants.BLUE_ALLIANCE? Math.PI: 0.0;
+        return MatchInfo.alliance == GlobalConstants.BLUE_ALLIANCE? Math.PI: 0.0;
     }
 
     /** Same as {@link #driveFieldCentric} but relative to the robot's own nose. */
@@ -92,28 +94,28 @@ public class DriveSubsystem extends PedroSubsystem {
 
     /**
      * Calculates the 3d distance from the bot to the bottom of the tipped up cell of the alliances color.
-     * Assumes Constants.changeTarget() has been updated recently and odometry tracking is accurate
+     * Assumes MatchInfo.changeTarget() has been updated recently and odometry tracking is accurate
      * */
     public double getDistance(){
         Pose pose = follower.pose();
-        return Math.sqrt(Math.pow(pose.x() - Constants.targetX, 2) + Math.pow(pose.y() - Constants.targetY, 2) + Math.pow(Constants.CELL_HEIGHT - Constants.LL_HEIGHT, 2));
+        return Math.sqrt(Math.pow(pose.x() - MatchInfo.targetX, 2) + Math.pow(pose.y() - MatchInfo.targetY, 2) + Math.pow(GlobalConstants.CELL_HEIGHT - Constants.LL_HEIGHT, 2));
     }
 
 
     /* ===================== Aiming at the target ===================== */
 
-    /** True once Constants.changeTarget() has set a target position. */
+    /** True once MatchInfo.changeTarget() has set a target position. */
     public boolean hasTarget(){
-        return Constants.targetX != Constants.NO_POS && Constants.targetY != Constants.NO_POS;
+        return MatchInfo.targetX != GlobalConstants.NO_POS && MatchInfo.targetY != GlobalConstants.NO_POS;
     }
 
     /**
      * Field heading (radians, -PI to PI) the robot has to face for its front to point at
-     * the current target (Constants.targetX / targetY). The shooter is on the front of the robot.
+     * the current target (MatchInfo.targetX / targetY). The shooter is on the front of the robot.
      */
     public double getTargetHeadingRadians(){
         Pose pose = follower.pose();
-        return Math.atan2(Constants.targetY - pose.y(), Constants.targetX - pose.x());
+        return Math.atan2(MatchInfo.targetY - pose.y(), MatchInfo.targetX - pose.x());
     }
 
     /**
@@ -167,7 +169,7 @@ public class DriveSubsystem extends PedroSubsystem {
             return true;
         }
 
-        Pose[] corners = Constants.COLLISIONS[j].getCorners();
+        Pose[] corners = GlobalConstants.COLLISIONS[j].getCorners();
 
         for(int i = 0; i < corners.length; i++){
             if(!corners[i].equals(startPose) && (collisionInPath(Paths.line(startPose, corners[i]).tangent()) < 0)){
@@ -260,8 +262,8 @@ public class DriveSubsystem extends PedroSubsystem {
         double maxLength = p.curve.length();
         for(int i = 1; i <= (int) Math.ceil(maxLength); i++){
             double t = Math.min(Math.max(i/maxLength, 0), 1);
-            for(int j = 0; j < Constants.COLLISIONS.length; j++){
-                if(Constants.COLLISIONS[j].collides(getRobotCollision(p.get(t)))){
+            for(int j = 0; j < GlobalConstants.COLLISIONS.length; j++){
+                if(GlobalConstants.COLLISIONS[j].collides(getRobotCollision(p.get(t)))){
                     return j;
                 }
             }
@@ -272,7 +274,7 @@ public class DriveSubsystem extends PedroSubsystem {
     public Path autoRoute(Pose startPose, Pose endPose) throws NullPointerException{
         //check for collision in straight path
         //if collides, find path to spot that won't collide then;
-        List<Pose> poses = routeAroundCollision(startPose, endPose, Constants.DEFAULT_DEPTH);
+        List<Pose> poses = routeAroundCollision(startPose, endPose, GlobalConstants.DEFAULT_DEPTH);
         return poses != null ? pathify(poses): null;
     }
 
@@ -329,7 +331,7 @@ public class DriveSubsystem extends PedroSubsystem {
      * Zeroes the heading in place, keeping the current x/y.
      */
     public void resetHeading() {
-        follower.setHeading((Constants.alliance == Constants.BLUE_ALLIANCE)
+        follower.setHeading((MatchInfo.alliance == GlobalConstants.BLUE_ALLIANCE)
                 ? Math.PI
                 : 0.0
         );

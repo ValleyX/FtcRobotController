@@ -11,6 +11,8 @@ import org.firstinspires.ftc.team2844global.PIDF;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.helpers.SavedVars;
 import org.firstinspires.ftc.team2844simple.helpers.Subsystems;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 public abstract class TestingTeleOp extends CommandOpMode {
     protected Subsystems subsystems;
@@ -22,9 +24,9 @@ public abstract class TestingTeleOp extends CommandOpMode {
 
     @Override
     protected void initialize() {
-        Constants.changeAlliance(alliance());
-        int target = (Constants.side != Constants.NO_TARGET)? Constants.side+alliance(): alliance();
-        Constants.changeTarget(target);
+        MatchInfo.changeAlliance(alliance());
+        int target = (MatchInfo.side != GlobalConstants.NO_TARGET)? MatchInfo.side+alliance(): alliance();
+        MatchInfo.changeTarget(target);
         startPose = new Pose(0,0,0);
 
         subsystems = new Subsystems(hardwareMap, startPose, target);

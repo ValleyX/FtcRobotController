@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.vcs.valleylib.ftc.opmode.CommandOpMode;
 
 import org.firstinspires.ftc.team2844.helpers.Constants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
 
 @TeleOp(name = "Wiring OpMode")
 @Disabled
@@ -93,9 +94,9 @@ public class WiringOpMode extends CommandOpMode {
     @Override
     protected void run() {
         //? Lights
-        light0.setPosition(Constants.GREEN);
-        light1.setPosition(Constants.YELLOW);
-        light2.setPosition(Constants.RED);
+        light0.setPosition(GlobalConstants.GREEN);
+        light1.setPosition(GlobalConstants.YELLOW);
+        light2.setPosition(GlobalConstants.RED);
 
         //? change the step to the next or previous testing
         if(gamepad1.rightBumperWasPressed()){

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.team2844simple.autos.geometries.SoloGeometry;
 import org.firstinspires.ftc.team2844simple.autos.routines.SoloRoutine;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
 
 @Autonomous(name = "Simple Red Solo", group = "Red")
 public class RedSolo extends SoloRoutine {
@@ -17,10 +18,10 @@ public class RedSolo extends SoloRoutine {
 
     @Override
     public int alliance() {
-        return Constants.RED_ALLIANCE;
+        return GlobalConstants.RED_ALLIANCE;
     }
     @Override
     public int target() {
-        return Constants.AUDIENCE_SIDE;
+        return GlobalConstants.AUDIENCE_SIDE;
     }
 }

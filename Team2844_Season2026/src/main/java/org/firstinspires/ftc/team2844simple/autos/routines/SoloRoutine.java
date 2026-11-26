@@ -10,6 +10,8 @@ import org.firstinspires.ftc.team2844simple.autos.geometries.SoloGeometry;
 import org.firstinspires.ftc.team2844simple.commands.CommandFactory;
 import org.firstinspires.ftc.team2844simple.commands.shoot.ShootCmd;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 public abstract class SoloRoutine extends AutoBase {
     //-Yellow = just moving
@@ -30,7 +32,7 @@ public abstract class SoloRoutine extends AutoBase {
             //-Go through the middle to the other side (to avoid hitting parking teammate)
             b.follow(SoloGeometry.underpassFromGarden(f));
             b.action(() ->
-                Constants.changeSide((Constants.side == Constants.AUDIENCE_SIDE)? Constants.BACK_SIDE: Constants.AUDIENCE_SIDE));
+                MatchInfo.changeSide((MatchInfo.side == GlobalConstants.AUDIENCE_SIDE)? GlobalConstants.BACK_SIDE: GlobalConstants.AUDIENCE_SIDE));
 
             //!We assume that the hive has tipped from our first shot
             b.command(new ShootCmd(subsystems.intake, subsystems.pollen, subsystems.transfer, 4000));

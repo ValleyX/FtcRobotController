@@ -16,6 +16,8 @@ import org.firstinspires.ftc.team2844.commands.drive.GoToCmd;
 import org.firstinspires.ftc.team2844.commands.turret.DefaultTurretCmd;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 import org.firstinspires.ftc.team2844.helpers.Subsystems;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 public class TeleOpContainer extends RobotContainer {
     public enum Cycle {IDLE, INTAKE, PREPARE, SHOOT, OUTTAKE}
@@ -56,7 +58,7 @@ public class TeleOpContainer extends RobotContainer {
         this.subsystems = subsystems;
         factory = new CommandFactory(subsystems);
         defaultTurretCmd = new DefaultTurretCmd(subsystems.turret, subsystems.vision);
-        resetPose = (Constants.alliance == Constants.BLUE_ALLIANCE)
+        resetPose = (MatchInfo.alliance == GlobalConstants.BLUE_ALLIANCE)
                 ?new Pose(144.0-(Constants.ROBOT_LENGTH/2.0), Constants.ROBOT_WIDTH/2.0, Math.toRadians(180.0))
                 :new Pose(Constants.ROBOT_LENGTH/2.0, (144-Constants.ROBOT_WIDTH/2.0), Math.toRadians(0.0));
 
@@ -201,11 +203,11 @@ public class TeleOpContainer extends RobotContainer {
 
         //when the robot goes to the audience side, set the pipeline and target
         audienceSide.onTrue(
-                new InstantCommand(() ->subsystems.vision.setPipeline(Constants.alliance + Constants.AUDIENCE_SIDE))
-                .andThen(() ->Constants.changeSide(Constants.AUDIENCE_SIDE)));
+                new InstantCommand(() ->subsystems.vision.setPipeline(MatchInfo.alliance + GlobalConstants.AUDIENCE_SIDE))
+                .andThen(() ->MatchInfo.changeSide(GlobalConstants.AUDIENCE_SIDE)));
         //when the robot goes to the back side, set the pipeline and target
-        audienceSide.onFalse(new InstantCommand(() ->subsystems.vision.setPipeline(Constants.alliance + Constants.BACK_SIDE))
-                .andThen(() ->Constants.changeSide(Constants.BACK_SIDE)));
+        audienceSide.onFalse(new InstantCommand(() ->subsystems.vision.setPipeline(MatchInfo.alliance + GlobalConstants.BACK_SIDE))
+                .andThen(() ->MatchInfo.changeSide(GlobalConstants.BACK_SIDE)));
 
 
         //?Lock Turret Trigger

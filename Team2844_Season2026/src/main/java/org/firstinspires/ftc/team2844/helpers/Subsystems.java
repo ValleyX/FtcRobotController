@@ -10,7 +10,7 @@ import org.firstinspires.ftc.team2844.subsystems.LightSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.TransferSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.TurretSubsystem;
-import org.firstinspires.ftc.team2844.subsystems.VisionSubsystem;
+import org.firstinspires.ftc.team2844.subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.team2844global.ShooterConfig;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class Subsystems {
     public final ShooterSubsystem pollen;
     public final TransferSubsystem transfer;
     public final TurretSubsystem turret;
-    public final VisionSubsystem vision;
+    public final LimelightSubsystem vision;
 
     ShooterConfig nectarConfig, pollenConfig;
 
@@ -53,7 +53,7 @@ public class Subsystems {
         pollen = new ShooterSubsystem(hardwareMap, pollenConfig);
         transfer = new TransferSubsystem(hardwareMap);
         turret = new TurretSubsystem(hardwareMap);
-        vision = new VisionSubsystem(hardwareMap);
+        vision = new LimelightSubsystem(hardwareMap);
 
         vision.setPipeline(pipeline);
     }

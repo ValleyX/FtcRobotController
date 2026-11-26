@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.team2844simple.autos.geometries.UpGeometry;
 import org.firstinspires.ftc.team2844simple.autos.routines.UpRoutine;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
 
 @Autonomous(name = "Simple Red Up", group = "Red")
 public class RedUp extends UpRoutine {
@@ -16,11 +17,11 @@ public class RedUp extends UpRoutine {
 
     @Override
     public int alliance() {
-        return Constants.RED_ALLIANCE;
+        return GlobalConstants.RED_ALLIANCE;
     }
 
     @Override
     public int target() {
-        return Constants.AUDIENCE_SIDE;
+        return GlobalConstants.AUDIENCE_SIDE;
     }
 }

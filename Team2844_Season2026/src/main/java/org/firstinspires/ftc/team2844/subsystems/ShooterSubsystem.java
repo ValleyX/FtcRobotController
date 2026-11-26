@@ -11,6 +11,7 @@ import com.vcs.valleylib.ftc.hardware.MotorEx;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 import org.firstinspires.ftc.team2844global.PIDF;
 import org.firstinspires.ftc.team2844global.ShooterConfig;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
 
 public class ShooterSubsystem extends FtcSubsystem {
     MotorEx shooter;
@@ -68,7 +69,7 @@ public class ShooterSubsystem extends FtcSubsystem {
     public double getShooterSurfaceSpeed(double velocity){
         double RPM = getAsRPM(velocity);
         //convert to radians per second
-        double radsPerSec = RPM/Constants.RAD_PS_TO_RPM;
+        double radsPerSec = RPM/GlobalConstants.RAD_PS_TO_RPM;
         //get the physical distance that one radian travels
         double inchesPerSec = Constants.SHOOTER_RADIUS*radsPerSec;
         //convert to feet
@@ -123,7 +124,7 @@ public class ShooterSubsystem extends FtcSubsystem {
         //? USES A TARGETING FORMULA TO FIND THE BEST ANGLE FOR THE SHOOTER TO AIM BASED ON THE CURRENT VELOCITY
         //? It is called a Trajectory Point-Match Equation
         //? It uses a constant velocity(which the ball is after it is launched) and decides what the best angle to shoot it at is based on how far and high the target is.
-        double height = (Constants.CELL_HEIGHT-Constants.LL_HEIGHT)/12.0;
+        double height = (GlobalConstants.CELL_HEIGHT-Constants.LL_HEIGHT)/12.0;
         //initial velocity of the ball squared.
         double v2 = initialVelocity*initialVelocity;
         double v4 = v2*v2;
@@ -133,7 +134,7 @@ public class ShooterSubsystem extends FtcSubsystem {
 
 
         double inside = v4 -g*(g*d2 + 2*height*v2);
-        if(inside < 0.0) return Constants.TOO_SLOW;
+        if(inside < 0.0) return GlobalConstants.TOO_SLOW;
         //the square root part of the quadratic formula
         double sqrt = Math.sqrt(inside);
         //?The top half of the quadratic formula
@@ -150,7 +151,7 @@ public class ShooterSubsystem extends FtcSubsystem {
         } else if(Constants.MIN_HOOD_DEGREE < highAngle && highAngle < Constants.MAX_HOOD_DEGREE){
             return highAngle;
         } else {
-            return (lowAngle > Constants.MAX_HOOD_DEGREE)? Constants.TOO_FAST: Constants.TOO_SLOW;
+            return (lowAngle > Constants.MAX_HOOD_DEGREE)? GlobalConstants.TOO_FAST: GlobalConstants.TOO_SLOW;
         }
     }
 
@@ -184,18 +185,18 @@ public class ShooterSubsystem extends FtcSubsystem {
      * Assumes -999 as invalid distance
      * */
     public void shoot(){
-        if(distance != Constants.NO_DIS) {
+        if(distance != GlobalConstants.NO_DIS) {
             double vel = Constants.SHOOT_RPM;
             double hoodDegree = getExpectedHoodDegrees();
-            /*if (hoodDegree == Constants.TOO_SLOW) {
+            /*if (hoodDegree == GlobalConstants.TOO_SLOW) {
                 vel = getFasterVelocity(vel);
                 hoodDegree = getExpectedHoodDegrees(getBallVelocity(getAsTPS(vel)));
-            } else if (hoodDegree == Constants.TOO_FAST) {
+            } else if (hoodDegree == GlobalConstants.TOO_FAST) {
                 vel = getSlowerVelocity(vel);
                 hoodDegree = getExpectedHoodDegrees(getBallVelocity(getAsTPS(vel)));
             }*/
             setVelocity(getAsTPS(vel));
-            setHoodDegrees((hoodDegree != Constants.TOO_SLOW && hoodDegree != Constants.TOO_FAST)
+            setHoodDegrees((hoodDegree != GlobalConstants.TOO_SLOW && hoodDegree != GlobalConstants.TOO_FAST)
                     ? hoodDegree
                     : Constants.MIN_HOOD_DEGREE);
             targetVelocity = getAsTPS(vel);

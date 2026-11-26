@@ -12,6 +12,8 @@ import org.firstinspires.ftc.team2844.commands.turret.DefaultTurretCmd;
 import org.firstinspires.ftc.team2844.helpers.Constants;
 import org.firstinspires.ftc.team2844.helpers.SavedVars;
 import org.firstinspires.ftc.team2844.helpers.Subsystems;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 public abstract class AutoBase extends CommandOpMode {
     protected Subsystems subsystems;
@@ -21,15 +23,15 @@ public abstract class AutoBase extends CommandOpMode {
     public abstract int target();
     protected abstract Command routine();
     protected PoseFactory field() {
-        return (alliance() == Constants.BLUE_ALLIANCE) ? AutoPaths.BLUE : AutoPaths.RED;
+        return (alliance() == GlobalConstants.BLUE_ALLIANCE) ? AutoPaths.BLUE : AutoPaths.RED;
     }
 
     @Override
     protected void initialize() {
         SavedVars.reset();
         int target = alliance()+target();
-        Constants.changeAlliance(alliance());
-        Constants.changeSide(target());
+        MatchInfo.changeAlliance(alliance());
+        MatchInfo.changeSide(target());
         subsystems = new Subsystems(hardwareMap, startingPose(), target);
 
         //Keeps the turret tracking the entire auto
@@ -52,7 +54,7 @@ public abstract class AutoBase extends CommandOpMode {
                     })
                     .andThen(new GoToCmd(subsystems.drive,
                             ()->subsystems.drive.autoRoute(subsystems.drive.getPose(), AutoPaths.park(field())))
-                            .andThen(new TurnToCmd(subsystems.drive, (alliance() == Constants.BLUE_ALLIANCE)? Math.PI: 0.0)).withTimeout(4.75))
+                            .andThen(new TurnToCmd(subsystems.drive, (alliance() == GlobalConstants.BLUE_ALLIANCE)? Math.PI: 0.0)).withTimeout(4.75))
                     .finallyDo(this::handOffToTeleop)
         );
     }

@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.vcs.valleylib.ftc.hardware.FtcSubsystem;
 
 import org.firstinspires.ftc.team2844.helpers.Constants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 public class TurretSubsystem extends FtcSubsystem {
     private double heading, x, y;
@@ -123,8 +125,8 @@ public class TurretSubsystem extends FtcSubsystem {
      * @return What the relative heading of the TURRET should be set to in order to aim to the target.
      * */
     public double getRobotTargetRadians(double x, double y, double heading){
-        double adjacent = Constants.targetX - x;
-        double opposite = Constants.targetY - y;
+        double adjacent = MatchInfo.targetX - x;
+        double opposite = MatchInfo.targetY - y;
 
         double temp = Math.atan2(opposite, adjacent);
         return getFieldCentricRadians(temp, heading);
@@ -156,8 +158,8 @@ public class TurretSubsystem extends FtcSubsystem {
      * @return What the field centric heading of the turret should be set to in order to aim to the target. Units in radians.
      * */
     public double getFieldTargetRadians(){
-        double adjacent = Constants.targetX - x;
-        double opposite = Constants.targetY - y;
+        double adjacent = MatchInfo.targetX - x;
+        double opposite = MatchInfo.targetY - y;
 
         return Math.atan2(opposite, adjacent);
     }
@@ -206,7 +208,7 @@ public class TurretSubsystem extends FtcSubsystem {
     }
 
     public void aimToTx(){
-        if(tx != Constants.NO_LL) {
+        if(tx != GlobalConstants.NO_LL) {
             setRelativeDegrees(getTx());
         }
     }

@@ -9,8 +9,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.vcs.valleylib.ftc.pedro.PedroSubsystem;
 
 import org.firstinspires.ftc.team2844.helpers.Constants;
-import org.firstinspires.ftc.team2844.helpers.collision.CollisionBox;
+import org.firstinspires.ftc.team2844global.collision.CollisionBox;
 import org.firstinspires.ftc.team2844.pedro.PedroConstants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +50,7 @@ public class DriveSubsystem extends PedroSubsystem {
      * @param turn    +1 turns counter-clockwise
      */
     public void driveFieldCentric(double forward, double strafe, double turn) {
-        double offsetHeading = Constants.alliance == Constants.BLUE_ALLIANCE? Math.PI: 0.0;
+        double offsetHeading = MatchInfo.alliance == GlobalConstants.BLUE_ALLIANCE? Math.PI: 0.0;
         follower.manual(ManualDrive.fieldCentric(
                 scale(forward),
                 scale(strafe),
@@ -70,20 +72,20 @@ public class DriveSubsystem extends PedroSubsystem {
 
     /**
      * Calculates the 2d distance from the bot to the spot below the cell of the alliance's color.
-     * Assumes Constants.changeTarget() has been updated recently and odometry tracking is accurate
+     * Assumes MatchInfo.changeTarget() has been updated recently and odometry tracking is accurate
      * */
     public double getDistance(){
         Pose pose = follower.pose();
-        return Math.sqrt(Math.pow(pose.x() - Constants.targetX, 2) + Math.pow(pose.y() - Constants.targetY, 2));
+        return Math.sqrt(Math.pow(pose.x() - MatchInfo.targetX, 2) + Math.pow(pose.y() - MatchInfo.targetY, 2));
     }
 
     /**
      * Calculates the 2d distance from the bot to the spot below the cell of the alliance's color while correcting for the current robot velocity.
-     * Assumes Constants.changeTarget() has been updated recently and odometry tracking is accurate
+     * Assumes MatchInfo.changeTarget() has been updated recently and odometry tracking is accurate
      * */
 //    public double getVirtualDistance(){
 //        Pose pose = follower.pose();
-//        return Math.sqrt(Math.pow(pose.x() - (Constants.targetX + ), 2) + Math.pow(pose.y() - (Constants.targetY + ), 2));
+//        return Math.sqrt(Math.pow(pose.x() - (MatchInfo.targetX + ), 2) + Math.pow(pose.y() - (MatchInfo.targetY + ), 2));
 //    }
 
 
@@ -125,7 +127,7 @@ public class DriveSubsystem extends PedroSubsystem {
             return true;
         }
 
-        Pose[] corners = Constants.COLLISIONS[j].getCorners();
+        Pose[] corners = GlobalConstants.COLLISIONS[j].getCorners();
 
         for(int i = 0; i < corners.length; i++){
             if(!corners[i].equals(startPose) && (collisionInPath(Paths.line(startPose, corners[i]).tangent()) < 0)){
@@ -218,8 +220,8 @@ public class DriveSubsystem extends PedroSubsystem {
         double maxLength = p.curve.length();
         for(int i = 1; i <= (int) Math.ceil(maxLength); i++){
             double t = Math.min(Math.max(i/maxLength, 0), 1);
-            for(int j = 0; j < Constants.COLLISIONS.length; j++){
-                if(Constants.COLLISIONS[j].collides(getRobotCollision(p.get(t)))){
+            for(int j = 0; j < GlobalConstants.COLLISIONS.length; j++){
+                if(GlobalConstants.COLLISIONS[j].collides(getRobotCollision(p.get(t)))){
                     return j;
                 }
             }
@@ -230,7 +232,7 @@ public class DriveSubsystem extends PedroSubsystem {
     public Path autoRoute(Pose startPose, Pose endPose) throws NullPointerException{
         //check for collision in straight path
         //if collides, find path to spot that won't collide then;
-        List<Pose> poses = routeAroundCollision(startPose, endPose, Constants.DEFAULT_DEPTH);
+        List<Pose> poses = routeAroundCollision(startPose, endPose, GlobalConstants.DEFAULT_DEPTH);
         return poses != null ? pathify(poses): null;
     }
 
@@ -302,7 +304,7 @@ public class DriveSubsystem extends PedroSubsystem {
      * Zeroes the heading in place, keeping the current x/y.
      */
     public void resetHeading() {
-        follower.setHeading((Constants.alliance == Constants.BLUE_ALLIANCE)
+        follower.setHeading((MatchInfo.alliance == GlobalConstants.BLUE_ALLIANCE)
                 ? Math.PI
                 : 0.0
         );

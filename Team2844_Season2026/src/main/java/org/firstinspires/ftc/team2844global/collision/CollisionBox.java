@@ -1,6 +1,9 @@
-package org.firstinspires.ftc.team2844.helpers.collision;
+package org.firstinspires.ftc.team2844global.collision;
 
 import com.pedropathing.math.Pose;
+import com.pedropathing.paths.Path;
+
+import org.firstinspires.ftc.team2844global.GlobalConstants;
 
 /**
  * A box (or any convex shape) made from its corners. Works when the box is rotated.
@@ -112,8 +115,29 @@ public class CollisionBox implements Collider{
         return new double[]{min, max};
     }
 
+    /**The point on the edge of this box closest to point. If point is inside the box, this is the closest point on the edge.*/
+    public Pose closestPoint(Pose point){
+        Pose closest = corners[0];
+        double closestDistance = Double.POSITIVE_INFINITY;
+        for(int i = 0; i < corners.length; i++){
+            Pose onEdge = closestPointOnEdge(point, corners[i], corners[(i + 1) % corners.length]);
+            double distance = Math.hypot(point.x() - onEdge.x(), point.y() - onEdge.y());
+            if(distance < closestDistance){
+                closestDistance = distance;
+                closest = onEdge;
+            }
+        }
+        return closest;
+    }
+
     /**Shortest distance from point to the line segment a->b.*/
     private static double distanceToEdge(Pose point, Pose a, Pose b){
+        Pose closest = closestPointOnEdge(point, a, b);
+        return Math.hypot(point.x() - closest.x(), point.y() - closest.y());
+    }
+
+    /**The point on the line segment a->b closest to point.*/
+    private static Pose closestPointOnEdge(Pose point, Pose a, Pose b){
         double edgeX = b.x() - a.x();
         double edgeY = b.y() - a.y();
         double lengthSquared = edgeX * edgeX + edgeY * edgeY;
@@ -124,8 +148,6 @@ public class CollisionBox implements Collider{
             t = ((point.x() - a.x()) * edgeX + (point.y() - a.y()) * edgeY) / lengthSquared;
             t = Math.max(0.0, Math.min(1.0, t));
         }
-        double closestX = a.x() + t * edgeX;
-        double closestY = a.y() + t * edgeY;
-        return Math.hypot(point.x() - closestX, point.y() - closestY);
+        return new Pose(a.x() + t * edgeX, a.y() + t * edgeY);
     }
 }

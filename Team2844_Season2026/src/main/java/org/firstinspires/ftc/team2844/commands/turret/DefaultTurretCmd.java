@@ -4,21 +4,21 @@ import com.vcs.valleylib.core.command.Command;
 import com.vcs.valleylib.core.subsystem.Subsystem;
 
 import org.firstinspires.ftc.team2844.subsystems.TurretSubsystem;
-import org.firstinspires.ftc.team2844.subsystems.VisionSubsystem;
+import org.firstinspires.ftc.team2844.subsystems.LimelightSubsystem;
 
 import java.util.Collections;
 import java.util.Set;
 
 public class DefaultTurretCmd implements Command {
     TurretSubsystem turret;
-    VisionSubsystem vision;
+    LimelightSubsystem vision;
     boolean track;
     boolean locked;
     boolean manual;
     boolean relative;
     double degrees;
 
-    public DefaultTurretCmd(TurretSubsystem turret, VisionSubsystem vision){
+    public DefaultTurretCmd(TurretSubsystem turret, LimelightSubsystem vision){
         this.turret = turret;
         this.vision = vision;
         locked = false;

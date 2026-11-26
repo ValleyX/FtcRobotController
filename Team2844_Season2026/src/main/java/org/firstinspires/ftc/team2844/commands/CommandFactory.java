@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.team2844.commands;
 
-import com.pedropathing.api.Paths;
 import com.pedropathing.math.Pose;
 import com.vcs.valleylib.core.command.Command;
 import com.vcs.valleylib.core.command.decorators.ParallelCommandGroup;
@@ -15,8 +14,7 @@ import org.firstinspires.ftc.team2844.subsystems.LightSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.TransferSubsystem;
 import org.firstinspires.ftc.team2844.subsystems.TurretSubsystem;
-import org.firstinspires.ftc.team2844.subsystems.VisionSubsystem;
-import org.firstinspires.ftc.team2844simple.commands.drive.GoToCmd;
+import org.firstinspires.ftc.team2844.subsystems.LimelightSubsystem;
 
 public class CommandFactory {
     DriveSubsystem drive;
@@ -26,7 +24,7 @@ public class CommandFactory {
     ShooterSubsystem pollen;
     TransferSubsystem transfer;
     TurretSubsystem turret;
-    VisionSubsystem vision;
+    LimelightSubsystem vision;
 
     public CommandFactory(Subsystems subsystems){
         drive = subsystems.drive;

@@ -15,6 +15,8 @@ import org.firstinspires.ftc.team2844simple.commands.drive.GoToCmd;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.helpers.Subsystems;
 import org.firstinspires.ftc.team2844simple.subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 public class TestingContainer {
     public enum Cycle {DRIVE, PIDF, SHOOTING}
@@ -56,7 +58,7 @@ public class TestingContainer {
         currentPIDF = 0;
 
 
-        resetPose = (Constants.alliance == Constants.BLUE_ALLIANCE)
+        resetPose = (MatchInfo.alliance == GlobalConstants.BLUE_ALLIANCE)
                 ?new Pose(144.0-(Constants.ROBOT_LENGTH/2.0), Constants.ROBOT_WIDTH/2.0, Math.toRadians(180.0))
                 :new Pose(Constants.ROBOT_LENGTH/2.0, (144-Constants.ROBOT_WIDTH/2.0), Math.toRadians(0.0));
 

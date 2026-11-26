@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.firstinspires.ftc.team2844.autos.geometries.UpGeometry;
 import org.firstinspires.ftc.team2844.autos.routines.UpRoutine;
 import org.firstinspires.ftc.team2844.helpers.Constants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
 
 @Autonomous(name = "Blue Up", group = "Blue")
 @Disabled
@@ -19,11 +20,11 @@ public class BlueUp extends UpRoutine {
 
     @Override
     public int alliance() {
-        return Constants.BLUE_ALLIANCE;
+        return GlobalConstants.BLUE_ALLIANCE;
     }
 
     @Override
     public int target() {
-        return Constants.BACK_SIDE;
+        return GlobalConstants.BACK_SIDE;
     }
 }

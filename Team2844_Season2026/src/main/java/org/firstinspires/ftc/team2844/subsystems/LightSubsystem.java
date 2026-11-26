@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vcs.valleylib.ftc.hardware.FtcSubsystem;
 
 import org.firstinspires.ftc.team2844.helpers.Constants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 
 public class LightSubsystem extends FtcSubsystem {
@@ -28,7 +30,7 @@ public class LightSubsystem extends FtcSubsystem {
         pollenLight.setPosition(color);
     }
     public void turnOnPollen(boolean pollen){
-        double color = (pollen)? Constants.YELLOW: Constants.OFF;
+        double color = (pollen)? GlobalConstants.YELLOW: GlobalConstants.OFF;
         setColorPollen(color);
     }
 
@@ -36,10 +38,10 @@ public class LightSubsystem extends FtcSubsystem {
         nectarLight.setPosition(color);
     }
     public void turnOnNectar(boolean nectar){
-        double allianceColor = (Constants.alliance == Constants.BLUE_ALLIANCE)
-                ? Constants.BLUE
-                : Constants.RED;
-        double color = (nectar)? allianceColor: Constants.OFF;
+        double allianceColor = (MatchInfo.alliance == GlobalConstants.BLUE_ALLIANCE)
+                ? GlobalConstants.BLUE
+                : GlobalConstants.RED;
+        double color = (nectar)? allianceColor: GlobalConstants.OFF;
         setColorNectar(color);
     }
 
@@ -52,15 +54,15 @@ public class LightSubsystem extends FtcSubsystem {
     public void periodic() {
         if(timer) {
             if (run.seconds() > 120) {
-                timerLight.setPosition(Constants.OFF);
+                timerLight.setPosition(GlobalConstants.OFF);
             } else if (run.seconds() > 115) {
                 //TODO Blink Red
             } else if (run.seconds() > 100) {
-                timerLight.setPosition(Constants.RED);
+                timerLight.setPosition(GlobalConstants.RED);
             } else if (run.seconds() > 60) {
-                timerLight.setPosition(Constants.YELLOW);
+                timerLight.setPosition(GlobalConstants.YELLOW);
             } else {
-                timerLight.setPosition(Constants.GREEN);
+                timerLight.setPosition(GlobalConstants.GREEN);
             }
         }
     }

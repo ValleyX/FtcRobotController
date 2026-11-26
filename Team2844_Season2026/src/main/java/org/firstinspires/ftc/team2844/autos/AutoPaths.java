@@ -7,6 +7,8 @@ import com.pedropathing.paths.Path;
 
 import org.firstinspires.ftc.team2844.helpers.Constants;
 import org.firstinspires.ftc.team2844.pedro.PedroConstants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 public final class AutoPaths {
     private AutoPaths(){}
@@ -19,10 +21,10 @@ public final class AutoPaths {
     public static final PoseFactory RED = PoseFactory.degrees().mirrorX(72.0).mirrorY(72.0);
 
     public static PoseFactory getField(){
-        return getField(Constants.alliance);
+        return getField(MatchInfo.alliance);
     }
     public static PoseFactory getField(int alliance){
-        return (alliance == Constants.BLUE_ALLIANCE)? BLUE: RED;
+        return (alliance == GlobalConstants.BLUE_ALLIANCE)? BLUE: RED;
     }
 
 
@@ -40,7 +42,7 @@ public final class AutoPaths {
     }
 
     private static boolean inMiddle(Pose pose, double alliance){
-        return (pose.x() < 96.0 && alliance == Constants.BLUE_ALLIANCE) || (pose.x() > 48.0 && alliance == Constants.RED_ALLIANCE);
+        return (pose.x() < 96.0 && alliance == GlobalConstants.BLUE_ALLIANCE) || (pose.x() > 48.0 && alliance == GlobalConstants.RED_ALLIANCE);
     }
 
     public static Path lineLinearHeading(Pose start, Pose end){

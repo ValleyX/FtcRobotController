@@ -4,12 +4,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.teleops.TeleOpBase;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 @TeleOp(name = "Simple Blue")
 public class TeleOpBlue extends TeleOpBase {
-    /**Constants.changeAlliance(alliance) MUST BE CALLED AS THE FIRST LINE OF TELEOP BECAUSE IT AFFECTS SETUP LOGIC*/
+    /**MatchInfo.changeAlliance(alliance) MUST BE CALLED AS THE FIRST LINE OF TELEOP BECAUSE IT AFFECTS SETUP LOGIC*/
     @Override
     public int alliance(){
-        return Constants.BLUE_ALLIANCE;
+        return GlobalConstants.BLUE_ALLIANCE;
     }
 }

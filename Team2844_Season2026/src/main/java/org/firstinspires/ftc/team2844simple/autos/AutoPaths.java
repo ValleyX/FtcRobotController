@@ -7,6 +7,8 @@ import com.pedropathing.paths.Path;
 
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.pedro.PedroConstants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 import java.util.function.Supplier;
 
@@ -21,10 +23,10 @@ public final class AutoPaths {
     public static final PoseFactory RED = PoseFactory.degrees().mirrorX(72.0).mirrorY(72.0);
 
     public static PoseFactory getField(){
-        return getField(Constants.alliance);
+        return getField(MatchInfo.alliance);
     }
     public static PoseFactory getField(int alliance){
-        return (alliance == Constants.BLUE_ALLIANCE)? BLUE: RED;
+        return (alliance == GlobalConstants.BLUE_ALLIANCE)? BLUE: RED;
     }
 
 
@@ -36,12 +38,12 @@ public final class AutoPaths {
     public static Pose yFlower(PoseFactory f){return f.of(144-(Constants.ROBOT_LENGTH/2.0), 96.0, 0.0);}
 
     public static Pose normalized(Pose p, int alliance){
-        return (alliance == Constants.BLUE_ALLIANCE)
+        return (alliance == GlobalConstants.BLUE_ALLIANCE)
                 ? p
                 : RED.of(p.x(), p.y(), Math.toDegrees(p.heading()));
     }
     public static Pose normalized(Pose p){
-        return normalized(p, Constants.alliance);
+        return normalized(p, MatchInfo.alliance);
     }
 
 
@@ -53,7 +55,7 @@ public final class AutoPaths {
     }
 
     public static Path routeToPark(PoseFactory f, Pose from){
-        return routeToPark(f, from, Constants.alliance);
+        return routeToPark(f, from, MatchInfo.alliance);
     }
 
     public static Path routeToPark(PoseFactory f, Pose from, int alliance){
@@ -76,10 +78,10 @@ public final class AutoPaths {
     }
 
     private static boolean inMiddle(Pose pose, double alliance){
-        return (pose.x() < 96.0 && alliance == Constants.BLUE_ALLIANCE) || (pose.x() > 48.0 && alliance == Constants.RED_ALLIANCE);
+        return (pose.x() < 96.0 && alliance == GlobalConstants.BLUE_ALLIANCE) || (pose.x() > 48.0 && alliance == GlobalConstants.RED_ALLIANCE);
     }
 
     private static boolean inMiddle(Pose pose){
-        return inMiddle(pose, Constants.alliance);
+        return inMiddle(pose, MatchInfo.alliance);
     }
 }

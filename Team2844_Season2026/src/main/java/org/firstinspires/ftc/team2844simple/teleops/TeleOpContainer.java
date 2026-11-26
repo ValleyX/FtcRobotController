@@ -18,6 +18,8 @@ import org.firstinspires.ftc.team2844simple.commands.drive.TurnToCmd;
 import org.firstinspires.ftc.team2844simple.commands.drive.TurnToTargetCmd;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
 import org.firstinspires.ftc.team2844simple.helpers.Subsystems;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
 
 import java.util.function.Supplier;
 
@@ -59,11 +61,11 @@ public class TeleOpContainer extends RobotContainer {
     public TeleOpContainer(Subsystems subsystems, Gamepad gamepad1, Gamepad gamepad2) {
         this.subsystems = subsystems;
         factory = new CommandFactory(subsystems);
-        resetPose = (Constants.alliance == Constants.BLUE_ALLIANCE)
+        resetPose = (MatchInfo.alliance == GlobalConstants.BLUE_ALLIANCE)
                 ?new Pose(144.0-(Constants.ROBOT_LENGTH/2.0), Constants.ROBOT_WIDTH/2.0, Math.toRadians(180.0))
                 :new Pose(Constants.ROBOT_LENGTH/2.0, (144-Constants.ROBOT_WIDTH/2.0), Math.toRadians(0.0));
 
-        shootPose = (Constants.alliance == Constants.BLUE_ALLIANCE)
+        shootPose = (MatchInfo.alliance == GlobalConstants.BLUE_ALLIANCE)
                 ?new Pose(0.0,0.0,0.0)
                 :new Pose(0.0,0.0,0.0);
 
@@ -181,11 +183,11 @@ public class TeleOpContainer extends RobotContainer {
 
         //when the robot goes to the audience side, set the pipeline and target
         audienceSide.onTrue(
-                new InstantCommand(() ->subsystems.vision.setPipeline(Constants.alliance + Constants.AUDIENCE_SIDE))
-                .andThen(() ->Constants.changeSide(Constants.AUDIENCE_SIDE)));
+                new InstantCommand(() ->subsystems.vision.setPipeline(MatchInfo.alliance + GlobalConstants.AUDIENCE_SIDE))
+                .andThen(() ->MatchInfo.changeSide(GlobalConstants.AUDIENCE_SIDE)));
         //when the robot goes to the back side, set the pipeline and target
-        audienceSide.onFalse(new InstantCommand(() ->subsystems.vision.setPipeline(Constants.alliance + Constants.BACK_SIDE))
-                .andThen(() ->Constants.changeSide(Constants.BACK_SIDE)));
+        audienceSide.onFalse(new InstantCommand(() ->subsystems.vision.setPipeline(MatchInfo.alliance + GlobalConstants.BACK_SIDE))
+                .andThen(() ->MatchInfo.changeSide(GlobalConstants.BACK_SIDE)));
 
     }
 

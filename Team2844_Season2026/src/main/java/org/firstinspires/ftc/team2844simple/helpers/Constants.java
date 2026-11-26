@@ -4,8 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.math.Pose;
 
-import org.firstinspires.ftc.team2844.helpers.collision.CollisionBox;
+import org.firstinspires.ftc.team2844global.collision.CollisionBox;
 import org.firstinspires.ftc.team2844global.PIDF;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
 
 @Config
 @Configurable
@@ -19,58 +20,6 @@ public class Constants {
     public static final double PS = 0.0;
     public static final double PV = 1.0;
     public static final PIDF POLLEN_PIDF = new PIDF(PP, PI, PD, PS, PV);
-
-    /* ---------- MATH CONSTANTS ---------- */
-    /** Multiply to turn radians per second into rotations per minute, divide to get the opposite*/
-    public static final double RAD_PS_TO_RPM = 30.0 / Math.PI;
-    /** Multiply to turn meters to inches, and divide to get inches to meters*/
-    public static final double METERS_TO_INCHES = 39.3701;
-
-    /* ---------- MISSING INFO ---------- */
-    public static final double NO_HEADING = -999;
-    public static final double NO_POS = -999;
-    public static final double NO_DIS = -999;
-    public static final double NO_LL = -999;
-    public static final int NO_TARGET = -1;
-    public static final int NO_ALLIANCE = -1;
-    public static final double TOO_SLOW = -999;
-    public static final double TOO_FAST = 999;
-
-
-    /* ---------- COORDINATE DATA ---------- */
-    public static double targetX = Constants.NO_POS;
-    public static double targetY = Constants.NO_POS;
-
-    public static final double CELL_HEIGHT = 53.5;
-
-    public static double BLUE_AUDIENCE_X = 84.0;
-    public static double BLUE_AUDIENCE_Y = 53.0;
-    public static double BLUE_BACK_X = 84.0;
-    public static double BLUE_BACK_Y = 91.0;
-    public static double RED_AUDIENCE_X = 60.0;
-    public static double RED_AUDIENCE_Y = 53.0;
-    public static double RED_BACK_X = 60.0;
-    public static double RED_BACK_Y = 91.0;
-
-
-    /* ---------- ID CONSTANTS ---------- */
-    public static final int BLUE_AUDIENCE = 0;
-    public static final int BLUE_BACK = 1;
-    public static final int RED_AUDIENCE = 2;
-    public static final int RED_BACK = 3;
-
-    // ?----- alliance tracker -----
-    public static int alliance = NO_ALLIANCE;
-    public static final int BLUE_ALLIANCE = 0;
-    public static final int RED_ALLIANCE = 2;
-    public static void changeAlliance(int team){
-        alliance = team;
-    }
-
-    // ?----- side ids -----
-    public static final int AUDIENCE_SIDE = 0;
-    public static final int BACK_SIDE = 1;
-    public static int side = NO_TARGET;
 
     /* ---------- IRL ROBOT SIZES ---------- */
     //TODO PUT REAL WIDTH, LENGTH, AND HEIGHT
@@ -115,48 +64,6 @@ public class Constants {
     public static double EFFICIENCY = 0.85;
     public static final double SHOOTER_RADIUS = 36.0/25.4;
 
-    public static void changeSide(int newSide){
-        side = newSide;
-        setTarget();
-    }
-
-    public static void setTarget(){
-        changeTarget(side+alliance);
-    }
-
-    public static int target = NO_TARGET;
-
-    /**
-     * This method changes the values for the goal's field coordinates depending on case given
-     * The field coordinates are rough estimates of where the cell is above when tipped up.
-     * @param t 0- Blue Audience 1- Blue Back 2- Red Audience 3- Red Back
-     *
-     */
-    public static void changeTarget(int t) {
-        target = t;
-        switch(target) {
-            case(Constants.BLUE_AUDIENCE): //Blue Audience
-                targetX = Constants.BLUE_AUDIENCE_X;
-                targetY = Constants.BLUE_AUDIENCE_Y;
-                break;
-            case(Constants.BLUE_BACK): //Blue Back
-                targetX = Constants.BLUE_BACK_X;
-                targetY = Constants.BLUE_BACK_Y;
-                break;
-            case(Constants.RED_AUDIENCE): //Red Audience
-                targetX = Constants.RED_AUDIENCE_X;
-                targetY = Constants.RED_AUDIENCE_Y;
-                break;
-            case(Constants.RED_BACK): //Red Back
-                targetX = Constants.RED_BACK_X;
-                targetY = Constants.RED_BACK_Y;
-                break;
-            default:
-                System.out.println("Target Failed to Change");
-                break;
-        }
-    }
-
 
     /* ---------- PEDRO PATHING ---------- */
     public static final double XPOD_OFFSET = -0.4321152018749808;
@@ -165,65 +72,6 @@ public class Constants {
     /* ---------- AUTO DRIVING ---------- */
     public static final double SAFETY_MARGIN = 1.5;
     public static final double MAX_CURVE_DIS = 18.0;
-    public static final int DEFAULT_DEPTH = 8;
-
-    // Corners go counterclockwise.
-    public static final CollisionBox BLUE_HIVE_COLLISION = new CollisionBox(
-            new Pose(94.73, 52.525),
-            new Pose(96.73, 52.525),
-            new Pose(96.73, 91.475),
-            new Pose(94.73, 91.475)
-    );
-
-    public static final CollisionBox RED_HIVE_COLLISION = new CollisionBox(
-            new Pose(47.27, 52.525),
-            new Pose(49.27, 52.525),
-            new Pose(49.27, 91.475),
-            new Pose(47.27, 91.475)
-    );
-
-    //blue y flower: blue alliance wall, centered at y = 96
-    public static final CollisionBox BLUE_YFLOWER_COLLISION = new CollisionBox(
-            new Pose(139.0, 93.0),
-            new Pose(144.0, 93.0),
-            new Pose(144.0, 99.0),
-            new Pose(139.0, 99.0)
-    );
-
-    //blue x flower: audience wall, centered at x = 96
-    public static final CollisionBox BLUE_XFLOWER_COLLISION = new CollisionBox(
-            new Pose(93.0, 0.0),
-            new Pose(99.0, 0.0),
-            new Pose(99.0, 5.0),
-            new Pose(93.0, 5.0)
-    );
-
-    //red y flower: red alliance wall, centered at y = 48
-    public static final CollisionBox RED_YFLOWER_COLLISION = new CollisionBox(
-            new Pose(0.0, 45.0),
-            new Pose(5.0, 45.0),
-            new Pose(5.0, 51.0),
-            new Pose(0.0, 51.0)
-    );
-
-    //red x flower: back wall, centered at x = 48
-    public static final CollisionBox RED_XFLOWER_COLLISION = new CollisionBox(
-            new Pose(45.0, 139.0),
-            new Pose(51.0, 139.0),
-            new Pose(51.0, 144.0),
-            new Pose(45.0, 144.0)
-    );
-
-    public static final CollisionBox[] COLLISIONS = new CollisionBox[]{
-            BLUE_HIVE_COLLISION,
-            BLUE_XFLOWER_COLLISION,
-            BLUE_YFLOWER_COLLISION,
-            RED_HIVE_COLLISION,
-            RED_XFLOWER_COLLISION,
-            RED_YFLOWER_COLLISION
-    };
-
-    public static final double FIELD_SIZE = 144.0;
     /**Extra room added to the safe corners so lines between them don't count as touching.*/
     public static final double WAYPOINT_EPSILON = 0.5;
     /**How far the safe corners are pushed out from each obstacle: the reach of the robot box
@@ -233,12 +81,12 @@ public class Constants {
             ROBOT_WIDTH / 2.0 + SAFETY_MARGIN) + WAYPOINT_EPSILON;
 
     /**
-     * Waypoints for driving around each obstacle. SAFE_COLLISIONS[j] goes with COLLISIONS[j].
+     * Waypoints for driving around each obstacle. SAFE_COLLISIONS[j] goes with GlobalConstants.COLLISIONS[j].
      * <p>Each corner is pushed SAFE_OFFSET out in both x and y. Corners the robot can't reach
      * (closer than SAFE_OFFSET to a wall) are left out, so a flower against a wall only has 2.
-     * <p>Only use these as places to aim for. Collision checks should still use COLLISIONS.
+     * <p>Only use these as places to aim for. Collision checks should still use GlobalConstants.COLLISIONS.
      */
-    public static final CollisionBox[] SAFE_COLLISIONS = makeSafeCollisions(COLLISIONS);
+    public static final CollisionBox[] SAFE_COLLISIONS = makeSafeCollisions(GlobalConstants.COLLISIONS);
 
     /**Builds SAFE_COLLISIONS. Only works for axis-aligned boxes.*/
     private static CollisionBox[] makeSafeCollisions(CollisionBox[] boxes){
@@ -260,8 +108,8 @@ public class Constants {
             for(Pose c : corners){
                 double x = c.x() + SAFE_OFFSET * Math.signum(c.x() - centerX);
                 double y = c.y() + SAFE_OFFSET * Math.signum(c.y() - centerY);
-                boolean reachable = x >= SAFE_OFFSET && x <= FIELD_SIZE - SAFE_OFFSET
-                        && y >= SAFE_OFFSET && y <= FIELD_SIZE - SAFE_OFFSET;
+                boolean reachable = x >= SAFE_OFFSET && x <= GlobalConstants.FIELD_SIZE - SAFE_OFFSET
+                        && y >= SAFE_OFFSET && y <= GlobalConstants.FIELD_SIZE - SAFE_OFFSET;
                 if(reachable){
                     safeCorners.add(new Pose(x, y));
                 }
@@ -342,20 +190,6 @@ public class Constants {
     public static final String EHDD5 = "p1";
     public static final String EHDD6 = "p2";
     public static final String EHDD7 = "p3";
-
-    /* COLORS */
-    public static final double OFF = 0.00;
-    public static final double RED = 0.28;
-    public static final double ORANGE = 0.33;
-    public static final double YELLOW = 0.39;
-    public static final double SAGE = 0.44;
-    public static final double GREEN = 0.50;
-    public static final double AZURE = 0.56;
-    public static final double BLUE = 0.61;
-    public static final double INDIGO = 0.67;
-    public static final double VIOLET = 0.72;
-    public static final double WHITE = 1.00;
-
 
     //CLOCKWISE rotation is negative heading (approaching -180)
     //COUNTERCLOCKWISE rotation is positive heading (approaching 180)

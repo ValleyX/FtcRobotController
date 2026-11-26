@@ -1,16 +1,19 @@
 package org.firstinspires.ftc.team2844simple.helpers;
 
+import org.firstinspires.ftc.team2844global.GlobalConstants;
+import org.firstinspires.ftc.team2844global.MatchInfo;
+
 public class SavedVars {
-    public static double startingX = Constants.NO_POS;
+    public static double startingX = GlobalConstants.NO_POS;
 
-    public static double startingY = Constants.NO_POS;
+    public static double startingY = GlobalConstants.NO_POS;
 
-    public static double startingHeading = Constants.NO_HEADING;
+    public static double startingHeading = GlobalConstants.NO_HEADING;
     public static void reset(){
-        startingHeading = Constants.NO_HEADING;
-        startingX = Constants.NO_POS;
-        startingY = Constants.NO_POS;
-        Constants.side = Constants.NO_TARGET;
+        startingHeading = GlobalConstants.NO_HEADING;
+        startingX = GlobalConstants.NO_POS;
+        startingY = GlobalConstants.NO_POS;
+        MatchInfo.side = GlobalConstants.NO_TARGET;
     }
 
     public static boolean validPose(){
@@ -18,10 +21,10 @@ public class SavedVars {
     }
 
     public static boolean validPosition(){
-        return (startingX != Constants.NO_POS && startingY != Constants.NO_POS);
+        return (startingX != GlobalConstants.NO_POS && startingY != GlobalConstants.NO_POS);
     }
 
     public static boolean validHeading(){
-        return (startingHeading != Constants.NO_HEADING);
+        return (startingHeading != GlobalConstants.NO_HEADING);
     }
 }

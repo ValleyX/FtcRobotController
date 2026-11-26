@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.team2844global.PIDF;
 import org.firstinspires.ftc.team2844global.ShooterConfig;
 import org.firstinspires.ftc.team2844simple.helpers.Constants;
+import org.firstinspires.ftc.team2844global.GlobalConstants;
 
 public class ShooterSubsystem extends FtcSubsystem {
     MotorEx shooter;
@@ -65,7 +66,7 @@ public class ShooterSubsystem extends FtcSubsystem {
     public double getShooterSurfaceSpeed(double velocity){
         double RPM = getAsRPM(velocity);
         //convert to radians per second
-        double radsPerSec = RPM/Constants.RAD_PS_TO_RPM;
+        double radsPerSec = RPM/GlobalConstants.RAD_PS_TO_RPM;
         //get the physical distance that one radian travels
         double inchesPerSec = Constants.SHOOTER_RADIUS*radsPerSec;
         //convert to feet
@@ -105,7 +106,7 @@ public class ShooterSubsystem extends FtcSubsystem {
      * Assumes -999 as invalid distance
      * */
     public void shoot(){
-        if(distance != Constants.NO_DIS) {
+        if(distance != GlobalConstants.NO_DIS) {
             double vel = getAsTPS(getLinReg());
             setVelocity(vel);
             targetVelocity = vel;
@@ -161,7 +162,7 @@ public class ShooterSubsystem extends FtcSubsystem {
     }
 
     public double get2DDistance(double distance){
-        return Math.sqrt(Math.max(0.0, Math.pow(distance,2) - Math.pow(Constants.CELL_HEIGHT-Constants.LL_HEIGHT, 2)));
+        return Math.sqrt(Math.max(0.0, Math.pow(distance,2) - Math.pow(GlobalConstants.CELL_HEIGHT-Constants.LL_HEIGHT, 2)));
     }
 
     public double getPower(){
