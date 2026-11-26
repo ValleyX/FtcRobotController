@@ -33,4 +33,6 @@ android {
 dependencies {
     implementation project(':FtcRobotController')
     implementation 'com.acmerobotics.dashboard:dashboard:0.5.1'
+    implementation 'com.github.ValleyX.valleyLib:core:2.0.0'
+    implementation 'com.github.ValleyX.valleyLib:ftc:2.0.0'
 }

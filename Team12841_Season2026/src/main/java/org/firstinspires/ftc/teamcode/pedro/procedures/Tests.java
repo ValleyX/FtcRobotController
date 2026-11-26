@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedro.procedures;
 
+import com.bylazar.field.FieldManager;
+import com.bylazar.field.PanelsField;
 import com.pedropathing.algorithm.Algorithm;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.drivetrain.Drivetrain;
@@ -279,11 +281,15 @@ class TestsInterpolation extends TuningOpMode<Boolean> {
 class TestsLocalization extends TuningOpMode<Boolean> {
     Function<HardwareMap, Drivetrain> drivetrainFunction;
     Function<HardwareMap, Localizer> localizerFunction;
+    FieldManager field;
 
     public TestsLocalization(Function<HardwareMap, Drivetrain> drivetrainFunction, Function<HardwareMap, Localizer> localizerFunction) {
         super("Localization Test", "Verifies localization and manual control.", true);
         this.drivetrainFunction = drivetrainFunction;
         this.localizerFunction = localizerFunction;
+        field = PanelsField.INSTANCE.getField();
+        field.setBackground(PanelsField.INSTANCE.getImages().getBIOBUZZ().getDARK());
+        field.setOffsets(PanelsField.INSTANCE.getPresets().getPEDRO_PATHING());
     }
 
     @Override
@@ -300,7 +306,16 @@ class TestsLocalization extends TuningOpMode<Boolean> {
         while (opModeIsActive()) {
             drivetrain.drive(new DrivePowers(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x), true);
             localizer.update();
-            telemetry.addData("Pose", localizer.pose());
+            Pose p = localizer.pose();
+            telemetry.addData("Pose", p);
+
+            field.setStyle(PanelsField.INSTANCE.getBLUE(), PanelsField.INSTANCE.getWHITE(), 1.0);
+            field.moveCursor(p.x(), p.y());
+            field.setCursorHeading(p.heading());
+            field.circle(9.0);
+            field.line(p.x() + 9.0*Math.cos(p.heading()), p.y() + 9.0 * Math.sin(p.heading()));
+            field.update();
+
             telemetry.update();
         }
         return true;

@@ -29,18 +29,23 @@
 
 package org.firstinspires.ftc.team12841.CompBot;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
+
+import java.util.function.BooleanSupplier;
 
 /*
  * This file works in conjunction with the External Hardware Class sample called: ConceptExternalHardwareClass.java
@@ -64,7 +69,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 public class RobotHardware {
 
     /* Declare OpMode members. */
-    private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
+    private HardwareMap hardwareMap = null;
+    private Telemetry telemetry = null;
+    private BooleanSupplier opModeIsActive = null;
 
     // This declares the seven motors needed
     private  DcMotor frontLeftDrive= null;
@@ -80,6 +87,11 @@ public class RobotHardware {
 
     // This declares the IMU needed to get the current direction the robot is facing
     private IMU imu = null;
+
+
+    /* ---------- Pedro Pathing ---------- */
+    private Follower follower = null;
+    private boolean pedro;
 
 
 
@@ -99,8 +111,14 @@ public class RobotHardware {
     public static final double ARM_DOWN_POWER  = -0.45 ;*/
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
-    public RobotHardware(LinearOpMode opmode) {
-        myOpMode = opmode;
+    public RobotHardware(LinearOpMode opmode, boolean pedro) {
+        this(opmode.hardwareMap, opmode.telemetry, opmode::opModeIsActive, pedro);
+    }
+    public RobotHardware(HardwareMap hardwareMap, Telemetry telemetry, BooleanSupplier opModeIsActive, boolean pedro) {
+        this.hardwareMap = hardwareMap;
+        this.telemetry = telemetry;
+        this.opModeIsActive = opModeIsActive;
+        this.pedro = pedro;
     }
      /* Initialize all the robot's hardware.
      * This method must be called ONCE when the OpMode is initialized.
@@ -134,9 +152,9 @@ public class RobotHardware {
 
     // These constants define the desired driving/control characteristics
     // They can/should be tweaked to suit the specific robot drive train.
-    static final double     DRIVE_SPEED             = 0.4;     // Max driving speed for better distance accuracy.
-    static final double     TURN_SPEED              = 0.2;     // Max turn speed to limit turn rate.
-    static final double     HEADING_THRESHOLD       = 1.0 ;    // How close must the heading get to the target before moving to next step.
+    public static final double     DRIVE_SPEED             = 0.4;     // Max driving speed for better distance accuracy.
+    public static final double     TURN_SPEED              = 0.2;     // Max turn speed to limit turn rate.
+    public static final double     HEADING_THRESHOLD       = 1.0 ;    // How close must the heading get to the target before moving to next step.
     // Requiring more accuracy (a smaller number) will often make the turn take longer to get into the final position.
     // Define the Proportional control coefficient (or GAIN) for "heading control".
     // We define one value when Turning (larger errors), and the other is used when Driving straight (smaller errors).
@@ -149,39 +167,66 @@ public class RobotHardware {
      This section contains the class initialization
      ***********************************************************************************/
     public void init()    {
+        if(pedro){
+            follower = Constants.create(hardwareMap);
+        } else {
+            //Hub
+            frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");  //0
+            frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive"); //3
+            backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");  //1
+            backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");  //2
+
+            backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+            frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+            backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+            frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+
+            frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            imu = hardwareMap.get(IMU.class, "imu");
+
+            // This needs to be changed to match the orientation on your robot
+            RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
+                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+            RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
+                    RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
+
+            RevHubOrientationOnRobot orientationOnRobot = new
+                    RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+            imu.initialize(new IMU.Parameters(orientationOnRobot));
+            imu.resetYaw();
+        }
+
         // Define and Initialize Motors (note: need to use reference to actual OpMode).
-        //Hub
-        frontLeftDrive = myOpMode.hardwareMap.get(DcMotor.class, "front_left_drive");  //0
-        frontRightDrive = myOpMode.hardwareMap.get(DcMotor.class, "front_right_drive"); //3
-        backLeftDrive = myOpMode.hardwareMap.get(DcMotor.class, "back_left_drive");  //1
-        backRightDrive = myOpMode.hardwareMap.get(DcMotor.class, "back_right_drive");  //2
         //Expansion Hub
-        feederMotor = myOpMode.hardwareMap.get(DcMotor.class,"feeder_Motor");  //1 expansion
-        intakeMotor = myOpMode.hardwareMap.get(DcMotor.class,"intake_Motor");  //2 expansion
-        //drumShooter = myOpMode.hardwareMap.get(DcMotor.class,"drum_Shooter");  //3 expansion
-        //drumShooterTwo = myOpMode.hardwareMap.get(DcMotor.class,"drum_shooter_2"); //0 expansion
-        drumShooter = myOpMode.hardwareMap.get(DcMotorEx.class,"drum_Shooter");  //3 expansion
-        drumShooterTwo = myOpMode.hardwareMap.get(DcMotorEx.class,"drum_shooter_2"); //0 expansion
+        feederMotor = hardwareMap.get(DcMotor.class,"feeder_Motor");  //1 expansion
+        intakeMotor = hardwareMap.get(DcMotor.class,"intake_Motor");  //2 expansion
+        //drumShooter = hardwareMap.get(DcMotor.class,"drum_Shooter");  //3 expansion
+        //drumShooterTwo = hardwareMap.get(DcMotor.class,"drum_shooter_2"); //0 expansion
+        drumShooter = hardwareMap.get(DcMotorEx.class,"drum_Shooter");  //3 expansion
+        drumShooterTwo = hardwareMap.get(DcMotorEx.class,"drum_shooter_2"); //0 expansion
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
 
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+
         intakeMotor.setDirection(DcMotor.Direction.REVERSE);
         feederMotor.setDirection(DcMotor.Direction.FORWARD);
         drumShooter.setDirection(DcMotor.Direction.REVERSE);
         drumShooterTwo.setDirection(DcMotor.Direction.REVERSE);
 
         // this keeps the motors from running when the button isn't pressed
-        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         drumShooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         drumShooterTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -193,10 +238,6 @@ public class RobotHardware {
         // rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         feederMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //drumShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -204,23 +245,8 @@ public class RobotHardware {
         drumShooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         drumShooterTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
-        imu = myOpMode.hardwareMap.get(IMU.class, "imu");
-
-        // This needs to be changed to match the orientation on your robot
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
-
-        RevHubOrientationOnRobot orientationOnRobot = new
-                RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-        imu.resetYaw();
-
-        myOpMode.telemetry.addData(">", "Hardware Initialized");
-        myOpMode.telemetry.update();
+        telemetry.addData(">", "Hardware Initialized");
+        telemetry.update();
     }
 
     /************************************************************************************
@@ -301,7 +327,7 @@ public class RobotHardware {
                               double heading) {
 
         // Ensure that the OpMode is still active
-        if (myOpMode.opModeIsActive()) {
+        if (opModeIsActive.getAsBoolean()) {
 
             // Determine new target position, and pass to motor controller
             int moveCounts = (int)(distance * COUNTS_PER_INCH);
@@ -328,7 +354,7 @@ public class RobotHardware {
             moveRobot(maxDriveSpeed, 0);
 
             // keep looping while we are still active, and BOTH motors are running.
-            while (myOpMode.opModeIsActive() &&
+            while (opModeIsActive.getAsBoolean() &&
                     (frontLeftDrive.isBusy() || backLeftDrive.isBusy()) ||
                     (frontRightDrive.isBusy() || backRightDrive.isBusy())) {
 
@@ -379,7 +405,7 @@ public class RobotHardware {
         getSteeringCorrection(heading, P_DRIVE_GAIN);
 
         // keep looping while we are still active, and not on heading.
-        while (myOpMode.opModeIsActive() && (Math.abs(headingError) > HEADING_THRESHOLD)) {
+        while (opModeIsActive.getAsBoolean() && (Math.abs(headingError) > HEADING_THRESHOLD)) {
 
             // Determine required steering to keep on heading
             turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
@@ -417,7 +443,7 @@ public class RobotHardware {
         holdTimer.reset();
 
         // keep looping while we have time remaining.
-        while (myOpMode.opModeIsActive() && (holdTimer.time() < holdTime)) {
+        while (opModeIsActive.getAsBoolean() && (holdTimer.time() < holdTime)) {
             // Determine required steering to keep on heading
             turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
 
@@ -493,18 +519,18 @@ public class RobotHardware {
     private void sendTelemetry(boolean straight) {
 
         if (straight) {
-            myOpMode.telemetry.addData("Motion", "Drive Straight");
-            myOpMode.telemetry.addData("Target Pos L:R",  "%7d:%7d",      frontleftTarget,  frontrightTarget);
-            myOpMode.telemetry.addData("Actual Pos L:R",  "%7d:%7d",      frontLeftDrive.getCurrentPosition(),
+            telemetry.addData("Motion", "Drive Straight");
+            telemetry.addData("Target Pos L:R",  "%7d:%7d",      frontleftTarget,  frontrightTarget);
+            telemetry.addData("Actual Pos L:R",  "%7d:%7d",      frontLeftDrive.getCurrentPosition(),
                     frontRightDrive.getCurrentPosition());
         } else {
-            myOpMode.telemetry.addData("Motion", "Turning");
+            telemetry.addData("Motion", "Turning");
         }
 
-        myOpMode.telemetry.addData("Heading- Target : Current", "%5.2f : %5.0f", targetHeading, getHeading());
-        myOpMode.telemetry.addData("Error  : Steer Pwr",  "%5.1f : %5.1f", headingError, turnSpeed);
-        myOpMode.telemetry.addData("Wheel Speeds L : R", "%5.2f : %5.2f", leftSpeed, rightSpeed);
-        myOpMode.telemetry.update();
+        telemetry.addData("Heading- Target : Current", "%5.2f : %5.0f", targetHeading, getHeading());
+        telemetry.addData("Error  : Steer Pwr",  "%5.1f : %5.1f", headingError, turnSpeed);
+        telemetry.addData("Wheel Speeds L : R", "%5.2f : %5.2f", leftSpeed, rightSpeed);
+        telemetry.update();
     }
 
     /**
@@ -561,5 +587,16 @@ public class RobotHardware {
     public double getDrumVelocity(){
         //convert from TPS to RPM
         return drumShooter.getVelocity() * (60.0/28);
+    }
+
+    public Follower getFollower(){
+        return follower;
+    }
+    public void updatePose(){
+        follower.update();
+    }
+
+    public Pose getPose(){
+        return follower.pose();
     }
 }

@@ -1,7 +1,10 @@
-package org.firstinspires.ftc.team12841.CompBot;
+
+package org.firstinspires.ftc.team12841.CompBot.autos;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.team12841.CompBot.RobotHardware;
 
 /*
  *  This OpMode illustrates the concept of driving an autonomous path based on Gyro (IMU) heading and encoder counts.
@@ -51,10 +54,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  *  Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Shoot Grab and Park", group="Robot")
+@Autonomous(name="Offset Shoot and Park", group="Robot")
 //@Disabled
-public class Comp_Auto_Shoot_Grab_Shoot_Park extends LinearOpMode {
-    RobotHardware robot = new RobotHardware(this);
+public class CompBot_Auto_Offset_shoot_and_Park extends LinearOpMode {
+    RobotHardware robot = new RobotHardware(this, false);
 
     @Override
     public void runOpMode() {
@@ -68,24 +71,23 @@ public class Comp_Auto_Shoot_Grab_Shoot_Park extends LinearOpMode {
          * already starting with 4 pollen
          *************************************************************************************/
 
-
-        robot.setDrumSpeedPower(.51);
+        sleep(2000);
+        robot.driveStraight(robot.DRIVE_SPEED, 6.0, 0.0);
+        robot.turnToHeading(robot.TURN_SPEED, 25.0);
+        robot.setDrumSpeedPower(.43);
         sleep(5000);
         robot.setFeederMotorPower(1);
         sleep(2000);
-        robot.driveStraight(robot.DRIVE_SPEED, 6.0, 0.0);
-        robot.turnToHeading(robot.TURN_SPEED, 90.0);
-        robot.driveStraight(robot.DRIVE_SPEED, 6.0, 180.0);
-        sleep(5000);
-        robot.driveStraight(robot.DRIVE_SPEED, -2.0, 180.0);
-        
+        robot.driveStraight(robot.DRIVE_SPEED, 2.0, -25.0);
+        sleep(2000);
+        robot.driveStraight(robot.DRIVE_SPEED, -2.0, -25.0);
         robot.setDrumSpeedPower(0);
         robot.setFeederMotorPower(0);
         robot.turnToHeading(robot.TURN_SPEED, 0.0);
-        robot.driveStraight(robot.DRIVE_SPEED, 106.0, 0.0);
-        robot.turnToHeading(robot.TURN_SPEED, -90.0);
-        robot.driveStraight(robot.DRIVE_SPEED, -19.0, -90.0);
-
+       // robot.driveStraight(robot.DRIVE_SPEED, 107.0, 0.0);
+      //  robot.turnToHeading(robot.TURN_SPEED, -90.0);
+       // robot.driveStraight(robot.DRIVE_SPEED, -20.0, -90.0);
+        //robot.turnToHeading(robot.TURN_SPEED, -90)
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
